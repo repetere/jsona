@@ -1,3 +1,15 @@
 export const settings = {
-  reactRouter: 'browserHistory', //browserHistory|hashHistory|createMemoryHistory",
+  application: {
+    state: {
+      useWindowState: true,
+      useWindowDebugging: true,
+      useWindowSettings: true,
+    },
+    props: {
+      useWindowDynamicData:true,
+    },
+    history: {
+      reactRouter: 'browserHistory', //browserHistory|hashHistory|createMemoryHistory",
+    }
+  },
 };
