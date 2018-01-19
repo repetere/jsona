@@ -1,7 +1,8 @@
 // import React from 'react';
 import ReactDOM from 'react-dom';
-// import * as Semantic from 'semantic-ui-react';
+import 'animate.css/animate.css';
 import 'semantic-ui-css/semantic.min.css';
+import '../styles/default.css';
 
 import registerServiceWorker from '../vendor/create-react-app/registerServiceWorker';
 import { configuration, } from '../defaults';

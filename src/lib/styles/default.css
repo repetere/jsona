@@ -1,0 +1,9 @@
+.Medium-Speed{
+  animation-duration: .4s;
+}
+.Slow-Speed{
+  animation-duration: .5s;
+}
+.Header-Speed{
+  animation-duration: .25s;
+}

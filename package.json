@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "animate.css": "^3.5.2",
     "capitalize": "^1.0.0",
     "history": "^4.7.2",
     "json6": "^1.0.3",
@@ -21,7 +22,7 @@
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
-    "rjx": "^1.2.1",
+    "rjx": "^1.2.2",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.77.2"
   },

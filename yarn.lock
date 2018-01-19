@@ -87,6 +87,10 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+animate.css@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/animate.css/-/animate.css-3.5.2.tgz#91e668dc069a808e5e499514867b97aae0166c36"
+
 ansi-align@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-1.1.0.tgz#2f0c1658829739add5ebb15e6b0c6e3423f016ba"
@@ -5567,9 +5571,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rjx@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/rjx/-/rjx-1.2.1.tgz#8e05b6e94245ea4b855f927bd1f00314ff4cc02f"
+rjx@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/rjx/-/rjx-1.2.2.tgz#e2f48adb1948a510731eec727d6d15a989ae0424"
   dependencies:
     create-react-class "^15.6.2"
     react "^16.2.0"

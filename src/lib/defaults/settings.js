@@ -27,6 +27,10 @@ export const settings = {
       modal: {},
       overlay: {},
       footer: {},
-    }
+    },
+    ui: {
+      showHeader: true,
+      showFooter: true,
+    },
   },
 };
