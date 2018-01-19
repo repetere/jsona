@@ -13,7 +13,9 @@ import {
   Visibility,
 } from 'semantic-ui-react';
 import { NavLink, Link } from 'react-router-dom'
-import { Route, Switch} from 'react-router';
+import { Route, Switch } from 'react-router';
+import * as Semantic from 'semantic-ui-react';
+import * as RJX from 'rjx/src/main';
 
 class Hello extends Component{
   render() {
@@ -47,10 +49,32 @@ const FixedMenu = () => (
 )
 
 export default function getMainComponent(options = {},returnClass) {
-  // const { } = options;
+  const { settings = { application: { props: {}, html: {}, }, } } = options;
+  const rjxThisObject = Object.assign({}, options.rjx);
+  rjxThisObject.componentLibraries = Object.assign({ Semantic }, rjxThisObject.componentLibraries);
+  rjxThisObject.reactComponents = Object.assign({ Link, NavLink, }, rjxThisObject.reactComponents);
   class Main extends Component {
-    state = {}
-  
+    // state = {}
+    // rjxOptions = 
+    
+    constructor(props) {
+      super(props);
+      // console.log('this.renderRJX', this.renderRJX);
+      // console.log('this.renderRJXComponent', this.renderRJXComponent);
+      const rjxThisObject = Object.assign({}, options.rjx);
+
+      this.reactComponents = Object.assign({ Link, NavLink, }, rjxThisObject.reactComponents);
+      this.componentLibraries = Object.assign({ Semantic }, rjxThisObject.componentLibraries);
+
+      this.renderRJX = RJX.getRenderedJSON.bind(this);
+      this.renderRJXComponent = RJX._rjxComponents.getReactComponent.bind(this);
+      this.loggedOutFooter = this.renderRJXComponent.call(this,options.components.footer.loggedOut);
+      this.loggedInFooter = this.renderRJXComponent.call(this,options.components.footer.loggedIn);
+      this.state = {
+        user: props.store.user || {},
+      };
+    }
+
     hideFixedMenu = () => this.setState({ visible: false })
     showFixedMenu = () => this.setState({ visible: true })
     componentWillReceiveProps(nextProps) {
@@ -58,23 +82,25 @@ export default function getMainComponent(options = {},returnClass) {
       // this.handleComponentLifecycle();
     }
     componentDidMount() {
-      console.log({ options });
-      setTimeout(() => {
-        this.props.reduxRouter.push('/company')
-      },2000)
+      if (settings.application.props.useWindowPropsDebugging) {
+        window.__rajaxProps = this.props;
+      }
+      // setTimeout(() => {
+      //   this.props.actions.reduxRouter.push('/company')
+      // },2000)
     }
     render() {
-      const { visible } = this.state
-  
+      const { visible } = this.state;
+      const rajaxFooter = this.state.user.loggedIn ? this.loggedInFooter : this.loggedOutFooter; 
+      // console.log(this.renderRJX({ component: 'p', children: 'hello', props: {ok:true}}));
       return (
-        <div>
+        <div className={settings.application.html.rajaxAppContainerClass}>
           { visible ? <FixedMenu /> : null }
   
           <Visibility
             onBottomPassed={this.showFixedMenu}
             onBottomVisible={this.hideFixedMenu}
-            once={false}
-          >
+            once={false}>
             <Segment
               inverted
               textAlign='center'
@@ -229,6 +255,7 @@ export default function getMainComponent(options = {},returnClass) {
               </Grid>
             </Container>
           </Segment>
+          {rajaxFooter(this.props)}
         </div>
       )
     }

@@ -1,8 +1,9 @@
 import { push, replace, go, goForward, goBack, } from 'react-router-redux';
+import * as RJX from 'rjx';
 
 export function getDefaultActions(options = {}) {
   const { store, settings = { application:{props: {},},}, } = options;
-  console.log({ settings });
+
   if (settings.application.props.useWindowDynamicData) {
     window.__rajax = Object.assign({}, window.__rajax);
     console.warn('implement actions.dynamic.setDynamicData')
@@ -13,6 +14,7 @@ export function getDefaultActions(options = {}) {
     debug: (data) => {
       console.debug(data);
     },
+    rjxString:(rjx, resources)=> RJX.rjxHTMLString.call(Object.assign({},store, options.rjx),{rjx,resources}),
     refresh: () => store.dispatch(push(window.location.pathname)),
     reduxRouter: {
       push: (location) => store.dispatch(push(location)),
@@ -21,8 +23,8 @@ export function getDefaultActions(options = {}) {
       goForward: () => store.dispatch(goForward()),
       goBack: () => store.dispatch(goBack()),
     },
+    isLoggedIn: () => { console.warn('FIX USER IS LOGGEDIN'); return false;},// store.getState().user.isLoggedIn,
     /*
-    // isLoggedIn: () => store.getState().user.isLoggedIn,
     //.dispatch(actions.user.getUserStatus()),
     fetchAction: function (pathname, fetchOptions, success) {
       // console.debug('in redux actions this', this);

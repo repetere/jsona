@@ -5567,9 +5567,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rjx@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/rjx/-/rjx-1.2.0.tgz#3c5155d7496b6c4ce4c3d2c558b0fc982584cf3a"
+rjx@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/rjx/-/rjx-1.2.1.tgz#8e05b6e94245ea4b855f927bd1f00314ff4cc02f"
   dependencies:
     create-react-class "^15.6.2"
     react "^16.2.0"

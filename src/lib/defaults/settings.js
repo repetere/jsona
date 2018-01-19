@@ -2,14 +2,31 @@ export const settings = {
   application: {
     state: {
       useWindowState: true,
-      useWindowDebugging: true,
+      useWindowStateDebugging: true,
       useWindowSettings: true,
     },
     props: {
-      useWindowDynamicData:true,
+      useWindowDynamicData: true,
+      useWindowPropsDebugging: true,
     },
     history: {
       reactRouter: 'browserHistory', //browserHistory|hashHistory|createMemoryHistory",
+    },
+    html: {
+      useBodyLoadedClass: true,
+      useHTMLLoadedClass: true,
+      bodyLoadedClass:'__rajax_body_loaded',
+      htmlLoadedClass: '__rajax_html_loaded',
+      rajaxAppContainerClass: 'reactapp__app_div_content',
+    },
+    layout: {
+      app: {},
+      header: {},
+      nav: {},
+      body: {},
+      modal: {},
+      overlay: {},
+      footer: {},
     }
   },
 };

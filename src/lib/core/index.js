@@ -9,12 +9,20 @@ import { getRajaxApp, } from './App';
 
 export function rajaxRender(config = {}) {
   const {
-    querySelector='#root',
+    querySelector = '#root',
+    // rjx,
     // reduxStores,
     // getReduxStoreActions,
   } = config;
   const settings = Object.assign({}, configuration.settings, config.settings);
-  const options = Object.assign({},config,{settings,title: 'Test func for Class'})
+  const components = Object.assign({}, configuration.components, config.components);
+  const options = Object.assign({},
+    config,
+    {
+      settings,
+      components,
+      title: 'Test func for Class'
+    });
   const app = getRajaxApp(options);
   // console.log({ app });
   ReactDOM.render(

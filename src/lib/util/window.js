@@ -6,7 +6,7 @@ import moment from 'moment';
 export function setWindowProperties(options) {
   const { settings = { application: { state: {},},}, store, } = options;
   window.__rajax = Object.assign({},window.__rajax);
-  if (settings.application.state.useWindowDebugging) {
+  if (settings.application.state.useWindowStateDebugging) {
     window.__rajaxStore = store;
   }
   window.__rajaxUtils = {
