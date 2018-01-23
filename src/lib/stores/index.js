@@ -3,8 +3,8 @@ import { routerMiddleware, } from 'react-router-redux';
 // import * as ReactRouter from 'react-router';
 // import { browserHistory, hashHistory, } from 'react-router';
 import thunk from 'redux-thunk';
-import { createLogger } from 'redux-logger';
-import { getCombinedReducers } from '../reducers';
+import { createLogger, } from 'redux-logger';
+import { getCombinedReducers, } from '../reducers';
 
 const windowState = (typeof window !== 'undefined' && window.__rajax) ? window.__rajax : {};
 

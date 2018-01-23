@@ -15,6 +15,7 @@ export const settings = {
     html: {
       useBodyLoadedClass: true,
       useHTMLLoadedClass: true,
+      setBodyPathnameID: true,
       bodyLoadedClass:'__rajax_body_loaded',
       htmlLoadedClass: '__rajax_html_loaded',
       rajaxAppContainerClass: 'reactapp__app_div_content',
@@ -25,12 +26,17 @@ export const settings = {
       nav: {},
       body: {},
       modal: {},
-      overlay: {},
+      overlay: {
+        style: {
+          
+        },
+      },
       footer: {},
     },
     ui: {
       showHeader: true,
       showFooter: true,
+      useLoadingScreen: true,
     },
   },
 };

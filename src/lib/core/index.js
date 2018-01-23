@@ -17,12 +17,14 @@ export function rajaxRender(config = {}) {
   } = config;
   const settings = Object.assign({}, configuration.settings, config.settings);
   const components = Object.assign({}, configuration.components, config.components);
+  const constants = Object.assign({}, configuration.constants, config.constants);
   const options = Object.assign({},
     config,
     {
       settings,
       components,
-      title: 'Test func for Class'
+      constants,
+      title: 'Test func for Class',
     });
   const app = getRajaxApp(options);
   // console.log({ app });

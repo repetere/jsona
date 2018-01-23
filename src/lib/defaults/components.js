@@ -141,15 +141,103 @@ const footer = {
   },
 };
 
+const loading = {
+  render: {
+    body: {
+      component: 'div',
+      children: [
+        {
+          component: 'Semantic.IconGroup',
+          children: [
+            {
+              component: 'Semantic.Icon',
+              props: {
+                size: 'huge',
+                loading: true,
+                name: 'refresh',
+                inverted: true,
+              },
+            },
+          ],
+        },
+        {
+          component: 'p',
+          children:'Loading',
+        },
+      ],
+    },
+  },
+};
+
+const nav = {
+  render: {
+    body: 
+    {
+      component: 'Semantic.Menu',
+      props: {
+        inverted: true,
+        color:'black',
+        // pointing: true,
+        // secondary: true,
+        size: 'large',
+        fixed:'top',
+      },
+      children: [
+        {
+          component:'Semantic.Container',
+          children: [
+            {
+              component: 'Semantic.Menu.Item',
+              props: {
+                to:'/',
+              },
+              __dangerouslyInsertReactComponents: {
+                as: 'Link',
+              },
+              children:'Home',
+            },
+            {
+              component: 'Semantic.Menu.Item',
+              props: {
+                to:'/about',
+              },
+              __dangerouslyInsertReactComponents: {
+                as: 'Link',
+              },
+              children:'About',
+            },
+            {
+              component: 'Semantic.Menu.Item',
+              props: {
+                position:'right',
+              },
+              children: [
+                {
+                  component: 'Semantic.Button',
+                  props: {
+                    to: '/login',
+                    // inverted:true,
+                    primary:true,
+                  },
+                  __dangerouslyInsertReactComponents: {
+                    as: 'Link',
+                  },
+                  children:'Log In',
+                },
+              ],
+            },
+          ],
+        }  
+      ]
+    },
+  },
+};
 
 export const components = {
+  loading,
   nav: {
-    loggedIn: {
-    
-    },
-    loggedOut: {
-      
-    },
+    loggedIn: nav,
+    loggedOut: nav,
   },
   footer: {
     loggedIn: footer,

@@ -16,3 +16,11 @@ export function setDocumentBodyClass(options = {}) {
     }
   }
 }
+
+export function setBodyPathnameId(options = {}) {
+  const { settings = { application: { html: {}, }, }, pathname='__rajax', } = options;
+
+  if (settings.application.html.setBodyPathnameID && document && document.body && document.body.setAttribute) {
+    document.body.setAttribute('id', encodeURIComponent(`__rajax__${pathname}`).replace(new RegExp(/%2F|%2/, 'g'), '_'));
+  } 
+}

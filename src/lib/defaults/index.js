@@ -1,7 +1,9 @@
 import { settings, } from './settings';
 import { components, } from './components';
+import { constants, } from './constants';
 
 export const configuration = {
-  settings,
   components,
+  constants,
+  settings,
 };
