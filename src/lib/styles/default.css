@@ -1,3 +1,11 @@
+body{
+  height:100%;
+}
+
+#root, .reactapp__app_div_content{
+  height:100%;
+}
+
 .Medium-Speed{
   animation-duration: .4s;
 }
