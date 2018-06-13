@@ -1,2 +1,2 @@
 # rajax
-Build single paged React applications with zero-configuration, no compilation steps and RJX.
+Build single paged React applications with zero-compilation steps and RJX.
