@@ -3,11 +3,12 @@ import React, { Component, Fragment, } from 'react';
 import { NavLink, Link, } from 'react-router-dom';
 // import { Route, Switch, } from 'react-router';
 import * as Semantic from 'semantic-ui-react';
-import * as RJX from 'rjx/src/main';
+import * as RJX from 'rjx/dist/rjx.esm';
 // eslint-disable-next-line
 import { ContentLoadingScreen, } from '../components/ContentLoadingScreen';
 import { utils, } from '../util';
 import { manifests, } from '../defaults/manifests';
+// const RJX = require('rjx');
 
 export default function getMainComponent(options = {}, returnClass) {
   const { settings = { application: { props: {}, html: {}, }, }, } = options;
