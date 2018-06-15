@@ -1,3 +1,11 @@
-import { rajaxRender } from './lib/core/index';
+import { rajaxRender, } from './lib/core/index';
+import * as recharts from 'recharts';
 
-rajaxRender({});
+// console.log({ recharts, });
+rajaxRender({
+  rjx: {
+    componentLibraries:{
+      recharts,
+    },
+  },
+});
