@@ -1,7 +1,6 @@
 {
-  "name": "rajax-core",
-  "version": "0.1.0",
-  "private": true,
+  "name": "pwax",
+  "version": "0.0.1",
   "dependencies": {
     "animate.css": "^3.5.2",
     "capitalize": "^1.0.0",
