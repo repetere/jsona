@@ -1,7 +1,7 @@
-import pluralize from 'pluralize';
-import numeral from 'numeral';
-import capitalize from 'capitalize';
-import moment from 'moment';
+// import pluralize from 'pluralize';
+// import numeral from 'numeral';
+// import capitalize from 'capitalize';
+// import moment from 'moment';
 
 export function setWindowProperties(options) {
   const { settings = { application: { state: {},},}, store, } = options;
@@ -10,9 +10,9 @@ export function setWindowProperties(options) {
     window.__rajaxStore = store;
   }
   window.__rajaxUtils = {
-    pluralize,
-    numeral,
-    capitalize,
-    moment,
+    // pluralize,
+    // numeral,
+    // capitalize,
+    // moment,
   };  
 }

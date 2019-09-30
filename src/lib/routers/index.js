@@ -1,12 +1,13 @@
-// import { browserHistory, hashHistory, createMemoryHistory, } from 'react-router';
-// import * as ReactRouter from 'react-router';
-// import { syncHistoryWithStore, } from 'react-router-redux';
-import browserHistory from 'history/createBrowserHistory';
-import memoryHistory from 'history/createMemoryHistory';
-import hashHistory from 'history/createHashHistory';
+import { browserHistory, hashHistory, createMemoryHistory, } from 'react-router';
+import * as ReactRouter from 'react-router';
+import { syncHistoryWithStore, } from 'react-router-redux';
+// import browserHistory from 'history/createBrowserHistory';
+// import memoryHistory from 'history/createMemoryHistory';
+// import hashHistory from 'history/createHashHistory';
 
 export function getHistoryType(type) {
   const historyType = {
+    createMemoryHistory,
     browserHistory,
     memoryHistory,
     hashHistory,
