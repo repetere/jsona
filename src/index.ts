@@ -1,5 +1,11 @@
-import ViewXApp from './lib/core/index';
-import * as serviceWorker from './serviceWorker';
+import ViewXApp from "./lib/core/index";
+import * as serviceWorker from "./serviceWorker";
+
+declare global {
+  interface Window {
+    __ViewXAppConfig: any;
+  }
+}
 
 // ReactDOM.render(<ViewXApp />, document.getElementById('root'));
 

@@ -1,57 +1,77 @@
 // eslint-disable-next-line
-import React, { useEffect, } from 'react';
-import { Link, } from 'react-router-dom';
-import { findMatchingRoutePath, } from 'test-matching-route';
-import * as JSONX from 'jsonx/src/main';
+import React, { useEffect, FunctionComponent } from "react";
+import { Link } from "react-router-dom";
+// @ts-ignore
+import { findMatchingRoutePath } from "test-matching-route";
+// @ts-ignore
+import * as JSONX from "jsonx/src/main";
+// @ts-ignore
+import Promisie from "promisie";
 
-
-export default function getMainComponent(options = {}, returnClass) {
-  const { dispatch, useGlobalState, } = options;
-  const dispatcher = (action) => dispatch(action);
+export default function getMainComponent(options = {}): FunctionComponent {
+  // @ts-ignore
+  const { dispatch, useGlobalState } = options;
+  // @ts-ignore
+  const dispatcher = action => dispatch(action);
+  // @ts-ignore
   function Main(props) {
-    const [templates] = useGlobalState('templates');
-    const [views] = useGlobalState('views');
-    const { pathname, } = props.location; 
+    const [templates] = useGlobalState("templates");
+    const [views] = useGlobalState("views");
+    const { pathname } = props.location;
     const getReactElement = JSONX.getReactElement.bind({
       props: Object.assign({ dispatch }, props),
       debug: true,
-      componentLibraries: {
-
-      },
+      componentLibraries: {},
       reactComponents: {
-        Link,
-      },
+        Link
+      }
     });
     // let body = null;
+
     let body = getReactElement(views.layout ? views.layout.viewx : null);
     useEffect(() => {
       async function loadRoute() {
-        const template = findMatchingRoutePath(templates.layout, pathname, { return_matching_keys: true, });
+        const template = findMatchingRoutePath(templates.layout, pathname, {
+          return_matching_keys: true
+        });
         if (template) {
           dispatcher({
-            type: 'setView',
-            view: { layout: templates.layout[ template.route ] }
+            type: "setView",
+            view: { layout: templates.layout[template.route] }
           });
         }
-        console.log({pathname,templates,template})
+        console.log({ pathname, templates, template });
       }
       loadRoute();
-    //   // return function cleanup(){}
-    }, [  views.layout, pathname, templates ]);
-    return (<div>
-      <h1>main app</h1>
-      {getReactElement({ component: 'p', children: 'testing jsonx' })}
-      {body}
-      <Link to="/some/path">Path1 </Link>
-      <Link to="/two/again">Two </Link>
-      <Link to="/home">home </Link>
-      <Link to="/about">about </Link>
-      <Link to="/page/3">page 3 </Link>
-      </div>)
-  }
-  return (returnClass) ? Main : <Main />;
-}
+      //   // return function cleanup(){}
+    }, [pathname, templates]);
+    return (
+      <div>
+        <h1 key="a">main app</h1>
 
+        {body}
+        <ul key="c">
+          <li key={1}>
+            <Link to="/some/path">Path1 </Link>
+          </li>
+          <li key={2}>
+            <Link to="/two/again">Two </Link>
+          </li>
+          <li key={3}>
+            <Link to="/home">home </Link>
+          </li>
+          <li key={4}>
+            <Link to="/about">about </Link>
+          </li>
+          <li key={5}>
+            <Link to="/page/3">page 3 </Link>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+  return Main;
+}
 
 /**
  * // // import { Route, Switch, } from 'react-router';

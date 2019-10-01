@@ -1,95 +1,132 @@
-import { createStore } from 'react-hooks-global-state';
+import {
+  createStore
+} from 'react-hooks-global-state';
 
 export function getGlobalStateHooks(options = {}) {
   const reducer = (state, action) => {
     switch (action.type) {
       // case 'increment': return { ...state, count: state.count + 1 };
       // case 'decrement': return { ...state, count: state.count - 1 };
-      case 'setView': return Object.assign({},
-        state,
-        {
-          views: Object.assign({}, state.views, action.view)
-        });
-      default: return state;
+      case 'setView':
+        console.log('dispatching setView')
+        return Object.assign({},
+          state, {
+            views: Object.assign({}, state.views, action.view)
+          });
+      default:
+        return state;
     }
   };
-  const initialState = { 
+  const initialState = {
     count: 0,
     views: {
       layout: null,
     },
     viewdata: {
-      layout:null,
+      layout: null,
     },
     templates: {
       layout: {
-        '/home': { 
+        '/home': {
           viewx: {
             component: 'div',
-            children: [
-              {
+            props: {
+              key: 'b'
+            },
+            children: [{
                 component: 'p',
-                children:'home page'
+                children: 'home page'
+              },
+              {
+                component: 'img',
+                props: {
+                  src: '/favicon.png'
+                }
+              },
+              {
+                component: 'ul',
+                children: [{
+                    component: 'li',
+                    children: [
+
+                      {
+                        component: 'Link',
+                        props: {
+                          to: '/about'
+                        },
+                        children: 'about page '
+                      },
+                    ]
+                  },
+                  {
+                    component: 'li',
+                    children: [
+
+                      {
+                        component: 'Link',
+                        props: {
+                          to: '/page/2'
+                        },
+                        children: ' page 2'
+                      }
+                    ]
+                  }
+                ]
+              },
+            ]
+          },
+          fetch_resources: {
+
+          }
+        },
+        '/about': {
+          viewx: {
+            component: 'div',
+            children: [{
+                component: 'p',
+                children: 'about page'
               },
               {
                 component: 'Link',
                 props: {
-                  to:'/about'
+                  to: '/home'
                 },
-                children:'about page '
-              },
-              {
-                component: 'Link',
-                props: {
-                  to:'/page/2'
-                },
-                children:' page 2'
+                children: 'home page'
               }
             ]
           }
         },
-        '/about': { 
+        '/page/:id': {
           viewx: {
             component: 'div',
-            children: [
-              {
+            children: [{
                 component: 'p',
-                children:'about page'
+                children: 'page 2'
               },
               {
                 component: 'Link',
                 props: {
-                  to:'/home'
+                  to: '/home'
                 },
-                children:'home page'
-              }
-            ]
-          }
-        },
-        '/page/:id': { 
-          viewx: {
-            component: 'div',
-            children: [
-              {
-                component: 'p',
-                children:'page 2'
-              },
-              {
-                component: 'Link',
-                props: {
-                  to:'/home'
-                },
-                children:'home page'
+                children: 'home page'
               }
             ]
           }
         }
       }
     }
-   };
-  const { GlobalStateProvider, dispatch, useGlobalState } = createStore(reducer, initialState);
+  };
+  const {
+    GlobalStateProvider,
+    dispatch,
+    useGlobalState
+  } = createStore(reducer, initialState);
 
-  return { GlobalStateProvider, dispatch, useGlobalState };
+  return {
+    GlobalStateProvider,
+    dispatch,
+    useGlobalState
+  };
 }
 
 // import { createStore, applyMiddleware, } from 'redux';
@@ -119,7 +156,7 @@ export function getGlobalStateHooks(options = {}) {
 //       logger
 //     )
 //   );
-  
+
 //   if (module.hot) {
 //     // Enable Webpack hot module replacement for reducers
 //     module.hot.accept(combinedReducers, () => {
@@ -127,6 +164,6 @@ export function getGlobalStateHooks(options = {}) {
 //       AppReduxStore.replaceReducer(nextRootReducer);
 //     });
 //   }
-  
+
 //   return AppReduxStore;
 // }

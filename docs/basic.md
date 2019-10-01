@@ -1,0 +1,89 @@
+# Template
+```javascript
+templates:{
+    [layerName]:{
+        [pathname]:{ //__error_404,__error_500
+            jsonx:{/* jsonx react element */},
+            resources:{
+                [propertyName]:'fetchPath',
+                [propertyName]:{
+                    fetchPath:'url',
+                    fetchOptions:{
+                        blocking:false,
+                    }
+                },
+            },
+            preRenderFunction:[functionName,'func:window.functionName','func:viewx.functions.functionName'],
+            preRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+            postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+            postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+            pageData:{
+                tagName:{prop1:value,prop2:value}
+                title:innerHtml
+            },
+        }
+    }
+}
+```
+
+# ViewX State
+```javascript
+views:{
+    [layerName]:jsonx,
+},
+viewdata:{
+    [layerName]:jsonx,
+},
+templates:{
+    [layerName]:{
+        [pathName]:{
+            jsonx,
+        }
+    }
+},
+user:{},
+auth:{},
+ui:{},
+```
+
+# ViewX Configuration
+```javascript
+{
+    customComponents:[
+        {
+            name:ComponentName,
+            format:umd|jsonx,
+            type:component|library,
+            umdFilePath:url,
+            jsonx,
+            stylesheets:[url,],
+        }
+    ],
+    customScripts:[url,],
+    customStyles:[url,],
+    customFunctions:[Function,],
+    layers:[
+        loading,
+        modal,
+        overlay,
+        header,
+        footer,
+        nav,
+        error,
+        layout,
+    ],
+    settings:{
+        router:hash|memory|broswer,
+        cacheTemplatesOffline:false,
+        templatePath:url,
+        templateFetchOptions:{},
+    },
+    application:{
+        state:{
+            prop,
+            prop2,
+        }
+    },
+    templates:{},
+}
+```
