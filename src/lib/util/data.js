@@ -19,7 +19,7 @@ export async function fetchResources({ resources = {}, templateRoute = {}, }) {
       const resource = resources[ prop ];
       const fetchPath = (typeof resource === 'string') ? resource : resource.fetchPath;
       const toPath = pathToRegexp.compile(fetchPath);
-      const fetchURL = toPath(templateRoute.params);
+      const fetchURL = toPath(templateRoute.params)+window.location.search;
 
       const fetchOptions = typeof resource === 'string' ? {} : resource.fetchOptions;
       results[ prop ] = await fetchJSON(fetchURL, fetchOptions);
