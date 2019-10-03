@@ -15,12 +15,15 @@ templates:{
             },
             preRenderFunction:[functionName,'func:window.functionName','func:viewx.functions.functionName'],
             preRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+            postRenderFunction:[functionName,window.functionName,viewx.functions.functionName],
             postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
-            postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
-            pageData:{
-                tagName:{prop1:value,prop2:value}
-                title:innerHtml
-            },
+            pageData:[
+                {
+                    tagName:'title',
+                    innerHTML:'my title',
+                    attributes:{prop1:value,prop2:value}
+                }
+            ],
         }
     }
 }
@@ -73,16 +76,22 @@ ui:{},
         layout,
     ],
     settings:{
+        debug:true,
         router:hash|memory|broswer,
         cacheTemplatesOffline:false,
         templatePath:url,
         templateFetchOptions:{},
     },
+    querySelector:'#root',
     application:{
         state:{
             prop,
             prop2,
-        }
+        },
+        preRenderFunction:[functionName,'func:window.functionName','func:viewx.functions.functionName'],
+        preRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+        postRenderFunction:[functionName,window.functionName,viewx.functions.functionName],
+        postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
     },
     templates:{},
 }

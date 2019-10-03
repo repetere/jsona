@@ -1,3 +1,4 @@
+import ReactDOM from "react-dom";
 
 export function setDocumentBodyClass(options = {}) {
   const { settings = { application: { html: {}, }, }, } = options;
@@ -23,4 +24,20 @@ export function setBodyPathnameId(options = {}) {
   if (settings.application.html.setBodyPathnameID && document && document.body && document.body.setAttribute) {
     document.body.setAttribute('id', encodeURIComponent(`__rajax__${pathname}`).replace(new RegExp(/%2F|%2/, 'g'), '_'));
   } 
+}
+
+export function createLayer({ layer,app }) {
+  const { name, type, order, } = layer;
+  const selector = `#${name}`;
+  let layerDOM = document.querySelector(selector);
+  if (!layerDOM) {
+    const domEl = document.createElement('div');
+    domEl.setAttribute('id', name);
+    document.body.appendChild(domEl);
+    domEl.style.zIndex = order;
+    layerDOM = domEl;
+  }
+  if (type === 'applicationRoot') {
+    ReactDOM.render(app, layerDOM);
+  }
 }

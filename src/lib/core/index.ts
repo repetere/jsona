@@ -1,29 +1,17 @@
 // import React from 'react';
-import ReactDOM from "react-dom";
-// import 'animate.css/animate.css';
-// import 'semantic-ui-css/semantic.min.css';
-// import '../styles/default.css';
-
-// import { configuration, } from '../defaults';
+// import ReactDOM from "react-dom";
 import { getViewXapp } from "./App";
+import { configureViewx } from '../util/config';
+import { createLayer, } from '../util/html';
 
-export default function ViewXApp(config: any = {}): void {
-  const {
-    querySelector = "#root"
-    // rjx,
-    // reduxStores,
-    // getReduxStoreActions,
-  } = config;
-  // const settings = Object.assign({}, configuration.settings, config.settings);
-  // const components = Object.assign({}, configuration.components, config.components);
-  // const constants = Object.assign({}, configuration.constants, config.constants);
-  const options = Object.assign({}, config, {
-    // settings,
-    // components,
-    // constants,
-    // title: 'Test func for Class',
-  });
-  const app = getViewXapp(options);
-  // console.log({ app });
-  ReactDOM.render(app, document.querySelector(querySelector));
+export default async function ViewXApp(options: any = { config: {} }): Promise<void> {
+  options.config = await configureViewx(options);
+  console.log({ options });
+  // const { querySelector, } = options.config;
+
+  const app = await getViewXapp(options);
+  options.config.layers
+    .sort((a: any, b: any) => a.order - b.order)
+    .forEach((layer:any) =>createLayer({layer,app}));
+  // ReactDOM.render(app, document.querySelector(querySelector));
 }

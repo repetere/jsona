@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "jsonx": "^0.9.5",
+    "jsonx": "^0.9.7",
     "promisie": "^2.0.0-alpha.0",
     "react": "^16.10.0",
     "react-dom": "^16.10.0",
