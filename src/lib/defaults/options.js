@@ -9,9 +9,11 @@ export const options = {
     // stylesheets:[url,],
     // }
   ],
-  customScripts: [/*url,*/ ],
-  customStyles: [/*url,*/ ],
-  customFunctions: { /*Function, */},
+  customScripts: [ /*url,*/ ],
+  customStyles: [ /*url,*/ ],
+  customFunctions: {
+    /*Function, */
+  },
   layers: [
     // loading,
     // modal,
@@ -27,12 +29,11 @@ export const options = {
       type: 'viewpath',
     },
   ],
-  settings: {
-  },
+  settings: {},
   application: {
     state: {
       name: 'My Application',
-      version:'0.0.1',
+      version: '0.0.1',
     }
   },
   templates: {
@@ -40,7 +41,7 @@ export const options = {
       '/:catchall*': {
         jsonx: {
           component: 'div',
-          children:'loading...',
+          children: 'loading...',
         }
       },
     },
@@ -48,68 +49,78 @@ export const options = {
       '__error_404': {
         jsonx: {
           component: 'div',
-          children: [
-            {
+          children: [{
               component: 'h1',
-              children:'Not Found',
+              children: 'Not Found',
             },
             {
               component: 'div',
               thisprops: {
-                _children:['location','pathname']
+                _children: ['location', 'pathname']
               }
             }
           ]
-        }
+        },
+        pageData: [{
+          tagName: "title",
+          attributes: {},
+          innerHTML: "Not Found"
+        }]
       },
       '__error_500': {
         jsonx: {
           component: 'div',
-          children: [
-            {
+          children: [{
               component: 'h1',
-              children:'Error',
+              children: 'Error',
             },
             {
               component: 'textarea',
               resourceprops: {
-                _children:['error']
+                _children: ['error']
               }
             }
           ]
-        }
+        },
+        pageData: [{
+          tagName: "title",
+          attributes: {},
+          innerHTML: "Error"
+        }]
       },
       '/:catchall*': {
         jsonx: {
           component: 'Fragment',
-          children: [
-            {
+          props: {
+            key: 'catchall'
+          },
+          children: [{
               component: 'div',
               children: 'hello world!',
             },
             {
               component: 'h2',
               thisstate: {
-                _children: [ 'name' ]
+                _children: ['name']
               }
             },
             {
               component: 'input',
               thisstate: {
-                value:['name']
+                value: ['name']
               },
               __dangerouslyBindEvalProps: {
-                onChange:`(function(e){
-                  console.log({e});
-                  console.log('this',this)
-                  console.log('e.target.value',e.target.value)
+                onChange: `(function(e){
+                  //console.log({e});
+                  //console.log('this',this)
+                  //console.log('e.target.value',e.target.value)
                   this.setState({name:e.target.value})
                 })`
               }
             },
 
           ]
-        }  
+        }
       }
     }
   },
