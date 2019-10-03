@@ -24,15 +24,16 @@ export async function loadRoute({ viewxTemplates, pathname, dispatcher, layers, 
   layers.forEach(async(layer) => {
     const { name, } = layer;
     try {
-      const template = findMatchingRoutePath(viewxTemplates[name], pathname, {
+      const templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
         return_matching_keys: true
       });
       let viewdata = {};
       let vxtObject = {};
-      if (template) {
-        vxtObject = viewxTemplates[name][ template.route ];
-        // console.log({ template, name, type, vxtObject });
-        viewdata = await fetchResources(vxtObject);
+      if (templateRoute) {
+        vxtObject = viewxTemplates[ name ][ templateRoute.route ];
+        const { resources,  } = vxtObject;
+        // console.log({ templateRoute, name, vxtObject });
+        viewdata = await fetchResources({ resources, templateRoute, });
         dispatcher({
           type: "setView",
           view: { [name]: vxtObject },
