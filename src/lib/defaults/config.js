@@ -4,10 +4,11 @@ export const config = {
   querySelector: "#root",
   settings: {
     debug: true,
-    router: 'browser',//hash|memory|broswer,
+    router: 'browser', //hash|memory|broswer,
     cacheTemplatesOffline: false,
     templatePath: undefined,
     templateFetchOptions: {},
+    fetchHeaders: {},
     dynamicTemplatePath: undefined,
     dynamicTemplateFetchOptions: {},
     // useBodyLoadedClass: true,
@@ -15,9 +16,18 @@ export const config = {
     // setBodyPathnameID: true,
     uiLoadedClass: '__viewx_ui_loaded',
     uiLoadingClass: '__viewx_ui_loading',
+    accessTokenProperty: 'x-access-token',
   },
   Functions: {
-    showLoader: function showLoader({ ui, setUI, }) {
+    debug: function (input) {
+      console.info('DEBUG', {
+        input
+      });
+    },
+    showLoader: function showLoader({
+      ui,
+      setUI,
+    }) {
       const el = document.querySelector('#loading');
       el.style.height = '100%';
       el.style.width = '100%';
@@ -32,7 +42,10 @@ export const config = {
         isLoading: true,
       });
     },
-    hideLoader: function hideLoader({ ui, setUI, }) {
+    hideLoader: function hideLoader({
+      ui,
+      setUI,
+    }) {
       const el = document.querySelector('#loading');
       el.style.display = 'none';
 
@@ -42,8 +55,7 @@ export const config = {
       });
     },
   },
-  layers: [
-    {
+  layers: [{
       order: 100,
       name: 'loading',
       type: 'loadingView',

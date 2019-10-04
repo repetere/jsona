@@ -1,13 +1,13 @@
 import ReactDOM from "react-dom";
 
-export function setDocumentBodyClass(options = {}) {
+export function setDocumentBodyClass(config = {}) {
   const {
     settings = {
       application: {
         html: {},
       },
     },
-  } = options;
+  } = config;
   if (settings.application.html.useBodyLoadedClass) {
     const bodyClass = settings.application.html.bodyLoadedClass;
     const htmlClass = settings.application.html.htmlLoadedClass;
@@ -24,18 +24,57 @@ export function setDocumentBodyClass(options = {}) {
   }
 }
 
-export function setBodyPathnameId(options = {}) {
+export function setBodyPathnameId(config = {}) {
   const {
     settings = {
       application: {
         html: {},
       },
     }, pathname = '__rajax',
-  } = options;
+  } = config;
 
   if (settings.application.html.setBodyPathnameID && document && document.body && document.body.setAttribute) {
     document.body.setAttribute('id', encodeURIComponent(`__rajax__${pathname}`).replace(new RegExp(/%2F|%2/, 'g'), '_'));
   }
+}
+
+export function insertJavaScript({
+  src,
+  name,
+  async = true,
+  onload,
+}) {
+  (function (d, s, id) {
+    const tagId = `viewx-script-${id}`;
+    if (d.getElementById(id)) return;
+    const s0 = d.getElementsByTagName(s)[0];
+    const j = d.createElement(s);
+    j.async = async;
+    j.id = tagId;
+    j.type = 'text/javascript';
+    j.src = src;
+    j.onload = onload;
+    s0.parentNode.insertBefore(j, s0);
+  }(document || window.document, 'script', name));
+}
+
+export function insertStyleSheet({
+  src,
+  name,
+  onload,
+}) {
+  (function (d, l, id) {
+    const tagId = `viewx-style-${id}`;
+    if (d.getElementById(id)) return;
+    const s0 = d.getElementsByTagName(l)[0];
+    const ss = d.createElement(l);
+    ss.id = tagId;
+    ss.rel = 'stylesheet';
+    ss.type = 'text/css';
+    ss.href = src;
+    ss.onload = onload;
+    s0.parentNode.insertBefore(ss, s0);
+  }(document || window.document, 'link', name));
 }
 
 export function createLayer({
@@ -83,12 +122,6 @@ export async function setPageAttributes({
     const selector = getElementSelector(pageDatum);
     const el = document.querySelector(selector);
     const element = el || document.createElement(tagName);
-    console.log({
-      pageDatum,
-      selector,
-      el,
-      element
-    });
     // if(!el) el.setAttribute()
     if (innerHTML) element.innerHTML = innerHTML;
     Object.keys(attributes).forEach(attr => {

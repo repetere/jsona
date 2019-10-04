@@ -53,6 +53,11 @@ export function getGlobalStateHooks(options = {}) {
       isLoading: true,
       hasLoadedInitialTemplates: false,
     },
+    user: {
+      jwt_token: undefined,
+      profile: {},
+      loggedIn: false,
+    },
   });
   const {
     GlobalStateProvider,

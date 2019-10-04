@@ -13,10 +13,10 @@ templates:{
                     }
                 },
             },
-            preRenderFunction:[functionName,'func:window.functionName','func:viewx.functions.functionName'],
-            preRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
-            postRenderFunction:[functionName,window.functionName,viewx.functions.functionName],
-            postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+            preRenderFunctions:[functionName,'func:window.functionName','func:viewx.functions.functionName'],
+            // preRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
+            postRenderFunctions:[functionName,window.functionName,viewx.functions.functionName],
+            // postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],
             pageData:[
                 {
                     tagName:'title',

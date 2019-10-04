@@ -49,12 +49,13 @@ export default function getMainComponent(
       componentLibraries: Object.assign({}, config.componentLibraries),
       reactComponents: Object.assign({ Link }, config.reactComponents)
     });
+    const functionContext = { props, state, setState };
 
     useEffect(() => {
       let viewxTemplates = templates;
       async function initialize() {
         // @ts-ignore
-        Functions.showLoader({ ui, setUI });
+        Functions.showLoader.call(functionContext, { ui, setUI });
         try {
           if (ui.hasLoadedInitialTemplates === false) {
             const updatedTemplates = await loadTemplates({
@@ -64,7 +65,8 @@ export default function getMainComponent(
               setTemplates,
               setUI,
               ui,
-              layers: config.layers
+              layers: config.layers,
+              Functions
             });
             viewxTemplates = updatedTemplates.viewxTemplates;
           }
@@ -72,13 +74,15 @@ export default function getMainComponent(
             viewxTemplates,
             pathname,
             dispatcher,
-            layers: config.layers
+            layers: config.layers,
+            Functions,
+            functionContext
           });
         } catch (e) {
           console.error(e);
         }
         // @ts-ignore
-        Functions.hideLoader({ ui, setUI });
+        Functions.hideLoader.call(functionContext, { ui, setUI });
       }
       initialize();
       //   // return function cleanup(){}

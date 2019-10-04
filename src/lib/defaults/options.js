@@ -26,7 +26,7 @@ export const options = {
     {
       order: 100,
       name: 'root',
-      type: 'viewpath',
+      type: 'applicationRoot',
     },
   ],
   settings: {},
@@ -89,6 +89,7 @@ export const options = {
         }]
       },
       '/:catchall*': {
+        // preRenderFunctions: ['func:viewx.Functions.debug', 'func:window.someWindowFunction'],
         jsonx: {
           component: 'Fragment',
           props: {
@@ -97,6 +98,9 @@ export const options = {
           children: [{
               component: 'div',
               children: 'hello world!',
+            },
+            {
+              component: 'sayHello',
             },
             {
               component: 'h2',
@@ -116,7 +120,7 @@ export const options = {
                   //console.log('e.target.value',e.target.value)
                   this.setState({name:e.target.value})
                 })`
-              }
+              },
             },
 
           ]
