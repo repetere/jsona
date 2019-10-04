@@ -3,6 +3,9 @@ export const config = {
   reactComponents: {},
   querySelector: "#root",
   settings: {
+    addReactToWindow: true,
+    addReactDOMToWindow: true,
+    addJSONXToWindow: true,
     debug: true,
     router: 'browser', //hash|memory|broswer,
     cacheTemplatesOffline: false,

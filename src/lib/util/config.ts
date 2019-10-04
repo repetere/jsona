@@ -1,19 +1,10 @@
+// @ts-ignore
 import * as JSONX from "jsonx/src/main";
-import {
-  config
-} from '../defaults/config';
-import {
-  insertJavaScript,
-  insertStyleSheet,
-} from './html';
+import { config } from "../defaults/config";
+import { insertJavaScript, insertStyleSheet } from "./html";
 let addedReact = false;
-
-export function getFilePromise({
-  type,
-  file,
-  i,
-  name
-}) {
+// @ts-ignore
+export function getFilePromise({ type, file, i, name }) {
   return new Promise((resolve, reject) => {
     try {
       let returnedFile = false;
@@ -24,30 +15,30 @@ export function getFilePromise({
       };
       let t = setTimeout(() => {
         clearTimeout(t);
-        if (returnedFile === false) throw new Error('Timeout loading file: ' + file);
+        if (returnedFile === false)
+          throw new Error("Timeout loading file: " + file);
       }, 60000);
-      if (type === 'script') {
+      if (type === "script") {
         insertJavaScript({
           name: `${name}-${i}`,
           src: file,
           async: true,
-          onload,
+          onload
         });
-      } else if (type === 'style') {
+      } else if (type === "style") {
         insertStyleSheet({
           src: file,
           name: `${name}-${i}`,
-          onload,
+          onload
         });
       } else resolve(true);
-
     } catch (e) {
       console.error(e);
       reject(e);
     }
   });
 }
-
+// @ts-ignore
 export function getComponentPromise(customComponent) {
   return new Promise((resolve, reject) => {
     let returnedFile = false;
@@ -56,18 +47,25 @@ export function getComponentPromise(customComponent) {
         // type,
         umdFilePath,
         name,
-        stylesheets = [],
+        stylesheets = []
       } = customComponent;
       if (umdFilePath) {
         let t = setTimeout(() => {
           clearTimeout(t);
-          if (returnedFile === false) throw new Error('Timeout loading file: ' + umdFilePath);
+          if (returnedFile === false)
+            throw new Error("Timeout loading file: " + umdFilePath);
         }, 60000);
       }
-      if (stylesheets.length) stylesheets.forEach((stylesheet, i) => insertStyleSheet({
-        src: stylesheet,
-        name: `${name}-${i}`,
-      }));
+      if (stylesheets.length) {
+        // @ts-ignore
+        stylesheets.forEach((stylesheet, i) =>
+          // @ts-ignore
+          insertStyleSheet({
+            src: stylesheet,
+            name: `${name}-${i}`
+          })
+        );
+      }
       if (umdFilePath) {
         if (addedReact === false) {
           if (!window.React) window.React = JSONX.__getReact();
@@ -92,75 +90,96 @@ export function getComponentPromise(customComponent) {
   });
 }
 
-export async function getReactLibrariesAndComponents({
-  customComponents
-}) {
+// @ts-ignore
+export async function getReactLibrariesAndComponents({ customComponents }) {
   const componentLibraries = {};
   const reactComponents = {};
 
   await Promise.all(customComponents.map(getComponentPromise));
 
+  // @ts-ignore
   customComponents.forEach(customComponent => {
-    const {
-      type,
-      name,
-      jsonx,
-      options,
-      functionBody,
-    } = customComponent;
-    if (type === 'library') {
+    const { type, name, jsonx, options, functionBody } = customComponent;
+    if (type === "library") {
       if (jsonx) {
-        componentLibraries[name] = Object.keys(jsonx)
-          .reduce((result, prop) => {
-            const libraryComponent = jsonx[prop];
-            const {
-              type,
-              name,
+        // @ts-ignore
+        componentLibraries[name] = Object.keys(jsonx).reduce((result, prop) => {
+          const libraryComponent = jsonx[prop];
+          const {
+            type,
+            name,
+            jsonxComponent,
+            options,
+            functionBody
+          } = libraryComponent;
+          if (type === "component") {
+            // @ts-ignore
+            result[name] = JSONX._jsonxComponents.getReactClassComponent(
               jsonxComponent,
-              options,
+              options
+            );
+          } else {
+            // @ts-ignore
+            result[name] = JSONX._jsonxComponents.getReactFunctionComponent(
+              jsonxComponent,
               functionBody,
-            } = libraryComponent;
-            if (type === 'component') {
-              result[name] = JSONX._jsonxComponents.getReactClassComponent(jsonxComponent, options);
-            } else {
-              result[name] = JSONX._jsonxComponents.getReactFunctionComponent(jsonxComponent, functionBody, options);
-            }
-            return result;
-          }, {});
+              options
+            );
+          }
+          return result;
+        }, {});
+        // @ts-ignore
       } else componentLibraries[name] = window[name];
-    } else if (type === 'component') {
+    } else if (type === "component") {
       if (jsonx) {
-        reactComponents[name] = JSONX._jsonxComponents.getReactClassComponent(jsonx, options);
+        // @ts-ignore
+        reactComponents[name] = JSONX._jsonxComponents.getReactClassComponent(
+          jsonx,
+          options
+        );
+        // @ts-ignore
       } else reactComponents[name] = window[name];
-    } else if (type === 'function') {
+    } else if (type === "function") {
       if (jsonx) {
-        reactComponents[name] = JSONX._jsonxComponents.getReactFunctionComponent(jsonx, functionBody, options);
+        // @ts-ignore
+        reactComponents[
+          name
+        ] = JSONX._jsonxComponents.getReactFunctionComponent(
+          jsonx,
+          functionBody,
+          options
+        );
+        // @ts-ignore
       } else reactComponents[name] = window[name];
     }
   });
 
   return {
     componentLibraries,
-    reactComponents,
+    reactComponents
   };
 }
 
-export async function addCustomFiles({
-  type,
-  files
-}) {
-  return await Promise.all(files.map((file, i) => getFilePromise({
-    type,
-    file,
-    i,
-    name: type
-  })));
+// @ts-ignore
+export async function addCustomFiles({ type, files }) {
+  return await Promise.all(
+    // @ts-ignore
+    files.map((file, i) =>
+      getFilePromise({
+        type,
+        file,
+        i,
+        name: type
+      })
+    )
+  );
 }
 
 export async function configureViewx(options = {}) {
   const configuration = Object.assign({}, config);
   configuration.settings = {
     ...configuration.settings,
+    // @ts-ignore
     ...options.settings
   };
   // const {
@@ -172,16 +191,19 @@ export async function configureViewx(options = {}) {
 
   const [reactJSONXComponents] = await Promise.all([
     getReactLibrariesAndComponents({
-      customComponents: options.customComponents,
+      // @ts-ignore
+      customComponents: options.customComponents
     }),
     addCustomFiles({
-      type: 'script',
+      type: "script",
+      // @ts-ignore
       files: options.customScripts
     }),
     addCustomFiles({
-      type: 'style',
+      type: "style",
+      // @ts-ignore
       files: options.customStyles
-    }),
+    })
   ]);
   configuration.componentLibraries = reactJSONXComponents.componentLibraries;
   configuration.reactComponents = reactJSONXComponents.reactComponents;

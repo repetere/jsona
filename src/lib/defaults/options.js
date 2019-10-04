@@ -36,6 +36,12 @@ export const options = {
       version: '0.0.1',
     }
   },
+  vxaState: {
+    views: {},
+    viewdata: {},
+    ui: {},
+    user: {},
+  },
   templates: {
     loading: {
       '/:catchall*': {
@@ -51,7 +57,7 @@ export const options = {
           component: 'div',
           children: [{
               component: 'h1',
-              children: 'Not Found',
+              children: 'No t Found',
             },
             {
               component: 'div',
@@ -90,6 +96,11 @@ export const options = {
       },
       '/:catchall*': {
         // preRenderFunctions: ['func:viewx.Functions.debug', 'func:window.someWindowFunction'],
+        pageData: [{
+          tagName: "title",
+          attributes: {},
+          innerHTML: "Sample Simple App"
+        }],
         jsonx: {
           component: 'Fragment',
           props: {

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Web site created using create-react-app" />
+    <script type="text/javascript">
+        var __ViewXAppConfig = {
+            settings: {
+                templatePath: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/templates',
+                router: 'hash',
+            },
+            customComponents: [{ //https://cdnjs.com/libraries/react-slick
+                    name: 'Slider',
+                    format: 'umd',
+                    type: 'component',
+                    umdFilePath: 'https://cdnjs.cloudflare.com/ajax/libs/react-slick/0.25.2/react-slick.js',
+                    stylesheets: [
+                        'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css',
+                        'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css',
+                    ],
+                },
+                {
+                    name: 'ReactBootstrap',
+                    format: 'umd',
+                    type: 'library',
+                    umdFilePath: 'https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js',
+                    // jsonx,
+                    stylesheets: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', ],
+                },
+                {
+                    name: 'sayHello',
+                    format: 'jsonx',
+                    type: 'component',
+                    jsonx: {
+                        render: {
+                            body: {
+                                component: 'div',
+                                children: 'HELLO!'
+                            }
+                        }
+                    },
+                }
+            ],
+            customScripts: [
+                /*url,*/
+            ],
+            customStyles: [
+                /*url,*/
+            ],
+            customFunctions: {
+                /*Function, */
+            },
+            layers: [
+                // loading,
+                // modal,
+                // overlay,
+                // header,
+                // footer,
+                // nav,
+                // error,
+                // root,
+                {
+                    order: 100,
+                    name: 'root',
+                    type: 'applicationRoot',
+                },
+            ],
+        };
+        window.someWindowFunction = function someWindowFunction(input) {
+            console.log('someWindowFunction this', this, {
+                input
+            });
+        }
+    </script>
+    <title>React App</title>
+</head>
+
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- <div id="root"></div> -->
+    <script type="text/javascript" src="../../dist/viewx.vma.umd.js"></script>
+    <script type="text/javascript">
+        VXA.ViewXApp(window.__ViewXAppConfig);
+    </script>
+</body>
+
+</html>
