@@ -95,13 +95,17 @@ export async function getGlobalStateHooks(options: any = {}) {
       isModalOpen: false,
       hasOverlayLayer: false,
       hasLoadedInitialTemplates: false,
+      returnURL:undefined,
       ...layerOpenState,
       ...options.vxaState.ui
     },
     user: {
-      jwt_token: undefined,
+      token: undefined,
+      expires: undefined,
+      timeout: undefined,
       profile: {},
       loggedIn: false,
+      loggedInMFA: false,
       ...options.vxaState.user
     }
   };

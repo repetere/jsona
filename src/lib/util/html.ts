@@ -1,6 +1,24 @@
 import ReactDOM from "react-dom";
 
 // @ts-ignore
+export function setHTMLElementClass({ element, className, }) {
+  if (element.classList && element.classList.add) {
+    element.classList.add(className);
+  } else if (element.className) {
+    element.className = element.className += className;
+  }
+  // if(window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf('Trident') !== -1) {
+  //   document.body.style.zoom = 1;
+  // }
+}
+
+export function setBodyPathnameId(pathname:string) {
+  if (document && document.body && document.body.setAttribute) {
+    document.body.setAttribute('id', encodeURIComponent(pathname).replace(new RegExp(/%2F|%2/, 'g'), '_'));
+  } 
+}
+
+// @ts-ignore
 export function insertJavaScript({ src, name, async = true, onload }) {
   (function(d, s, id) {
     const tagId = `viewx-script-${id}`;

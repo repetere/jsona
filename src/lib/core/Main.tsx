@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 // @ts-ignore
 import * as JSONX from "jsonx/src/main";
 import { loadTemplates, loadRoute } from "../util/props";
+import { setBodyPathnameId, } from "../util/html";
 
 export default function getMainComponent(
   options = {
@@ -20,25 +21,26 @@ export default function getMainComponent(
       componentLibraries: {},
       reactComponents: {},
       layers: [],
-      settings: { debug: true }
+      settings: { debug: true, setBodyPathnameID:true, }
     }
   }
 ): FunctionComponent {
   // @ts-ignore
   const { dispatch, useGlobalState, config } = options;
-  const { Functions } = config;
+  const { Functions, settings, } = config;
   // @ts-ignore
   const dispatcher = action => dispatch(action);
   // @ts-ignore
   function Main(appProps) {
     const [templates, setTemplates] = useGlobalState("templates");
     const [views] = useGlobalState("views");
+    const [user] = useGlobalState("user");
     const [viewdata] = useGlobalState("viewdata");
     const [ui, setUI] = useGlobalState("ui");
     const [state, setState] = useState(options.application.state);
     const { pathname } = appProps.location;
-    const props = Object.assign({ dispatch, templates, views, viewdata, ui }, appProps);
-    const functionContext = { props, state, setState };
+    const props = Object.assign({ dispatch, templates, views, viewdata, ui, user, }, appProps);
+    const functionContext = { props, state, setState, settings, };
     const loadView = useMemo(() => {
       // @ts-ignore
       return function _loadView({ layerName, view, resourceprops, pathname, }) {
@@ -75,9 +77,15 @@ export default function getMainComponent(
       reactComponents: Object.assign({ Link }, config.reactComponents)
     });
     useEffect(() => {
+      // async function initMain() {
+        
+      // } 
+      // initMain();
+      // @ts-ignore
+      initialize.call(functionContext,{settings,});
       // @ts-ignore
       Functions.onLaunch.call(functionContext);
-      // @ts-ignore
+      // @ts-ignore      
       return ()=>Functions.onShutdown.call(functionContext);
     }, []);
     useEffect(() => {
@@ -86,6 +94,7 @@ export default function getMainComponent(
         // @ts-ignore
         Functions.showLoader.call(functionContext, { ui, setUI });
         try {
+          // @ts-ignore
           if (ui.hasLoadedInitialTemplates === false) {
             const updatedTemplates = await loadTemplates({
               config,
@@ -95,7 +104,8 @@ export default function getMainComponent(
               setUI,
               ui,
               layers: config.layers,
-              Functions
+              Functions,
+              functionContext,
             });
             viewxTemplates = updatedTemplates.viewxTemplates;
           }
@@ -107,8 +117,10 @@ export default function getMainComponent(
             Functions,
             functionContext
           });
+          if(settings.setBodyPathnameID) setBodyPathnameId(pathname);
         } catch (e) {
-          console.error(e);
+          // @ts-ignore
+          Functions.log({ type: 'error', error: e, });
         }
         // @ts-ignore
         Functions.hideLoader.call(functionContext, { ui, setUI });

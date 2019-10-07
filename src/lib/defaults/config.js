@@ -3,6 +3,8 @@ export const config = {
   reactComponents: {},
   querySelector: "#root",
   settings: {
+    name:'VXA-SPA',
+    version:'0.0.1',
     addReactToWindow: true,
     addReactDOMToWindow: true,
     addJSONXToWindow: true,
@@ -14,20 +16,41 @@ export const config = {
     fetchHeaders: {},
     dynamicTemplatePath: undefined,
     dynamicTemplateFetchOptions: {},
-    // useBodyLoadedClass: true,
-    // useHTMLLoadedClass: true,
-    // setBodyPathnameID: true,
+    useBodyLoadedClass: true,
+    useHTMLLoadedClass: true,
+    setBodyPathnameID: true,
+    bodyLoadedClass: '__viewx_body_loaded',
+    htmlLoadedClass: '__viewx_html_loaded',
     uiLoadedClass: '__viewx_ui_loaded',
     uiLoadingClass: '__viewx_ui_loading',
     accessTokenProperty: 'x-access-token',
+    routes: {
+      login: '/login',
+      login_mfa: '/login_mfa'
+    }
   },
   Functions: {
-    debug: function (input) {
+    log ({ type, data, error, meta }){
+      switch (type) {
+        case 'error':
+          console.error(error, { data, meta });
+          break;
+        case 'warning':
+          console.warn(data, { meta });
+          break;
+        case 'info':
+          console.info(data, { meta });
+          break;
+        default:
+          console.log(data, { meta });
+      }
+    },
+    debug (input) {
       console.info('DEBUG', {
         input
       });
     },
-    showLoader: function showLoader({
+    showLoader({
       ui,
       setUI,
     }) {
@@ -45,7 +68,7 @@ export const config = {
         isLoading: true,
       });
     },
-    hideLoader: function hideLoader({
+    hideLoader({
       ui,
       setUI,
     }) {
@@ -57,11 +80,29 @@ export const config = {
         isLoading: false,
       });
     },
+    onPageChange() {
+      
+    },
     onLaunch() {
-      console.warn('default onlaunch')
+      // console.warn('default onlaunch')
     },
     onShutdown() {
-      console.warn('default onshutdown')
+      // console.warn('default onshutdown')
+    },
+    requireAuth: async function requireAuth() {
+      if (this.props.user.loggedIn === false) {
+        if (this.props.location.pathname !== this.settings.routes.login) {
+          this.dispatch({
+            type: "setReturnURL",
+            returnURL: this.props.location.pathname,
+          });
+        }
+        this.props.history.push(this.settings.routes.login);
+      }
+    },
+    requireMFA: async function requireMFA() {
+      if (this.props.user.loggedIn === false) this.props.history.push(this.settings.routes.login);
+      else if (this.props.user.loggedInMFA === false && this.props.user.loggedIn) this.props.history.push(this.settings.routes.login_mfa);
     }
   },
   layers: [{

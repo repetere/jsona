@@ -4,7 +4,130 @@ import { findMatchingRoutePath } from "test-matching-route";
 // @ts-ignore
 import { fetchJSON, fetchResources } from "./data";
 // @ts-ignore
-import { setPageAttributes } from "./html";
+import { setPageAttributes, setHTMLElementClass, } from "./html";
+
+/*
+const u = {
+  import { initSockets, } from './SocketHelper';
+
+class MainApp extends Component{
+  constructor(props) {
+    super(props);
+    this.state = props;
+    initSockets.call(this, { auth: true, });
+
+  }
+
+  componentDidMount() {
+    // if (this.state.settings.use_sockets && once) {
+    //   once = false;
+      
+
+    // }
+    if (this.state.settings.noauth) {
+      this.props.fetchUnauthenticatedManifest()
+        .then(() => {
+          this.props.setUILoadedState(true);
+          // initSockets.call(this, { auth:false, });
+        })
+        .catch((error) => {
+          this.props.errorNotification(error);
+          this.props.setUILoadedState(true);
+          // initSockets.call(this, { auth:false, });
+        });
+    } else {
+      Promise.all([
+        AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
+        AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
+        AsyncStorage.getItem(constants.jwt_token.PROFILE_JSON),
+        this.props.fetchMainComponent(),
+        this.props.fetchErrorComponents(),
+        this.props.fetchUnauthenticatedManifest(),
+        AsyncStorage.getItem(constants.user.MFA_AUTHENTICATED),
+        //AsyncStorage.getItem(constants.async_token.TABBAR_TOKEN),
+      ])
+        .then((results) => {
+          try {
+            if (results[results.length - 1] === 'true') {
+              this.props.authenticatedMFA();
+            }
+            let jwt_token = results[ 0 ];
+            let jwt_token_data = JSON.parse(results[ 1 ]);
+            let jwt_user_profile = {};
+            try {
+              jwt_user_profile = JSON.parse(results[ 2 ]);
+            } catch (e) {
+              this.props.getUserProfile(jwt_token);
+              this.props.initializeAuthenticatedUser(jwt_token, false);
+              this.props.errorNotification(new Error('Invalid User Profile'));
+            }
+            if (jwt_token_data && jwt_user_profile) {
+              let url = '/api/jwt/token';
+              let response = {};
+              let json = {
+                token: jwt_token_data.token,
+                expires: jwt_token_data.expires,
+                timeout: jwt_token_data.timeout,
+                user: jwt_user_profile,
+              };
+              let currentTime = new Date();
+              
+              if (moment(jwt_token_data.expires).isBefore(currentTime)) {
+                let expiredTokenError = new Error(`Access Token Expired ${moment(jwt_token_data.expires).format('LLLL')}`);
+                this.props.logoutUser();
+                throw expiredTokenError;
+              } else {
+                this.props.saveUserProfile(url, response, json);
+                this.props.initializeAuthenticatedUser(json.token, false);
+              }
+            } else if (jwt_token) {
+              this.props.getUserProfile(jwt_token);
+              this.props.initializeAuthenticatedUser(jwt_token, false);
+              this.props.createNotification({ text: 'welcome back', timeout:4000,  });
+            } else {
+              console.log('MAIN componentDidMount USER IS NOT LOGGED IN');
+            }
+            this.props.setUILoadedState(true);  
+            // console.debug('main this.state.user', this.state.user);
+            // if (socket) {
+            //   console.debug('HAS SOCKET state.user',state.user)
+      
+            //   socket.emit('authentication', {
+            //     user: state.user,
+            //   });
+            // } else {
+            //   console.debug('NO SOCKET')
+            // }
+            // initSockets.call(this, { auth: true, });
+            // this.props.initUserSocket();
+          } catch (e) {
+            this.props.errorNotification(e);
+            // initSockets.call(this, { auth:false, });
+            // console.error(e)
+            // console.log(e);
+          }
+          
+        })
+        .catch((error) => {
+          // console.error(error)
+          this.props.errorNotification(error);
+          // console.error('MAIN componentDidMount: JWT USER Login Error.', error);
+          this.props.logoutUser();
+          this.props.setUILoadedState(true);
+          // initSockets.call(this, { auth:false, });
+        });
+      
+    }
+    
+  }
+}
+}
+*/
+// @ts-ignore
+export async function initialize({ settings, }) {
+  if (settings.useBodyLoadedClass) setHTMLElementClass({ element: document.body, className: settings.bodyLoadedClass, });
+  if (settings.useHTMLLoadedClass) setHTMLElementClass({ element: document.querySelector('html'), className: settings.htmlLoadedClass, });
+}
 
 // @ts-ignore
 export async function loadTemplates({
@@ -23,9 +146,11 @@ export async function loadTemplates({
   // @ts-ignore
   layers,
   // @ts-ignore
-  Functions
+  Functions,
+  // @ts-ignore
+  functionContext,
 }) {
-  const fetchFunction = Functions.fetchJSON || fetchJSON;
+  const fetchFunction = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
   // @ts-ignore
   const loadedTemplates = await fetchFunction(
     config.settings.templatePath,
@@ -122,7 +247,7 @@ export async function loadRoute({
     });
     // @ts-ignore
     const templateViewPromises = templateRouteLayers.map(templateRouteLayer =>
-      fetchResourcesFunction({
+      fetchResourcesFunction.call(functionContext,{
         resources: templateRouteLayer.vxtObject.resources,
         templateRoute: templateRouteLayer.templateRoute
       })
@@ -167,7 +292,7 @@ export async function loadRoute({
       templateRouteLayers
     });
   } catch (e) {
-    console.error(e);
+    Functions.log({ type: 'error', error: e, });
     dispatcher({
       type: "setView",
       view: {
