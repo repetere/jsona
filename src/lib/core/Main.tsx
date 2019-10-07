@@ -3,7 +3,7 @@ import React, {
   useEffect,
   FunctionComponent,
   useState,
-  // useMemo,
+  useMemo,
   Fragment
 } from "react";
 import ReactDOM from "react-dom";
@@ -37,7 +37,32 @@ export default function getMainComponent(
     const [ui, setUI] = useGlobalState("ui");
     const [state, setState] = useState(options.application.state);
     const { pathname } = appProps.location;
-    const props = Object.assign({ dispatch }, appProps);
+    const props = Object.assign({ dispatch, templates, views, viewdata, ui }, appProps);
+    const functionContext = { props, state, setState };
+    const loadView = useMemo(() => {
+      // @ts-ignore
+      return function _loadView({ layerName, view, resourceprops, pathname, }) {
+        const loadViewPathname = pathname || `_loadView_${layerName}`;
+        return loadRoute({
+          viewxTemplates: {
+            ...templates,
+            [layerName]: {
+              ...templates[layerName],
+              [loadViewPathname]:view,
+            }
+          },
+          pathname:loadViewPathname,
+          dispatcher,
+          // @ts-ignore
+          layers: config.layers.filter(layer=>layer.name===layerName),
+          Functions,
+          resourceprops,
+          functionContext
+        });
+      };
+    }, [templates,functionContext,]);
+    // @ts-ignore
+    Functions.loadView = loadView;
 
     const getReactElement = JSONX.getReactElement.bind({
       props,
@@ -49,8 +74,12 @@ export default function getMainComponent(
       componentLibraries: Object.assign({}, config.componentLibraries),
       reactComponents: Object.assign({ Link }, config.reactComponents)
     });
-    const functionContext = { props, state, setState };
-
+    useEffect(() => {
+      // @ts-ignore
+      Functions.onLaunch.call(functionContext);
+      // @ts-ignore
+      return ()=>Functions.onShutdown.call(functionContext);
+    }, []);
     useEffect(() => {
       let viewxTemplates = templates;
       async function initialize() {

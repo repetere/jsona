@@ -176,18 +176,31 @@ export async function addCustomFiles({ type, files }) {
 }
 
 export async function configureViewx(options = {}) {
-  const configuration = Object.assign({}, config);
+  let layerMaxOrder = 0;
+  let applicationRootLayerName;
+  const configuration = {...config};
   configuration.settings = {
     ...configuration.settings,
     // @ts-ignore
     ...options.settings
   };
-  // const {
-  //   componentLibraries,
-  //   reactComponents,
-  // } = await getReactLibrariesAndComponents({
-  //   customComponents: options.customComponents,
-  // });
+  configuration.Functions = {
+    ...configuration.Functions,
+    // @ts-ignore
+    ...options.customFunctions,
+  }
+  // @ts-ignore
+  const layerObject = [].concat(configuration.layers, options.layers)
+  // @ts-ignore
+    .reduce((result, layerObject) => {
+      const { order, name, type, } = layerObject;
+      if (order > layerMaxOrder) layerMaxOrder = order;
+      if (type === 'applicationRoot') applicationRootLayerName = name;
+      result[name] = layerObject;
+      return result;
+    }, {});
+  if (layerObject[applicationRootLayerName].order !== layerMaxOrder) layerObject[applicationRootLayerName].order = layerMaxOrder + 1;
+  configuration.layers = Object.keys(layerObject).map(layerName => layerObject[layerName]);
 
   const [reactJSONXComponents] = await Promise.all([
     getReactLibrariesAndComponents({

@@ -6,7 +6,7 @@
   "browser": "dist/viewx.vma.umd.js",
   "web": "dist/viewx.vma.web.js",
   "dependencies": {
-    "jsonx": "^0.9.7",
+    "jsonx": "^0.9.80",
     "path-to-regexp": "^3.1.0",
     "promisie": "^2.0.0-alpha.0",
     "react": "^16.10.0",
@@ -19,6 +19,7 @@
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "store2": "^2.10.0",
     "test-matching-route": "^1.2.0"
   },
   "scripts": {

@@ -13,7 +13,7 @@ export async function getViewXapp(options = { config: {} }) {
   console.log('getViewXapp options', options);
   // @ts-ignore
   const { settings } = options.config;
-  const { GlobalStateProvider, dispatch, useGlobalState } = getGlobalStateHooks(
+  const { GlobalStateProvider, dispatch, useGlobalState } = await getGlobalStateHooks(
     options
   );
   // @ts-ignore

@@ -53,6 +53,7 @@ export async function loadTemplates({
 
 // @ts-ignore
 export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
+  let hasOverlayLayer:boolean = false;
   // @ts-ignore
   return layer => {
     const { name, type } = layer;
@@ -63,15 +64,20 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
         return_matching_keys: true
       }
     );
+    if (type === 'overlay' && templateRoute) hasOverlayLayer = true;
     if (templateRoute) {
-      const vxtObject =
-        viewxTemplates[name][templateRoute.route] ||
-        viewxTemplates[name].__error_404;
+      const vxtObject = hasOverlayLayer
+        ? viewxTemplates[name][templateRoute.route]
+        : viewxTemplates[name][templateRoute.route] || viewxTemplates[name].__error_404;
       return {
         name,
         type,
         vxtObject,
-        templateRoute
+        templateRoute,
+        ui: {
+          [`isRouteLayer_${name}_Matched`]:true,
+        },
+        hasOverlayLayer,
       };
     } else return undefined;
   };
@@ -89,7 +95,9 @@ export async function loadRoute({
   // @ts-ignore
   Functions,
   // @ts-ignore
-  functionContext
+  functionContext,
+  // @ts-ignore
+  resourceprops = {},
 }) {
   let applicationRootName = "root";
   try {
@@ -121,24 +129,32 @@ export async function loadRoute({
     );
     const templateViewData = await Promise.all(templateViewPromises);
     const action = templateViewData.reduce(
-      (result, templateViewDatum, i) => {
-        const { name, type, vxtObject } = templateRouteLayers[i];
-
+      (result:any, templateViewDatum, i:number) => {
+        const { name, type, vxtObject, ui, hasOverlayLayer, } = templateRouteLayers[i];
+        if (hasOverlayLayer) result.ui.hasOverlayLayer = true;
         if (type === "applicationRoot") {
           applicationRootName = name;
-          setPageAttributes(vxtObject);
         }
+        setPageAttributes(vxtObject);
         // @ts-ignore
         result.view[name] = vxtObject;
         // @ts-ignore
-        result.viewdata[name] = templateViewDatum;
+        result.viewdata[name] = {
+          ...templateViewDatum,
+          ...resourceprops,
+        };
+        // @ts-ignore
+        result.ui = { ...result.ui, ...ui, };
         // result
         return result;
       },
       {
         type: "setView",
         view: {},
-        viewdata: {}
+        viewdata: {},
+        ui: {
+          hasOverlayLayer: false,
+        },
       }
     );
 

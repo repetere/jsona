@@ -120,21 +120,88 @@ export const options = {
               }
             },
             {
-              component: 'input',
-              thisstate: {
-                value: ['name']
+              component: 'div',
+              props: {
+                style: {
+                  display:'flex',
+                }
               },
-              __dangerouslyBindEvalProps: {
-                onChange: `(function(e){
-                  //console.log({e});
-                  //console.log('this',this)
-                  //console.log('e.target.value',e.target.value)
-                  this.setState({name:e.target.value})
-                })`
-              },
+              children: [
+                {
+                  component: 'input',
+                  thisstate: {
+                    value: ['name']
+                  },
+                  __dangerouslyBindEvalProps: {
+                    onChange: `(function(e){
+                      //console.log({e});
+                      //console.log('this',this)
+                      //console.log('e.target.value',e.target.value)
+                      this.setState({name:e.target.value})
+                    })`
+                  },
+                },
+                {
+                  component: 'Link',
+                  props: {
+                    to:'/modal/hello',
+                  },
+                  children:'Hello Modal'
+                },
+                {
+                  component: 'button',
+                  children: 'change header',
+                  __dangerouslyBindEvalProps: {
+                    onClick:`(function(){
+                      // console.log('onClick this',this);
+                      this.viewx.Functions.loadView({
+                        layerName:'header',
+                        view:{
+                          jsonx:{
+                            component:'h1',
+                            resourceprops:{
+                              style:['customStyle']
+                            },
+                            children:'NEW HEADER',
+                          },
+                        },
+                        resourceprops:{
+                          customStyle:{
+                            color:'red',
+                          }
+                        }
+                      });
+                    })`
+                  },
+                  
+                }
+              ]
             },
-
           ]
+        }
+      }
+    },
+    modal: {
+      '/modal/hello': {
+        jsonx: {
+          component: 'ReactModal',
+          props: {
+            ariaHideApp:false,
+          },
+          thisprops: {
+            isOpen: [ 'ui', 'isRouteLayer_modal_Matched' ],
+          },
+          __dangerouslyBindEvalProps: {
+            onRequestClose:`(function(){
+              // console.log('onRequestClose this',this);
+              this.props.dispatch({ type:'toggleMatchedRouteLayer_modal',});
+              this.props.history.goBack();
+            })`
+          },
+          // __functionProps: {
+          //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
+          // },
+          children:'SAY HELLO MODAL',
         }
       }
     }

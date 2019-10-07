@@ -2,8 +2,20 @@ import {
   createStore
   // createGlobalState,
 } from "react-hooks-global-state";
+import store from 'store2';
 
-export function getGlobalStateHooks(options: any = {}) {
+export async function getGlobalStateHooks(options: any = {}) {
+  // @ts-ignore
+  window.store = store;
+  // @ts-ignore
+  await import('store2/src/store.cache');
+  const layers = options.config.layers;
+  // const layerNames = layers.map((layer:any) => layer.name);
+  const layerOpenState = layers.reduce((result: any, layer: any) => {
+    const { name, type, } = layer;
+    result[`isRouteLayer_${name}_Matched`] = type === 'applicationRoot' ? true : false;
+    return result;  
+  }, {});
   const reducer = (state: any, action: any) => {
     switch (action.type) {
       case "viewxUILoadingStart":
@@ -26,16 +38,34 @@ export function getGlobalStateHooks(options: any = {}) {
             }
           }
         };
-      // case 'decrement': return { ...state, count: state.count - 1 };
       case "setView":
-        // console.log("dispatching setView", {
-        //   action
-        // });
-        return Object.assign({}, state, {
-          views: Object.assign({}, state.views, action.view),
-          viewdata: Object.assign({}, state.viewdata, action.viewdata)
-        });
+        return {
+          ...state,
+          views: {
+            ...state.views,
+            ...action.view,
+          },
+          viewdata: {
+            ...state.viewdata,
+            ...action.viewdata,
+          },
+          ui: {
+            ...state.ui,
+            ...action.ui,
+          }
+        };
       default:
+        if (action.type.includes('toggleMatchedRouteLayer')) {
+          const [, layerName] = action.type.split('_');
+          const uiLayerName = `isRouteLayer_${layerName}_Matched`;
+          return {
+            ...state,
+            ui: {
+              ...state.ui,
+              [uiLayerName]: !state.ui[uiLayerName],
+            }
+          };
+        }
         return state;
     }
   };
@@ -54,7 +84,10 @@ export function getGlobalStateHooks(options: any = {}) {
     },
     ui: {
       isLoading: true,
+      isModalOpen: false,
+      hasOverlayLayer: false,
       hasLoadedInitialTemplates: false,
+      ...layerOpenState,
       ...options.vxaState.ui
     },
     user: {

@@ -36,6 +36,14 @@
         // jsonx,
         // stylesheets:[url,],
         // }
+        {
+          name:'ReactModal',
+          format:'umd',
+          type:'component',
+          umdFilePath:'https://unpkg.com/react-modal@3.10.1/dist/react-modal.js',
+          // jsonx,
+          // stylesheets:[url,],
+        },
         { //https://cdnjs.com/libraries/react-slick
           name: 'Slider',
           format: 'umd',
@@ -76,6 +84,9 @@
       ],
       customFunctions: {
         /*Function, */
+        onLaunch(){
+          console.info('custom launch function')
+        },
       },
       layers: [
         // loading,
@@ -86,9 +97,18 @@
         // nav,
         // error,
         // root,
+        // {
+        //   order: 200,
+        //   name: 'toot_two',
+        //   type: 'view',
+        // },
         {
-          order: 100,
+          // order: 100,
+          // name: 'root',
+          // type: 'applicationRoot',
+          order: 200,
           name: 'root',
+          // system: true,
           type: 'applicationRoot',
         },
       ],

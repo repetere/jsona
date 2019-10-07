@@ -57,17 +57,30 @@ export const config = {
         isLoading: false,
       });
     },
+    onLaunch() {
+      console.warn('default onlaunch')
+    },
+    onShutdown() {
+      console.warn('default onshutdown')
+    }
   },
   layers: [{
       order: 100,
       name: 'loading',
+      system: true,
       type: 'loadingView',
     },
-    // modal
+    {
+      order: 200,
+      name: 'modal',
+      system: true,
+      type:'overlay',
+    },
     // overlay
     {
       order: 400,
       name: 'header',
+      system: true,
       type: 'view',
     },
     // nav
@@ -76,6 +89,7 @@ export const config = {
     {
       order: 900,
       name: 'root',
+      system: true,
       type: 'applicationRoot',
     },
   ],
