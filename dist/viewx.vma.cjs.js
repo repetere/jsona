@@ -9474,6 +9474,196 @@ var server_node = createCommonjsModule(function (module) {
 }
 });
 
+function Cache () {
+  var _cache = Object.create(null);
+  var _hitCount = 0;
+  var _missCount = 0;
+  var _size = 0;
+  var _debug = false;
+
+  this.put = function(key, value, time, timeoutCallback) {
+    if (_debug) {
+      console.log('caching: %s = %j (@%s)', key, value, time);
+    }
+
+    if (typeof time !== 'undefined' && (typeof time !== 'number' || isNaN(time) || time <= 0)) {
+      throw new Error('Cache timeout must be a positive number');
+    } else if (typeof timeoutCallback !== 'undefined' && typeof timeoutCallback !== 'function') {
+      throw new Error('Cache timeout callback must be a function');
+    }
+
+    var oldRecord = _cache[key];
+    if (oldRecord) {
+      clearTimeout(oldRecord.timeout);
+    } else {
+      _size++;
+    }
+
+    var record = {
+      value: value,
+      expire: time + Date.now()
+    };
+
+    if (!isNaN(record.expire)) {
+      record.timeout = setTimeout(function() {
+        _del(key);
+        if (timeoutCallback) {
+          timeoutCallback(key, value);
+        }
+      }.bind(this), time);
+    }
+
+    _cache[key] = record;
+
+    return value;
+  };
+
+  this.del = function(key) {
+    var canDelete = true;
+
+    var oldRecord = _cache[key];
+    if (oldRecord) {
+      clearTimeout(oldRecord.timeout);
+      if (!isNaN(oldRecord.expire) && oldRecord.expire < Date.now()) {
+        canDelete = false;
+      }
+    } else {
+      canDelete = false;
+    }
+
+    if (canDelete) {
+      _del(key);
+    }
+
+    return canDelete;
+  };
+
+  function _del(key){
+    _size--;
+    delete _cache[key];
+  }
+
+  this.clear = function() {
+    for (var key in _cache) {
+      clearTimeout(_cache[key].timeout);
+    }
+    _size = 0;
+    _cache = Object.create(null);
+    if (_debug) {
+      _hitCount = 0;
+      _missCount = 0;
+    }
+  };
+
+  this.get = function(key) {
+    var data = _cache[key];
+    if (typeof data != "undefined") {
+      if (isNaN(data.expire) || data.expire >= Date.now()) {
+        if (_debug) _hitCount++;
+        return data.value;
+      } else {
+        // free some space
+        if (_debug) _missCount++;
+        _size--;
+        delete _cache[key];
+      }
+    } else if (_debug) {
+      _missCount++;
+    }
+    return null;
+  };
+
+  this.size = function() {
+    return _size;
+  };
+
+  this.memsize = function() {
+    var size = 0,
+      key;
+    for (key in _cache) {
+      size++;
+    }
+    return size;
+  };
+
+  this.debug = function(bool) {
+    _debug = bool;
+  };
+
+  this.hits = function() {
+    return _hitCount;
+  };
+
+  this.misses = function() {
+    return _missCount;
+  };
+
+  this.keys = function() {
+    return Object.keys(_cache);
+  };
+
+  this.exportJson = function() {
+    var plainJsCache = {};
+
+    // Discard the `timeout` property.
+    // Note: JSON doesn't support `NaN`, so convert it to `'NaN'`.
+    for (var key in _cache) {
+      var record = _cache[key];
+      plainJsCache[key] = {
+        value: record.value,
+        expire: record.expire || 'NaN',
+      };
+    }
+
+    return JSON.stringify(plainJsCache);
+  };
+
+  this.importJson = function(jsonToImport, options) {
+    var cacheToImport = JSON.parse(jsonToImport);
+    var currTime = Date.now();
+
+    var skipDuplicates = options && options.skipDuplicates;
+
+    for (var key in cacheToImport) {
+      if (cacheToImport.hasOwnProperty(key)) {
+        if (skipDuplicates) {
+          var existingRecord = _cache[key];
+          if (existingRecord) {
+            if (_debug) {
+              console.log('Skipping duplicate imported key \'%s\'', key);
+            }
+            continue;
+          }
+        }
+
+        var record = cacheToImport[key];
+
+        // record.expire could be `'NaN'` if no expiry was set.
+        // Try to subtract from it; a string minus a number is `NaN`, which is perfectly fine here.
+        var remainingTime = record.expire - currTime;
+
+        if (remainingTime <= 0) {
+          // Delete any record that might exist with the same key, since this key is expired.
+          this.del(key);
+          continue;
+        }
+
+        // Remaining time must now be either positive or `NaN`,
+        // but `put` will throw an error if we try to give it `NaN`.
+        remainingTime = remainingTime > 0 ? remainingTime : undefined;
+
+        this.put(key, record.value, remainingTime);
+      }
+    }
+
+    return this.size();
+  };
+}
+
+var memoryCache = new Cache();
+var Cache_1 = Cache;
+memoryCache.Cache = Cache_1;
+
 var reactDomFactories = createCommonjsModule(function (module, exports) {
 
 /**
@@ -10954,6 +11144,21 @@ function getSimplifiedJSONX(jsonx = {}) {
   }
 }
 
+/**
+ * Fetches JSON from remote path
+ * @param {String} path - fetch path url
+ * @param {Object} options - fetch options
+ * @return {Object} - returns fetched JSON data
+ */
+async function fetchJSON(path='', options={}) {
+  try {
+    const response = await fetch(path, options);
+    return await response.json();
+  } catch (e) {
+    throw e;
+  }
+}
+
 var jsonxUtils = /*#__PURE__*/Object.freeze({
     __proto__: null,
     displayComponent: displayComponent,
@@ -10962,7 +11167,8 @@ var jsonxUtils = /*#__PURE__*/Object.freeze({
     validateJSONX: validateJSONX,
     validSimpleJSONXSyntax: validSimpleJSONXSyntax,
     simpleJSONXSyntax: simpleJSONXSyntax,
-    getSimplifiedJSONX: getSimplifiedJSONX
+    getSimplifiedJSONX: getSimplifiedJSONX,
+    fetchJSON: fetchJSON
 });
 
 /**
@@ -12045,6 +12251,7 @@ var createReactClass = factory_1(
   ReactNoopUpdateQueue
 );
 
+const cache = new Cache_1();
 // if (typeof window === 'undefined') {
 //   var window = window || (typeof global!=="undefined" ? global : window).window || {};
 // }
@@ -12152,10 +12359,15 @@ function getComponentFromMap(options = {}) {
  * @returns {Function} 
  */
 function getFunctionFromEval(options = {}) {
-  const { body = '', args = [], } = options;
+  if (typeof options === 'function') return options;
+  const { body = '', args = [], name, } = options;
   const argus = [].concat(args);
   argus.push(body);
-  return Function.prototype.constructor.apply({}, argus);
+  const evalFunction = Function.prototype.constructor.apply({ name, }, argus);
+  if (name) {
+    Object.defineProperty(evalFunction, 'name', { value: name, });
+  }
+  return evalFunction;
 }
 
 /**
@@ -12254,6 +12466,43 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
   return reactClass;
 }
 
+function DynamicComponent(props={}) {
+  const { useCache = true, cacheTimeout = 60 * 60 * 5, loadingJSONX= { component:'div', children:'...Loading', },
+  loadingErrorJSONX= { component:'div', children:[{component:'span',children:'Error: '},{ component:'span',  resourceprops:{_children:['error','message']}, }], }, cacheTimeoutFunction = () => { }, jsonx, transformFunction = data => data, fetchURL, fetchOptions, } = props;
+  const context = this || {};
+  const [ state, setState ] = React.useState({ hasLoaded: false, hasError: false, resources: {}, error:undefined, });
+  const transformer = React.useMemo(()=>getFunctionFromEval(transformFunction), [ transformFunction ]);
+  const timeoutFunction = React.useMemo(()=>getFunctionFromEval(cacheTimeoutFunction), [ cacheTimeoutFunction ]);
+  const renderJSONX = React.useMemo(()=>getReactElementFromJSONX.bind({context}), [ context ]);
+  const loadingComponent = React.useMemo(()=>renderJSONX(loadingJSONX), [ loadingJSONX ]);
+  const loadingError = React.useMemo(()=>renderJSONX(loadingErrorJSONX,{error:state.error}), [ loadingErrorJSONX, state.error ]);
+
+  React.useEffect(() => { 
+    async function getData() {
+      try {
+        let transformedData;
+        if (useCache && cache.get(fetchURL)) {
+          transformedData = cache.get(fetchURL);
+        } else {
+          const fetchedData = await fetchJSON(fetchURL, fetchOptions);
+          transformedData = await transformer(fetchedData);
+          if (useCache) cache.put(fetchURL, transformedData, cacheTimeout,timeoutFunction);
+        }
+        setState(prevState=>Object.assign({},prevState,{ hasLoaded: true, hasError: false, resources: transformedData, }));
+      } catch (e) {
+        if(context.debug) console.warn(e);
+        setState({ hasError: true, error:e, });
+      }
+    }
+    getData();
+  }, [ fetchURL, fetchOptions ]);
+  if (state.hasError) {
+    return loadingError;
+  } else if (state.hasLoaded === false) {
+    return loadingComponent;
+  } else return renderJSONX(jsonx, state.resources);
+}
+
 /**
  * Returns new React Function Component
  * @memberOf components
@@ -12348,6 +12597,7 @@ var jsonxComponents = /*#__PURE__*/Object.freeze({
     getComponentFromMap: getComponentFromMap,
     getFunctionFromEval: getFunctionFromEval,
     getReactClassComponent: getReactClassComponent,
+    DynamicComponent: DynamicComponent,
     getReactFunctionComponent: getReactFunctionComponent,
     getReactContext: getReactContext
 });
@@ -13051,7 +13301,7 @@ var jsonxChildren = /*#__PURE__*/Object.freeze({
 
 // import React, { createElement, } from 'react';
 const createElement = React__default.createElement;
-const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, } = jsonxComponents;
+const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, DynamicComponent: DynamicComponent$1, } = jsonxComponents;
 const { getComputedProps: getComputedProps$1, } = jsonxProps;
 const { getJSONXChildren: getJSONXChildren$1, } = jsonxChildren;
 const { displayComponent: displayComponent$1, } = jsonxUtils;
@@ -13082,7 +13332,7 @@ function getReactElementFromJSONX(jsonx = {}, resources = {}) {
   if (validSimpleJSONXSyntax(jsonx)) jsonx = simpleJSONXSyntax(jsonx);
   if (!jsonx.component) return createElement('span', {}, debug ? 'Error: Missing Component Object' : '');
   try {
-    const components = Object.assign({}, componentMap$1, this.reactComponents);
+    const components = Object.assign({ DynamicComponent: DynamicComponent$1.bind(this), }, componentMap$1, this.reactComponents);
 
     const reactComponents = (boundedComponents.length)
       ? getBoundedComponents$1.call(this, { boundedComponents, reactComponents: components, })
@@ -13129,7 +13379,7 @@ function __getReactDOM() {
 const _jsonxComponents = jsonxComponents;
 
 // import pluralize from 'pluralize';
-function fetchJSON(path, options) {
+function fetchJSON$1(path, options) {
     return __awaiter(this, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
@@ -13170,7 +13420,7 @@ function fetchResources(_a) {
                                                 // @ts-ignore
                                                 _a = results;
                                                 _b = prop;
-                                                return [4 /*yield*/, fetchJSON(fetchURL, fetchOptions)];
+                                                return [4 /*yield*/, fetchJSON$1(fetchURL, fetchOptions)];
                                             case 1:
                                                 // @ts-ignore
                                                 _a[_b] = _c.sent();
@@ -13189,55 +13439,6 @@ function fetchResources(_a) {
     });
 }
 
-// export function setDocumentBodyClass(config = {}) {
-//   const {
-//     settings = {
-//       application: {
-//         html: {}
-//       }
-//     }
-//   } = config;
-//   if (settings.application.html.useBodyLoadedClass) {
-//     const bodyClass = settings.application.html.bodyLoadedClass;
-//     const htmlClass = settings.application.html.htmlLoadedClass;
-//     try {
-//       document.body.classList.add(bodyClass);
-//     } catch (e) {
-//       document.body.className = document.body.className += bodyClass;
-//     }
-//     try {
-//       document.querySelector("html").classList.add(htmlClass);
-//     } catch (e) {
-//       document.querySelector("html").className = document.querySelector(
-//         "html"
-//       ).className += htmlClass;
-//     }
-//   }
-// }
-// export function setBodyPathnameId(config = {}) {
-//   const {
-//     settings = {
-//       application: {
-//         html: {}
-//       }
-//     },
-//     pathname = "__rajax"
-//   } = config;
-//   if (
-//     settings.application.html.setBodyPathnameID &&
-//     document &&
-//     document.body &&
-//     document.body.setAttribute
-//   ) {
-//     document.body.setAttribute(
-//       "id",
-//       encodeURIComponent(`__rajax__${pathname}`).replace(
-//         new RegExp(/%2F|%2/, "g"),
-//         "_"
-//       )
-//     );
-//   }
-// }
 // @ts-ignore
 function insertJavaScript(_a) {
     var src = _a.src, name = _a.name, _b = _a.async, async = _b === void 0 ? true : _b, onload = _a.onload;
@@ -13358,7 +13559,7 @@ function loadTemplates(_a) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    fetchFunction = Functions.fetchJSON || fetchJSON;
+                    fetchFunction = Functions.fetchJSON || fetchJSON$1;
                     return [4 /*yield*/, fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions)];
                 case 1:
                     loadedTemplates = _b.sent();
@@ -13380,20 +13581,29 @@ function loadTemplates(_a) {
 // @ts-ignore
 function getTemplateRouteLayer(_a) {
     var viewxTemplates = _a.viewxTemplates, pathname = _a.pathname;
+    var hasOverlayLayer = false;
     // @ts-ignore
     return function (layer) {
+        var _a;
         var name = layer.name, type = layer.type;
         var templateRoute = testMatchingRoute.findMatchingRoutePath(viewxTemplates[name], pathname, {
             return_matching_keys: true
         });
+        if (type === 'overlay' && templateRoute)
+            hasOverlayLayer = true;
         if (templateRoute) {
-            var vxtObject = viewxTemplates[name][templateRoute.route] ||
-                viewxTemplates[name].__error_404;
+            var vxtObject = hasOverlayLayer
+                ? viewxTemplates[name][templateRoute.route]
+                : viewxTemplates[name][templateRoute.route] || viewxTemplates[name].__error_404;
             return {
                 name: name,
                 type: type,
                 vxtObject: vxtObject,
-                templateRoute: templateRoute
+                templateRoute: templateRoute,
+                ui: (_a = {},
+                    _a["isRouteLayer_" + name + "_Matched"] = true,
+                    _a),
+                hasOverlayLayer: hasOverlayLayer,
             };
         }
         else
@@ -13413,17 +13623,21 @@ function loadRoute(_a) {
     // @ts-ignore
     Functions = _a.Functions, 
     // @ts-ignore
-    functionContext = _a.functionContext;
+    functionContext = _a.functionContext, 
+    // @ts-ignore
+    _b = _a.resourceprops, 
+    // @ts-ignore
+    resourceprops = _b === void 0 ? {} : _b;
     return __awaiter(this, void 0, void 0, function () {
         var applicationRootName, fetchResourcesFunction_1, templateRouteLayers_1, templateViewPromises, templateViewData, action, e_1;
-        var _b, _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        var _c, _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0:
                     applicationRootName = "root";
-                    _d.label = 1;
+                    _e.label = 1;
                 case 1:
-                    _d.trys.push([1, 3, , 4]);
+                    _e.trys.push([1, 3, , 4]);
                     fetchResourcesFunction_1 = Functions.fetchResources || fetchResources;
                     templateRouteLayers_1 = layers
                         .map(getTemplateRouteLayer({
@@ -13447,23 +13661,30 @@ function loadRoute(_a) {
                     });
                     return [4 /*yield*/, Promise.all(templateViewPromises)];
                 case 2:
-                    templateViewData = _d.sent();
+                    templateViewData = _e.sent();
                     action = templateViewData.reduce(function (result, templateViewDatum, i) {
-                        var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject;
+                        var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer;
+                        if (hasOverlayLayer)
+                            result.ui.hasOverlayLayer = true;
                         if (type === "applicationRoot") {
                             applicationRootName = name;
-                            setPageAttributes(vxtObject);
                         }
+                        setPageAttributes(vxtObject);
                         // @ts-ignore
                         result.view[name] = vxtObject;
                         // @ts-ignore
-                        result.viewdata[name] = templateViewDatum;
+                        result.viewdata[name] = __assign(__assign({}, templateViewDatum), resourceprops);
+                        // @ts-ignore
+                        result.ui = __assign(__assign({}, result.ui), ui);
                         // result
                         return result;
                     }, {
                         type: "setView",
                         view: {},
-                        viewdata: {}
+                        viewdata: {},
+                        ui: {
+                            hasOverlayLayer: false,
+                        },
                     });
                     dispatcher(action);
                     invokeWebhooks({
@@ -13475,18 +13696,18 @@ function loadRoute(_a) {
                     });
                     return [3 /*break*/, 4];
                 case 3:
-                    e_1 = _d.sent();
+                    e_1 = _e.sent();
                     console.error(e_1);
                     dispatcher({
                         type: "setView",
-                        view: (_b = {},
-                            _b[applicationRootName] = viewxTemplates[applicationRootName].__error_500,
-                            _b),
-                        viewdata: (_c = {},
-                            _c[applicationRootName] = {
+                        view: (_c = {},
+                            _c[applicationRootName] = viewxTemplates[applicationRootName].__error_500,
+                            _c),
+                        viewdata: (_d = {},
+                            _d[applicationRootName] = {
                                 error: e_1
                             },
-                            _c)
+                            _d)
                     });
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
@@ -13608,7 +13829,28 @@ function getMainComponent(options) {
         var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
         var _c = React.useState(options.application.state), state = _c[0], setState = _c[1];
         var pathname = appProps.location.pathname;
-        var props = Object.assign({ dispatch: dispatch }, appProps);
+        var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui }, appProps);
+        var functionContext = { props: props, state: state, setState: setState };
+        var loadView = React.useMemo(function () {
+            // @ts-ignore
+            return function _loadView(_a) {
+                var _b, _c;
+                var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
+                var loadViewPathname = pathname || "_loadView_" + layerName;
+                return loadRoute({
+                    viewxTemplates: __assign(__assign({}, templates), (_b = {}, _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)), _b)),
+                    pathname: loadViewPathname,
+                    dispatcher: dispatcher,
+                    // @ts-ignore
+                    layers: config.layers.filter(function (layer) { return layer.name === layerName; }),
+                    Functions: Functions,
+                    resourceprops: resourceprops,
+                    functionContext: functionContext
+                });
+            };
+        }, [templates, functionContext,]);
+        // @ts-ignore
+        Functions.loadView = loadView;
         var getReactElement$1 = getReactElement.bind({
             props: props,
             state: state,
@@ -13619,7 +13861,12 @@ function getMainComponent(options) {
             componentLibraries: Object.assign({}, config.componentLibraries),
             reactComponents: Object.assign({ Link: reactRouterDom.Link }, config.reactComponents)
         });
-        var functionContext = { props: props, state: state, setState: setState };
+        React.useEffect(function () {
+            // @ts-ignore
+            Functions.onLaunch.call(functionContext);
+            // @ts-ignore
+            return function () { return Functions.onShutdown.call(functionContext); };
+        }, []);
         React.useEffect(function () {
             var viewxTemplates = templates;
             function initialize() {
@@ -13693,38 +13940,315 @@ function getMainComponent(options) {
     return Main;
 }
 
+var store2 = createCommonjsModule(function (module) {
+(function(window, define) {
+    var _ = {
+        version: "2.10.0",
+        areas: {},
+        apis: {},
+
+        // utilities
+        inherit: function(api, o) {
+            for (var p in api) {
+                if (!o.hasOwnProperty(p)) {
+                    Object.defineProperty(o, p, Object.getOwnPropertyDescriptor(api, p));
+                }
+            }
+            return o;
+        },
+        stringify: function(d) {
+            return d === undefined || typeof d === "function" ? d+'' : JSON.stringify(d);
+        },
+        parse: function(s) {
+            // if it doesn't parse, return as is
+            try{ return JSON.parse(s); }catch(e){ return s; }
+        },
+
+        // extension hooks
+        fn: function(name, fn) {
+            _.storeAPI[name] = fn;
+            for (var api in _.apis) {
+                _.apis[api][name] = fn;
+            }
+        },
+        get: function(area, key){ return area.getItem(key); },
+        set: function(area, key, string){ area.setItem(key, string); },
+        remove: function(area, key){ area.removeItem(key); },
+        key: function(area, i){ return area.key(i); },
+        length: function(area){ return area.length; },
+        clear: function(area){ area.clear(); },
+
+        // core functions
+        Store: function(id, area, namespace) {
+            var store = _.inherit(_.storeAPI, function(key, data, overwrite) {
+                if (arguments.length === 0){ return store.getAll(); }
+                if (typeof data === "function"){ return store.transact(key, data, overwrite); }// fn=data, alt=overwrite
+                if (data !== undefined){ return store.set(key, data, overwrite); }
+                if (typeof key === "string" || typeof key === "number"){ return store.get(key); }
+                if (typeof key === "function"){ return store.each(key); }
+                if (!key){ return store.clear(); }
+                return store.setAll(key, data);// overwrite=data, data=key
+            });
+            store._id = id;
+            try {
+                var testKey = '_-bad-_';
+                area.setItem(testKey, 'wolf');
+                store._area = area;
+                area.removeItem(testKey);
+            } catch (e) {}
+            if (!store._area) {
+                store._area = _.storage('fake');
+            }
+            store._ns = namespace || '';
+            if (!_.areas[id]) {
+                _.areas[id] = store._area;
+            }
+            if (!_.apis[store._ns+store._id]) {
+                _.apis[store._ns+store._id] = store;
+            }
+            return store;
+        },
+        storeAPI: {
+            // admin functions
+            area: function(id, area) {
+                var store = this[id];
+                if (!store || !store.area) {
+                    store = _.Store(id, area, this._ns);//new area-specific api in this namespace
+                    if (!this[id]){ this[id] = store; }
+                }
+                return store;
+            },
+            namespace: function(namespace, singleArea) {
+                if (!namespace){
+                    return this._ns ? this._ns.substring(0,this._ns.length-1) : '';
+                }
+                var ns = namespace, store = this[ns];
+                if (!store || !store.namespace) {
+                    store = _.Store(this._id, this._area, this._ns+ns+'.');//new namespaced api
+                    if (!this[ns]){ this[ns] = store; }
+                    if (!singleArea) {
+                        for (var name in _.areas) {
+                            store.area(name, _.areas[name]);
+                        }
+                    }
+                }
+                return store;
+            },
+            isFake: function(){ return this._area.name === 'fake'; },
+            toString: function() {
+                return 'store'+(this._ns?'.'+this.namespace():'')+'['+this._id+']';
+            },
+
+            // storage functions
+            has: function(key) {
+                if (this._area.has) {
+                    return this._area.has(this._in(key));//extension hook
+                }
+                return !!(this._in(key) in this._area);
+            },
+            size: function(){ return this.keys().length; },
+            each: function(fn, fill) {// fill is used by keys(fillList) and getAll(fillList))
+                for (var i=0, m=_.length(this._area); i<m; i++) {
+                    var key = this._out(_.key(this._area, i));
+                    if (key !== undefined) {
+                        if (fn.call(this, key, this.get(key), fill) === false) {
+                            break;
+                        }
+                    }
+                    if (m > _.length(this._area)) { m--; i--; }// in case of removeItem
+                }
+                return fill || this;
+            },
+            keys: function(fillList) {
+                return this.each(function(k, v, list){ list.push(k); }, fillList || []);
+            },
+            get: function(key, alt) {
+                var s = _.get(this._area, this._in(key));
+                return s !== null ? _.parse(s) : alt || s;// support alt for easy default mgmt
+            },
+            getAll: function(fillObj) {
+                return this.each(function(k, v, all){ all[k] = v; }, fillObj || {});
+            },
+            transact: function(key, fn, alt) {
+                var val = this.get(key, alt),
+                    ret = fn(val);
+                this.set(key, ret === undefined ? val : ret);
+                return this;
+            },
+            set: function(key, data, overwrite) {
+                var d = this.get(key);
+                if (d != null && overwrite === false) {
+                    return data;
+                }
+                return _.set(this._area, this._in(key), _.stringify(data), overwrite) || d;
+            },
+            setAll: function(data, overwrite) {
+                var changed, val;
+                for (var key in data) {
+                    val = data[key];
+                    if (this.set(key, val, overwrite) !== val) {
+                        changed = true;
+                    }
+                }
+                return changed;
+            },
+            add: function(key, data) {
+                var d = this.get(key);
+                if (d instanceof Array) {
+                    data = d.concat(data);
+                } else if (d !== null) {
+                    var type = typeof d;
+                    if (type === typeof data && type === 'object') {
+                        for (var k in data) {
+                            d[k] = data[k];
+                        }
+                        data = d;
+                    } else {
+                        data = d + data;
+                    }
+                }
+                _.set(this._area, this._in(key), _.stringify(data));
+                return data;
+            },
+            remove: function(key, alt) {
+                var d = this.get(key, alt);
+                _.remove(this._area, this._in(key));
+                return d;
+            },
+            clear: function() {
+                if (!this._ns) {
+                    _.clear(this._area);
+                } else {
+                    this.each(function(k){ _.remove(this._area, this._in(k)); }, 1);
+                }
+                return this;
+            },
+            clearAll: function() {
+                var area = this._area;
+                for (var id in _.areas) {
+                    if (_.areas.hasOwnProperty(id)) {
+                        this._area = _.areas[id];
+                        this.clear();
+                    }
+                }
+                this._area = area;
+                return this;
+            },
+
+            // internal use functions
+            _in: function(k) {
+                if (typeof k !== "string"){ k = _.stringify(k); }
+                return this._ns ? this._ns + k : k;
+            },
+            _out: function(k) {
+                return this._ns ?
+                    k && k.indexOf(this._ns) === 0 ?
+                        k.substring(this._ns.length) :
+                        undefined : // so each() knows to skip it
+                    k;
+            }
+        },// end _.storeAPI
+        storage: function(name) {
+            return _.inherit(_.storageAPI, { items: {}, name: name });
+        },
+        storageAPI: {
+            length: 0,
+            has: function(k){ return this.items.hasOwnProperty(k); },
+            key: function(i) {
+                var c = 0;
+                for (var k in this.items){
+                    if (this.has(k) && i === c++) {
+                        return k;
+                    }
+                }
+            },
+            setItem: function(k, v) {
+                if (!this.has(k)) {
+                    this.length++;
+                }
+                this.items[k] = v;
+            },
+            removeItem: function(k) {
+                if (this.has(k)) {
+                    delete this.items[k];
+                    this.length--;
+                }
+            },
+            getItem: function(k){ return this.has(k) ? this.items[k] : null; },
+            clear: function(){ for (var k in this.items){ this.removeItem(k); } }
+        }// end _.storageAPI
+    };
+
+    var store =
+        // safely set this up (throws error in IE10/32bit mode for local files)
+        _.Store("local", (function(){try{ return localStorage; }catch(e){}})());
+    store.local = store;// for completeness
+    store._ = _;// for extenders and debuggers...
+    // safely setup store.session (throws exception in FF for file:/// urls)
+    store.area("session", (function(){try{ return sessionStorage; }catch(e){}})());
+    store.area("page", _.storage("page"));
+
+    if (typeof define === 'function' && define.amd !== undefined) {
+        define('store2', [], function () {
+            return store;
+        });
+    } else if ( module.exports) {
+        module.exports = store;
+    } else {
+        // expose the primary store fn to the global object and save conflicts
+        if (window.store){ _.conflict = window.store; }
+        window.store = store;
+    }
+
+})(commonjsGlobal, commonjsGlobal && commonjsGlobal.define);
+});
+
+// @ts-ignore
+window.store = store2;
+// @ts-ignore
+// await import('store2/src/store.cache');
 function getGlobalStateHooks(options) {
     if (options === void 0) { options = {}; }
-    var reducer = function (state, action) {
-        switch (action.type) {
-            case "viewxUILoadingStart":
-                return __assign(__assign({}, state), {
-                    ui: __assign(__assign({}, state.ui), { isLoading: true })
-                });
-            case "viewxUILoadingComplete":
-                return __assign(__assign({}, state), {
-                    ui: __assign(__assign({}, state.ui), { isLoading: false })
-                });
-            // case 'decrement': return { ...state, count: state.count - 1 };
-            case "setView":
-                // console.log("dispatching setView", {
-                //   action
-                // });
-                return Object.assign({}, state, {
-                    views: Object.assign({}, state.views, action.view),
-                    viewdata: Object.assign({}, state.viewdata, action.viewdata)
-                });
-            default:
-                return state;
-        }
-    };
-    var initialState = __assign(__assign({}, options.application.state), { views: __assign({ layout: null }, options.vxaState.views), viewdata: __assign({ layout: null }, options.vxaState.viewdata), templates: __assign({}, options.templates), ui: __assign({ isLoading: true, hasLoadedInitialTemplates: false }, options.vxaState.ui), user: __assign({ jwt_token: undefined, profile: {}, loggedIn: false }, options.vxaState.user) });
-    var _a = reactHooksGlobalState.createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
-    return {
-        GlobalStateProvider: GlobalStateProvider,
-        dispatch: dispatch,
-        useGlobalState: useGlobalState
-    };
+    return __awaiter(this, void 0, void 0, function () {
+        var layers, layerOpenState, reducer, initialState, _a, GlobalStateProvider, dispatch, useGlobalState;
+        return __generator(this, function (_b) {
+            layers = options.config.layers;
+            layerOpenState = layers.reduce(function (result, layer) {
+                var name = layer.name, type = layer.type;
+                result["isRouteLayer_" + name + "_Matched"] = type === 'applicationRoot' ? true : false;
+                return result;
+            }, {});
+            reducer = function (state, action) {
+                var _a;
+                switch (action.type) {
+                    case "viewxUILoadingStart":
+                        return __assign(__assign({}, state), {
+                            ui: __assign(__assign({}, state.ui), { isLoading: true })
+                        });
+                    case "viewxUILoadingComplete":
+                        return __assign(__assign({}, state), {
+                            ui: __assign(__assign({}, state.ui), { isLoading: false })
+                        });
+                    case "setView":
+                        return __assign(__assign({}, state), { views: __assign(__assign({}, state.views), action.view), viewdata: __assign(__assign({}, state.viewdata), action.viewdata), ui: __assign(__assign({}, state.ui), action.ui) });
+                    default:
+                        if (action.type.includes('toggleMatchedRouteLayer')) {
+                            var _b = action.type.split('_'), layerName = _b[1];
+                            var uiLayerName = "isRouteLayer_" + layerName + "_Matched";
+                            return __assign(__assign({}, state), { ui: __assign(__assign({}, state.ui), (_a = {}, _a[uiLayerName] = !state.ui[uiLayerName], _a)) });
+                        }
+                        return state;
+                }
+            };
+            initialState = __assign(__assign({}, options.application.state), { views: __assign({ layout: null }, options.vxaState.views), viewdata: __assign({ layout: null }, options.vxaState.viewdata), templates: __assign({}, options.templates), ui: __assign(__assign({ isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialTemplates: false }, layerOpenState), options.vxaState.ui), user: __assign({ jwt_token: undefined, profile: {}, loggedIn: false }, options.vxaState.user) });
+            _a = reactHooksGlobalState.createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+            return [2 /*return*/, {
+                    GlobalStateProvider: GlobalStateProvider,
+                    dispatch: dispatch,
+                    useGlobalState: useGlobalState
+                }];
+        });
+    });
 }
 
 // @ts-ignore
@@ -13733,18 +14257,23 @@ function getViewXapp(options) {
     return __awaiter(this, void 0, void 0, function () {
         var settings, _a, GlobalStateProvider, dispatch, useGlobalState, MainApp, Router;
         return __generator(this, function (_b) {
-            console.log('getViewXapp options', options);
-            settings = options.config.settings;
-            _a = getGlobalStateHooks(options), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
-            // @ts-ignore
-            options.dispatch = dispatch;
-            // @ts-ignore
-            options.useGlobalState = useGlobalState;
-            MainApp = getMainComponent(options);
-            Router = settings.router === 'hash' ? reactRouterDom.HashRouter : reactRouterDom.BrowserRouter;
-            return [2 /*return*/, (React__default.createElement(GlobalStateProvider, null,
-                    React__default.createElement(Router, null,
-                        React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))))];
+            switch (_b.label) {
+                case 0:
+                    console.log('getViewXapp options', options);
+                    settings = options.config.settings;
+                    return [4 /*yield*/, getGlobalStateHooks(options)];
+                case 1:
+                    _a = _b.sent(), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+                    // @ts-ignore
+                    options.dispatch = dispatch;
+                    // @ts-ignore
+                    options.useGlobalState = useGlobalState;
+                    MainApp = getMainComponent(options);
+                    Router = settings.router === 'hash' ? reactRouterDom.HashRouter : reactRouterDom.BrowserRouter;
+                    return [2 /*return*/, (React__default.createElement(GlobalStateProvider, null,
+                            React__default.createElement(Router, null,
+                                React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))))];
+            }
         });
     });
 }
@@ -13808,17 +14337,30 @@ const config = {
         isLoading: false,
       });
     },
+    onLaunch() {
+      console.warn('default onlaunch');
+    },
+    onShutdown() {
+      console.warn('default onshutdown');
+    }
   },
   layers: [{
       order: 100,
       name: 'loading',
+      system: true,
       type: 'loadingView',
     },
-    // modal
+    {
+      order: 200,
+      name: 'modal',
+      system: true,
+      type:'overlay',
+    },
     // overlay
     {
       order: 400,
       name: 'header',
+      system: true,
       type: 'view',
     },
     // nav
@@ -13827,6 +14369,7 @@ const config = {
     {
       order: 900,
       name: 'root',
+      system: true,
       type: 'applicationRoot',
     },
   ],
@@ -14014,12 +14557,28 @@ function addCustomFiles(_a) {
 function configureViewx(options) {
     if (options === void 0) { options = {}; }
     return __awaiter(this, void 0, void 0, function () {
-        var configuration, reactJSONXComponents;
+        var layerMaxOrder, applicationRootLayerName, configuration, layerObject, reactJSONXComponents;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    configuration = Object.assign({}, config);
+                    layerMaxOrder = 0;
+                    configuration = __assign({}, config);
                     configuration.settings = __assign(__assign({}, configuration.settings), options.settings);
+                    configuration.Functions = __assign(__assign({}, configuration.Functions), options.customFunctions);
+                    layerObject = [].concat(configuration.layers, options.layers)
+                        // @ts-ignore
+                        .reduce(function (result, layerObject) {
+                        var order = layerObject.order, name = layerObject.name, type = layerObject.type;
+                        if (order > layerMaxOrder)
+                            layerMaxOrder = order;
+                        if (type === 'applicationRoot')
+                            applicationRootLayerName = name;
+                        result[name] = layerObject;
+                        return result;
+                    }, {});
+                    if (layerObject[applicationRootLayerName].order !== layerMaxOrder)
+                        layerObject[applicationRootLayerName].order = layerMaxOrder + 1;
+                    configuration.layers = Object.keys(layerObject).map(function (layerName) { return layerObject[layerName]; });
                     return [4 /*yield*/, Promise.all([
                             getReactLibrariesAndComponents({
                                 // @ts-ignore
@@ -14168,21 +14727,88 @@ const options = {
               }
             },
             {
-              component: 'input',
-              thisstate: {
-                value: ['name']
+              component: 'div',
+              props: {
+                style: {
+                  display:'flex',
+                }
               },
-              __dangerouslyBindEvalProps: {
-                onChange: `(function(e){
-                  //console.log({e});
-                  //console.log('this',this)
-                  //console.log('e.target.value',e.target.value)
-                  this.setState({name:e.target.value})
-                })`
-              },
+              children: [
+                {
+                  component: 'input',
+                  thisstate: {
+                    value: ['name']
+                  },
+                  __dangerouslyBindEvalProps: {
+                    onChange: `(function(e){
+                      //console.log({e});
+                      //console.log('this',this)
+                      //console.log('e.target.value',e.target.value)
+                      this.setState({name:e.target.value})
+                    })`
+                  },
+                },
+                {
+                  component: 'Link',
+                  props: {
+                    to:'/modal/hello',
+                  },
+                  children:'Hello Modal'
+                },
+                {
+                  component: 'button',
+                  children: 'change header',
+                  __dangerouslyBindEvalProps: {
+                    onClick:`(function(){
+                      // console.log('onClick this',this);
+                      this.viewx.Functions.loadView({
+                        layerName:'header',
+                        view:{
+                          jsonx:{
+                            component:'h1',
+                            resourceprops:{
+                              style:['customStyle']
+                            },
+                            children:'NEW HEADER',
+                          },
+                        },
+                        resourceprops:{
+                          customStyle:{
+                            color:'red',
+                          }
+                        }
+                      });
+                    })`
+                  },
+                  
+                }
+              ]
             },
-
           ]
+        }
+      }
+    },
+    modal: {
+      '/modal/hello': {
+        jsonx: {
+          component: 'ReactModal',
+          props: {
+            ariaHideApp:false,
+          },
+          thisprops: {
+            isOpen: [ 'ui', 'isRouteLayer_modal_Matched' ],
+          },
+          __dangerouslyBindEvalProps: {
+            onRequestClose:`(function(){
+              // console.log('onRequestClose this',this);
+              this.props.dispatch({ type:'toggleMatchedRouteLayer_modal',});
+              this.props.history.goBack();
+            })`
+          },
+          // __functionProps: {
+          //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
+          // },
+          children:'SAY HELLO MODAL',
         }
       }
     }

@@ -3,12 +3,12 @@ import {
   // createGlobalState,
 } from "react-hooks-global-state";
 import store from 'store2';
-
+// @ts-ignore
+window.store = store;
+// @ts-ignore
+// await import('store2/src/store.cache');
 export async function getGlobalStateHooks(options: any = {}) {
-  // @ts-ignore
-  window.store = store;
-  // @ts-ignore
-  await import('store2/src/store.cache');
+
   const layers = options.config.layers;
   // const layerNames = layers.map((layer:any) => layer.name);
   const layerOpenState = layers.reduce((result: any, layer: any) => {
