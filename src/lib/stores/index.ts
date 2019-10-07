@@ -2,11 +2,19 @@ import {
   createStore
   // createGlobalState,
 } from "react-hooks-global-state";
+// @ts-ignore
 import store from 'store2';
+import storeCache from '../vendor/store2/store.cache';
 // @ts-ignore
 window.store = store;
+console.log({ storeCache, store, })
 // @ts-ignore
-// await import('store2/src/store.cache');
+storeCache(window.store);
+// @ts-ignore
+console.log({ storeCache, store,'window.store':window.store })
+// @ts-ignore
+// import 'store2/src/store.cache';
+
 export async function getGlobalStateHooks(options: any = {}) {
 
   const layers = options.config.layers;
