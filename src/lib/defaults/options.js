@@ -57,7 +57,7 @@ export const options = {
           component: 'div',
           children: [{
               component: 'h1',
-              children: 'No t Found',
+              children: 'Not Found',
             },
             {
               component: 'div',
@@ -79,13 +79,32 @@ export const options = {
           children: [{
               component: 'h1',
               children: 'Error',
-            },
+          },
             {
-              component: 'textarea',
-              resourceprops: {
-                _children: ['error']
-              }
-            }
+              component: 'div',
+              props: {
+                style: {
+                  padding: '1rem',
+                  margin: '1rem',
+                  border: '1px solid lightgrey'
+                }
+              },
+              children: [
+                {
+                  component: 'pre',
+                  resourceprops: {
+                    _children: ['error','message']
+                  }
+                },
+                {
+                  component: 'pre',
+                  resourceprops: {
+                    _children: ['error','stack']
+                  }
+                }
+              ]
+            },
+            
           ]
         },
         pageData: [{
@@ -94,8 +113,16 @@ export const options = {
           innerHTML: "Error"
         }]
       },
-      '/:catchall*': {
-        // preRenderFunctions: ['func:viewx.Functions.debug', 'func:window.someWindowFunction'],
+      '/': {
+      // '/:catchall*': {
+        preRenderFunctions: [
+          // 'func:viewx.Functions.passOne',
+          // 'func:window.someWindowFunction',
+          // 'func:viewx.Functions.passOne',
+          // 'func:viewx.Functions.passTwo',
+          // 'func:viewx.Functions.requireAuth',
+          // 'func:viewx.Functions.passOne',
+        ],
         pageData: [{
           tagName: "title",
           attributes: {},
@@ -129,6 +156,11 @@ export const options = {
               children: [
                 {
                   component: 'input',
+                  props: {
+                    style: {
+                      padding:'5px',
+                    },
+                  },
                   thisstate: {
                     value: ['name']
                   },
@@ -145,11 +177,39 @@ export const options = {
                   component: 'Link',
                   props: {
                     to:'/modal/hello',
+                    style: {
+                      padding:'5px',
+                    },
                   },
                   children:'Hello Modal'
                 },
                 {
+                  component: 'Link',
+                  props: {
+                    to: '/about',
+                    style: {
+                      padding:'5px',
+                    }
+                  },
+                  children:'About Page'
+                },
+                {
+                  component: 'Link',
+                  props: {
+                    to:'/page/4',
+                    style: {
+                      padding:'5px',
+                    },
+                  },
+                  children:'Page 4'
+                },
+                {
                   component: 'button',
+                  props: {
+                    style: {
+                      padding:'5px',
+                    }
+                  },
                   children: 'change header',
                   __dangerouslyBindEvalProps: {
                     onClick:`(function(){

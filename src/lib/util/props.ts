@@ -150,7 +150,8 @@ export async function loadTemplates({
   // @ts-ignore
   functionContext,
 }) {
-  const fetchFunction = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
+  // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
+  const fetchFunction = (Functions.fetchJSON||fetchJSON).bind(functionContext);
   // @ts-ignore
   const loadedTemplates = await fetchFunction(
     config.settings.templatePath,
@@ -181,6 +182,7 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
   let hasOverlayLayer:boolean = false;
   // @ts-ignore
   return layer => {
+    let vxtObject;
     const { name, type } = layer;
     const templateRoute = findMatchingRoutePath(
       viewxTemplates[name],
@@ -190,10 +192,12 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
       }
     );
     if (type === 'overlay' && templateRoute) hasOverlayLayer = true;
-    if (templateRoute) {
-      const vxtObject = hasOverlayLayer
-        ? viewxTemplates[name][templateRoute.route]
-        : viewxTemplates[name][templateRoute.route] || viewxTemplates[name].__error_404;
+    if(!templateRoute && viewxTemplates[name].__error_404 && !hasOverlayLayer){
+      vxtObject = viewxTemplates[name].__error_404;
+    } else if (templateRoute) {
+      vxtObject = viewxTemplates[name][templateRoute.route];
+    }
+    if (vxtObject) {
       return {
         name,
         type,
@@ -239,12 +243,15 @@ export async function loadRoute({
       .filter(layer => layer);
 
     // @ts-ignore
-    invokeWebhooks({
+    const preFunctions = await invokeWebhooks({
       Functions,
       functionContext,
       property: "preRenderFunctions",
       templateRouteLayers
     });
+
+    // @ts-ignore
+    if (shortCircutPromiseArray(preFunctions,'preRenderFunctions')) return false;
     // @ts-ignore
     const templateViewPromises = templateRouteLayers.map(templateRouteLayer =>
       fetchResourcesFunction.call(functionContext,{
@@ -308,6 +315,23 @@ export async function loadRoute({
 }
 
 // @ts-ignore
+export function shortCircutPromiseArray(promiseArrayResult,name) {
+   // @ts-ignore
+   const results = promiseArrayResult.map(arrayResult => arrayResult[Object.keys(arrayResult)[0]]);
+  //  // @ts-ignore
+  //  console.log({ promiseArrayResult,results }, ' promiseArrayResult.filter(result => !result).length', promiseArrayResult.filter(result => !result).length);
+
+   // @ts-ignore
+   if (promiseArrayResult.length && results.filter(result => result===false).length) {
+     // return true;
+     throw new Error(`There was an error processing: ${name}. [${JSON.stringify(promiseArrayResult, null, 2)}]`); 
+     // @ts-ignore
+    } else if (promiseArrayResult.length && results.filter(result => result===undefined).length) {
+    return true;
+  } else return false;
+}
+
+// @ts-ignore
 export async function invokeWebhooks({
   // @ts-ignore
   Functions,
@@ -321,6 +345,10 @@ export async function invokeWebhooks({
   templateRouteLayers
 }) {
   // @ts-ignore
+  const promises = [];
+  // @ts-ignore
+  const promiseNames = [];
+  // @ts-ignore
   templateRouteLayers.forEach(async templateRouteLayer => {
     const functionNames = templateRouteLayer.vxtObject[property] || [];
     // @ts-ignore
@@ -331,8 +359,44 @@ export async function invokeWebhooks({
         functionName
       })(templateViewData)
     );
+    promiseNames.push(...functionNames);
+    promises.push(...funcs);
+  });
+  // @ts-ignore
+  console.log({promises})
+  // @ts-ignore
+  const results = await promiseSeries(promises.map(func => () => enforcePromise(func)));
+  // @ts-ignore
+  return results.map((result, i) => ({
+    // @ts-ignore
+    [promiseNames[i]]: result,
+  }))
+}
 
-    await Promise.all(funcs);
+// @ts-ignore
+export function enforcePromise(val) {
+  return val instanceof Promise
+    ? val
+    : Promise.resolve(val);
+}
+
+// @ts-ignore
+export function promiseSeries(providers) {
+  const ret = Promise.resolve(null);
+  // @ts-ignore
+  const results = [];
+
+  // @ts-ignore
+  return providers.reduce(function(result, provider, index) {
+    return result.then(function () {
+      // @ts-ignore
+      return provider().then(function (val) {
+        results[index] = val;
+      });
+    });
+  }, ret).then(function () {
+      // @ts-ignore
+      return results;
   });
 }
 

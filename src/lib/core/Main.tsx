@@ -10,7 +10,7 @@ import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 // @ts-ignore
 import * as JSONX from "jsonx/src/main";
-import { loadTemplates, loadRoute } from "../util/props";
+import { loadTemplates, loadRoute, initialize, } from "../util/props";
 import { setBodyPathnameId, } from "../util/html";
 
 export default function getMainComponent(
@@ -109,7 +109,7 @@ export default function getMainComponent(
             });
             viewxTemplates = updatedTemplates.viewxTemplates;
           }
-          loadRoute({
+          await loadRoute({
             viewxTemplates,
             pathname,
             dispatcher,

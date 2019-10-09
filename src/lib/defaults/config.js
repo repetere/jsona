@@ -91,19 +91,31 @@ export const config = {
     },
     requireAuth: async function requireAuth() {
       if (this.props.user.loggedIn === false) {
+        let returnURL;
         if (this.props.location.pathname !== this.settings.routes.login) {
-          this.dispatch({
+          this.props.dispatch({
             type: "setReturnURL",
             returnURL: this.props.location.pathname,
           });
+          returnURL = '?returnURL=' + this.props.location.pathname;
         }
-        this.props.history.push(this.settings.routes.login);
-      }
+        this.props.history.push(this.settings.routes.login+returnURL);
+        return undefined;
+      } else return true;
     },
     requireMFA: async function requireMFA() {
       if (this.props.user.loggedIn === false) this.props.history.push(this.settings.routes.login);
       else if (this.props.user.loggedInMFA === false && this.props.user.loggedIn) this.props.history.push(this.settings.routes.login_mfa);
-    }
+    },
+    passOne: async function () {
+      return true;
+    },
+    passTwo: function () {
+      return true;
+    },
+    failOne: async function () {
+      return false;
+    },
   },
   layers: [{
       order: 100,
