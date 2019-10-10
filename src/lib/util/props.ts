@@ -6,9 +6,9 @@ import { fetchJSON, fetchResources } from "./data";
 // @ts-ignore
 import { setPageAttributes, setHTMLElementClass } from "./html";
 
+import { initSockets, } from './socket';
 /*
 const u = {
-  import { initSockets, } from './SocketHelper';
 
 class MainApp extends Component{
   constructor(props) {
@@ -118,14 +118,8 @@ class MainApp extends Component{
 */
 // @ts-ignore
 export async function setup({ settings }) {
-  // initSockets.call(this, { auth: true, });
-  /**
-          AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
-        AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
-        AsyncStorage.getItem(constants.jwt_token.PROFILE_JSON),
-        AsyncStorage.getItem(constants.user.MFA_AUTHENTICATED),
-        //AsyncStorage.getItem(constants.async_token.TABBAR_TOKEN),
-   */
+  // @ts-ignore
+  initSockets.call(this);
 
   if (settings.useBodyLoadedClass)
     setHTMLElementClass({

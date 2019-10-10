@@ -77,6 +77,8 @@ export async function getGlobalStateHooks(options: any = {}) {
         return state;
     }
   };
+
+
   const initialState = {
     ...options.application.state,
     views: {
@@ -90,6 +92,7 @@ export async function getGlobalStateHooks(options: any = {}) {
     templates: {
       ...options.templates
     },
+    socket:{},
     ui: {
       isLoading: true,
       isModalOpen: false,
@@ -99,13 +102,15 @@ export async function getGlobalStateHooks(options: any = {}) {
       ...layerOpenState,
       ...options.vxaState.ui
     },
-    user: {
-      token: undefined,
+    user: {//TODO: fix loading user
+      token: undefined,//AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
+      tokenData: undefined,//AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
       expires: undefined,
       timeout: undefined,
       profile: {},
+      fetchHeaders: {},
       loggedIn: false,
-      loggedInMFA: false,
+      loggedInMFA: false, //AsyncStorage.getItem(constants.user.MFA_AUTHENTICATED),
       ...options.vxaState.user
     }
   };

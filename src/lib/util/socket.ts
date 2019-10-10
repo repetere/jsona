@@ -1,5 +1,6 @@
-// // import { Router, EventRouter, } from 'simple-socket-router/lib/router.mjs';
-// //ts-ignore
+// @ts-ignore
+import { Router, EventRouter, } from 'simple-socket-router/lib/router.mjs';
+// ts-ignore
 // import { Router, EventRouter, } from 'simple-socket-router/bundle/router.esm.js';
 // //ts-ignore
 // import { getFunctionFromProps, } from '../ResponsiveForm/FormHelpers';

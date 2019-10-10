@@ -74,7 +74,6 @@ export const config = {
     }) {
       const el = document.querySelector('#loading');
       el.style.display = 'none';
-
       setUI({
         ...ui,
         isLoading: false,

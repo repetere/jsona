@@ -6,7 +6,7 @@
   "browser": "dist/viewx.vma.umd.js",
   "web": "dist/viewx.vma.web.js",
   "dependencies": {
-    "jsonx": "^0.9.80",
+    "jsonx": "^0.9.82",
     "path-to-regexp": "^3.1.0",
     "promisie": "^2.0.0-alpha.0",
     "react": "^16.10.0",

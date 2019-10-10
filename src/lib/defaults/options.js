@@ -127,19 +127,70 @@ export const options = {
                   password: ''
                 },
               },
+              __dangerouslyInsertFunctionComponents:{
+                render: {
+                  reactComponent: {
+                    component: 'form',
+                    thisprops: {
+                      onSubmit:['handleSubmit']
+                    },
+                    children: [
+        //               <form onSubmit={props.handleSubmit}>
+                      {
+                        component: 'Formik.Field',
+                        props: {
+                          type: 'text',
+                          name: 'username',
+                          placeholder:'username',
+                        }
+                      },
+                      {
+                        component: 'Formik.ErrorMessage',
+                        props: {
+                          name:'username'
+                        }
+                      },
+                      {
+                        component: 'Formik.Field',
+                        props: {
+                          type: 'password',
+                          name: 'password',
+                        }
+                      },
+                      {
+                        component: 'button',
+                        props: {
+                          type:'submit'
+                        },
+                        children:'Submit'
+                      },
+        //   <Field
+        //     name="lastName"
+        //     render={({ field /* _form */ }) => (
+        //       <input {...field} placeholder="lastName" />
+        //     )}
+        //   />
+        //   <button type="submit">Submit</button>
+        // </form>
+                    ]
+                  }
+                }
+              },
               __dangerouslyBindEvalProps: {
                 validate: `(function(values){
                   let errors = {};
-                  if (!values.email) {
-                    errors.email = 'Required';
-                  } else if (
-                    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                  ) {
-                    errors.email = 'Invalid email address';
-                  }
+                  if (!values.username) {
+                    errors.username = 'Required';
+                  } 
+                  // else if (
+                  //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                  // ) {
+                  //   errors.email = 'Invalid email address';
+                  // }
                   return errors;
                 })`,
                 onSubmit: `(function(values, { setSubmitting }){
+                  console.log({values})
                   setTimeout(() => {
                     alert(JSON.stringify(values, null, 2));
                     setSubmitting(false);
