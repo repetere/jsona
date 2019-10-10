@@ -4,7 +4,7 @@ import { findMatchingRoutePath } from "test-matching-route";
 // @ts-ignore
 import { fetchJSON, fetchResources } from "./data";
 // @ts-ignore
-import { setPageAttributes, setHTMLElementClass, } from "./html";
+import { setPageAttributes, setHTMLElementClass } from "./html";
 
 /*
 const u = {
@@ -37,14 +37,7 @@ class MainApp extends Component{
         });
     } else {
       Promise.all([
-        AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
-        AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
-        AsyncStorage.getItem(constants.jwt_token.PROFILE_JSON),
-        this.props.fetchMainComponent(),
-        this.props.fetchErrorComponents(),
-        this.props.fetchUnauthenticatedManifest(),
-        AsyncStorage.getItem(constants.user.MFA_AUTHENTICATED),
-        //AsyncStorage.getItem(constants.async_token.TABBAR_TOKEN),
+
       ])
         .then((results) => {
           try {
@@ -124,9 +117,26 @@ class MainApp extends Component{
 }
 */
 // @ts-ignore
-export async function initialize({ settings, }) {
-  if (settings.useBodyLoadedClass) setHTMLElementClass({ element: document.body, className: settings.bodyLoadedClass, });
-  if (settings.useHTMLLoadedClass) setHTMLElementClass({ element: document.querySelector('html'), className: settings.htmlLoadedClass, });
+export async function setup({ settings }) {
+  // initSockets.call(this, { auth: true, });
+  /**
+          AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
+        AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
+        AsyncStorage.getItem(constants.jwt_token.PROFILE_JSON),
+        AsyncStorage.getItem(constants.user.MFA_AUTHENTICATED),
+        //AsyncStorage.getItem(constants.async_token.TABBAR_TOKEN),
+   */
+
+  if (settings.useBodyLoadedClass)
+    setHTMLElementClass({
+      element: document.body,
+      className: settings.bodyLoadedClass
+    });
+  if (settings.useHTMLLoadedClass)
+    setHTMLElementClass({
+      element: document.querySelector("html"),
+      className: settings.htmlLoadedClass
+    });
 }
 
 // @ts-ignore
@@ -148,10 +158,12 @@ export async function loadTemplates({
   // @ts-ignore
   Functions,
   // @ts-ignore
-  functionContext,
+  functionContext
 }) {
   // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
-  const fetchFunction = (Functions.fetchJSON||fetchJSON).bind(functionContext);
+  const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(
+    functionContext
+  );
   // @ts-ignore
   const loadedTemplates = await fetchFunction(
     config.settings.templatePath,
@@ -170,7 +182,7 @@ export async function loadTemplates({
   setTemplates(viewxTemplates);
   setUI({
     ...ui,
-    hasLoadedInitialTemplates: true
+    hasLoadedInitialProcess: true
   });
   return {
     viewxTemplates
@@ -179,7 +191,7 @@ export async function loadTemplates({
 
 // @ts-ignore
 export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
-  let hasOverlayLayer:boolean = false;
+  let hasOverlayLayer: boolean = false;
   // @ts-ignore
   return layer => {
     let vxtObject;
@@ -191,8 +203,12 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
         return_matching_keys: true
       }
     );
-    if (type === 'overlay' && templateRoute) hasOverlayLayer = true;
-    if(!templateRoute && viewxTemplates[name].__error_404 && !hasOverlayLayer){
+    if (type === "overlay" && templateRoute) hasOverlayLayer = true;
+    if (
+      !templateRoute &&
+      viewxTemplates[name].__error_404 &&
+      !hasOverlayLayer
+    ) {
       vxtObject = viewxTemplates[name].__error_404;
     } else if (templateRoute) {
       vxtObject = viewxTemplates[name][templateRoute.route];
@@ -204,9 +220,9 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
         vxtObject,
         templateRoute,
         ui: {
-          [`isRouteLayer_${name}_Matched`]:true,
+          [`isRouteLayer_${name}_Matched`]: true
         },
-        hasOverlayLayer,
+        hasOverlayLayer
       };
     } else return undefined;
   };
@@ -226,7 +242,7 @@ export async function loadRoute({
   // @ts-ignore
   functionContext,
   // @ts-ignore
-  resourceprops = {},
+  resourceprops = {}
 }) {
   let applicationRootName = "root";
   try {
@@ -251,18 +267,25 @@ export async function loadRoute({
     });
 
     // @ts-ignore
-    if (shortCircutPromiseArray(preFunctions,'preRenderFunctions')) return false;
+    if (shortCircutPromiseArray(preFunctions, "preRenderFunctions"))
+      return false;
     // @ts-ignore
     const templateViewPromises = templateRouteLayers.map(templateRouteLayer =>
-      fetchResourcesFunction.call(functionContext,{
+      fetchResourcesFunction.call(functionContext, {
         resources: templateRouteLayer.vxtObject.resources,
         templateRoute: templateRouteLayer.templateRoute
       })
     );
     const templateViewData = await Promise.all(templateViewPromises);
     const action = templateViewData.reduce(
-      (result:any, templateViewDatum, i:number) => {
-        const { name, type, vxtObject, ui, hasOverlayLayer, } = templateRouteLayers[i];
+      (result: any, templateViewDatum, i: number) => {
+        const {
+          name,
+          type,
+          vxtObject,
+          ui,
+          hasOverlayLayer
+        } = templateRouteLayers[i];
         if (hasOverlayLayer) result.ui.hasOverlayLayer = true;
         if (type === "applicationRoot") {
           applicationRootName = name;
@@ -273,10 +296,10 @@ export async function loadRoute({
         // @ts-ignore
         result.viewdata[name] = {
           ...templateViewDatum,
-          ...resourceprops,
+          ...resourceprops
         };
         // @ts-ignore
-        result.ui = { ...result.ui, ...ui, };
+        result.ui = { ...result.ui, ...ui };
         // result
         return result;
       },
@@ -285,8 +308,8 @@ export async function loadRoute({
         view: {},
         viewdata: {},
         ui: {
-          hasOverlayLayer: false,
-        },
+          hasOverlayLayer: false
+        }
       }
     );
 
@@ -299,7 +322,7 @@ export async function loadRoute({
       templateRouteLayers
     });
   } catch (e) {
-    Functions.log({ type: 'error', error: e, });
+    Functions.log({ type: "error", error: e });
     dispatcher({
       type: "setView",
       view: {
@@ -315,18 +338,34 @@ export async function loadRoute({
 }
 
 // @ts-ignore
-export function shortCircutPromiseArray(promiseArrayResult,name) {
-   // @ts-ignore
-   const results = promiseArrayResult.map(arrayResult => arrayResult[Object.keys(arrayResult)[0]]);
+export function shortCircutPromiseArray(promiseArrayResult, name) {
+  // @ts-ignore
+  const results = promiseArrayResult.map(
+    // @ts-ignore
+    arrayResult => arrayResult[Object.keys(arrayResult)[0]]
+  );
   //  // @ts-ignore
   //  console.log({ promiseArrayResult,results }, ' promiseArrayResult.filter(result => !result).length', promiseArrayResult.filter(result => !result).length);
 
-   // @ts-ignore
-   if (promiseArrayResult.length && results.filter(result => result===false).length) {
-     // return true;
-     throw new Error(`There was an error processing: ${name}. [${JSON.stringify(promiseArrayResult, null, 2)}]`); 
-     // @ts-ignore
-    } else if (promiseArrayResult.length && results.filter(result => result===undefined).length) {
+  // @ts-ignore
+  if (
+    promiseArrayResult.length &&
+    // @ts-ignore
+    results.filter(result => result === false).length
+  ) {
+    // return true;
+    throw new Error(
+      `There was an error processing: ${name}. [${JSON.stringify(
+        promiseArrayResult,
+        null,
+        2
+      )}]`
+    );
+  } else if (
+    promiseArrayResult.length &&
+    // @ts-ignore
+    results.filter(result => result === undefined).length
+  ) {
     return true;
   } else return false;
 }
@@ -363,21 +402,22 @@ export async function invokeWebhooks({
     promises.push(...funcs);
   });
   // @ts-ignore
-  console.log({promises})
+  console.log({ promises });
   // @ts-ignore
-  const results = await promiseSeries(promises.map(func => () => enforcePromise(func)));
+  const results = await promiseSeries(
+    // @ts-ignore
+    promises.map(func => () => enforcePromise(func))
+  );
   // @ts-ignore
   return results.map((result, i) => ({
     // @ts-ignore
-    [promiseNames[i]]: result,
-  }))
+    [promiseNames[i]]: result
+  }));
 }
 
 // @ts-ignore
 export function enforcePromise(val) {
-  return val instanceof Promise
-    ? val
-    : Promise.resolve(val);
+  return val instanceof Promise ? val : Promise.resolve(val);
 }
 
 // @ts-ignore
@@ -387,17 +427,22 @@ export function promiseSeries(providers) {
   const results = [];
 
   // @ts-ignore
-  return providers.reduce(function(result, provider, index) {
-    return result.then(function () {
+  return (
+    providers
       // @ts-ignore
-      return provider().then(function (val) {
-        results[index] = val;
-      });
-    });
-  }, ret).then(function () {
-      // @ts-ignore
-      return results;
-  });
+      .reduce(function(result, provider, index) {
+        return result.then(function() {
+          // @ts-ignore
+          return provider().then(function(val) {
+            results[index] = val;
+          });
+        });
+      }, ret)
+      .then(function() {
+        // @ts-ignore
+        return results;
+      })
+  );
 }
 
 // @ts-ignore

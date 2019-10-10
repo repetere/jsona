@@ -3,26 +3,26 @@ import {
   // createGlobalState,
 } from "react-hooks-global-state";
 // @ts-ignore
-import store from 'store2';
-import storeCache from '../vendor/store2/store.cache';
+import store from "store2";
+import storeCache from "../vendor/store2/store.cache";
 // @ts-ignore
 window.store = store;
-console.log({ storeCache, store, })
+console.log({ storeCache, store });
 // @ts-ignore
 storeCache(window.store);
 // @ts-ignore
-console.log({ storeCache, store,'window.store':window.store })
+console.log({ storeCache, store, "window.store": window.store });
 // @ts-ignore
 // import 'store2/src/store.cache';
 
 export async function getGlobalStateHooks(options: any = {}) {
-
   const layers = options.config.layers;
   // const layerNames = layers.map((layer:any) => layer.name);
   const layerOpenState = layers.reduce((result: any, layer: any) => {
-    const { name, type, } = layer;
-    result[`isRouteLayer_${name}_Matched`] = type === 'applicationRoot' ? true : false;
-    return result;  
+    const { name, type } = layer;
+    result[`isRouteLayer_${name}_Matched`] =
+      type === "applicationRoot" ? true : false;
+    return result;
   }, {});
   const reducer = (state: any, action: any) => {
     switch (action.type) {
@@ -51,26 +51,26 @@ export async function getGlobalStateHooks(options: any = {}) {
           ...state,
           views: {
             ...state.views,
-            ...action.view,
+            ...action.view
           },
           viewdata: {
             ...state.viewdata,
-            ...action.viewdata,
+            ...action.viewdata
           },
           ui: {
             ...state.ui,
-            ...action.ui,
+            ...action.ui
           }
         };
       default:
-        if (action.type.includes('toggleMatchedRouteLayer')) {
-          const [, layerName] = action.type.split('_');
+        if (action.type.includes("toggleMatchedRouteLayer")) {
+          const [, layerName] = action.type.split("_");
           const uiLayerName = `isRouteLayer_${layerName}_Matched`;
           return {
             ...state,
             ui: {
               ...state.ui,
-              [uiLayerName]: !state.ui[uiLayerName],
+              [uiLayerName]: !state.ui[uiLayerName]
             }
           };
         }
@@ -94,8 +94,8 @@ export async function getGlobalStateHooks(options: any = {}) {
       isLoading: true,
       isModalOpen: false,
       hasOverlayLayer: false,
-      hasLoadedInitialTemplates: false,
-      returnURL:undefined,
+      hasLoadedInitialProcess: false,
+      returnURL: undefined,
       ...layerOpenState,
       ...options.vxaState.ui
     },

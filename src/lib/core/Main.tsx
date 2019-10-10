@@ -10,8 +10,8 @@ import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 // @ts-ignore
 import * as JSONX from "jsonx/src/main";
-import { loadTemplates, loadRoute, initialize, } from "../util/props";
-import { setBodyPathnameId, } from "../util/html";
+import { loadTemplates, loadRoute, setup } from "../util/props";
+import { setBodyPathnameId } from "../util/html";
 
 export default function getMainComponent(
   options = {
@@ -21,13 +21,13 @@ export default function getMainComponent(
       componentLibraries: {},
       reactComponents: {},
       layers: [],
-      settings: { debug: true, setBodyPathnameID:true, }
+      settings: { debug: true, setBodyPathnameID: true }
     }
   }
 ): FunctionComponent {
   // @ts-ignore
   const { dispatch, useGlobalState, config } = options;
-  const { Functions, settings, } = config;
+  const { Functions, settings } = config;
   // @ts-ignore
   const dispatcher = action => dispatch(action);
   // @ts-ignore
@@ -39,30 +39,33 @@ export default function getMainComponent(
     const [ui, setUI] = useGlobalState("ui");
     const [state, setState] = useState(options.application.state);
     const { pathname } = appProps.location;
-    const props = Object.assign({ dispatch, templates, views, viewdata, ui, user, }, appProps);
-    const functionContext = { props, state, setState, settings, };
+    const props = Object.assign(
+      { dispatch, templates, views, viewdata, ui, user },
+      appProps
+    );
+    const functionContext = { props, state, setState, settings };
     const loadView = useMemo(() => {
       // @ts-ignore
-      return function _loadView({ layerName, view, resourceprops, pathname, }) {
+      return function _loadView({ layerName, view, resourceprops, pathname }) {
         const loadViewPathname = pathname || `_loadView_${layerName}`;
         return loadRoute({
           viewxTemplates: {
             ...templates,
             [layerName]: {
               ...templates[layerName],
-              [loadViewPathname]:view,
+              [loadViewPathname]: view
             }
           },
-          pathname:loadViewPathname,
+          pathname: loadViewPathname,
           dispatcher,
           // @ts-ignore
-          layers: config.layers.filter(layer=>layer.name===layerName),
+          layers: config.layers.filter(layer => layer.name === layerName),
           Functions,
           resourceprops,
           functionContext
         });
       };
-    }, [templates,functionContext,]);
+    }, [templates, functionContext]);
     // @ts-ignore
     Functions.loadView = loadView;
 
@@ -77,16 +80,10 @@ export default function getMainComponent(
       reactComponents: Object.assign({ Link }, config.reactComponents)
     });
     useEffect(() => {
-      // async function initMain() {
-        
-      // } 
-      // initMain();
-      // @ts-ignore
-      initialize.call(functionContext,{settings,});
       // @ts-ignore
       Functions.onLaunch.call(functionContext);
-      // @ts-ignore      
-      return ()=>Functions.onShutdown.call(functionContext);
+      // @ts-ignore
+      return () => Functions.onShutdown.call(functionContext);
     }, []);
     useEffect(() => {
       let viewxTemplates = templates;
@@ -95,7 +92,9 @@ export default function getMainComponent(
         Functions.showLoader.call(functionContext, { ui, setUI });
         try {
           // @ts-ignore
-          if (ui.hasLoadedInitialTemplates === false) {
+          setup.call(functionContext, { settings });
+          // @ts-ignore
+          if (ui.hasLoadedInitialProcess === false) {
             const updatedTemplates = await loadTemplates({
               config,
               viewxTemplates,
@@ -105,7 +104,7 @@ export default function getMainComponent(
               ui,
               layers: config.layers,
               Functions,
-              functionContext,
+              functionContext
             });
             viewxTemplates = updatedTemplates.viewxTemplates;
           }
@@ -117,10 +116,10 @@ export default function getMainComponent(
             Functions,
             functionContext
           });
-          if(settings.setBodyPathnameID) setBodyPathnameId(pathname);
+          if (settings.setBodyPathnameID) setBodyPathnameId(pathname);
         } catch (e) {
           // @ts-ignore
-          Functions.log({ type: 'error', error: e, });
+          Functions.log({ type: "error", error: e });
         }
         // @ts-ignore
         Functions.hideLoader.call(functionContext, { ui, setUI });

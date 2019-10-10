@@ -37,10 +37,10 @@
         // stylesheets:[url,],
         // }
         {
-          name:'ReactModal',
-          format:'umd',
-          type:'component',
-          umdFilePath:'https://unpkg.com/react-modal@3.10.1/dist/react-modal.js',
+          name: 'ReactModal',
+          format: 'umd',
+          type: 'component',
+          umdFilePath: 'https://unpkg.com/react-modal@3.10.1/dist/react-modal.js',
           // jsonx,
           // stylesheets:[url,],
         },
@@ -61,6 +61,14 @@
           umdFilePath: 'https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js',
           // jsonx,
           stylesheets: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', ],
+        },
+        {
+          name: 'Formik',
+          format: 'umd',
+          type: 'library',
+          umdFilePath: 'https://unpkg.com/formik/dist/formik.umd.production.js',
+          // jsonx,
+          // stylesheets: [ ],
         },
         {
           name: 'sayHello',
@@ -84,7 +92,7 @@
       ],
       customFunctions: {
         /*Function, */
-        onLaunch(){
+        onLaunch() {
           console.info('custom launch function')
         },
       },
