@@ -43,6 +43,7 @@ export default function getMainComponent(
       { dispatch, templates, views, viewdata, ui, user },
       appProps
     );
+
     const functionContext = { props, state, setState, settings };
     const loadView = useMemo(() => {
       // @ts-ignore
@@ -87,6 +88,8 @@ export default function getMainComponent(
     }, []);
     useEffect(() => {
       let viewxTemplates = templates;
+      // @ts-ignore
+      let action;
       async function initialize() {
         // @ts-ignore
         Functions.showLoader.call(functionContext, { ui, setUI });
@@ -108,7 +111,7 @@ export default function getMainComponent(
             });
             viewxTemplates = updatedTemplates.viewxTemplates;
           }
-          await loadRoute({
+          action = await loadRoute({
             viewxTemplates,
             pathname,
             dispatcher,
@@ -122,7 +125,7 @@ export default function getMainComponent(
           Functions.log({ type: "error", error: e });
         }
         // @ts-ignore
-        Functions.hideLoader.call(functionContext, { ui, setUI });
+        Functions.hideLoader.call(functionContext, { ui: action.ui, setUI });
       }
       initialize();
       //   // return function cleanup(){}
@@ -135,7 +138,7 @@ export default function getMainComponent(
             views[name] ? views[name].jsonx : null,
             viewdata[name] ? viewdata[name] : {}
           );
-          // console.log('LAYER',{name,type,jsonxChildren})
+          // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
           if (type === "applicationRoot") {
             return jsonxChildren;
           } else {

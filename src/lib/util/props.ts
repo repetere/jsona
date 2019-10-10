@@ -276,7 +276,6 @@ export async function loadRoute({
         templateRoute: templateRouteLayer.templateRoute
       })
     );
-    console.log("templateRouteLayers", templateRouteLayers);
     const templateViewData = await Promise.all(templateViewPromises);
     const action = templateViewData.reduce(
       (result: any, templateViewDatum, i: number) => {
@@ -313,7 +312,6 @@ export async function loadRoute({
         }
       }
     );
-
     dispatcher(action);
     invokeWebhooks({
       Functions,
@@ -322,6 +320,7 @@ export async function loadRoute({
       property: "postRenderFunctions",
       templateRouteLayers
     });
+    return action;
   } catch (e) {
     Functions.log({ type: "error", error: e });
     dispatcher({
@@ -402,8 +401,6 @@ export async function invokeWebhooks({
     promiseNames.push(...functionNames);
     promises.push(...funcs);
   });
-  // @ts-ignore
-  console.log({ promises });
   // @ts-ignore
   const results = await promiseSeries(
     // @ts-ignore
