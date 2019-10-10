@@ -79,7 +79,7 @@ export const options = {
           children: [{
               component: 'h1',
               children: 'Error',
-          },
+            },
             {
               component: 'div',
               props: {
@@ -89,22 +89,21 @@ export const options = {
                   border: '1px solid lightgrey'
                 }
               },
-              children: [
-                {
+              children: [{
                   component: 'pre',
                   resourceprops: {
-                    _children: ['error','message']
+                    _children: ['error', 'message']
                   }
                 },
                 {
                   component: 'pre',
                   resourceprops: {
-                    _children: ['error','stack']
+                    _children: ['error', 'stack']
                   }
                 }
               ]
             },
-            
+
           ]
         },
         pageData: [{
@@ -113,8 +112,51 @@ export const options = {
           innerHTML: "Error"
         }]
       },
+      '/login': {
+        jsonx: {
+          component: 'div',
+          children: [{
+              component: 'h1',
+              children: 'Login'
+            },
+            {
+              component: 'Formik.Formik',
+              props: {
+                initialValues: {
+                  username: '',
+                  password: ''
+                },
+              },
+              __dangerouslyBindEvalProps: {
+                validate: `(function(values){
+                  let errors = {};
+                  if (!values.email) {
+                    errors.email = 'Required';
+                  } else if (
+                    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                  ) {
+                    errors.email = 'Invalid email address';
+                  }
+                  return errors;
+                })`,
+                onSubmit: `(function(values, { setSubmitting }){
+                  setTimeout(() => {
+                    alert(JSON.stringify(values, null, 2));
+                    setSubmitting(false);
+                  }, 400);
+                })`
+              }
+            }
+          ]
+        },
+        pageData: [{
+          tagName: "title",
+          attributes: {},
+          innerHTML: "User Login"
+        }]
+      },
       '/': {
-      // '/:catchall*': {
+        // '/:catchall*': {
         preRenderFunctions: [
           // 'func:viewx.Functions.passOne',
           // 'func:window.someWindowFunction',
@@ -150,15 +192,14 @@ export const options = {
               component: 'div',
               props: {
                 style: {
-                  display:'flex',
+                  display: 'flex',
                 }
               },
-              children: [
-                {
+              children: [{
                   component: 'input',
                   props: {
                     style: {
-                      padding:'5px',
+                      padding: '5px',
                     },
                   },
                   thisstate: {
@@ -176,43 +217,43 @@ export const options = {
                 {
                   component: 'Link',
                   props: {
-                    to:'/modal/hello',
+                    to: '/modal/hello',
                     style: {
-                      padding:'5px',
+                      padding: '5px',
                     },
                   },
-                  children:'Hello Modal'
+                  children: 'Hello Modal'
                 },
                 {
                   component: 'Link',
                   props: {
                     to: '/about',
                     style: {
-                      padding:'5px',
+                      padding: '5px',
                     }
                   },
-                  children:'About Page'
+                  children: 'About Page'
                 },
                 {
                   component: 'Link',
                   props: {
-                    to:'/page/4',
+                    to: '/page/4',
                     style: {
-                      padding:'5px',
+                      padding: '5px',
                     },
                   },
-                  children:'Page 4'
+                  children: 'Page 4'
                 },
                 {
                   component: 'button',
                   props: {
                     style: {
-                      padding:'5px',
+                      padding: '5px',
                     }
                   },
                   children: 'change header',
                   __dangerouslyBindEvalProps: {
-                    onClick:`(function(){
+                    onClick: `(function(){
                       // console.log('onClick this',this);
                       this.viewx.Functions.loadView({
                         layerName:'header',
@@ -233,7 +274,7 @@ export const options = {
                       });
                     })`
                   },
-                  
+
                 }
               ]
             },
@@ -246,13 +287,13 @@ export const options = {
         jsonx: {
           component: 'ReactModal',
           props: {
-            ariaHideApp:false,
+            ariaHideApp: false,
           },
           thisprops: {
-            isOpen: [ 'ui', 'isRouteLayer_modal_Matched' ],
+            isOpen: ['ui', 'isRouteLayer_modal_Matched'],
           },
           __dangerouslyBindEvalProps: {
-            onRequestClose:`(function(){
+            onRequestClose: `(function(){
               // console.log('onRequestClose this',this);
               this.props.dispatch({ type:'toggleMatchedRouteLayer_modal',});
               this.props.history.goBack();
@@ -261,7 +302,7 @@ export const options = {
           // __functionProps: {
           //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
           // },
-          children:'SAY HELLO MODAL',
+          children: 'SAY HELLO MODAL',
         }
       }
     }

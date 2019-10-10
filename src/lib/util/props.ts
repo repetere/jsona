@@ -276,6 +276,7 @@ export async function loadRoute({
         templateRoute: templateRouteLayer.templateRoute
       })
     );
+    console.log("templateRouteLayers", templateRouteLayers);
     const templateViewData = await Promise.all(templateViewPromises);
     const action = templateViewData.reduce(
       (result: any, templateViewDatum, i: number) => {
