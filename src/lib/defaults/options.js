@@ -135,7 +135,6 @@ export const options = {
                       onSubmit:['handleSubmit']
                     },
                     children: [
-        //               <form onSubmit={props.handleSubmit}>
                       {
                         component: 'Formik.Field',
                         props: {
@@ -164,14 +163,6 @@ export const options = {
                         },
                         children:'Submit'
                       },
-        //   <Field
-        //     name="lastName"
-        //     render={({ field /* _form */ }) => (
-        //       <input {...field} placeholder="lastName" />
-        //     )}
-        //   />
-        //   <button type="submit">Submit</button>
-        // </form>
                     ]
                   }
                 }
@@ -191,6 +182,8 @@ export const options = {
                 })`,
                 onSubmit: `(function(values, { setSubmitting }){
                   console.log({values})
+                  this.viewx.Functions.loginUser(values),
+
                   setTimeout(() => {
                     alert(JSON.stringify(values, null, 2));
                     setSubmitting(false);

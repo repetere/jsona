@@ -8,42 +8,7 @@
 //   authenticatedMFA: () => store.dispatch(actions.user.authenticatedMFA()),
     
     
-    
-//   validateMFA (formdata = {}) {
-//     let requestOptions = {
-//       method: 'POST',
-//       headers: {
-//         Accept: 'application/json',
-//         'Content-Type': 'application/json',
-//         'x-access-token': undefined,
-//       },
-//       body: JSON.stringify(formdata),
-//     };
-//     return (dispatch, getState) => {
-//       let state = getState();
-//       let basename = (typeof state.settings.adminPath === 'string' && state.settings.adminPath !== '/') ? state.settings.basename + state.settings.adminPath : state.settings.basename;
-//       let headers = state.settings.userprofile.options.headers;
-//       delete headers.clientid_default;
-//       let options = Object.assign({}, requestOptions);
-//       options.headers = Object.assign({}, options.headers, { 'x-access-token': state.user.jwt_token, });
-//       return utilities.fetchComponent(`${ basename }/load/mfa`, options)()
-//         .then(response => {
-//           if (response && response.data && response.data.authenticated) {
-//             dispatch(this.authenticatedMFA());
-//             return AsyncStorage.setItem(constants.user.MFA_AUTHENTICATED, true)
-//               .then(() => response, e => Promise.reject(e));
-//           }
-//           return response;
-//         })
-//         .then(response => {
-//           if (response.result === 'error') dispatch(notification.errorNotification(new Error(response.data.error)));
-//           return this.enforceMFA()(dispatch, getState);
-//         })
-//         .catch(e => {
-//           dispatch(notification.errorNotification(e));
-//         });
-//     };
-// },
+
   
 // initializeAuthenticatedUser(token, ensureMFA, __returnURL) {
 //   // console.debug('initializeAuthenticatedUser', { token, ensureMFA, __returnURL, __global__returnURL, });
@@ -101,63 +66,7 @@
 // * @param {object} options what-wg fetch options
 // * @param {function} responseFormatter custom reponse formatter, must be a function that returns a promise that resolves to json/javascript object
 // */
-// loginUser(loginData, __returnURL) {
-//   // console.debug('loginUser', { loginData, __returnURL, });
-//   return (dispatch, getState) => {
-//     let fetchResponse;
-//     let cachedResponseData;
-//     let loginSettings = getState().settings.login;
-//     let notificationsSettings = getState().settings.ui.notifications;
-//     let url = loginSettings.url;
-
-//     dispatch(this.loginRequest(url));
-//     fetch(url, {
-//       method: loginSettings.method || 'POST',
-//       headers: Object.assign({
-//         'Accept': 'application/json',
-//         // 'Content-Type': 'application/json',
-//       }, loginSettings.options.headers, {
-//         username: loginData.username,
-//         password: loginData.password,
-//       }),
-//       body: JSON.stringify({
-//         username: loginData.username,
-//         password: loginData.password,
-//       }),
-//     })
-//       .then(checkStatus)
-//       .then((response) => response.json())
-//       .then((responseData) => {
-//         cachedResponseData = responseData;
-//         // console.debug('loginData.__returnURL', loginData.__returnURL);
-//         __global__returnURL = loginData.__returnURL || __returnURL;
-//         return Promise.all([
-//           AsyncStorage.setItem(constants.jwt_token.TOKEN_NAME, responseData.token),
-//           AsyncStorage.setItem(constants.jwt_token.TOKEN_DATA, JSON.stringify({
-//             expires: responseData.expires,
-//             timeout: responseData.timeout,
-//             token: responseData.token,
-//           })),
-//           AsyncStorage.setItem(constants.jwt_token.PROFILE_JSON, JSON.stringify(responseData.user)),
-//           this.initializeAuthenticatedUser(responseData.token, false, __global__returnURL)(dispatch, getState),
-//         ]);
-//       })
-//       .then(() => {
-//         dispatch(this.recievedLoginUser(url, fetchResponse, cachedResponseData));
-//         let welcomeMessage = 'Welcome back';
-//         if (cachedResponseData && cachedResponseData.user) welcomeMessage = 'Welcome back ' + (cachedResponseData.user.firstname || cachedResponseData.user.name || cachedResponseData.user.email);
-//         console.log({ fetchResponse, cachedResponseData });
-//         if(!notificationsSettings.hide_login_notification){
-//           dispatch(notification.createNotification({ text: welcomeMessage, timeout:4000, type:'success', }));
-//         }
-//         return this.enforceMFA()(dispatch, getState);
-//       })
-//       .catch((error) => {
-//         dispatch(notification.errorNotification(error));
-//         dispatch(this.failedUserRequest(url, error));
-//       });
-//   };
-// },
+// 
 // getUserProfile(jwt_token, responseFormatter) {
 //   return (dispatch, getState) => {
 //     let fetchResponse;
@@ -270,53 +179,8 @@
 //     },
 //   };
 // },
-// logoutUser() {
-//   return (dispatch, getState) => {
-//     let state = getState();
-//     // console.debug({ state });
-//     dispatch(pageActions.resetAppLoadedState());
-//     Promise.all([
-//       AsyncStorage.removeItem(constants.jwt_token.TOKEN_NAME),
-//       AsyncStorage.removeItem(constants.jwt_token.TOKEN_DATA),
-//       AsyncStorage.removeItem(constants.jwt_token.PROFILE_JSON),
-//       AsyncStorage.removeItem(constants.user.MFA_AUTHENTICATED),
-//       utilities.flushCacheConfiguration(['manifest.authenticated', 'user.navigation', 'user.preferences',]),
-//       // AsyncStorage.removeItem(constants.pages.ASYNCSTORAGE_KEY),
-//     ])
-//       .then((/*results*/) => {
-//         dispatch(this.logoutUserSuccess());
-//         dispatch(pageActions.initialAppLoaded());
-//         dispatch(uiActions.closeUISidebar());
-//         dispatch(this.authenticatedMFA(false));
-//         dispatch(push(state.settings.auth.logged_out_path || '/'));
-//         let t = setImmediate(() => {
-//           clearImmediate(t);
-//           window.location.reload();
-//         });
-//       })
-//       .catch(error => { 
-//         dispatch(notification.errorNotification(error));
-//         dispatch(this.failedLogoutRequest(error));
-//         dispatch(pageActions.initialAppLoaded());
-//         dispatch(uiActions.closeUISidebar());
-//         dispatch(push(state.settings.auth.logged_out_path || '/'));
-//         let t = setImmediate(() => {
-//           clearImmediate(t);
-//           window.location.reload();
-//         });
-//       });
-//   };
-// },
-// function getSocketUser({ url, json, response, }) {
-//   return {
-//     email: json.user.email,
-//     username: json.user.name || json.user.username,
-//     jwt_token: json.token,
-//     jwt_token_expires: json.expires,
-//     jwt_token_timeout: json.timeout,
-//     userdata: json.user,
-//   };
-// }
+
+// function 
 // /**
 //  * @param {string} location name of extension to load
 //  * @param {object} options what-wg fetch options

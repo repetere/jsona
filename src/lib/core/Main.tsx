@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import * as JSONX from "jsonx/src/main";
 import { loadTemplates, loadRoute, setup } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
+import { fetchJSON, } from "../util/data";
+
 
 export default function getMainComponent(
   options = {
@@ -69,6 +71,8 @@ export default function getMainComponent(
     }, [templates, functionContext]);
     // @ts-ignore
     Functions.loadView = loadView;
+    // @ts-ignore
+    Functions.fetchJSON = fetchJSON.bind(functionContext);
 
     const getReactElement = JSONX.getReactElement.bind({
       props,
@@ -98,6 +102,8 @@ export default function getMainComponent(
           setup.call(functionContext, { settings });
           // @ts-ignore
           if (ui.hasLoadedInitialProcess === false) {
+            // @ts-ignore
+            await Functions.loadUser.call(functionContext);
             const updatedTemplates = await loadTemplates({
               config,
               viewxTemplates,
