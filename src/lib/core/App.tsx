@@ -10,7 +10,7 @@ import { getGlobalStateHooks, } from "../stores";
 
 // @ts-ignore
 export async function getViewXapp(options = { config: {} }) {
-  console.log('getViewXapp options', options);
+  // console.log('getViewXapp options', options);
   // @ts-ignore
   const { settings } = options.config;
   const { GlobalStateProvider, dispatch, useGlobalState } = await getGlobalStateHooks(

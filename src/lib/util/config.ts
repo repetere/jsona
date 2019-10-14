@@ -182,7 +182,12 @@ export async function configureViewx(options = {}) {
   configuration.settings = {
     ...configuration.settings,
     // @ts-ignore
-    ...options.settings
+    ...options.settings,
+    routes: {
+      ...configuration.settings.routes,
+      // @ts-ignore
+      ...options.settings.routes,
+    }
   };
   configuration.Functions = {
     ...configuration.Functions,

@@ -26,6 +26,16 @@
     var __ViewXAppConfig = {
       settings: {
         templatePath: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/templates',
+        routes: {
+          user_login_METHOD: 'GET',
+          user_login_mfa_METHOD: 'GET',
+          user_profile_METHOD: 'GET',
+          user_login: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/auth_user_login',
+          user_login_mfa: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/auth_user_mfa',
+          user_profile: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/auth_user_profile',
+          login: '/login',
+          login_mfa: '/login_mfa'
+        },
       },
       customComponents: [
         // {

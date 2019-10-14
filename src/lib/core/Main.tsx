@@ -14,6 +14,21 @@ import { loadTemplates, loadRoute, setup } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
 import { fetchJSON, } from "../util/data";
 
+// @ts-ignore
+export function bindFunctionContext({ Functions, functionContext }) {
+  // @ts-ignore
+  Functions.fetchJSON = fetchJSON.bind(functionContext);
+  // @ts-ignore
+  Functions.loadUser = Functions.loadUser.bind(functionContext);
+  // @ts-ignore
+  Functions.loginUser = Functions.loginUser.bind(functionContext);
+  // @ts-ignore
+  Functions.getUserProfile = Functions.getUserProfile.bind(functionContext);
+  // @ts-ignore
+  Functions.validateMFA = Functions.validateMFA.bind(functionContext);
+  // @ts-ignore
+  Functions.logoutUser = Functions.logoutUser.bind(functionContext);
+}
 
 export default function getMainComponent(
   options = {
@@ -42,16 +57,16 @@ export default function getMainComponent(
     const [state, setState] = useState(options.application.state);
     const { pathname } = appProps.location;
     const props = Object.assign(
-      { dispatch, templates, views, viewdata, ui, user },
+      { dispatch, templates, views, viewdata, ui, user, setUI, setTemplates, },
       appProps
     );
-
-    const functionContext = { props, state, setState, settings };
+    const functionContext = { props, state, setState, settings, viewx: { Functions, settings, }, };
     const loadView = useMemo(() => {
       // @ts-ignore
       return function _loadView({ layerName, view, resourceprops, pathname }) {
         const loadViewPathname = pathname || `_loadView_${layerName}`;
         return loadRoute({
+          ui,
           viewxTemplates: {
             ...templates,
             [layerName]: {
@@ -71,16 +86,15 @@ export default function getMainComponent(
     }, [templates, functionContext]);
     // @ts-ignore
     Functions.loadView = loadView;
-    // @ts-ignore
-    Functions.fetchJSON = fetchJSON.bind(functionContext);
+    bindFunctionContext({ Functions, functionContext });
 
     const getReactElement = JSONX.getReactElement.bind({
       props,
       state,
       setState,
-      viewx: { Functions },
+      viewx: { Functions, settings, },
       // state:{counter, setCounter},
-      debug: true, //options.config.settings.debug,
+      debug: settings.debug,
       componentLibraries: Object.assign({}, config.componentLibraries),
       reactComponents: Object.assign({ Link }, config.reactComponents)
     });
@@ -118,6 +132,7 @@ export default function getMainComponent(
             viewxTemplates = updatedTemplates.viewxTemplates;
           }
           action = await loadRoute({
+            ui,
             viewxTemplates,
             pathname,
             dispatcher,

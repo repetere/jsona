@@ -181,13 +181,13 @@ export const options = {
                   return errors;
                 })`,
                 onSubmit: `(function(values, { setSubmitting }){
-                  console.log({values})
-                  this.viewx.Functions.loginUser(values),
+                  // console.log({values},this)
+                  this.viewx.Functions.loginUser(values);
 
-                  setTimeout(() => {
-                    alert(JSON.stringify(values, null, 2));
-                    setSubmitting(false);
-                  }, 400);
+                  // setTimeout(() => {
+                  //   alert(JSON.stringify(values, null, 2));
+                  //   setSubmitting(false);
+                  // }, 400);
                 })`
               }
             }

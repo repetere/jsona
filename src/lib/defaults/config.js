@@ -1,3 +1,5 @@
+import qs from 'querystring';
+import { removeKeys, } from '../util/data';
 export const config = {
   componentLibraries: {},
   reactComponents: {},
@@ -11,6 +13,8 @@ export const config = {
     debug: true,
     router: 'browser', //hash|memory|broswer,
     cacheTemplatesOffline: false,
+    cacheLoggedInUser: true,
+    cacheUserTimeout: 1000*60*24*30,
     templatePath: undefined,
     templateFetchOptions: {},
     fetchHeaders: {},
@@ -23,13 +27,23 @@ export const config = {
     htmlLoadedClass: '__viewx_html_loaded',
     uiLoadedClass: '__viewx_ui_loaded',
     uiLoadingClass: '__viewx_ui_loading',
+    useWebSockets: false,
+    useWebSocketsAuth: false,
+    socket_server_options: {},
+    socket_disconnect_message: {},
+    socket_server:undefined,//http://localhost:3000
     accessTokenProperty: 'x-access-token',
     routes: {
       user_login: '/auth/user/login',
+      user_login_METHOD: 'POST',
       user_login_mfa: '/auth/user/mfa',
+      user_login_mfa_METHOD: 'POST',
       user_profile: '/auth/user/profile',
+      user_profile_METHOD: 'POST',
       login: '/login',
-      login_mfa: '/login_mfa'
+      login_mfa: '/login_mfa',
+      logged_in_homepage: '/home',
+      logged_out_homepage: '/',
     }
   },
   Functions: {
@@ -109,15 +123,6 @@ export const config = {
       if (this.props.user.loggedIn === false) this.props.history.push(this.settings.routes.login);
       else if (this.props.user.loggedInMFA === false && this.props.user.loggedIn) this.props.history.push(this.settings.routes.login_mfa);
     },
-    passOne: async function () {
-      return true;
-    },
-    passTwo: function () {
-      return true;
-    },
-    failOne: async function () {
-      return false;
-    },
     loadUser: async function () {
       // try {
       //   if (results[results.length - 1] === 'true') {
@@ -158,53 +163,76 @@ export const config = {
       //     this.props.createNotification({ text: 'welcome back', timeout:4000,  });
       return true;
     },
-    getSocketUser({ url, json, response, }) {
-      //   return {
-      //     email: json.user.email,
-      //     username: json.user.name || json.user.username,
-      //     jwt_token: json.token,
-      //     jwt_token_expires: json.expires,
-      //     jwt_token_timeout: json.timeout,
-      //     userdata: json.user,
-      //   };
+    getSocketUser({ token, expires, timeout, profile, }) {
+        return {
+          email: profile.email,
+          username: profile.name || profile.username,
+          jwt_token: token,
+          jwt_token_expires: expires,
+          jwt_token_timeout: timeout,
+          userdata: profile,
+        };
     },
-    loginUser: async function ({ username, password }) {
+    loginUser: async function ({ username, password, remember_me, }) {
       try {
-        const response = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' },
+        const queryParams = qs.parse(window.location.search);
+        console.log('loginUser', { username, password, queryParams, }, this);
+        const tokenData = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
+          method: this.settings.routes.user_login_METHOD,
+          headers: { 'Accept': 'application/json','Content-Type': 'application/json' },
           body: JSON.stringify({
             username,
             password,
           })
         });
-        //update user login state in cache
-        //update user login state
+        // console.log({ tokenData });
+        const { token, expires, timeout, } = tokenData;
+        // console.log({ token, expires, timeout, } )
+        if (!token) throw new ReferenceError('Invalid login token');
+        const userLoginAction = {
+          type: 'setUser',
+          user: {
+            token,//AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
+            tokenData,//AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
+            expires,
+            timeout,
+            loggedIn: true,
+            rememberMe: typeof remember_me !== 'undefined' ? remember_me : true,
+            // loggedInMFA: false, 
+          },
+        };
+        this.viewx.Functions.showLoader.call(this,{ ui:this.props.ui, setUI:this.props.setUI, });
+        this.props.dispatch(userLoginAction);
+        const profile = await this.viewx.Functions.getUserProfile({ token });
+        this.props.dispatch({ type: 'setUser', user:{ profile}, });
+
         //send welcome message
-        //fetch user profile
-        //save user profile
-        /*
-        user = getSocketUser();
-        socket.emit('authentication', {
-//       user,
-//       reconnection: true,
-//     });
-        */
-        //redirect (returlURL or loginRedirect)
+        if (this.settings.useWebSockets) {
+          const user = this.viewx.Functions.getSocketUser({ token, expires, timeout, profile });
+          this.props.socket.emit('authentication', {
+            user,
+            reconnection: true,
+          });
+        }
+
+        console.log('this.props.ui.returnURL', this.props.ui.returnURL);
+        this.props.history.push(this.props.ui.returnURL || this.settings.routes.logged_in_homepage);
+        // this.props.dispatch({ type: 'setReturnURL', returnURL:undefined, });
+
       } catch (e) {
         this.viewx.Functions.log({ type: 'error', error: e, });
       }
     },
     getUserProfile: async function({ token }) {
       return await this.viewx.Functions.fetchJSON(this.settings.routes.user_profile, {
+        method: this.settings.routes.user_profile_METHOD,
         headers: { [this.settings.accessTokenProperty]: token},
-        
       });
     },
     validateMFA: async function({ code }) {
       try {
         const response = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
-          method: 'POST',
+          method: this.settings.routes.user_login_mfa_METHOD,
           headers: { 'Accept': 'application/json' },
           body: JSON.stringify({
             code,
@@ -224,41 +252,20 @@ export const config = {
       }
     },
     logoutUser() {
-//   return (dispatch, getState) => {
-//     let state = getState();
-//     // console.debug({ state });
-//     dispatch(pageActions.resetAppLoadedState());
-//     Promise.all([
-//       AsyncStorage.removeItem(constants.jwt_token.TOKEN_NAME),
-//       AsyncStorage.removeItem(constants.jwt_token.TOKEN_DATA),
-//       AsyncStorage.removeItem(constants.jwt_token.PROFILE_JSON),
-//       AsyncStorage.removeItem(constants.user.MFA_AUTHENTICATED),
-//       utilities.flushCacheConfiguration(['manifest.authenticated', 'user.navigation', 'user.preferences',]),
-//       // AsyncStorage.removeItem(constants.pages.ASYNCSTORAGE_KEY),
-//     ])
-//       .then((/*results*/) => {
-//         dispatch(this.logoutUserSuccess());
-//         dispatch(pageActions.initialAppLoaded());
-//         dispatch(uiActions.closeUISidebar());
-//         dispatch(this.authenticatedMFA(false));
-//         dispatch(push(state.settings.auth.logged_out_path || '/'));
-//         let t = setImmediate(() => {
-//           clearImmediate(t);
-//           window.location.reload();
-//         });
-//       })
-//       .catch(error => { 
-//         dispatch(notification.errorNotification(error));
-//         dispatch(this.failedLogoutRequest(error));
-//         dispatch(pageActions.initialAppLoaded());
-//         dispatch(uiActions.closeUISidebar());
-//         dispatch(push(state.settings.auth.logged_out_path || '/'));
-//         let t = setImmediate(() => {
-//           clearImmediate(t);
-//           window.location.reload();
-//         });
-//       });
-//   };
+      const userLoginProps = [ 'token', 'tokenData', 'expires', 'timeout', 'profile', 'loggedIn', 'loggedInMFA', ];
+      //remove cache keys
+      if(this.settings.cacheLoggedInUser) removeKeys('user', userLoginProps);
+      //remove from state
+      const userLogoutAction = userLoginProps.reduce((result, prop) => { 
+        result.user[ prop ] = false;
+        return result;
+      } ,{
+          type: 'setUser',
+          user:{},
+      });
+      this.viewx.Functions.showLoader.call(this,{ ui:this.props.ui, setUI:this.props.setUI, });
+      this.props.dispatch(userLogoutAction);
+      this.props.history.push(this.settings.routes.logged_out_homepage);
     },
   },
   layers: [{

@@ -10,12 +10,12 @@
  * Status: BETA - useful, needs testing
  */
 export default function storeCache(_) {
-  var prefix = 'exp@',
-      suffix = ';',
-      parse = _.parse,
-      _get = _.get,
-    _set = _.set;
-  console.log({ parse, _get, _set });
+    var prefix = 'exp@',
+        suffix = ';',
+        parse = _.parse,
+        _get = _.get.bind(_),
+        _set = _.set.bind(_);
+  console.log({ parse, _get, _set, _ });
   _.parse = function(s) {
       if (s && s.indexOf(prefix) === 0) {
           s = s.substring(s.indexOf(suffix)+1);
@@ -40,12 +40,14 @@ export default function storeCache(_) {
       }
       return s;
   };
-  _.get = function(area, key) {
+    _.get = function (area, key) {
+    console.log('_get', { area, key }, this);
       var s = _.cache(area, key);
       return s === undefined ? null : s;
   };
   _.set = function(area, key, string, min) {
-      try {
+    console.log('_set', { area, key, string, min }, this);
+    try {
           if (min) {
               string = prefix + (_.when()+min) + suffix + string;
           }

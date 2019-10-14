@@ -3,19 +3,10 @@ import {
   // createGlobalState,
 } from "react-hooks-global-state";
 // @ts-ignore
-import store from "store2";
-import storeCache from "../vendor/store2/store.cache";
-// @ts-ignore
-window.store = store;
-console.log({ storeCache, store });
-// @ts-ignore
-storeCache(window.store);
-// @ts-ignore
-console.log({ storeCache, store, "window.store": window.store });
-// @ts-ignore
-// import 'store2/src/store.cache';
+import { setCacheStore, getFromCacheStore, } from "../util/data";
 
 export async function getGlobalStateHooks(options: any = {}) {
+  const settings = options.config.settings;
   const layers = options.config.layers;
   // const layerNames = layers.map((layer:any) => layer.name);
   const layerOpenState = layers.reduce((result: any, layer: any) => {
@@ -47,6 +38,7 @@ export async function getGlobalStateHooks(options: any = {}) {
           }
         };
       case "setView":
+          console.warn('setting setView', { action },state.ui);
         return {
           ...state,
           views: {
@@ -61,6 +53,37 @@ export async function getGlobalStateHooks(options: any = {}) {
             ...state.ui,
             ...action.ui
           }
+        };
+      case "setReturnURL":
+          console.warn('setting RETURN URL', { action },state.ui);
+          return {
+          ...state,
+          ui: {
+            ...state.ui,
+            returnURL: action.returnURL,
+          },
+        };
+      case "setUser":
+        if (settings.cacheLoggedInUser || action.rememberMe) {
+          // @ts-ignore
+          Object.keys(action.user)
+            .filter(prop => prop !== 'type')
+            .forEach(prop => {
+              setCacheStore('user', prop, action.user[prop], settings.cacheUserTimeout);
+            });
+        }
+
+        return {
+          ...state,
+          user: {
+            ...state.user,
+            ...action.user
+          }
+        };
+      case "setSocket":
+        return {
+          ...state,
+          socker: action.socket,
         };
       default:
         if (action.type.includes("toggleMatchedRouteLayer")) {
@@ -102,15 +125,29 @@ export async function getGlobalStateHooks(options: any = {}) {
       ...layerOpenState,
       ...options.vxaState.ui
     },
-    user: {//TODO: fix loading user
-      token: undefined,//AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
-      tokenData: undefined,//AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
-      expires: undefined,
-      timeout: undefined,
-      profile: {},
+    user: {
+      token: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'token')
+        : undefined, 
+      tokenData: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'tokenData')
+        : undefined,
+      expires: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'expires')
+        : undefined,
+      timeout: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'timeout')
+        : undefined,
+      profile: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'profile') || {}
+        : {},
       fetchHeaders: {},
-      loggedIn: false,
-      loggedInMFA: false, //AsyncStorage.getItem(constants.user.MFA_AUTHENTICATED),
+      loggedIn: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'loggedIn') || false
+        : false,
+      loggedInMFA: settings.cacheLoggedInUser
+        ? getFromCacheStore('user', 'loggedInMFA') || false
+        : false,
       ...options.vxaState.user
     }
   };

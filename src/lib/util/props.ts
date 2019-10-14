@@ -10,7 +10,7 @@ import { initSockets, } from './socket';
 // @ts-ignore
 export async function setup({ settings }) {
   // @ts-ignore
-  initSockets.call(this);
+  initSockets.call(this, settings);
 
   if (settings.useBodyLoadedClass)
     setHTMLElementClass({
@@ -115,6 +115,8 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
 
 export async function loadRoute({
   // @ts-ignore
+  ui,
+  // @ts-ignore
   viewxTemplates,
   // @ts-ignore
   pathname,
@@ -193,6 +195,7 @@ export async function loadRoute({
         view: {},
         viewdata: {},
         ui: {
+          ...ui,
           hasOverlayLayer: false
         }
       }
