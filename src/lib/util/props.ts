@@ -50,7 +50,7 @@ export async function loadTemplates({
     functionContext
   );
   // @ts-ignore
-  const loadedTemplates = await fetchFunction(
+  const loadedTemplates = (config.settings.hasPreloadedTemplates) ? {}: await fetchFunction(
     config.settings.templatePath,
     config.settings.templateFetchOptions
   );

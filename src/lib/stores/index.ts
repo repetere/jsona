@@ -38,7 +38,7 @@ export async function getGlobalStateHooks(options: any = {}) {
           }
         };
       case "setView":
-          console.warn('setting setView', { action },state.ui);
+          // console.warn('setting setView', { action },state.ui);
         return {
           ...state,
           views: {
@@ -55,7 +55,7 @@ export async function getGlobalStateHooks(options: any = {}) {
           }
         };
       case "setReturnURL":
-          console.warn('setting RETURN URL', { action },state.ui);
+          // console.warn('setting RETURN URL', { action },state.ui);
           return {
           ...state,
           ui: {
@@ -121,6 +121,7 @@ export async function getGlobalStateHooks(options: any = {}) {
       isModalOpen: false,
       hasOverlayLayer: false,
       hasLoadedInitialProcess: false,
+      hasPreloadedTemplates: settings.hasPreloadedTemplates||false,
       returnURL: undefined,
       ...layerOpenState,
       ...options.vxaState.ui

@@ -64,7 +64,19 @@ var VXA = (function (exports) {
         }
     }
 
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    }
+
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    function commonjsRequire () {
+    	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
+    }
 
     function unwrapExports (x) {
     	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -44557,6 +44569,7 @@ var VXA = (function (exports) {
           };
         }));
       }
+      if (typeof options === 'undefined' || typeof options.bind === 'undefined') options.bind = true;
       const { resources = {}, args=[], } = options;
 
       const props = reactComponent.props;
@@ -44566,8 +44579,8 @@ var VXA = (function (exports) {
     const self = this;
     return function ${options.name || 'Anonymous'}(props){
       ${functionBody}
-      if(typeof exposeProps!=='undefined'){
-        reactComponent.props = Object.assign({},props,exposeProps);
+      if(typeof exposeProps==='undefined' || exposeProps){
+        reactComponent.props = Object.assign({},props,typeof exposeProps==='undefined'?{}:exposeProps);
         // reactComponent.__functionargs = Object.keys(exposeProps);
       } else{
         reactComponent.props =  props;
@@ -44870,6 +44883,41 @@ var VXA = (function (exports) {
       }, {});
     }
 
+    function getReactComponents(options) {
+      const { jsonx, resources, } = options;
+      const functionComponents = (!jsonx.__dangerouslyInsertFunctionComponents)
+        ? {}
+        : Object.keys(jsonx.__dangerouslyInsertFunctionComponents).reduce((cprops, cpropName) => {
+          let componentVal;
+          try {
+            const args = jsonx.__dangerouslyInsertFunctionComponents[ cpropName ];
+            args.options = Object.assign({}, args.options, { resources });
+            // eslint-disable-next-line
+            componentVal = getReactFunctionComponent.call(this, args.reactComponent, args.functionBody, args.options);
+          } catch (e) {
+            if (this.debug || jsonx.debug) componentVal = e;
+          }
+          cprops[ cpropName ] = cpropName === '_children' ? [ componentVal ] : componentVal;
+          return cprops;
+        }, {});
+      const classComponents = (!jsonx.__dangerouslyInsertClassComponents)
+        ? {}
+        : Object.keys(jsonx.__dangerouslyInsertClassComponents).reduce((cprops, cpropName) => {
+          let componentVal;
+          try {
+            const args = jsonx.__dangerouslyInsertClassComponents[ cpropName ];
+            args.options = Object.assign({}, args.options, { resources });
+            // eslint-disable-next-line
+            componentVal = getReactFunctionComponent.call(this, args.reactComponent, args.options);
+          } catch (e) {
+            if (this.debug || jsonx.debug) componentVal = e;
+          }
+          cprops[ cpropName ] = cpropName === '_children' ? [ componentVal ] : componentVal;
+          return cprops;
+        }, {});
+      return Object.assign({}, functionComponents, classComponents);
+    }
+
     /**
      * Resolves jsonx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points. 
      * @param {Object} options 
@@ -45143,11 +45191,14 @@ var VXA = (function (exports) {
         const insertedReactComponents = (jsonx.__dangerouslyInsertReactComponents || jsonx.__dangerouslyInsertJSONXComponents)
           ? getReactComponentProps.call(this, { jsonx, debug, })
           : {};
+        const insertedComputedComponents = (jsonx.__dangerouslyInsertFunctionComponents  || jsonx.__dangerouslyInsertClassComponents)
+          ? getReactComponents.call(this, { jsonx, debug, })
+          : {};
         
         const evalAllProps = (jsonx.__dangerouslyEvalAllProps)
           ? getEvalProps.call(this, { jsonx, })
           : {};
-        const allProps = Object.assign({}, this.disableRenderIndexKey || disableRenderIndexKey ? {}: { key: renderIndex, }, jsonx.props, thisprops, thisstate, resourceprops, asyncprops, windowprops, evalProps, insertedComponents, insertedReactComponents);
+        const allProps = Object.assign({}, this.disableRenderIndexKey || disableRenderIndexKey ? {}: { key: renderIndex, }, jsonx.props, thisprops, thisstate, resourceprops, asyncprops, windowprops, evalProps, insertedComponents, insertedReactComponents, insertedComputedComponents);
         const computedProps = Object.assign({}, allProps,
           jsonx.__functionProps ? getFunctionProps.call(this, { allProps, jsonx, }) : {},
           jsonx.__windowComponents ? getWindowComponents.call(this, { allProps, jsonx, }) : {},
@@ -45171,6 +45222,7 @@ var VXA = (function (exports) {
         boundArgsReducer: boundArgsReducer,
         getEvalProps: getEvalProps,
         getComponentProps: getComponentProps,
+        getReactComponents: getReactComponents,
         getReactComponentProps: getReactComponentProps,
         getFunctionFromProps: getFunctionFromProps,
         getFunctionProps: getFunctionProps,
@@ -45823,932 +45875,6 @@ var VXA = (function (exports) {
         : matching;
     }
 
-    /**
-     * Expose `pathToRegexp`.
-     */
-    var compile_1$2 = compile$2;
-
-    /**
-     * Default configs.
-     */
-    var DEFAULT_DELIMITER$1 = '/';
-
-    /**
-     * The main path matching regexp utility.
-     *
-     * @type {RegExp}
-     */
-    var PATH_REGEXP$2 = new RegExp([
-      // Match escaped characters that would otherwise appear in future matches.
-      // This allows the user to escape special characters that won't transform.
-      '(\\\\.)',
-      // Match Express-style parameters and un-named parameters with a prefix
-      // and optional suffixes. Matches appear as:
-      //
-      // ":test(\\d+)?" => ["test", "\d+", undefined, "?"]
-      // "(\\d+)"  => [undefined, undefined, "\d+", undefined]
-      '(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?'
-    ].join('|'), 'g');
-
-    /**
-     * Parse a string for the raw tokens.
-     *
-     * @param  {string}  str
-     * @param  {Object=} options
-     * @return {!Array}
-     */
-    function parse$2 (str, options) {
-      var tokens = [];
-      var key = 0;
-      var index = 0;
-      var path = '';
-      var defaultDelimiter = (options && options.delimiter) || DEFAULT_DELIMITER$1;
-      var whitelist = (options && options.whitelist) || undefined;
-      var pathEscaped = false;
-      var res;
-
-      while ((res = PATH_REGEXP$2.exec(str)) !== null) {
-        var m = res[0];
-        var escaped = res[1];
-        var offset = res.index;
-        path += str.slice(index, offset);
-        index = offset + m.length;
-
-        // Ignore already escaped sequences.
-        if (escaped) {
-          path += escaped[1];
-          pathEscaped = true;
-          continue
-        }
-
-        var prev = '';
-        var name = res[2];
-        var capture = res[3];
-        var group = res[4];
-        var modifier = res[5];
-
-        if (!pathEscaped && path.length) {
-          var k = path.length - 1;
-          var c = path[k];
-          var matches = whitelist ? whitelist.indexOf(c) > -1 : true;
-
-          if (matches) {
-            prev = c;
-            path = path.slice(0, k);
-          }
-        }
-
-        // Push the current path onto the tokens.
-        if (path) {
-          tokens.push(path);
-          path = '';
-          pathEscaped = false;
-        }
-
-        var repeat = modifier === '+' || modifier === '*';
-        var optional = modifier === '?' || modifier === '*';
-        var pattern = capture || group;
-        var delimiter = prev || defaultDelimiter;
-
-        tokens.push({
-          name: name || key++,
-          prefix: prev,
-          delimiter: delimiter,
-          optional: optional,
-          repeat: repeat,
-          pattern: pattern
-            ? escapeGroup$2(pattern)
-            : '[^' + escapeString$2(delimiter === defaultDelimiter ? delimiter : (delimiter + defaultDelimiter)) + ']+?'
-        });
-      }
-
-      // Push any remaining characters.
-      if (path || index < str.length) {
-        tokens.push(path + str.substr(index));
-      }
-
-      return tokens
-    }
-
-    /**
-     * Compile a string to a template function for the path.
-     *
-     * @param  {string}             str
-     * @param  {Object=}            options
-     * @return {!function(Object=, Object=)}
-     */
-    function compile$2 (str, options) {
-      return tokensToFunction$2(parse$2(str, options), options)
-    }
-
-    /**
-     * Expose a method for transforming tokens into the path function.
-     */
-    function tokensToFunction$2 (tokens, options) {
-      // Compile all the tokens into regexps.
-      var matches = new Array(tokens.length);
-
-      // Compile all the patterns before compilation.
-      for (var i = 0; i < tokens.length; i++) {
-        if (typeof tokens[i] === 'object') {
-          matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$', flags$2(options));
-        }
-      }
-
-      return function (data, options) {
-        var path = '';
-        var encode = (options && options.encode) || encodeURIComponent;
-        var validate = options ? options.validate !== false : true;
-
-        for (var i = 0; i < tokens.length; i++) {
-          var token = tokens[i];
-
-          if (typeof token === 'string') {
-            path += token;
-            continue
-          }
-
-          var value = data ? data[token.name] : undefined;
-          var segment;
-
-          if (Array.isArray(value)) {
-            if (!token.repeat) {
-              throw new TypeError('Expected "' + token.name + '" to not repeat, but got array')
-            }
-
-            if (value.length === 0) {
-              if (token.optional) continue
-
-              throw new TypeError('Expected "' + token.name + '" to not be empty')
-            }
-
-            for (var j = 0; j < value.length; j++) {
-              segment = encode(value[j], token);
-
-              if (validate && !matches[i].test(segment)) {
-                throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '"')
-              }
-
-              path += (j === 0 ? token.prefix : token.delimiter) + segment;
-            }
-
-            continue
-          }
-
-          if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-            segment = encode(String(value), token);
-
-            if (validate && !matches[i].test(segment)) {
-              throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but got "' + segment + '"')
-            }
-
-            path += token.prefix + segment;
-            continue
-          }
-
-          if (token.optional) continue
-
-          throw new TypeError('Expected "' + token.name + '" to be ' + (token.repeat ? 'an array' : 'a string'))
-        }
-
-        return path
-      }
-    }
-
-    /**
-     * Escape a regular expression string.
-     *
-     * @param  {string} str
-     * @return {string}
-     */
-    function escapeString$2 (str) {
-      return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1')
-    }
-
-    /**
-     * Escape the capturing group by escaping special characters and meaning.
-     *
-     * @param  {string} group
-     * @return {string}
-     */
-    function escapeGroup$2 (group) {
-      return group.replace(/([=!:$/()])/g, '\\$1')
-    }
-
-    /**
-     * Get the flags for a regexp from the options.
-     *
-     * @param  {Object} options
-     * @return {string}
-     */
-    function flags$2 (options) {
-      return options && options.sensitive ? '' : 'i'
-    }
-
-    // import pluralize from 'pluralize';
-    function fetchJSON$1(path, options) {
-        return __awaiter(this, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch(path, options)];
-                    case 1:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.json()];
-                    case 2: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    }
-    function fetchResources(_a) {
-        var _b = _a.resources, resources = _b === void 0 ? {} : _b, _c = _a.templateRoute, templateRoute = _c === void 0 ? {} : _c;
-        return __awaiter(this, void 0, void 0, function () {
-            var results, resourceProperties;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
-                    case 0:
-                        results = {};
-                        resourceProperties = Object.keys(resources);
-                        if (!resourceProperties.length) return [3 /*break*/, 2];
-                        return [4 /*yield*/, Promise.all(resourceProperties.map(function (prop) {
-                                return (function (prop) {
-                                    return __awaiter(this, void 0, void 0, function () {
-                                        var resource, fetchPath, toPath, fetchURL, fetchOptions, _a, _b;
-                                        return __generator(this, function (_c) {
-                                            switch (_c.label) {
-                                                case 0:
-                                                    resource = resources[prop];
-                                                    fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
-                                                    toPath = compile_1$2(fetchPath);
-                                                    fetchURL = 
-                                                    // @ts-ignore
-                                                    toPath(templateRoute.params) + window.location.search;
-                                                    fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
-                                                    // @ts-ignore
-                                                    _a = results;
-                                                    _b = prop;
-                                                    return [4 /*yield*/, fetchJSON$1(fetchURL, fetchOptions)];
-                                                case 1:
-                                                    // @ts-ignore
-                                                    _a[_b] = _c.sent();
-                                                    return [2 /*return*/, true];
-                                            }
-                                        });
-                                    });
-                                })(prop);
-                            }))];
-                    case 1:
-                        _d.sent();
-                        _d.label = 2;
-                    case 2: return [2 /*return*/, results];
-                }
-            });
-        });
-    }
-
-    // @ts-ignore
-    function insertJavaScript(_a) {
-        var src = _a.src, name = _a.name, _b = _a.async, async = _b === void 0 ? true : _b, onload = _a.onload;
-        (function (d, s, id) {
-            var tagId = "viewx-script-" + id;
-            if (d.getElementById(id))
-                return;
-            var s0 = d.getElementsByTagName(s)[0];
-            var j = d.createElement(s);
-            // @ts-ignore
-            j.async = async;
-            j.id = tagId;
-            // @ts-ignore
-            j.type = "text/javascript";
-            // @ts-ignore
-            j.src = src;
-            j.onload = onload;
-            // @ts-ignore
-            if (s0)
-                s0.parentNode.insertBefore(j, s0);
-            else
-                document.head.prepend(j);
-        })(document || window.document, "script", name);
-    }
-    // @ts-ignore
-    function insertStyleSheet(_a) {
-        var src = _a.src, name = _a.name, onload = _a.onload;
-        (function (d, l, id) {
-            var tagId = "viewx-style-" + id;
-            if (d.getElementById(id))
-                return;
-            var s0 = d.getElementsByTagName(l)[0];
-            var ss = d.createElement(l);
-            ss.id = tagId;
-            // @ts-ignore
-            ss.rel = "stylesheet";
-            // @ts-ignore
-            ss.type = "text/css";
-            // @ts-ignore
-            ss.href = src;
-            ss.onload = onload;
-            // @ts-ignore
-            if (s0)
-                s0.parentNode.insertBefore(ss, s0);
-            else
-                document.head.prepend(ss);
-        })(document || window.document, "link", name);
-    }
-    // @ts-ignore
-    function createLayer(_a) {
-        var layer = _a.layer, app = _a.app;
-        var name = layer.name, type = layer.type, order = layer.order;
-        var selector = "#" + name;
-        var layerDOM = document.querySelector(selector);
-        if (!layerDOM) {
-            var domEl = document.createElement("div");
-            domEl.setAttribute("id", name);
-            document.body.appendChild(domEl);
-            domEl.style.zIndex = order;
-            layerDOM = domEl;
-        }
-        if (type === "applicationRoot") {
-            reactDom.render(app, layerDOM);
-        }
-    }
-    // @ts-ignore
-    function getElementSelector(_a) {
-        var tagName = _a.tagName, _b = _a.attributes, attributes = _b === void 0 ? {} : _b;
-        return "" + tagName + Object.keys(attributes)
-            // @ts-ignore
-            .map(function (attr) { return "[" + attr + "=\"" + attributes[attr] + "\"]"; })
-            .join();
-    }
-    function setPageAttributes(_a) {
-        var _b = _a.pageData, pageData = _b === void 0 ? [] : _b;
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_c) {
-                pageData.forEach(function (pageDatum) {
-                    var attributes = pageDatum.attributes, tagName = pageDatum.tagName, innerHTML = pageDatum.innerHTML;
-                    var selector = getElementSelector(pageDatum);
-                    var el = document.querySelector(selector);
-                    var element = el || document.createElement(tagName);
-                    // if(!el) el.setAttribute()
-                    if (innerHTML)
-                        element.innerHTML = innerHTML;
-                    Object.keys(attributes).forEach(function (attr) {
-                        element.setAttribute(attr, attributes[attr]);
-                    });
-                    if (!el)
-                        document.head.appendChild(element);
-                });
-                return [2 /*return*/];
-            });
-        });
-    }
-
-    // @ts-ignore
-    function loadTemplates(_a) {
-        var 
-        // @ts-ignore
-        config = _a.config, 
-        // @ts-ignore
-        viewxTemplates = _a.viewxTemplates, 
-        // @ts-ignore
-        templates = _a.templates, 
-        // @ts-ignore
-        setTemplates = _a.setTemplates, 
-        // @ts-ignore
-        setUI = _a.setUI, 
-        // @ts-ignore
-        ui = _a.ui, 
-        // @ts-ignore
-        layers = _a.layers, 
-        // @ts-ignore
-        Functions = _a.Functions;
-        return __awaiter(this, void 0, void 0, function () {
-            var fetchFunction, loadedTemplates;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        fetchFunction = Functions.fetchJSON || fetchJSON$1;
-                        return [4 /*yield*/, fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions)];
-                    case 1:
-                        loadedTemplates = _b.sent();
-                        // @ts-ignore
-                        viewxTemplates = layers.reduce(function (result, layer) {
-                            var name = layer.name;
-                            result[name] = __assign(__assign({}, loadedTemplates[name]), templates[name]);
-                            return result;
-                        }, {});
-                        setTemplates(viewxTemplates);
-                        setUI(__assign(__assign({}, ui), { hasLoadedInitialTemplates: true }));
-                        return [2 /*return*/, {
-                                viewxTemplates: viewxTemplates
-                            }];
-                }
-            });
-        });
-    }
-    // @ts-ignore
-    function getTemplateRouteLayer(_a) {
-        var viewxTemplates = _a.viewxTemplates, pathname = _a.pathname;
-        var hasOverlayLayer = false;
-        // @ts-ignore
-        return function (layer) {
-            var _a;
-            var name = layer.name, type = layer.type;
-            var templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
-                return_matching_keys: true
-            });
-            if (type === 'overlay' && templateRoute)
-                hasOverlayLayer = true;
-            if (templateRoute) {
-                var vxtObject = hasOverlayLayer
-                    ? viewxTemplates[name][templateRoute.route]
-                    : viewxTemplates[name][templateRoute.route] || viewxTemplates[name].__error_404;
-                return {
-                    name: name,
-                    type: type,
-                    vxtObject: vxtObject,
-                    templateRoute: templateRoute,
-                    ui: (_a = {},
-                        _a["isRouteLayer_" + name + "_Matched"] = true,
-                        _a),
-                    hasOverlayLayer: hasOverlayLayer,
-                };
-            }
-            else
-                return undefined;
-        };
-    }
-    function loadRoute(_a) {
-        var 
-        // @ts-ignore
-        viewxTemplates = _a.viewxTemplates, 
-        // @ts-ignore
-        pathname = _a.pathname, 
-        // @ts-ignore
-        dispatcher = _a.dispatcher, 
-        // @ts-ignore
-        layers = _a.layers, 
-        // @ts-ignore
-        Functions = _a.Functions, 
-        // @ts-ignore
-        functionContext = _a.functionContext, 
-        // @ts-ignore
-        _b = _a.resourceprops, 
-        // @ts-ignore
-        resourceprops = _b === void 0 ? {} : _b;
-        return __awaiter(this, void 0, void 0, function () {
-            var applicationRootName, fetchResourcesFunction_1, templateRouteLayers_1, templateViewPromises, templateViewData, action, e_1;
-            var _c, _d;
-            return __generator(this, function (_e) {
-                switch (_e.label) {
-                    case 0:
-                        applicationRootName = "root";
-                        _e.label = 1;
-                    case 1:
-                        _e.trys.push([1, 3, , 4]);
-                        fetchResourcesFunction_1 = Functions.fetchResources || fetchResources;
-                        templateRouteLayers_1 = layers
-                            .map(getTemplateRouteLayer({
-                            viewxTemplates: viewxTemplates,
-                            pathname: pathname
-                        }))
-                            // @ts-ignore
-                            .filter(function (layer) { return layer; });
-                        // @ts-ignore
-                        invokeWebhooks({
-                            Functions: Functions,
-                            functionContext: functionContext,
-                            property: "preRenderFunctions",
-                            templateRouteLayers: templateRouteLayers_1
-                        });
-                        templateViewPromises = templateRouteLayers_1.map(function (templateRouteLayer) {
-                            return fetchResourcesFunction_1({
-                                resources: templateRouteLayer.vxtObject.resources,
-                                templateRoute: templateRouteLayer.templateRoute
-                            });
-                        });
-                        return [4 /*yield*/, Promise.all(templateViewPromises)];
-                    case 2:
-                        templateViewData = _e.sent();
-                        action = templateViewData.reduce(function (result, templateViewDatum, i) {
-                            var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer;
-                            if (hasOverlayLayer)
-                                result.ui.hasOverlayLayer = true;
-                            if (type === "applicationRoot") {
-                                applicationRootName = name;
-                            }
-                            setPageAttributes(vxtObject);
-                            // @ts-ignore
-                            result.view[name] = vxtObject;
-                            // @ts-ignore
-                            result.viewdata[name] = __assign(__assign({}, templateViewDatum), resourceprops);
-                            // @ts-ignore
-                            result.ui = __assign(__assign({}, result.ui), ui);
-                            // result
-                            return result;
-                        }, {
-                            type: "setView",
-                            view: {},
-                            viewdata: {},
-                            ui: {
-                                hasOverlayLayer: false,
-                            },
-                        });
-                        dispatcher(action);
-                        invokeWebhooks({
-                            Functions: Functions,
-                            functionContext: functionContext,
-                            templateViewData: templateViewData,
-                            property: "postRenderFunctions",
-                            templateRouteLayers: templateRouteLayers_1
-                        });
-                        return [3 /*break*/, 4];
-                    case 3:
-                        e_1 = _e.sent();
-                        console.error(e_1);
-                        dispatcher({
-                            type: "setView",
-                            view: (_c = {},
-                                _c[applicationRootName] = viewxTemplates[applicationRootName].__error_500,
-                                _c),
-                            viewdata: (_d = {},
-                                _d[applicationRootName] = {
-                                    error: e_1
-                                },
-                                _d)
-                        });
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    }
-    // @ts-ignore
-    function invokeWebhooks(_a) {
-        var 
-        // @ts-ignore
-        Functions = _a.Functions, 
-        // @ts-ignore
-        functionContext = _a.functionContext, 
-        // @ts-ignore
-        templateViewData = _a.templateViewData, 
-        // @ts-ignore
-        _b = _a.property, 
-        // @ts-ignore
-        property = _b === void 0 ? "preRenderFunctions" : _b, 
-        // @ts-ignore
-        templateRouteLayers = _a.templateRouteLayers;
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_c) {
-                // @ts-ignore
-                templateRouteLayers.forEach(function (templateRouteLayer) { return __awaiter(_this, void 0, void 0, function () {
-                    var functionNames, funcs;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                functionNames = templateRouteLayer.vxtObject[property] || [];
-                                funcs = functionNames.map(function (functionName) {
-                                    return getFunctionFromNameString({
-                                        Functions: Functions,
-                                        functionContext: functionContext,
-                                        functionName: functionName
-                                    })(templateViewData);
-                                });
-                                return [4 /*yield*/, Promise.all(funcs)];
-                            case 1:
-                                _a.sent();
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                return [2 /*return*/];
-            });
-        });
-    }
-    // @ts-ignore
-    function getFunctionFromNameString(_a) {
-        var 
-        // @ts-ignore
-        Functions = _a.Functions, 
-        // @ts-ignore
-        functionContext = _a.functionContext, 
-        // @ts-ignore
-        functionName = _a.functionName;
-        var func;
-        try {
-            if (typeof functionName === "string") {
-                var name = getDynamicFunctionName(functionName);
-                if (functionName.includes("func:this.props") &&
-                    typeof functionContext.props[name] === "function") {
-                    func = functionContext.props[name].bind(functionContext);
-                }
-                else if (functionName.includes("func:viewx.Functions") &&
-                    typeof Functions[name] === "function") {
-                    func = Functions[name].bind(functionContext);
-                }
-                else if (functionName.includes("func:window") &&
-                    typeof window[name] === "function") {
-                    // @ts-ignore
-                    func = window[name].bind(functionContext);
-                }
-            }
-            if (func)
-                return func;
-            else
-                return function () {
-                    console.warn("Invalid Function Name: " + functionName);
-                };
-        }
-        catch (e) {
-            return function () {
-                console.error("Invalid Function", e);
-            };
-        }
-    }
-    //func:this.props.login, func:window.alert, func:viewx.Functions.logout
-    var FUNCTION_NAME_REGEXP = /func:(?:this\.props|window|viewx)(?:\.Functions)?\.(\D.+)*/;
-    // @ts-ignore
-    function getDynamicFunctionName(function_name) {
-        return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
-    }
-
-    function getMainComponent(options) {
-        if (options === void 0) { options = {
-            application: { state: {} },
-            config: {
-                Functions: {},
-                componentLibraries: {},
-                reactComponents: {},
-                layers: [],
-                settings: { debug: true }
-            }
-        }; }
-        // @ts-ignore
-        var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config;
-        var Functions = config.Functions;
-        // @ts-ignore
-        var dispatcher = function (action) { return dispatch(action); };
-        // @ts-ignore
-        function Main(appProps) {
-            var _a = useGlobalState("templates"), templates = _a[0], setTemplates = _a[1];
-            var views = useGlobalState("views")[0];
-            var viewdata = useGlobalState("viewdata")[0];
-            var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
-            var _c = react_9(options.application.state), state = _c[0], setState = _c[1];
-            var pathname = appProps.location.pathname;
-            var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui }, appProps);
-            var functionContext = { props: props, state: state, setState: setState };
-            var loadView = react_14(function () {
-                // @ts-ignore
-                return function _loadView(_a) {
-                    var _b, _c;
-                    var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
-                    var loadViewPathname = pathname || "_loadView_" + layerName;
-                    return loadRoute({
-                        viewxTemplates: __assign(__assign({}, templates), (_b = {}, _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)), _b)),
-                        pathname: loadViewPathname,
-                        dispatcher: dispatcher,
-                        // @ts-ignore
-                        layers: config.layers.filter(function (layer) { return layer.name === layerName; }),
-                        Functions: Functions,
-                        resourceprops: resourceprops,
-                        functionContext: functionContext
-                    });
-                };
-            }, [templates, functionContext,]);
-            // @ts-ignore
-            Functions.loadView = loadView;
-            var getReactElement$1 = getReactElement.bind({
-                props: props,
-                state: state,
-                setState: setState,
-                viewx: { Functions: Functions },
-                // state:{counter, setCounter},
-                debug: true,
-                componentLibraries: Object.assign({}, config.componentLibraries),
-                reactComponents: Object.assign({ Link: Link }, config.reactComponents)
-            });
-            react_10(function () {
-                // @ts-ignore
-                Functions.onLaunch.call(functionContext);
-                // @ts-ignore
-                return function () { return Functions.onShutdown.call(functionContext); };
-            }, []);
-            react_10(function () {
-                var viewxTemplates = templates;
-                function initialize() {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var updatedTemplates, e_1;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    // @ts-ignore
-                                    Functions.showLoader.call(functionContext, { ui: ui, setUI: setUI });
-                                    _a.label = 1;
-                                case 1:
-                                    _a.trys.push([1, 4, , 5]);
-                                    if (!(ui.hasLoadedInitialTemplates === false)) return [3 /*break*/, 3];
-                                    return [4 /*yield*/, loadTemplates({
-                                            config: config,
-                                            viewxTemplates: viewxTemplates,
-                                            templates: templates,
-                                            setTemplates: setTemplates,
-                                            setUI: setUI,
-                                            ui: ui,
-                                            layers: config.layers,
-                                            Functions: Functions
-                                        })];
-                                case 2:
-                                    updatedTemplates = _a.sent();
-                                    viewxTemplates = updatedTemplates.viewxTemplates;
-                                    _a.label = 3;
-                                case 3:
-                                    loadRoute({
-                                        viewxTemplates: viewxTemplates,
-                                        pathname: pathname,
-                                        dispatcher: dispatcher,
-                                        layers: config.layers,
-                                        Functions: Functions,
-                                        functionContext: functionContext
-                                    });
-                                    return [3 /*break*/, 5];
-                                case 4:
-                                    e_1 = _a.sent();
-                                    console.error(e_1);
-                                    return [3 /*break*/, 5];
-                                case 5:
-                                    // @ts-ignore
-                                    Functions.hideLoader.call(functionContext, { ui: ui, setUI: setUI });
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                }
-                initialize();
-                //   // return function cleanup(){}
-            }, [pathname /* templates*/]);
-            return (react.createElement(react_5, null, options.config.layers.map(function (layer) {
-                var name = layer.name, type = layer.type;
-                var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
-                // console.log('LAYER',{name,type,jsonxChildren})
-                if (type === "applicationRoot") {
-                    return jsonxChildren;
-                }
-                else {
-                    // @ts-ignore
-                    var el = document.querySelector("#" + name);
-                    // @ts-ignore
-                    return reactDom.createPortal(jsonxChildren, 
-                    // @ts-ignore
-                    el);
-                }
-            })));
-        }
-        return Main;
-    }
-
-    // utility functions
-
-    const isFunction$1 = fn => (typeof fn === 'function');
-
-    const updateValue = (oldValue, newValue) => {
-      if (isFunction$1(newValue)) {
-        return newValue(oldValue);
-      }
-      return newValue;
-    };
-
-    // ref: https://github.com/dai-shi/react-hooks-global-state/issues/5
-    const useUnstableContextWithoutWarning = (Context, observedBits) => {
-      const { ReactCurrentDispatcher } = react_19;
-      const dispatcher = ReactCurrentDispatcher.current;
-      if (!dispatcher) {
-        throw new Error('Hooks can only be called inside the body of a function component. (https://fb.me/react-invalid-hook-call)');
-      }
-      return dispatcher.useContext(Context, observedBits);
-    };
-
-    // core functions
-
-    const EMPTY_OBJECT = {};
-
-    const createGlobalStateCommon = (initialState) => {
-      const keys = Object.keys(initialState);
-      let wholeGlobalState = initialState;
-      let listener = null;
-
-      const calculateChangedBits = (a, b) => {
-        let bits = 0;
-        keys.forEach((k, i) => {
-          if (a[k] !== b[k]) bits |= 1 << i;
-        });
-        return bits;
-      };
-
-      const Context = react_4(EMPTY_OBJECT, calculateChangedBits);
-
-      const GlobalStateProvider = ({ children }) => {
-        const [state, setState] = react_9(initialState);
-        react_10(() => {
-          if (listener) throw new Error('You cannot use <GlobalStateProvider> more than once.');
-          listener = setState;
-          if (state !== initialState) {
-            // probably state was saved by react-hot-loader, so restore it
-            wholeGlobalState = state;
-          } else if (state !== wholeGlobalState) {
-            // wholeGlobalState was updated during initialization
-            setState(wholeGlobalState);
-          }
-          const cleanup = () => {
-            listener = null;
-          };
-          return cleanup;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [initialState]); // trick for react-hot-loader
-        return react_8(Context.Provider, { value: state }, children);
-      };
-
-      const validateName = (name) => {
-        if (!keys.includes(name)) {
-          throw new Error(`'${name}' not found. It must be provided in initialState as a property key.`);
-        }
-      };
-
-      const setGlobalState = (name, update) => {
-        {
-          validateName(name);
-        }
-        wholeGlobalState = {
-          ...wholeGlobalState,
-          [name]: updateValue(wholeGlobalState[name], update),
-        };
-        if (listener) {
-          listener(wholeGlobalState);
-        }
-      };
-
-      const useGlobalState = (name) => {
-        {
-          validateName(name);
-        }
-        const index = keys.indexOf(name);
-        const observedBits = 1 << index;
-        const state = useUnstableContextWithoutWarning(Context, observedBits);
-        if (state === EMPTY_OBJECT) throw new Error('Please use <GlobalStateProvider>');
-        const updater = react_13(u => setGlobalState(name, u), [name]);
-        return [state[name], updater];
-      };
-
-      const getGlobalState = (name) => {
-        {
-          validateName(name);
-        }
-        return wholeGlobalState[name];
-      };
-
-      const getWholeGlobalState = () => wholeGlobalState;
-
-      const setWholeGlobalState = (state) => {
-        wholeGlobalState = state;
-        if (listener) {
-          listener(wholeGlobalState);
-        }
-      };
-
-      return {
-        GlobalStateProvider,
-        setGlobalState,
-        useGlobalState,
-        getGlobalState,
-        getWholeGlobalState,
-        setWholeGlobalState,
-      };
-    };
-
-    const createStore = (reducer, initialState, enhancer) => {
-      if (!initialState) initialState = reducer(undefined, { type: undefined });
-      if (enhancer) return enhancer(createStore)(reducer, initialState);
-      const {
-        GlobalStateProvider,
-        useGlobalState,
-        getWholeGlobalState,
-        setWholeGlobalState,
-      } = createGlobalStateCommon(initialState);
-      const dispatch = (action) => {
-        const oldState = getWholeGlobalState();
-        const newState = reducer(oldState, action);
-        setWholeGlobalState(newState);
-        return action;
-      };
-      return {
-        GlobalStateProvider,
-        useGlobalState,
-        getState: getWholeGlobalState,
-        setState: setWholeGlobalState, // for devtools.js
-        dispatch,
-      };
-    };
-
     var store2 = createCommonjsModule(function (module) {
     (function(window, define) {
         var _ = {
@@ -47012,19 +46138,1699 @@ var VXA = (function (exports) {
     })(commonjsGlobal, commonjsGlobal && commonjsGlobal.define);
     });
 
+    // Copyright Joyent, Inc. and other Node contributors.
+    //
+    // Permission is hereby granted, free of charge, to any person obtaining a
+    // copy of this software and associated documentation files (the
+    // "Software"), to deal in the Software without restriction, including
+    // without limitation the rights to use, copy, modify, merge, publish,
+    // distribute, sublicense, and/or sell copies of the Software, and to permit
+    // persons to whom the Software is furnished to do so, subject to the
+    // following conditions:
+    //
+    // The above copyright notice and this permission notice shall be included
+    // in all copies or substantial portions of the Software.
+    //
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+    // NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+    // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+    // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+    // If obj.hasOwnProperty has been overridden, then calling
+    // obj.hasOwnProperty(prop) will break.
+    // See: https://github.com/joyent/node/issues/1707
+    function hasOwnProperty$2(obj, prop) {
+      return Object.prototype.hasOwnProperty.call(obj, prop);
+    }
+    var isArray$2 = Array.isArray || function (xs) {
+      return Object.prototype.toString.call(xs) === '[object Array]';
+    };
+    function stringifyPrimitive(v) {
+      switch (typeof v) {
+        case 'string':
+          return v;
+
+        case 'boolean':
+          return v ? 'true' : 'false';
+
+        case 'number':
+          return isFinite(v) ? v : '';
+
+        default:
+          return '';
+      }
+    }
+
+    function stringify (obj, sep, eq, name) {
+      sep = sep || '&';
+      eq = eq || '=';
+      if (obj === null) {
+        obj = undefined;
+      }
+
+      if (typeof obj === 'object') {
+        return map(objectKeys(obj), function(k) {
+          var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+          if (isArray$2(obj[k])) {
+            return map(obj[k], function(v) {
+              return ks + encodeURIComponent(stringifyPrimitive(v));
+            }).join(sep);
+          } else {
+            return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+          }
+        }).join(sep);
+
+      }
+
+      if (!name) return '';
+      return encodeURIComponent(stringifyPrimitive(name)) + eq +
+             encodeURIComponent(stringifyPrimitive(obj));
+    }
+    function map (xs, f) {
+      if (xs.map) return xs.map(f);
+      var res = [];
+      for (var i = 0; i < xs.length; i++) {
+        res.push(f(xs[i], i));
+      }
+      return res;
+    }
+
+    var objectKeys = Object.keys || function (obj) {
+      var res = [];
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+      }
+      return res;
+    };
+
+    function parse$2(qs, sep, eq, options) {
+      sep = sep || '&';
+      eq = eq || '=';
+      var obj = {};
+
+      if (typeof qs !== 'string' || qs.length === 0) {
+        return obj;
+      }
+
+      var regexp = /\+/g;
+      qs = qs.split(sep);
+
+      var maxKeys = 1000;
+      if (options && typeof options.maxKeys === 'number') {
+        maxKeys = options.maxKeys;
+      }
+
+      var len = qs.length;
+      // maxKeys <= 0 means that we should not limit keys count
+      if (maxKeys > 0 && len > maxKeys) {
+        len = maxKeys;
+      }
+
+      for (var i = 0; i < len; ++i) {
+        var x = qs[i].replace(regexp, '%20'),
+            idx = x.indexOf(eq),
+            kstr, vstr, k, v;
+
+        if (idx >= 0) {
+          kstr = x.substr(0, idx);
+          vstr = x.substr(idx + 1);
+        } else {
+          kstr = x;
+          vstr = '';
+        }
+
+        k = decodeURIComponent(kstr);
+        v = decodeURIComponent(vstr);
+
+        if (!hasOwnProperty$2(obj, k)) {
+          obj[k] = v;
+        } else if (isArray$2(obj[k])) {
+          obj[k].push(v);
+        } else {
+          obj[k] = [obj[k], v];
+        }
+      }
+
+      return obj;
+    }var qs = {
+      encode: stringify,
+      stringify: stringify,
+      decode: parse$2,
+      parse: parse$2
+    };
+
+    /**
+     * Expose `pathToRegexp`.
+     */
+    var compile_1$2 = compile$2;
+
+    /**
+     * Default configs.
+     */
+    var DEFAULT_DELIMITER$1 = '/';
+
+    /**
+     * The main path matching regexp utility.
+     *
+     * @type {RegExp}
+     */
+    var PATH_REGEXP$2 = new RegExp([
+      // Match escaped characters that would otherwise appear in future matches.
+      // This allows the user to escape special characters that won't transform.
+      '(\\\\.)',
+      // Match Express-style parameters and un-named parameters with a prefix
+      // and optional suffixes. Matches appear as:
+      //
+      // ":test(\\d+)?" => ["test", "\d+", undefined, "?"]
+      // "(\\d+)"  => [undefined, undefined, "\d+", undefined]
+      '(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?'
+    ].join('|'), 'g');
+
+    /**
+     * Parse a string for the raw tokens.
+     *
+     * @param  {string}  str
+     * @param  {Object=} options
+     * @return {!Array}
+     */
+    function parse$3 (str, options) {
+      var tokens = [];
+      var key = 0;
+      var index = 0;
+      var path = '';
+      var defaultDelimiter = (options && options.delimiter) || DEFAULT_DELIMITER$1;
+      var whitelist = (options && options.whitelist) || undefined;
+      var pathEscaped = false;
+      var res;
+
+      while ((res = PATH_REGEXP$2.exec(str)) !== null) {
+        var m = res[0];
+        var escaped = res[1];
+        var offset = res.index;
+        path += str.slice(index, offset);
+        index = offset + m.length;
+
+        // Ignore already escaped sequences.
+        if (escaped) {
+          path += escaped[1];
+          pathEscaped = true;
+          continue
+        }
+
+        var prev = '';
+        var name = res[2];
+        var capture = res[3];
+        var group = res[4];
+        var modifier = res[5];
+
+        if (!pathEscaped && path.length) {
+          var k = path.length - 1;
+          var c = path[k];
+          var matches = whitelist ? whitelist.indexOf(c) > -1 : true;
+
+          if (matches) {
+            prev = c;
+            path = path.slice(0, k);
+          }
+        }
+
+        // Push the current path onto the tokens.
+        if (path) {
+          tokens.push(path);
+          path = '';
+          pathEscaped = false;
+        }
+
+        var repeat = modifier === '+' || modifier === '*';
+        var optional = modifier === '?' || modifier === '*';
+        var pattern = capture || group;
+        var delimiter = prev || defaultDelimiter;
+
+        tokens.push({
+          name: name || key++,
+          prefix: prev,
+          delimiter: delimiter,
+          optional: optional,
+          repeat: repeat,
+          pattern: pattern
+            ? escapeGroup$2(pattern)
+            : '[^' + escapeString$2(delimiter === defaultDelimiter ? delimiter : (delimiter + defaultDelimiter)) + ']+?'
+        });
+      }
+
+      // Push any remaining characters.
+      if (path || index < str.length) {
+        tokens.push(path + str.substr(index));
+      }
+
+      return tokens
+    }
+
+    /**
+     * Compile a string to a template function for the path.
+     *
+     * @param  {string}             str
+     * @param  {Object=}            options
+     * @return {!function(Object=, Object=)}
+     */
+    function compile$2 (str, options) {
+      return tokensToFunction$2(parse$3(str, options), options)
+    }
+
+    /**
+     * Expose a method for transforming tokens into the path function.
+     */
+    function tokensToFunction$2 (tokens, options) {
+      // Compile all the tokens into regexps.
+      var matches = new Array(tokens.length);
+
+      // Compile all the patterns before compilation.
+      for (var i = 0; i < tokens.length; i++) {
+        if (typeof tokens[i] === 'object') {
+          matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$', flags$2(options));
+        }
+      }
+
+      return function (data, options) {
+        var path = '';
+        var encode = (options && options.encode) || encodeURIComponent;
+        var validate = options ? options.validate !== false : true;
+
+        for (var i = 0; i < tokens.length; i++) {
+          var token = tokens[i];
+
+          if (typeof token === 'string') {
+            path += token;
+            continue
+          }
+
+          var value = data ? data[token.name] : undefined;
+          var segment;
+
+          if (Array.isArray(value)) {
+            if (!token.repeat) {
+              throw new TypeError('Expected "' + token.name + '" to not repeat, but got array')
+            }
+
+            if (value.length === 0) {
+              if (token.optional) continue
+
+              throw new TypeError('Expected "' + token.name + '" to not be empty')
+            }
+
+            for (var j = 0; j < value.length; j++) {
+              segment = encode(value[j], token);
+
+              if (validate && !matches[i].test(segment)) {
+                throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '"')
+              }
+
+              path += (j === 0 ? token.prefix : token.delimiter) + segment;
+            }
+
+            continue
+          }
+
+          if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+            segment = encode(String(value), token);
+
+            if (validate && !matches[i].test(segment)) {
+              throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but got "' + segment + '"')
+            }
+
+            path += token.prefix + segment;
+            continue
+          }
+
+          if (token.optional) continue
+
+          throw new TypeError('Expected "' + token.name + '" to be ' + (token.repeat ? 'an array' : 'a string'))
+        }
+
+        return path
+      }
+    }
+
+    /**
+     * Escape a regular expression string.
+     *
+     * @param  {string} str
+     * @return {string}
+     */
+    function escapeString$2 (str) {
+      return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1')
+    }
+
+    /**
+     * Escape the capturing group by escaping special characters and meaning.
+     *
+     * @param  {string} group
+     * @return {string}
+     */
+    function escapeGroup$2 (group) {
+      return group.replace(/([=!:$/()])/g, '\\$1')
+    }
+
+    /**
+     * Get the flags for a regexp from the options.
+     *
+     * @param  {Object} options
+     * @return {string}
+     */
+    function flags$2 (options) {
+      return options && options.sensitive ? '' : 'i'
+    }
+
+    var cacheKeyPrefix = 'exp@';
+    var cacheKeySuffix = ';';
+    function getNSKey(namespace, key) {
+        return "" + namespace + cacheKeySuffix + key;
+    }
+    function getKeyElements(cacheKey) {
+        var _a = cacheKey.split(cacheKeyPrefix), timeoutSuffixKey = _a[1];
+        var _b = timeoutSuffixKey.split(cacheKeySuffix), timeout = _b[0], key = _b[1];
+        return { timeout: timeout, key: key };
+    }
+    function getExpKey(key, timeout) {
+        return "" + cacheKeyPrefix + (new Date().valueOf() + timeout) + cacheKeySuffix + key;
+    }
+    function removeKeys(namespace, keys) {
+        keys.forEach(function (key) {
+            var nsKey = getNSKey(namespace, key);
+            var nsStore = store2.namespace(nsKey);
+            nsStore.clearAll();
+        });
+    }
+    function getFromCacheStore(namespace, key) {
+        var nsKey = getNSKey(namespace, key);
+        var nsStore = store2.namespace(nsKey);
+        var keyArray = nsStore.keys();
+        var cacheKey = (keyArray.length) ? keyArray[0] : undefined;
+        if (cacheKey) {
+            // @ts-ignore
+            var timeoutData = getKeyElements(cacheKey);
+            var currentTime = new Date().valueOf();
+            if (Number(timeoutData.timeout) < currentTime) {
+                nsStore.remove(cacheKey);
+                return undefined;
+            }
+            else {
+                return nsStore.get(cacheKey);
+            }
+        }
+        else
+            return undefined;
+    }
+    function setCacheStore(namespace, key, value, timeout) {
+        var nsKey = getNSKey(namespace, key);
+        var nsStore = store2.namespace(nsKey);
+        var keyArray = nsStore.keys();
+        var cacheKey = (keyArray.length) ? keyArray[0] : getExpKey(key, timeout);
+        nsStore.set(cacheKey, value, true);
+    }
+    function getPath(path, options) {
+        path = "" + path + (path.includes('?') ? '&' : '?') + qs.stringify(JSON.parse(options.body));
+        options.body = undefined;
+        delete options.body;
+        return { path: path, options: options };
+    }
+    function fetchJSON$1(path, options) {
+        if (options === void 0) { options = {}; }
+        return __awaiter(this, void 0, void 0, function () {
+            var userAccessToken, getPathBody, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        userAccessToken = (this.props.user.token) ? (_a = {},
+                            // @ts-ignore
+                            _a[this.settings.accessTokenProperty] = this.props.user.token,
+                            _a) : {};
+                        options.headers = __assign(__assign(__assign(__assign({}, options.headers), this.settings.fetchHeaders), this.props.user.fetchHeaders), userAccessToken);
+                        if (options.method === 'GET' && options.body) {
+                            getPathBody = getPath(path, options);
+                            path = getPathBody.path;
+                            options = getPathBody.options;
+                        }
+                        if (!(options.method === 'socket')) return [3 /*break*/, 2];
+                        return [4 /*yield*/, fetchJSONViaSocket.call(this, path, options)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                    case 2: return [4 /*yield*/, fetch(path, options)];
+                    case 3:
+                        response = _b.sent();
+                        if (typeof response.ok === 'boolean' && !response.ok)
+                            throw new Error(response.status + ": " + response.statusText);
+                        else if (response.status < 200 || response.status >= 300)
+                            throw new Error(response.status + ": " + response.statusText);
+                        return [4 /*yield*/, response.json()];
+                    case 4: return [2 /*return*/, _b.sent()];
+                }
+            });
+        });
+    }
+    function fetchJSONViaSocket(path, options) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                try {
+                    // @ts-ignore
+                    this.props.socket.emit(path, options, function (successData) {
+                        return successData;
+                    });
+                }
+                catch (e) {
+                    throw e;
+                }
+                return [2 /*return*/];
+            });
+        });
+    }
+    function fetchResources(_a) {
+        var _b = _a.resources, resources = _b === void 0 ? {} : _b, _c = _a.templateRoute, templateRoute = _c === void 0 ? {} : _c;
+        return __awaiter(this, void 0, void 0, function () {
+            var results, resourceProperties, context;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        results = {};
+                        resourceProperties = Object.keys(resources);
+                        context = this;
+                        if (!resourceProperties.length) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Promise.all(resourceProperties.map(function (prop) {
+                                return (function (prop) {
+                                    return __awaiter(this, void 0, void 0, function () {
+                                        var resource, fetchPath, toPath, fetchURL, fetchOptions, _a, _b;
+                                        return __generator(this, function (_c) {
+                                            switch (_c.label) {
+                                                case 0:
+                                                    resource = resources[prop];
+                                                    fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
+                                                    toPath = compile_1$2(fetchPath);
+                                                    fetchURL = 
+                                                    // @ts-ignore
+                                                    toPath(templateRoute.params) + window.location.search;
+                                                    fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
+                                                    // @ts-ignore
+                                                    _a = results;
+                                                    _b = prop;
+                                                    return [4 /*yield*/, fetchJSON$1.call(context, fetchURL, fetchOptions)];
+                                                case 1:
+                                                    // @ts-ignore
+                                                    _a[_b] = _c.sent();
+                                                    return [2 /*return*/, true];
+                                            }
+                                        });
+                                    });
+                                })(prop);
+                            }))];
+                    case 1:
+                        _d.sent();
+                        _d.label = 2;
+                    case 2: return [2 /*return*/, results];
+                }
+            });
+        });
+    }
+
     // @ts-ignore
-    window.store = store2;
+    function setHTMLElementClass(_a) {
+        var element = _a.element, className = _a.className;
+        if (element.classList && element.classList.add) {
+            element.classList.add(className);
+        }
+        else if (element.className) {
+            element.className = element.className += className;
+        }
+        // if(window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf('Trident') !== -1) {
+        //   document.body.style.zoom = 1;
+        // }
+    }
+    function setBodyPathnameId(pathname) {
+        if (document && document.body && document.body.setAttribute) {
+            document.body.setAttribute('id', encodeURIComponent(pathname).replace(new RegExp(/%2F|%2/, 'g'), '_'));
+        }
+    }
     // @ts-ignore
-    // await import('store2/src/store.cache');
+    function insertJavaScript(_a) {
+        var src = _a.src, name = _a.name, _b = _a.async, async = _b === void 0 ? true : _b, onload = _a.onload;
+        (function (d, s, id) {
+            var tagId = "viewx-script-" + id;
+            if (d.getElementById(id))
+                return;
+            var s0 = d.getElementsByTagName(s)[0];
+            var j = d.createElement(s);
+            // @ts-ignore
+            j.async = async;
+            j.id = tagId;
+            // @ts-ignore
+            j.type = "text/javascript";
+            // @ts-ignore
+            j.src = src;
+            j.onload = onload;
+            // @ts-ignore
+            if (s0)
+                s0.parentNode.insertBefore(j, s0);
+            else
+                document.head.prepend(j);
+        })(document || window.document, "script", name);
+    }
+    // @ts-ignore
+    function insertStyleSheet(_a) {
+        var src = _a.src, name = _a.name, onload = _a.onload;
+        (function (d, l, id) {
+            var tagId = "viewx-style-" + id;
+            if (d.getElementById(id))
+                return;
+            var s0 = d.getElementsByTagName(l)[0];
+            var ss = d.createElement(l);
+            ss.id = tagId;
+            // @ts-ignore
+            ss.rel = "stylesheet";
+            // @ts-ignore
+            ss.type = "text/css";
+            // @ts-ignore
+            ss.href = src;
+            ss.onload = onload;
+            // @ts-ignore
+            if (s0)
+                s0.parentNode.insertBefore(ss, s0);
+            else
+                document.head.prepend(ss);
+        })(document || window.document, "link", name);
+    }
+    // @ts-ignore
+    function createLayer(_a) {
+        var layer = _a.layer, app = _a.app;
+        var name = layer.name, type = layer.type, order = layer.order;
+        var selector = "#" + name;
+        var layerDOM = document.querySelector(selector);
+        if (!layerDOM) {
+            var domEl = document.createElement("div");
+            domEl.setAttribute("id", name);
+            document.body.appendChild(domEl);
+            domEl.style.zIndex = order;
+            layerDOM = domEl;
+        }
+        if (type === "applicationRoot") {
+            reactDom.render(app, layerDOM);
+        }
+    }
+    // @ts-ignore
+    function getElementSelector(_a) {
+        var tagName = _a.tagName, _b = _a.attributes, attributes = _b === void 0 ? {} : _b;
+        return "" + tagName + Object.keys(attributes)
+            // @ts-ignore
+            .map(function (attr) { return "[" + attr + "=\"" + attributes[attr] + "\"]"; })
+            .join();
+    }
+    function setPageAttributes(_a) {
+        var _b = _a.pageData, pageData = _b === void 0 ? [] : _b;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_c) {
+                pageData.forEach(function (pageDatum) {
+                    var attributes = pageDatum.attributes, tagName = pageDatum.tagName, innerHTML = pageDatum.innerHTML;
+                    var selector = getElementSelector(pageDatum);
+                    var el = document.querySelector(selector);
+                    var element = el || document.createElement(tagName);
+                    // if(!el) el.setAttribute()
+                    if (innerHTML)
+                        element.innerHTML = innerHTML;
+                    Object.keys(attributes).forEach(function (attr) {
+                        element.setAttribute(attr, attributes[attr]);
+                    });
+                    if (!el)
+                        document.head.appendChild(element);
+                });
+                return [2 /*return*/];
+            });
+        });
+    }
+
+    var routes = createCommonjsModule(function (module, exports) {
+    !function(e){module.exports=e();}(function(){return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof commonjsRequire=="function"&&commonjsRequire;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r);}return n[o].exports}var i=typeof commonjsRequire=="function"&&commonjsRequire;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+
+
+    /**
+     * Convert path to route object
+     *
+     * A string or RegExp should be passed,
+     * will return { re, src, keys} obj
+     *
+     * @param  {String / RegExp} path
+     * @return {Object}
+     */
+
+    var Route = function(path){
+      //using 'new' is optional
+
+      var src, re, keys = [];
+
+      if(path instanceof RegExp){
+        re = path;
+        src = path.toString();
+      }else{
+        re = pathToRegExp(path, keys);
+        src = path;
+      }
+
+      return {
+      	 re: re,
+      	 src: path.toString(),
+      	 keys: keys
+      }
+    };
+
+    /**
+     * Normalize the given path string,
+     * returning a regular expression.
+     *
+     * An empty array should be passed,
+     * which will contain the placeholder
+     * key names. For example "/user/:id" will
+     * then contain ["id"].
+     *
+     * @param  {String} path
+     * @param  {Array} keys
+     * @return {RegExp}
+     */
+    var pathToRegExp = function (path, keys) {
+    	path = path
+    		.concat('/?')
+    		.replace(/\/\(/g, '(?:/')
+    		.replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?|\*/g, function(_, slash, format, key, capture, optional){
+    			if (_ === "*"){
+    				keys.push(undefined);
+    				return _;
+    			}
+
+    			keys.push(key);
+    			slash = slash || '';
+    			return ''
+    				+ (optional ? '' : slash)
+    				+ '(?:'
+    				+ (optional ? slash : '')
+    				+ (format || '') + (capture || '([^/]+?)') + ')'
+    				+ (optional || '');
+    		})
+    		.replace(/([\/.])/g, '\\$1')
+    		.replace(/\*/g, '(.*)');
+    	return new RegExp('^' + path + '$', 'i');
+    };
+
+    /**
+     * Attempt to match the given request to
+     * one of the routes. When successful
+     * a  {fn, params, splats} obj is returned
+     *
+     * @param  {Array} routes
+     * @param  {String} uri
+     * @return {Object}
+     */
+    var match = function (routes, uri, startAt) {
+    	var captures, i = startAt || 0;
+
+    	for (var len = routes.length; i < len; ++i) {
+    		var route = routes[i],
+    		    re = route.re,
+    		    keys = route.keys,
+    		    splats = [],
+    		    params = {};
+
+    		if (captures = uri.match(re)) {
+    			for (var j = 1, len = captures.length; j < len; ++j) {
+    				var key = keys[j-1],
+    					val = typeof captures[j] === 'string'
+    						? unescape(captures[j])
+    						: captures[j];
+    				if (key) {
+    					params[key] = val;
+    				} else {
+    					splats.push(val);
+    				}
+    			}
+    			return {
+    				params: params,
+    				splats: splats,
+    				route: route.src,
+    				next: i + 1
+    			};
+    		}
+    	}
+    };
+
+    /**
+     * Default "normal" router constructor.
+     * accepts path, fn tuples via addRoute
+     * returns {fn, params, splats, route}
+     *  via match
+     *
+     * @return {Object}
+     */
+
+    var Router = function(){
+      //using 'new' is optional
+      return {
+        routes: [],
+        routeMap : {},
+        addRoute: function(path, fn){
+          if (!path) throw new Error(' route requires a path');
+          if (!fn) throw new Error(' route ' + path.toString() + ' requires a callback');
+
+          if (this.routeMap[path]) {
+            throw new Error('path is already defined: ' + path);
+          }
+
+          var route = Route(path);
+          route.fn = fn;
+
+          this.routes.push(route);
+          this.routeMap[path] = fn;
+        },
+
+        removeRoute: function(path) {
+          if (!path) throw new Error(' route requires a path');
+          if (!this.routeMap[path]) {
+            throw new Error('path does not exist: ' + path);
+          }
+          var newRoutes = [];
+
+          // copy the routes excluding the route being removed
+          for (var i = 0; i < this.routes.length; i++) {
+            var route = this.routes[i];
+            if (route.src !== path) {
+              newRoutes.push(route);
+            }
+          }
+          this.routes = newRoutes;
+          delete this.routeMap[path];
+        },
+
+        match: function(pathname, startAt){
+          var route = match(this.routes, pathname, startAt);
+          if(route){
+            route.fn = this.routeMap[route.route];
+            route.next = this.match.bind(this, pathname, route.next);
+          }
+          return route;
+        }
+      }
+    };
+
+    Router.Route = Route;
+    Router.pathToRegExp = pathToRegExp;
+    Router.match = match;
+    // back compat
+    Router.Router = Router;
+
+    module.exports = Router;
+
+    },{}]},{},[1])
+    (1)
+    });
+    });
+
+    const Router$1 = routes;
+
+    /**
+     * Catches all events on event emitter passed to the function
+     * @param {Event Emitter} emitter - websocket/socket.io(client/server)/event emitter to intercept all incoming events
+     * @param {Function} handler - socket.io like middleware (calls handler with packet and next) 
+     */
+    function patchEmitter(emitter, handler) {
+      emitter._onevent = emitter.onevent;
+      const next = () => { };
+      // Replace the onevent function with a handler that captures all messages
+      emitter.onevent = function (packet) {
+        handler(packet.data, next);
+        // DO NOT USE https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+        // emitter._onevent.apply(emitter, Array.prototype.slice.call(arguments));
+        const args = new Array(arguments.length);
+        for(var i = 0; i < args.length; ++i) {
+          args[i] = arguments[i];
+        }
+        emitter._onevent.apply(emitter, args);
+      };
+    }
+
+    /**
+     * Returns socket.io like middleware function to handle incoming events based on their path
+     * @param {Event emitter} options.socket - websocket/socket.io(client/server)/event emitter
+     * @param {object} options.router - routes object 
+     * @see https://www.npmjs.com/package/routes
+     * @return {function} router handler middleware function
+     */
+    function routerMiddleware({ socket, router,  }) {
+      return function routeHandler(packet, next) {
+        // console.log({ packet, socket });
+        const [path, body,] = packet;
+        const match = router.match(path);
+        const req = { path, body, socket, };
+        let cb = (data) => data;
+        const res = {
+          send(data) {
+            try {
+              socket.emit(path, cb(data));
+              cb = null;
+            } catch (e) {
+              socket.emit('error', new Error('Response already sent'));
+            }
+          },
+        };
+        if (match) {
+          req.params = match.params;
+          req.splats = match.splats;
+          match.fn(req, res, match);
+        }
+        next();
+      };
+    }
+
+    /**
+     * Responds to events based on their route and a router
+     * @param {Event emitter} options.socket - websocket/socket.io(client/server)/event emitter
+     * @param {object} options.router - routes object 
+     * @see https://www.npmjs.com/package/routes
+     */
+    function EventRouter({ socket, router,  }) {
+      if (socket.use) {
+        socket.use(routerMiddleware({ socket, router,  }));
+      } else {
+        patchEmitter(socket, routerMiddleware({ socket, router,  }));
+      }
+    }
+
+    var once = false;
+    function initSockets(settings) {
+        var _this = this;
+        if (settings === void 0) { settings = {}; }
+        // @ts-ignore
+        var useWebSocketsAuth = settings.useWebSocketsAuth, socket_server_options = settings.socket_server_options, socket_server = settings.socket_server, socket_disconnect_message = settings.socket_disconnect_message;
+        // console.debug('CALLING initSockets');
+        // @ts-ignore
+        var createNotification = this.viewx.Functions.log;
+        // @ts-ignore
+        var getSocketFunction = function (_a) {
+            var propFunc = _a.propFunc;
+            return getFunctionFromNameString({
+                // @ts-ignore
+                Functions: _this.viewx.Functions,
+                // @ts-ignore
+                functionContext: _this,
+                functionName: propFunc
+            });
+        };
+        var router = new Router$1();
+        router.addRoute('*', function (req) {
+            var propFunc = req.body.function || req.path;
+            var props = req.body && req.body.props && Array.isArray(req.body.props)
+                ? req.body.props
+                : [req.body,];
+            // console.debug({ propFunc, props, once, req, });
+            var reduxFunction = getSocketFunction({ propFunc: propFunc, });
+            // @ts-ignore
+            if (reduxFunction)
+                reduxFunction.call.apply(reduxFunction, __spreadArrays([_this], props));
+            // @ts-ignore
+            else
+                _this.viewx.Functions.log({ type: 'error', error: new Error('Invalid Live Update') });
+        });
+        var socketOptions = Object.assign({
+            // transports: [ 'websocket', ],
+            reconnectionAttempts: 10,
+        }, socket_server_options);
+        if (window.io) {
+            var socket_1 = (socket_server)
+                ? window.io(socket_server, socketOptions)
+                : window.io('', socketOptions);
+            // @ts-ignore
+            this.props.dispatch({
+                type: "setSocket",
+                socket: socket_1,
+            });
+            // @ts-ignore
+            this.props.setSocket(socket_1);
+            socket_1.once('connect', function () {
+                EventRouter({ socket: socket_1, router: router, });
+                socket_1.emit('authentication', {
+                    user: useWebSocketsAuth
+                        // @ts-ignore
+                        ? _this.props.user
+                        : false,
+                    reconnection: true,
+                });
+            });
+            // @ts-ignore
+            socket_1.on('error', function (e) { return createNotification({ type: 'error', error: e }); });
+            socket_1.on('connect_error', function (e) { return console.debug(e); });
+            socket_1.on('disconnect', function (reason) {
+                if (once === false && socket_disconnect_message) {
+                    createNotification({
+                        data: "Live Updated Disconnected: " + reason + ". Refresh for live updates",
+                    });
+                    once = true;
+                }
+            });
+            socket_1.on('reconnect', function (attemptNumber) {
+                socket_1.emit('authentication', {
+                    user: useWebSocketsAuth
+                        // @ts-ignore
+                        ? _this.props.user
+                        : false,
+                    reconnection: true,
+                });
+                createNotification({
+                    type: 'info',
+                    data: 'Reconnected to Live',
+                    meta: { attemptNumber: attemptNumber, },
+                });
+            });
+            socket_1.on('reconnecting', function (attemptNumber) {
+                createNotification({
+                    type: 'error',
+                    data: 'reconnecting socket',
+                    meta: { attemptNumber: attemptNumber, },
+                });
+                // console.debug('reconnecting', );
+            });
+            if (useWebSocketsAuth) {
+                // console.debug('REAUTH',this.state.user)
+                socket_1.emit('authentication', {
+                    // @ts-ignore
+                    user: this.props.user,
+                    reconnection: true,
+                });
+            }
+            socket_1.on('authenticated', function () {
+                // use the socket as usual
+                socket_1.emit('/user/createrepl', {
+                    user: useWebSocketsAuth
+                        // @ts-ignore
+                        ? _this.props.user
+                        : false,
+                    reconnection: true,
+                    authSend: 0,
+                });
+            });
+        }
+        //   // this.previousRoute = {};
+    }
+
+    // @ts-ignore
+    function setup(_a) {
+        var settings = _a.settings;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                // @ts-ignore
+                initSockets.call(this, settings);
+                if (settings.useBodyLoadedClass)
+                    setHTMLElementClass({
+                        element: document.body,
+                        className: settings.bodyLoadedClass
+                    });
+                if (settings.useHTMLLoadedClass)
+                    setHTMLElementClass({
+                        element: document.querySelector("html"),
+                        className: settings.htmlLoadedClass
+                    });
+                return [2 /*return*/];
+            });
+        });
+    }
+    // @ts-ignore
+    function loadTemplates(_a) {
+        var 
+        // @ts-ignore
+        config = _a.config, 
+        // @ts-ignore
+        viewxTemplates = _a.viewxTemplates, 
+        // @ts-ignore
+        templates = _a.templates, 
+        // @ts-ignore
+        setTemplates = _a.setTemplates, 
+        // @ts-ignore
+        setUI = _a.setUI, 
+        // @ts-ignore
+        ui = _a.ui, 
+        // @ts-ignore
+        layers = _a.layers, 
+        // @ts-ignore
+        Functions = _a.Functions, 
+        // @ts-ignore
+        functionContext = _a.functionContext;
+        return __awaiter(this, void 0, void 0, function () {
+            var fetchFunction, loadedTemplates, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        fetchFunction = (Functions.fetchJSON || fetchJSON$1).bind(functionContext);
+                        if (!(config.settings.hasPreloadedTemplates)) return [3 /*break*/, 1];
+                        _b = {};
+                        return [3 /*break*/, 3];
+                    case 1: return [4 /*yield*/, fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions)];
+                    case 2:
+                        _b = _c.sent();
+                        _c.label = 3;
+                    case 3:
+                        loadedTemplates = _b;
+                        // @ts-ignore
+                        viewxTemplates = layers.reduce(function (result, layer) {
+                            var name = layer.name;
+                            result[name] = __assign(__assign({}, loadedTemplates[name]), templates[name]);
+                            return result;
+                        }, {});
+                        setTemplates(viewxTemplates);
+                        setUI(__assign(__assign({}, ui), { hasLoadedInitialProcess: true }));
+                        return [2 /*return*/, {
+                                viewxTemplates: viewxTemplates
+                            }];
+                }
+            });
+        });
+    }
+    // @ts-ignore
+    function getTemplateRouteLayer(_a) {
+        var viewxTemplates = _a.viewxTemplates, pathname = _a.pathname;
+        var hasOverlayLayer = false;
+        // @ts-ignore
+        return function (layer) {
+            var _a;
+            var vxtObject;
+            var name = layer.name, type = layer.type;
+            var templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
+                return_matching_keys: true
+            });
+            if (type === "overlay" && templateRoute)
+                hasOverlayLayer = true;
+            if (!templateRoute &&
+                viewxTemplates[name].__error_404 &&
+                !hasOverlayLayer) {
+                vxtObject = viewxTemplates[name].__error_404;
+            }
+            else if (templateRoute) {
+                vxtObject = viewxTemplates[name][templateRoute.route];
+            }
+            if (vxtObject) {
+                return {
+                    name: name,
+                    type: type,
+                    vxtObject: vxtObject,
+                    templateRoute: templateRoute,
+                    ui: (_a = {},
+                        _a["isRouteLayer_" + name + "_Matched"] = true,
+                        _a),
+                    hasOverlayLayer: hasOverlayLayer
+                };
+            }
+            else
+                return undefined;
+        };
+    }
+    function loadRoute(_a) {
+        var 
+        // @ts-ignore
+        ui = _a.ui, 
+        // @ts-ignore
+        viewxTemplates = _a.viewxTemplates, 
+        // @ts-ignore
+        pathname = _a.pathname, 
+        // @ts-ignore
+        dispatcher = _a.dispatcher, 
+        // @ts-ignore
+        layers = _a.layers, 
+        // @ts-ignore
+        Functions = _a.Functions, 
+        // @ts-ignore
+        functionContext = _a.functionContext, 
+        // @ts-ignore
+        _b = _a.resourceprops, 
+        // @ts-ignore
+        resourceprops = _b === void 0 ? {} : _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var applicationRootName, fetchResourcesFunction_1, templateRouteLayers_1, preFunctions, templateViewPromises, templateViewData, action, e_1;
+            var _c, _d;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0:
+                        applicationRootName = "root";
+                        _e.label = 1;
+                    case 1:
+                        _e.trys.push([1, 4, , 5]);
+                        fetchResourcesFunction_1 = Functions.fetchResources || fetchResources;
+                        templateRouteLayers_1 = layers
+                            .map(getTemplateRouteLayer({
+                            viewxTemplates: viewxTemplates,
+                            pathname: pathname
+                        }))
+                            // @ts-ignore
+                            .filter(function (layer) { return layer; });
+                        return [4 /*yield*/, invokeWebhooks({
+                                Functions: Functions,
+                                functionContext: functionContext,
+                                property: "preRenderFunctions",
+                                templateRouteLayers: templateRouteLayers_1
+                            })];
+                    case 2:
+                        preFunctions = _e.sent();
+                        // @ts-ignore
+                        if (shortCircutPromiseArray(preFunctions, "preRenderFunctions"))
+                            return [2 /*return*/, false];
+                        templateViewPromises = templateRouteLayers_1.map(function (templateRouteLayer) {
+                            return fetchResourcesFunction_1.call(functionContext, {
+                                resources: templateRouteLayer.vxtObject.resources,
+                                templateRoute: templateRouteLayer.templateRoute
+                            });
+                        });
+                        return [4 /*yield*/, Promise.all(templateViewPromises)];
+                    case 3:
+                        templateViewData = _e.sent();
+                        action = templateViewData.reduce(function (result, templateViewDatum, i) {
+                            var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer;
+                            if (hasOverlayLayer)
+                                result.ui.hasOverlayLayer = true;
+                            if (type === "applicationRoot") {
+                                applicationRootName = name;
+                            }
+                            setPageAttributes(vxtObject);
+                            // @ts-ignore
+                            result.view[name] = vxtObject;
+                            // @ts-ignore
+                            result.viewdata[name] = __assign(__assign({}, templateViewDatum), resourceprops);
+                            // @ts-ignore
+                            result.ui = __assign(__assign({}, result.ui), ui);
+                            // result
+                            return result;
+                        }, {
+                            type: "setView",
+                            view: {},
+                            viewdata: {},
+                            ui: __assign(__assign({}, ui), { hasOverlayLayer: false })
+                        });
+                        dispatcher(action);
+                        invokeWebhooks({
+                            Functions: Functions,
+                            functionContext: functionContext,
+                            templateViewData: templateViewData,
+                            property: "postRenderFunctions",
+                            templateRouteLayers: templateRouteLayers_1
+                        });
+                        return [2 /*return*/, action];
+                    case 4:
+                        e_1 = _e.sent();
+                        Functions.log({ type: "error", error: e_1 });
+                        dispatcher({
+                            type: "setView",
+                            view: (_c = {},
+                                _c[applicationRootName] = viewxTemplates[applicationRootName].__error_500,
+                                _c),
+                            viewdata: (_d = {},
+                                _d[applicationRootName] = {
+                                    error: e_1
+                                },
+                                _d)
+                        });
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    // @ts-ignore
+    function shortCircutPromiseArray(promiseArrayResult, name) {
+        // @ts-ignore
+        var results = promiseArrayResult.map(
+        // @ts-ignore
+        function (arrayResult) { return arrayResult[Object.keys(arrayResult)[0]]; });
+        //  // @ts-ignore
+        //  console.log({ promiseArrayResult,results }, ' promiseArrayResult.filter(result => !result).length', promiseArrayResult.filter(result => !result).length);
+        // @ts-ignore
+        if (promiseArrayResult.length &&
+            // @ts-ignore
+            results.filter(function (result) { return result === false; }).length) {
+            // return true;
+            throw new Error("There was an error processing: " + name + ". [" + JSON.stringify(promiseArrayResult, null, 2) + "]");
+        }
+        else if (promiseArrayResult.length &&
+            // @ts-ignore
+            results.filter(function (result) { return result === undefined; }).length) {
+            return true;
+        }
+        else
+            return false;
+    }
+    // @ts-ignore
+    function invokeWebhooks(_a) {
+        var 
+        // @ts-ignore
+        Functions = _a.Functions, 
+        // @ts-ignore
+        functionContext = _a.functionContext, 
+        // @ts-ignore
+        templateViewData = _a.templateViewData, 
+        // @ts-ignore
+        _b = _a.property, 
+        // @ts-ignore
+        property = _b === void 0 ? "preRenderFunctions" : _b, 
+        // @ts-ignore
+        templateRouteLayers = _a.templateRouteLayers;
+        return __awaiter(this, void 0, void 0, function () {
+            var promises, promiseNames, results;
+            var _this = this;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        promises = [];
+                        promiseNames = [];
+                        // @ts-ignore
+                        templateRouteLayers.forEach(function (templateRouteLayer) { return __awaiter(_this, void 0, void 0, function () {
+                            var functionNames, funcs;
+                            return __generator(this, function (_a) {
+                                functionNames = templateRouteLayer.vxtObject[property] || [];
+                                funcs = functionNames.map(function (functionName) {
+                                    return getFunctionFromNameString({
+                                        Functions: Functions,
+                                        functionContext: functionContext,
+                                        functionName: functionName
+                                    })(templateViewData);
+                                });
+                                promiseNames.push.apply(promiseNames, functionNames);
+                                promises.push.apply(promises, funcs);
+                                return [2 /*return*/];
+                            });
+                        }); });
+                        return [4 /*yield*/, promiseSeries(
+                            // @ts-ignore
+                            promises.map(function (func) { return function () { return enforcePromise(func); }; }))];
+                    case 1:
+                        results = _c.sent();
+                        // @ts-ignore
+                        return [2 /*return*/, results.map(function (result, i) {
+                                var _a;
+                                return (_a = {},
+                                    // @ts-ignore
+                                    _a[promiseNames[i]] = result,
+                                    _a);
+                            })];
+                }
+            });
+        });
+    }
+    // @ts-ignore
+    function enforcePromise(val) {
+        return val instanceof Promise ? val : Promise.resolve(val);
+    }
+    // @ts-ignore
+    function promiseSeries(providers) {
+        var ret = Promise.resolve(null);
+        // @ts-ignore
+        var results = [];
+        // @ts-ignore
+        return (providers
+            // @ts-ignore
+            .reduce(function (result, provider, index) {
+            return result.then(function () {
+                // @ts-ignore
+                return provider().then(function (val) {
+                    results[index] = val;
+                });
+            });
+        }, ret)
+            .then(function () {
+            // @ts-ignore
+            return results;
+        }));
+    }
+    // @ts-ignore
+    function getFunctionFromNameString(_a) {
+        var 
+        // @ts-ignore
+        Functions = _a.Functions, 
+        // @ts-ignore
+        functionContext = _a.functionContext, 
+        // @ts-ignore
+        functionName = _a.functionName;
+        var func;
+        try {
+            if (typeof functionName === "string") {
+                var name = getDynamicFunctionName(functionName);
+                if (functionName.includes("func:this.props") &&
+                    typeof functionContext.props[name] === "function") {
+                    func = functionContext.props[name].bind(functionContext);
+                }
+                else if (functionName.includes("func:viewx.Functions") &&
+                    typeof Functions[name] === "function") {
+                    func = Functions[name].bind(functionContext);
+                }
+                else if (functionName.includes("func:window") &&
+                    typeof window[name] === "function") {
+                    // @ts-ignore
+                    func = window[name].bind(functionContext);
+                }
+            }
+            if (func)
+                return func;
+            else
+                return function () {
+                    console.warn("Invalid Function Name: " + functionName);
+                };
+        }
+        catch (e) {
+            return function () {
+                console.error("Invalid Function", e);
+            };
+        }
+    }
+    //func:this.props.login, func:window.alert, func:viewx.Functions.logout
+    var FUNCTION_NAME_REGEXP = /func:(?:this\.props|window|viewx)(?:\.Functions)?\.(\D.+)*/;
+    // @ts-ignore
+    function getDynamicFunctionName(function_name) {
+        return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
+    }
+
+    // @ts-ignore
+    function bindFunctionContext(_a) {
+        var Functions = _a.Functions, functionContext = _a.functionContext;
+        // @ts-ignore
+        Functions.fetchJSON = fetchJSON$1.bind(functionContext);
+        // @ts-ignore
+        Functions.loadUser = Functions.loadUser.bind(functionContext);
+        // @ts-ignore
+        Functions.loginUser = Functions.loginUser.bind(functionContext);
+        // @ts-ignore
+        Functions.getUserProfile = Functions.getUserProfile.bind(functionContext);
+        // @ts-ignore
+        Functions.validateMFA = Functions.validateMFA.bind(functionContext);
+        // @ts-ignore
+        Functions.logoutUser = Functions.logoutUser.bind(functionContext);
+    }
+    function getMainComponent(options) {
+        if (options === void 0) { options = {
+            application: { state: {} },
+            config: {
+                Functions: {},
+                componentLibraries: {},
+                reactComponents: {},
+                layers: [],
+                settings: { debug: true, setBodyPathnameID: true }
+            }
+        }; }
+        // @ts-ignore
+        var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config;
+        var Functions = config.Functions, settings = config.settings;
+        // @ts-ignore
+        var dispatcher = function (action) { return dispatch(action); };
+        // @ts-ignore
+        function Main(appProps) {
+            var _a = useGlobalState("templates"), templates = _a[0], setTemplates = _a[1];
+            var views = useGlobalState("views")[0];
+            var user = useGlobalState("user")[0];
+            var viewdata = useGlobalState("viewdata")[0];
+            var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
+            var _c = react_9(options.application.state), state = _c[0], setState = _c[1];
+            var pathname = appProps.location.pathname;
+            var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui, user: user, setUI: setUI, setTemplates: setTemplates, }, appProps);
+            var functionContext = { props: props, state: state, setState: setState, settings: settings, viewx: { Functions: Functions, settings: settings, }, };
+            var loadView = react_14(function () {
+                // @ts-ignore
+                return function _loadView(_a) {
+                    var _b, _c;
+                    var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
+                    var loadViewPathname = pathname || "_loadView_" + layerName;
+                    return loadRoute({
+                        ui: ui,
+                        viewxTemplates: __assign(__assign({}, templates), (_b = {}, _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)), _b)),
+                        pathname: loadViewPathname,
+                        dispatcher: dispatcher,
+                        // @ts-ignore
+                        layers: config.layers.filter(function (layer) { return layer.name === layerName; }),
+                        Functions: Functions,
+                        resourceprops: resourceprops,
+                        functionContext: functionContext
+                    });
+                };
+            }, [templates, functionContext]);
+            // @ts-ignore
+            Functions.loadView = loadView;
+            bindFunctionContext({ Functions: Functions, functionContext: functionContext });
+            var getReactElement$1 = getReactElement.bind({
+                props: props,
+                state: state,
+                setState: setState,
+                viewx: { Functions: Functions, settings: settings, },
+                // state:{counter, setCounter},
+                debug: settings.debug,
+                componentLibraries: Object.assign({}, config.componentLibraries),
+                reactComponents: Object.assign({ Link: Link }, config.reactComponents)
+            });
+            react_10(function () {
+                // @ts-ignore
+                Functions.onLaunch.call(functionContext);
+                // @ts-ignore
+                return function () { return Functions.onShutdown.call(functionContext); };
+            }, []);
+            react_10(function () {
+                var viewxTemplates = templates;
+                // @ts-ignore
+                var action;
+                function initialize() {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var updatedTemplates, e_1;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    // @ts-ignore
+                                    Functions.showLoader.call(functionContext, { ui: ui, setUI: setUI });
+                                    _a.label = 1;
+                                case 1:
+                                    _a.trys.push([1, 6, , 7]);
+                                    // @ts-ignore
+                                    setup.call(functionContext, { settings: settings });
+                                    if (!(ui.hasLoadedInitialProcess === false)) return [3 /*break*/, 4];
+                                    // @ts-ignore
+                                    return [4 /*yield*/, Functions.loadUser.call(functionContext)];
+                                case 2:
+                                    // @ts-ignore
+                                    _a.sent();
+                                    return [4 /*yield*/, loadTemplates({
+                                            config: config,
+                                            viewxTemplates: viewxTemplates,
+                                            templates: templates,
+                                            setTemplates: setTemplates,
+                                            setUI: setUI,
+                                            ui: ui,
+                                            layers: config.layers,
+                                            Functions: Functions,
+                                            functionContext: functionContext
+                                        })];
+                                case 3:
+                                    updatedTemplates = _a.sent();
+                                    viewxTemplates = updatedTemplates.viewxTemplates;
+                                    _a.label = 4;
+                                case 4: return [4 /*yield*/, loadRoute({
+                                        ui: ui,
+                                        viewxTemplates: viewxTemplates,
+                                        pathname: pathname,
+                                        dispatcher: dispatcher,
+                                        layers: config.layers,
+                                        Functions: Functions,
+                                        functionContext: functionContext
+                                    })];
+                                case 5:
+                                    action = _a.sent();
+                                    if (settings.setBodyPathnameID)
+                                        setBodyPathnameId(pathname);
+                                    return [3 /*break*/, 7];
+                                case 6:
+                                    e_1 = _a.sent();
+                                    // @ts-ignore
+                                    Functions.log({ type: "error", error: e_1 });
+                                    return [3 /*break*/, 7];
+                                case 7:
+                                    // @ts-ignore
+                                    Functions.hideLoader.call(functionContext, { ui: action.ui, setUI: setUI });
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                }
+                initialize();
+                //   // return function cleanup(){}
+            }, [pathname /* templates*/]);
+            return (react.createElement(react_5, null, options.config.layers.map(function (layer) {
+                var name = layer.name, type = layer.type;
+                var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
+                // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
+                if (type === "applicationRoot") {
+                    return jsonxChildren;
+                }
+                else {
+                    // @ts-ignore
+                    var el = document.querySelector("#" + name);
+                    // @ts-ignore
+                    return reactDom.createPortal(jsonxChildren, 
+                    // @ts-ignore
+                    el);
+                }
+            })));
+        }
+        return Main;
+    }
+
+    // utility functions
+
+    const isFunction$1 = fn => (typeof fn === 'function');
+
+    const updateValue = (oldValue, newValue) => {
+      if (isFunction$1(newValue)) {
+        return newValue(oldValue);
+      }
+      return newValue;
+    };
+
+    // ref: https://github.com/dai-shi/react-hooks-global-state/issues/5
+    const useUnstableContextWithoutWarning = (Context, observedBits) => {
+      const { ReactCurrentDispatcher } = react_19;
+      const dispatcher = ReactCurrentDispatcher.current;
+      if (!dispatcher) {
+        throw new Error('Hooks can only be called inside the body of a function component. (https://fb.me/react-invalid-hook-call)');
+      }
+      return dispatcher.useContext(Context, observedBits);
+    };
+
+    // core functions
+
+    const EMPTY_OBJECT = {};
+
+    const createGlobalStateCommon = (initialState) => {
+      const keys = Object.keys(initialState);
+      let wholeGlobalState = initialState;
+      let listener = null;
+
+      const calculateChangedBits = (a, b) => {
+        let bits = 0;
+        keys.forEach((k, i) => {
+          if (a[k] !== b[k]) bits |= 1 << i;
+        });
+        return bits;
+      };
+
+      const Context = react_4(EMPTY_OBJECT, calculateChangedBits);
+
+      const GlobalStateProvider = ({ children }) => {
+        const [state, setState] = react_9(initialState);
+        react_10(() => {
+          if (listener) throw new Error('You cannot use <GlobalStateProvider> more than once.');
+          listener = setState;
+          if (state !== initialState) {
+            // probably state was saved by react-hot-loader, so restore it
+            wholeGlobalState = state;
+          } else if (state !== wholeGlobalState) {
+            // wholeGlobalState was updated during initialization
+            setState(wholeGlobalState);
+          }
+          const cleanup = () => {
+            listener = null;
+          };
+          return cleanup;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [initialState]); // trick for react-hot-loader
+        return react_8(Context.Provider, { value: state }, children);
+      };
+
+      const validateName = (name) => {
+        if (!keys.includes(name)) {
+          throw new Error(`'${name}' not found. It must be provided in initialState as a property key.`);
+        }
+      };
+
+      const setGlobalState = (name, update) => {
+        {
+          validateName(name);
+        }
+        wholeGlobalState = {
+          ...wholeGlobalState,
+          [name]: updateValue(wholeGlobalState[name], update),
+        };
+        if (listener) {
+          listener(wholeGlobalState);
+        }
+      };
+
+      const useGlobalState = (name) => {
+        {
+          validateName(name);
+        }
+        const index = keys.indexOf(name);
+        const observedBits = 1 << index;
+        const state = useUnstableContextWithoutWarning(Context, observedBits);
+        if (state === EMPTY_OBJECT) throw new Error('Please use <GlobalStateProvider>');
+        const updater = react_13(u => setGlobalState(name, u), [name]);
+        return [state[name], updater];
+      };
+
+      const getGlobalState = (name) => {
+        {
+          validateName(name);
+        }
+        return wholeGlobalState[name];
+      };
+
+      const getWholeGlobalState = () => wholeGlobalState;
+
+      const setWholeGlobalState = (state) => {
+        wholeGlobalState = state;
+        if (listener) {
+          listener(wholeGlobalState);
+        }
+      };
+
+      return {
+        GlobalStateProvider,
+        setGlobalState,
+        useGlobalState,
+        getGlobalState,
+        getWholeGlobalState,
+        setWholeGlobalState,
+      };
+    };
+
+    const createStore = (reducer, initialState, enhancer) => {
+      if (!initialState) initialState = reducer(undefined, { type: undefined });
+      if (enhancer) return enhancer(createStore)(reducer, initialState);
+      const {
+        GlobalStateProvider,
+        useGlobalState,
+        getWholeGlobalState,
+        setWholeGlobalState,
+      } = createGlobalStateCommon(initialState);
+      const dispatch = (action) => {
+        const oldState = getWholeGlobalState();
+        const newState = reducer(oldState, action);
+        setWholeGlobalState(newState);
+        return action;
+      };
+      return {
+        GlobalStateProvider,
+        useGlobalState,
+        getState: getWholeGlobalState,
+        setState: setWholeGlobalState, // for devtools.js
+        dispatch,
+      };
+    };
+
     function getGlobalStateHooks(options) {
         if (options === void 0) { options = {}; }
         return __awaiter(this, void 0, void 0, function () {
-            var layers, layerOpenState, reducer, initialState, _a, GlobalStateProvider, dispatch, useGlobalState;
+            var settings, layers, layerOpenState, reducer, initialState, _a, GlobalStateProvider, dispatch, useGlobalState;
             return __generator(this, function (_b) {
+                settings = options.config.settings;
                 layers = options.config.layers;
                 layerOpenState = layers.reduce(function (result, layer) {
                     var name = layer.name, type = layer.type;
-                    result["isRouteLayer_" + name + "_Matched"] = type === 'applicationRoot' ? true : false;
+                    result["isRouteLayer_" + name + "_Matched"] =
+                        type === "applicationRoot" ? true : false;
                     return result;
                 }, {});
                 reducer = function (state, action) {
@@ -47039,17 +47845,47 @@ var VXA = (function (exports) {
                                 ui: __assign(__assign({}, state.ui), { isLoading: false })
                             });
                         case "setView":
+                            // console.warn('setting setView', { action },state.ui);
                             return __assign(__assign({}, state), { views: __assign(__assign({}, state.views), action.view), viewdata: __assign(__assign({}, state.viewdata), action.viewdata), ui: __assign(__assign({}, state.ui), action.ui) });
+                        case "setReturnURL":
+                            // console.warn('setting RETURN URL', { action },state.ui);
+                            return __assign(__assign({}, state), { ui: __assign(__assign({}, state.ui), { returnURL: action.returnURL }) });
+                        case "setUser":
+                            if (settings.cacheLoggedInUser || action.rememberMe) {
+                                // @ts-ignore
+                                Object.keys(action.user)
+                                    .filter(function (prop) { return prop !== 'type'; })
+                                    .forEach(function (prop) {
+                                    setCacheStore('user', prop, action.user[prop], settings.cacheUserTimeout);
+                                });
+                            }
+                            return __assign(__assign({}, state), { user: __assign(__assign({}, state.user), action.user) });
+                        case "setSocket":
+                            return __assign(__assign({}, state), { socker: action.socket });
                         default:
-                            if (action.type.includes('toggleMatchedRouteLayer')) {
-                                var _b = action.type.split('_'), layerName = _b[1];
+                            if (action.type.includes("toggleMatchedRouteLayer")) {
+                                var _b = action.type.split("_"), layerName = _b[1];
                                 var uiLayerName = "isRouteLayer_" + layerName + "_Matched";
                                 return __assign(__assign({}, state), { ui: __assign(__assign({}, state.ui), (_a = {}, _a[uiLayerName] = !state.ui[uiLayerName], _a)) });
                             }
                             return state;
                     }
                 };
-                initialState = __assign(__assign({}, options.application.state), { views: __assign({ layout: null }, options.vxaState.views), viewdata: __assign({ layout: null }, options.vxaState.viewdata), templates: __assign({}, options.templates), ui: __assign(__assign({ isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialTemplates: false }, layerOpenState), options.vxaState.ui), user: __assign({ jwt_token: undefined, profile: {}, loggedIn: false }, options.vxaState.user) });
+                initialState = __assign(__assign({}, options.application.state), { views: __assign({ layout: null }, options.vxaState.views), viewdata: __assign({ layout: null }, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'token')
+                            : undefined, tokenData: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'tokenData')
+                            : undefined, expires: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'expires')
+                            : undefined, timeout: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'timeout')
+                            : undefined, profile: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'profile') || {}
+                            : {}, fetchHeaders: {}, loggedIn: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'loggedIn') || false
+                            : false, loggedInMFA: settings.cacheLoggedInUser
+                            ? getFromCacheStore('user', 'loggedInMFA') || false
+                            : false }, options.vxaState.user) });
                 _a = createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
                 return [2 /*return*/, {
                         GlobalStateProvider: GlobalStateProvider,
@@ -47068,7 +47904,6 @@ var VXA = (function (exports) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        console.log('getViewXapp options', options);
                         settings = options.config.settings;
                         return [4 /*yield*/, getGlobalStateHooks(options)];
                     case 1:
@@ -47092,31 +47927,69 @@ var VXA = (function (exports) {
       reactComponents: {},
       querySelector: "#root",
       settings: {
+        name:'VXA-SPA',
+        version:'0.0.1',
         addReactToWindow: true,
         addReactDOMToWindow: true,
         addJSONXToWindow: true,
         debug: true,
         router: 'browser', //hash|memory|broswer,
         cacheTemplatesOffline: false,
+        cacheLoggedInUser: true,
+        cacheUserTimeout: 1000*60*24*30,
         templatePath: undefined,
         templateFetchOptions: {},
         fetchHeaders: {},
         dynamicTemplatePath: undefined,
         dynamicTemplateFetchOptions: {},
-        // useBodyLoadedClass: true,
-        // useHTMLLoadedClass: true,
-        // setBodyPathnameID: true,
+        useBodyLoadedClass: true,
+        useHTMLLoadedClass: true,
+        setBodyPathnameID: true,
+        bodyLoadedClass: '__viewx_body_loaded',
+        htmlLoadedClass: '__viewx_html_loaded',
         uiLoadedClass: '__viewx_ui_loaded',
         uiLoadingClass: '__viewx_ui_loading',
+        useWebSockets: false,
+        useWebSocketsAuth: false,
+        socket_server_options: {},
+        socket_disconnect_message: {},
+        socket_server:undefined,//http://localhost:3000
         accessTokenProperty: 'x-access-token',
+        routes: {
+          user_login: '/auth/user/login',
+          user_login_METHOD: 'POST',
+          user_login_mfa: '/auth/user/mfa',
+          user_login_mfa_METHOD: 'POST',
+          user_profile: '/auth/user/profile',
+          user_profile_METHOD: 'POST',
+          login: '/login',
+          login_mfa: '/login_mfa',
+          logged_in_homepage: '/home',
+          logged_out_homepage: '/',
+        }
       },
       Functions: {
-        debug: function (input) {
+        log ({ type, data, error, meta }){
+          switch (type) {
+            case 'error':
+              console.error(error, { data, meta });
+              break;
+            case 'warning':
+              console.warn(data, { meta });
+              break;
+            case 'info':
+              console.info(data, { meta });
+              break;
+            default:
+              console.log(data, { meta });
+          }
+        },
+        debug (input) {
           console.info('DEBUG', {
             input
           });
         },
-        showLoader: function showLoader({
+        showLoader({
           ui,
           setUI,
         }) {
@@ -47134,24 +48007,188 @@ var VXA = (function (exports) {
             isLoading: true,
           });
         },
-        hideLoader: function hideLoader({
+        hideLoader({
           ui,
           setUI,
         }) {
           const el = document.querySelector('#loading');
           el.style.display = 'none';
-
           setUI({
             ...ui,
             isLoading: false,
           });
         },
+        onPageChange() {
+          
+        },
         onLaunch() {
-          console.warn('default onlaunch');
+          // console.warn('default onlaunch')
         },
         onShutdown() {
-          console.warn('default onshutdown');
-        }
+          // console.warn('default onshutdown')
+        },
+        requireAuth: async function requireAuth() {
+          if (this.props.user.loggedIn === false) {
+            let returnURL;
+            if (this.props.location.pathname !== this.settings.routes.login) {
+              this.props.dispatch({
+                type: "setReturnURL",
+                returnURL: this.props.location.pathname,
+              });
+              returnURL = '?returnURL=' + this.props.location.pathname;
+            }
+            this.props.history.push(this.settings.routes.login+returnURL);
+            return undefined;
+          } else return true;
+        },
+        requireMFA: async function requireMFA() {
+          if (this.props.user.loggedIn === false) this.props.history.push(this.settings.routes.login);
+          else if (this.props.user.loggedInMFA === false && this.props.user.loggedIn) this.props.history.push(this.settings.routes.login_mfa);
+        },
+        loadUser: async function () {
+          // try {
+          //   if (results[results.length - 1] === 'true') {
+          //     this.props.authenticatedMFA();
+          //   }
+          //   let jwt_token = results[ 0 ];
+          //   let jwt_token_data = JSON.parse(results[ 1 ]);
+          //   let jwt_user_profile = {};
+          //   try {
+          //     jwt_user_profile = JSON.parse(results[ 2 ]);
+          //   } catch (e) {
+          //     this.props.getUserProfile(jwt_token);
+          //     this.props.initializeAuthenticatedUser(jwt_token, false);
+          //     this.props.errorNotification(new Error('Invalid User Profile'));
+          //   }
+          //   if (jwt_token_data && jwt_user_profile) {
+          //     let url = '/api/jwt/token';
+          //     let response = {};
+          //     let json = {
+          //       token: jwt_token_data.token,
+          //       expires: jwt_token_data.expires,
+          //       timeout: jwt_token_data.timeout,
+          //       user: jwt_user_profile,
+          //     };
+          //     let currentTime = new Date();
+              
+          //     if (moment(jwt_token_data.expires).isBefore(currentTime)) {
+          //       let expiredTokenError = new Error(`Access Token Expired ${moment(jwt_token_data.expires).format('LLLL')}`);
+          //       this.props.logoutUser();
+          //       throw expiredTokenError;
+          //     } else {
+          //       this.props.saveUserProfile(url, response, json);
+          //       this.props.initializeAuthenticatedUser(json.token, false);
+          //     }
+          //   } else if (jwt_token) {
+          //     this.props.getUserProfile(jwt_token);
+          //     this.props.initializeAuthenticatedUser(jwt_token, false);
+          //     this.props.createNotification({ text: 'welcome back', timeout:4000,  });
+          return true;
+        },
+        getSocketUser({ token, expires, timeout, profile, }) {
+            return {
+              email: profile.email,
+              username: profile.name || profile.username,
+              jwt_token: token,
+              jwt_token_expires: expires,
+              jwt_token_timeout: timeout,
+              userdata: profile,
+            };
+        },
+        loginUser: async function ({ username, password, remember_me, }) {
+          try {
+            const queryParams = qs.parse(window.location.search);
+            console.log('loginUser', { username, password, queryParams, }, this);
+            const tokenData = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
+              method: this.settings.routes.user_login_METHOD,
+              headers: { 'Accept': 'application/json','Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username,
+                password,
+              })
+            });
+            // console.log({ tokenData });
+            const { token, expires, timeout, } = tokenData;
+            // console.log({ token, expires, timeout, } )
+            if (!token) throw new ReferenceError('Invalid login token');
+            const userLoginAction = {
+              type: 'setUser',
+              user: {
+                token,//AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
+                tokenData,//AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
+                expires,
+                timeout,
+                loggedIn: true,
+                rememberMe: typeof remember_me !== 'undefined' ? remember_me : true,
+                // loggedInMFA: false, 
+              },
+            };
+            this.viewx.Functions.showLoader.call(this,{ ui:this.props.ui, setUI:this.props.setUI, });
+            this.props.dispatch(userLoginAction);
+            const profile = await this.viewx.Functions.getUserProfile({ token });
+            this.props.dispatch({ type: 'setUser', user:{ profile}, });
+
+            //send welcome message
+            if (this.settings.useWebSockets) {
+              const user = this.viewx.Functions.getSocketUser({ token, expires, timeout, profile });
+              this.props.socket.emit('authentication', {
+                user,
+                reconnection: true,
+              });
+            }
+
+            console.log('this.props.ui.returnURL', this.props.ui.returnURL);
+            this.props.history.push(this.props.ui.returnURL || this.settings.routes.logged_in_homepage);
+            // this.props.dispatch({ type: 'setReturnURL', returnURL:undefined, });
+
+          } catch (e) {
+            this.viewx.Functions.log({ type: 'error', error: e, });
+          }
+        },
+        getUserProfile: async function({ token }) {
+          return await this.viewx.Functions.fetchJSON(this.settings.routes.user_profile, {
+            method: this.settings.routes.user_profile_METHOD,
+            headers: { [this.settings.accessTokenProperty]: token},
+          });
+        },
+        validateMFA: async function({ code }) {
+          try {
+            const response = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
+              method: this.settings.routes.user_login_mfa_METHOD,
+              headers: { 'Accept': 'application/json' },
+              body: JSON.stringify({
+                code,
+              })
+            });
+            if (response && response.data && response.data.authenticated) {
+              //set auth mfa true
+              //login or redirect url
+            } else if (response.result === 'error') {
+              throw new Error(response.data.error);
+            //           return this.enforceMFA()(dispatch, getState);
+              
+            } else throw Error('Invalid Repsonse');
+            
+          } catch (e) {
+            this.viewx.Functions.log({ type: 'error', error: e, });
+          }
+        },
+        logoutUser() {
+          const userLoginProps = [ 'token', 'tokenData', 'expires', 'timeout', 'profile', 'loggedIn', 'loggedInMFA', ];
+          //remove cache keys
+          if(this.settings.cacheLoggedInUser) removeKeys('user', userLoginProps);
+          //remove from state
+          const userLogoutAction = userLoginProps.reduce((result, prop) => { 
+            result.user[ prop ] = false;
+            return result;
+          } ,{
+              type: 'setUser',
+              user:{},
+          });
+          this.viewx.Functions.showLoader.call(this,{ ui:this.props.ui, setUI:this.props.setUI, });
+          this.props.dispatch(userLogoutAction);
+          this.props.history.push(this.settings.routes.logged_out_homepage);
+        },
       },
       layers: [{
           order: 100,
@@ -47372,7 +48409,7 @@ var VXA = (function (exports) {
                     case 0:
                         layerMaxOrder = 0;
                         configuration = __assign({}, config);
-                        configuration.settings = __assign(__assign({}, configuration.settings), options.settings);
+                        configuration.settings = __assign(__assign(__assign({}, configuration.settings), options.settings), { routes: __assign(__assign({}, configuration.settings.routes), options.settings.routes) });
                         configuration.Functions = __assign(__assign({}, configuration.Functions), options.customFunctions);
                         layerObject = [].concat(configuration.layers, options.layers)
                             // @ts-ignore
@@ -47473,7 +48510,7 @@ var VXA = (function (exports) {
               component: 'div',
               children: [{
                   component: 'h1',
-                  children: 'No t Found',
+                  children: 'Not Found',
                 },
                 {
                   component: 'div',
@@ -47497,11 +48534,29 @@ var VXA = (function (exports) {
                   children: 'Error',
                 },
                 {
-                  component: 'textarea',
-                  resourceprops: {
-                    _children: ['error']
-                  }
-                }
+                  component: 'div',
+                  props: {
+                    style: {
+                      padding: '1rem',
+                      margin: '1rem',
+                      border: '1px solid lightgrey'
+                    }
+                  },
+                  children: [{
+                      component: 'pre',
+                      resourceprops: {
+                        _children: ['error', 'message']
+                      }
+                    },
+                    {
+                      component: 'pre',
+                      resourceprops: {
+                        _children: ['error', 'stack']
+                      }
+                    }
+                  ]
+                },
+
               ]
             },
             pageData: [{
@@ -47510,8 +48565,103 @@ var VXA = (function (exports) {
               innerHTML: "Error"
             }]
           },
-          '/:catchall*': {
-            // preRenderFunctions: ['func:viewx.Functions.debug', 'func:window.someWindowFunction'],
+          '/login': {
+            jsonx: {
+              component: 'div',
+              children: [{
+                  component: 'h1',
+                  children: 'Login'
+                },
+                {
+                  component: 'Formik.Formik',
+                  props: {
+                    initialValues: {
+                      username: '',
+                      password: ''
+                    },
+                  },
+                  __dangerouslyInsertFunctionComponents:{
+                    render: {
+                      reactComponent: {
+                        component: 'form',
+                        thisprops: {
+                          onSubmit:['handleSubmit']
+                        },
+                        children: [
+                          {
+                            component: 'Formik.Field',
+                            props: {
+                              type: 'text',
+                              name: 'username',
+                              placeholder:'username',
+                            }
+                          },
+                          {
+                            component: 'Formik.ErrorMessage',
+                            props: {
+                              name:'username'
+                            }
+                          },
+                          {
+                            component: 'Formik.Field',
+                            props: {
+                              type: 'password',
+                              name: 'password',
+                            }
+                          },
+                          {
+                            component: 'button',
+                            props: {
+                              type:'submit'
+                            },
+                            children:'Submit'
+                          },
+                        ]
+                      }
+                    }
+                  },
+                  __dangerouslyBindEvalProps: {
+                    validate: `(function(values){
+                  let errors = {};
+                  if (!values.username) {
+                    errors.username = 'Required';
+                  } 
+                  // else if (
+                  //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                  // ) {
+                  //   errors.email = 'Invalid email address';
+                  // }
+                  return errors;
+                })`,
+                    onSubmit: `(function(values, { setSubmitting }){
+                  // console.log({values},this)
+                  this.viewx.Functions.loginUser(values);
+
+                  // setTimeout(() => {
+                  //   alert(JSON.stringify(values, null, 2));
+                  //   setSubmitting(false);
+                  // }, 400);
+                })`
+                  }
+                }
+              ]
+            },
+            pageData: [{
+              tagName: "title",
+              attributes: {},
+              innerHTML: "User Login"
+            }]
+          },
+          '/': {
+            // '/:catchall*': {
+            preRenderFunctions: [
+              // 'func:viewx.Functions.passOne',
+              // 'func:window.someWindowFunction',
+              // 'func:viewx.Functions.passOne',
+              // 'func:viewx.Functions.passTwo',
+              // 'func:viewx.Functions.requireAuth',
+              // 'func:viewx.Functions.passOne',
+            ],
             pageData: [{
               tagName: "title",
               attributes: {},
@@ -47539,12 +48689,16 @@ var VXA = (function (exports) {
                   component: 'div',
                   props: {
                     style: {
-                      display:'flex',
+                      display: 'flex',
                     }
                   },
-                  children: [
-                    {
+                  children: [{
                       component: 'input',
+                      props: {
+                        style: {
+                          padding: '5px',
+                        },
+                      },
                       thisstate: {
                         value: ['name']
                       },
@@ -47560,15 +48714,43 @@ var VXA = (function (exports) {
                     {
                       component: 'Link',
                       props: {
-                        to:'/modal/hello',
+                        to: '/modal/hello',
+                        style: {
+                          padding: '5px',
+                        },
                       },
-                      children:'Hello Modal'
+                      children: 'Hello Modal'
+                    },
+                    {
+                      component: 'Link',
+                      props: {
+                        to: '/about',
+                        style: {
+                          padding: '5px',
+                        }
+                      },
+                      children: 'About Page'
+                    },
+                    {
+                      component: 'Link',
+                      props: {
+                        to: '/page/4',
+                        style: {
+                          padding: '5px',
+                        },
+                      },
+                      children: 'Page 4'
                     },
                     {
                       component: 'button',
+                      props: {
+                        style: {
+                          padding: '5px',
+                        }
+                      },
                       children: 'change header',
                       __dangerouslyBindEvalProps: {
-                        onClick:`(function(){
+                        onClick: `(function(){
                       // console.log('onClick this',this);
                       this.viewx.Functions.loadView({
                         layerName:'header',
@@ -47589,7 +48771,7 @@ var VXA = (function (exports) {
                       });
                     })`
                       },
-                      
+
                     }
                   ]
                 },
@@ -47602,13 +48784,13 @@ var VXA = (function (exports) {
             jsonx: {
               component: 'ReactModal',
               props: {
-                ariaHideApp:false,
+                ariaHideApp: false,
               },
               thisprops: {
-                isOpen: [ 'ui', 'isRouteLayer_modal_Matched' ],
+                isOpen: ['ui', 'isRouteLayer_modal_Matched'],
               },
               __dangerouslyBindEvalProps: {
-                onRequestClose:`(function(){
+                onRequestClose: `(function(){
               // console.log('onRequestClose this',this);
               this.props.dispatch({ type:'toggleMatchedRouteLayer_modal',});
               this.props.history.goBack();
@@ -47617,7 +48799,7 @@ var VXA = (function (exports) {
               // __functionProps: {
               //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
               // },
-              children:'SAY HELLO MODAL',
+              children: 'SAY HELLO MODAL',
             }
           }
         }
