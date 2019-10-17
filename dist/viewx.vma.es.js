@@ -12498,7 +12498,7 @@ function DynamicComponent(props={}) {
           transformedData = await transformer(fetchedData);
           if (useCache) cache.put(fetchURL, transformedData, cacheTimeout,timeoutFunction);
         }
-        setState(prevState=>Object.assign({},prevState,{ hasLoaded: true, hasError: false, resources: transformedData, }));
+        setState(prevState=>Object.assign({},prevState,{ hasLoaded: true, hasError: false, resources: { DynamicComponentData: transformedData, }, }));
       } catch (e) {
         if(context.debug) console.warn(e);
         setState({ hasError: true, error:e, });
