@@ -1,12 +1,12 @@
 {
   "name": "@viewx/vxa",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "dist/viewx.vma.cjs.js",
   "module": "dist/viewx.vma.es.js",
   "browser": "dist/viewx.vma.umd.js",
   "web": "dist/viewx.vma.web.js",
   "dependencies": {
-    "jsonx": "^0.9.86",
+    "jsonx": "^0.9.87",
     "path-to-regexp": "^3.1.0",
     "promisie": "^2.0.0-alpha.0",
     "react": "^16.10.0",

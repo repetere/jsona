@@ -44492,7 +44492,7 @@ var VXA = (function (exports) {
       const [ state, setState ] = react_9({ hasLoaded: false, hasError: false, resources: {}, error:undefined, });
       const transformer = react_14(()=>getFunctionFromEval(transformFunction), [ transformFunction ]);
       const timeoutFunction = react_14(()=>getFunctionFromEval(cacheTimeoutFunction), [ cacheTimeoutFunction ]);
-      const renderJSONX = react_14(()=>getReactElementFromJSONX.bind({context}), [ context ]);
+      const renderJSONX = react_14(()=>getReactElementFromJSONX.bind(context), [ context ]);
       const loadingComponent = react_14(()=>renderJSONX(loadingJSONX), [ loadingJSONX ]);
       const loadingError = react_14(()=>renderJSONX(loadingErrorJSONX,{error:state.error}), [ loadingErrorJSONX, state.error ]);
 
@@ -46575,6 +46575,8 @@ var VXA = (function (exports) {
                             _a[this.settings.accessTokenProperty] = this.props.user.token,
                             _a) : {};
                         options.headers = __assign(__assign(__assign(__assign({}, options.headers), this.settings.fetchHeaders), this.props.user.fetchHeaders), userAccessToken);
+                        // @ts-ignore
+                        if (this.settings.useWindowRequestQuery && window.location.search) ;
                         if (options.method === 'GET' && options.body) {
                             getPathBody = getPath(path, options);
                             path = getPathBody.path;
@@ -46626,16 +46628,17 @@ var VXA = (function (exports) {
                         return [4 /*yield*/, Promise.all(resourceProperties.map(function (prop) {
                                 return (function (prop) {
                                     return __awaiter(this, void 0, void 0, function () {
-                                        var resource, fetchPath, toPath, fetchURL, fetchOptions, _a, _b;
+                                        var resource, fetchPath, toPath, basePath, fetchURL, fetchOptions, _a, _b;
                                         return __generator(this, function (_c) {
                                             switch (_c.label) {
                                                 case 0:
                                                     resource = resources[prop];
                                                     fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
                                                     toPath = compile_1$2(fetchPath);
+                                                    basePath = toPath(templateRoute.params);
                                                     fetchURL = 
                                                     // @ts-ignore
-                                                    toPath(templateRoute.params) + window.location.search;
+                                                    "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                     fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
                                                     // @ts-ignore
                                                     _a = results;
@@ -47953,6 +47956,7 @@ var VXA = (function (exports) {
         htmlLoadedClass: '__viewx_html_loaded',
         uiLoadedClass: '__viewx_ui_loaded',
         uiLoadingClass: '__viewx_ui_loading',
+        useWindowRequestQuery: true,
         useWebSockets: false,
         useWebSocketsAuth: false,
         socket_server_options: {},

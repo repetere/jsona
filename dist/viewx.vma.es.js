@@ -12480,7 +12480,7 @@ function DynamicComponent(props={}) {
   const [ state, setState ] = useState({ hasLoaded: false, hasError: false, resources: {}, error:undefined, });
   const transformer = useMemo(()=>getFunctionFromEval(transformFunction), [ transformFunction ]);
   const timeoutFunction = useMemo(()=>getFunctionFromEval(cacheTimeoutFunction), [ cacheTimeoutFunction ]);
-  const renderJSONX = useMemo(()=>getReactElementFromJSONX.bind({context}), [ context ]);
+  const renderJSONX = useMemo(()=>getReactElementFromJSONX.bind(context), [ context ]);
   const loadingComponent = useMemo(()=>renderJSONX(loadingJSONX), [ loadingJSONX ]);
   const loadingError = useMemo(()=>renderJSONX(loadingErrorJSONX,{error:state.error}), [ loadingErrorJSONX, state.error ]);
 
@@ -13903,6 +13903,8 @@ function fetchJSON$1(path, options) {
                         _a[this.settings.accessTokenProperty] = this.props.user.token,
                         _a) : {};
                     options.headers = __assign(__assign(__assign(__assign({}, options.headers), this.settings.fetchHeaders), this.props.user.fetchHeaders), userAccessToken);
+                    // @ts-ignore
+                    if (this.settings.useWindowRequestQuery && window.location.search) ;
                     if (options.method === 'GET' && options.body) {
                         getPathBody = getPath(path, options);
                         path = getPathBody.path;
@@ -13954,16 +13956,17 @@ function fetchResources(_a) {
                     return [4 /*yield*/, Promise.all(resourceProperties.map(function (prop) {
                             return (function (prop) {
                                 return __awaiter(this, void 0, void 0, function () {
-                                    var resource, fetchPath, toPath, fetchURL, fetchOptions, _a, _b;
+                                    var resource, fetchPath, toPath, basePath, fetchURL, fetchOptions, _a, _b;
                                     return __generator(this, function (_c) {
                                         switch (_c.label) {
                                             case 0:
                                                 resource = resources[prop];
                                                 fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
                                                 toPath = compile(fetchPath);
+                                                basePath = toPath(templateRoute.params);
                                                 fetchURL = 
                                                 // @ts-ignore
-                                                toPath(templateRoute.params) + window.location.search;
+                                                "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                 fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
                                                 // @ts-ignore
                                                 _a = results;
@@ -15139,6 +15142,7 @@ const config = {
     htmlLoadedClass: '__viewx_html_loaded',
     uiLoadedClass: '__viewx_ui_loaded',
     uiLoadingClass: '__viewx_ui_loading',
+    useWindowRequestQuery: true,
     useWebSockets: false,
     useWebSocketsAuth: false,
     socket_server_options: {},

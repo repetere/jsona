@@ -27,6 +27,7 @@ export const config = {
     htmlLoadedClass: '__viewx_html_loaded',
     uiLoadedClass: '__viewx_ui_loaded',
     uiLoadingClass: '__viewx_ui_loading',
+    useWindowRequestQuery: true,
     useWebSockets: false,
     useWebSocketsAuth: false,
     socket_server_options: {},

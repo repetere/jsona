@@ -81,6 +81,20 @@ export async function fetchJSON(path: string, options: any = {}) {
     // @ts-ignore
     ...userAccessToken,
   };
+  // @ts-ignore
+  if (this.settings.useWindowRequestQuery && window.location.search) {
+    // const pathQuery = {
+    //   body: Object.assign({},
+    //     qs.parse(window.location.search.replace('?', '')),
+    //     options.body
+    //   )
+    // };
+    // // console.log({body})
+    // pathQuery.body = JSON.stringify(pathQuery.body);
+    // const getPathBody = getPath(path, pathQuery);
+    // path = getPathBody.path;
+    // options = getPathBody.options;
+  }
   if (options.method === 'GET' && options.body) {
     const getPathBody = getPath(path, options);
     path = getPathBody.path;
@@ -124,9 +138,12 @@ export async function fetchResources({ resources = {}, templateRoute = {} }) {
             typeof resource === "string" ? resource : resource.fetchPath;
           const toPath = pathToRegexp.compile(fetchPath);
           // @ts-ignore
+          const basePath = toPath(templateRoute.params);
+          // @ts-ignore
           const fetchURL =
             // @ts-ignore
-            toPath(templateRoute.params) + window.location.search;
+            `${basePath}${
+            basePath.includes('?') ? window.location.search.replace('?','') : window.location.search}`;
 
           // @ts-ignore
           const fetchOptions =
