@@ -44508,8 +44508,8 @@
             } else {
               let fetchedData;
               if (fetchFunction) {
-                fetchedData = await fetchJSON(fetchURL, fetchOptions);
-              } else fetchedData = await fetchFunction(fetchURL, fetchOptions);
+                fetchedData = await fetchFunction(fetchURL, fetchOptions);
+              } else fetchedData = await fetchJSON(fetchURL, fetchOptions);
               transformedData = await transformer(fetchedData);
               if (useCache) cache$2.put(fetchURL, transformedData, cacheTimeout,timeoutFunction);
             }
