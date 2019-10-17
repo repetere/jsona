@@ -85,6 +85,11 @@ export async function getGlobalStateHooks(options: any = {}) {
           ...state,
           socker: action.socket,
         };
+      case "setApplicationState":
+        return {
+          ...state,
+          ...action.state,
+        };
       default:
         if (action.type.includes("toggleMatchedRouteLayer")) {
           const [, layerName] = action.type.split("_");

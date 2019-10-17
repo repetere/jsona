@@ -14885,7 +14885,7 @@ function getMainComponent(options) {
         var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
         var _c = useState(options.application.state), state = _c[0], setState = _c[1];
         var pathname = appProps.location.pathname;
-        var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui, user: user, setUI: setUI, setTemplates: setTemplates, }, appProps);
+        var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui, user: user, setUI: setUI, setTemplates: setTemplates, updateState: function (applicationState) { return dispatch({ type: 'setApplicationState', state: applicationState, }); } }, appProps);
         var functionContext = { props: props, state: state, setState: setState, settings: settings, viewx: { Functions: Functions, settings: settings, }, };
         var loadView = useMemo(function () {
             // @ts-ignore
@@ -15055,6 +15055,8 @@ function getGlobalStateHooks(options) {
                         return __assign(__assign({}, state), { user: __assign(__assign({}, state.user), action.user) });
                     case "setSocket":
                         return __assign(__assign({}, state), { socker: action.socket });
+                    case "setApplicationState":
+                        return __assign(__assign({}, state), action.state);
                     default:
                         if (action.type.includes("toggleMatchedRouteLayer")) {
                             var _b = action.type.split("_"), layerName = _b[1];

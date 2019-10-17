@@ -57,7 +57,7 @@ export default function getMainComponent(
     const [state, setState] = useState(options.application.state);
     const { pathname } = appProps.location;
     const props = Object.assign(
-      { dispatch, templates, views, viewdata, ui, user, setUI, setTemplates, },
+      { dispatch, templates, views, viewdata, ui, user, setUI, setTemplates, updateState: (applicationState: any) => dispatch({ type: 'setApplicationState', state: applicationState, }) },
       appProps
     );
     const functionContext = { props, state, setState, settings, viewx: { Functions, settings, }, };
