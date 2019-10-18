@@ -2,6 +2,8 @@
 import * as JSONX from "jsonx/src/main";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
+import { VXAOptions, VXALayer, VXAConfig } from "../../../types";
+
 let addedReact = false;
 // @ts-ignore
 export function getFilePromise({ type, file, i, name }) {
@@ -175,10 +177,12 @@ export async function addCustomFiles({ type, files }) {
   );
 }
 
-export async function configureViewx(options = {}) {
+export async function configureViewx(
+  options: VXAOptions = {}
+): Promise<VXAConfig> {
   let layerMaxOrder = 0;
   let applicationRootLayerName;
-  const configuration = {...config};
+  const configuration: VXAConfig = { ...config };
   configuration.settings = {
     ...configuration.settings,
     // @ts-ignore
@@ -186,26 +190,33 @@ export async function configureViewx(options = {}) {
     routes: {
       ...configuration.settings.routes,
       // @ts-ignore
-      ...options.settings.routes,
+      ...options.settings.routes
     }
   };
   configuration.Functions = {
     ...configuration.Functions,
     // @ts-ignore
-    ...options.customFunctions,
-  }
+    ...options.customFunctions
+  };
   // @ts-ignore
-  const layerObject = [].concat(configuration.layers, options.layers)
-  // @ts-ignore
+  const layerObject = []
+    // @ts-ignore
+    .concat(configuration.layers, options.layers)
+    // @ts-ignore
     .reduce((result, layerObject) => {
-      const { order, name, type, } = layerObject;
+      const { order, name, type } = layerObject;
       if (order > layerMaxOrder) layerMaxOrder = order;
-      if (type === 'applicationRoot') applicationRootLayerName = name;
+      if (type === "applicationRoot") applicationRootLayerName = name;
       result[name] = layerObject;
       return result;
     }, {});
-  if (layerObject[applicationRootLayerName].order !== layerMaxOrder) layerObject[applicationRootLayerName].order = layerMaxOrder + 1;
-  configuration.layers = Object.keys(layerObject).map(layerName => layerObject[layerName]);
+  if (!applicationRootLayerName)
+    throw ReferenceError("Invalid/Missing ApplicationRoot Layer");
+  if (layerObject[applicationRootLayerName].order !== layerMaxOrder)
+    layerObject[applicationRootLayerName].order = layerMaxOrder + 1;
+  configuration.layers = Object.keys(layerObject).map(
+    (layerName: string) => layerObject[layerName]
+  );
 
   const [reactJSONXComponents] = await Promise.all([
     getReactLibrariesAndComponents({

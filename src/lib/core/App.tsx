@@ -6,23 +6,22 @@ import { BrowserRouter, HashRouter } from "react-router-dom";
 // import { connect, Provider, } from 'react-redux';
 
 import getMainComponent from "./Main";
-import { getGlobalStateHooks, } from "../stores";
+import { getGlobalStateHooks } from "../stores";
+import { VXAOptions, VXALayer, VXAConfig } from "../../../types";
 
-// @ts-ignore
-export async function getViewXapp(options = { config: {} }) {
-  // console.log('getViewXapp options', options);
-  // @ts-ignore
-  const { settings } = options.config;
-  const { GlobalStateProvider, dispatch, useGlobalState } = await getGlobalStateHooks(
-    options
-  );
-  // @ts-ignore
+export async function getViewXapp(options: VXAOptions) {
+  console.log("getViewXapp options", options);
+  const { settings } = options.config as VXAConfig;
+  const {
+    GlobalStateProvider,
+    dispatch,
+    useGlobalState
+  } = await getGlobalStateHooks(options);
   options.dispatch = dispatch;
-  // @ts-ignore
   options.useGlobalState = useGlobalState;
   // @ts-ignore
-  const MainApp = getMainComponent( options );
-  const Router: any = settings.router === 'hash' ? HashRouter : BrowserRouter;
+  const MainApp = getMainComponent(options);
+  const Router: any = settings.router === "hash" ? HashRouter : BrowserRouter;
   return (
     <GlobalStateProvider>
       <Router>

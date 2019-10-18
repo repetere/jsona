@@ -14,6 +14,7 @@ export const options = {
   customFunctions: {
     /*Function, */
   },
+  // config: {},
   layers: [
     // loading,
     // modal,
@@ -127,26 +128,25 @@ export const options = {
                   password: ''
                 },
               },
-              __dangerouslyInsertFunctionComponents:{
+              __dangerouslyInsertFunctionComponents: {
                 render: {
                   reactComponent: {
                     component: 'form',
                     thisprops: {
-                      onSubmit:['handleSubmit']
+                      onSubmit: ['handleSubmit']
                     },
-                    children: [
-                      {
+                    children: [{
                         component: 'Formik.Field',
                         props: {
                           type: 'text',
                           name: 'username',
-                          placeholder:'username',
+                          placeholder: 'username',
                         }
                       },
                       {
                         component: 'Formik.ErrorMessage',
                         props: {
-                          name:'username'
+                          name: 'username'
                         }
                       },
                       {
@@ -159,9 +159,9 @@ export const options = {
                       {
                         component: 'button',
                         props: {
-                          type:'submit'
+                          type: 'submit'
                         },
-                        children:'Submit'
+                        children: 'Submit'
                       },
                     ]
                   }
