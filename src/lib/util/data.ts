@@ -7,6 +7,8 @@
 import store from "store2";
 import qs from 'querystring';
 import * as pathToRegexp from "path-to-regexp";
+import { VXAFunctionContext, vxtResource, vxtTemplateRoute, jsonxResourceProps, } from "../../../types";
+// import { insertScriptParams } from '../../internal_types/config';
 
 export const cacheKeyPrefix = 'exp@';
 export const cacheKeySuffix = ';';
@@ -15,13 +17,13 @@ export function getNSKey(namespace: string, key: string):string {
   return `${namespace}${cacheKeySuffix}${key}`;
 }
 
-export function getKeyElements(cacheKey: string) {
+export function getKeyElements(cacheKey: string): { timeout: string; key: string;} {
   const [,timeoutSuffixKey] = cacheKey.split(cacheKeyPrefix);
   const [timeout, key] = timeoutSuffixKey.split(cacheKeySuffix);
   return { timeout, key };
 }
 
-export function getExpKey(key: string,timeout:number) {
+export function getExpKey(key: string,timeout:number):string {
   return `${cacheKeyPrefix}${(new Date().valueOf()+timeout)}${cacheKeySuffix}${key}`;
 }
 
@@ -33,15 +35,14 @@ export function removeKeys(namespace: string, keys: string[]): void{
   });
 }
 
-export function getFromCacheStore(namespace: string, key: string) {
+export function getFromCacheStore(namespace: string, key: string):any {
   const nsKey = getNSKey(namespace, key);
   const nsStore = store.namespace(nsKey);
   const keyArray = nsStore.keys();
   const cacheKey = (keyArray.length) ? keyArray[0] : undefined;
   if (cacheKey) {
-    // @ts-ignore
     const timeoutData = getKeyElements(cacheKey);
-    const currentTime = new Date().valueOf();
+    const currentTime:number = new Date().valueOf();
     if (Number(timeoutData.timeout) < currentTime) {
       nsStore.remove(cacheKey);
       return undefined;
@@ -51,7 +52,7 @@ export function getFromCacheStore(namespace: string, key: string) {
   } else return undefined;
 }
 
-export function setCacheStore(namespace: string, key: string, value:any, timeout:number) {
+export function setCacheStore(namespace: string, key: string, value:any, timeout:number):void {
   const nsKey = getNSKey(namespace, key);
   const nsStore = store.namespace(nsKey);
   const keyArray = nsStore.keys();
@@ -59,29 +60,30 @@ export function setCacheStore(namespace: string, key: string, value:any, timeout
   nsStore.set(cacheKey, value, true);
 }
 
-export function getPath(path:string, options:any) {
+export function getPath(path: string, options: any): { path: string; options: any;} {
   path = `${path}${path.includes('?') ? '&' : '?'}${qs.stringify(JSON.parse(options.body))}`;
   options.body = undefined;
   delete options.body;
   return { path, options };
 }
 
-export async function fetchJSON(path: string, options: any = {}) {
-  // @ts-ignore
+/**
+ * Return JSON from remote path
+ * @property this - function context
+ * @param path - fetch path
+ * @param options  - fetch options
+ * @param options.method - fetch options
+ */
+export async function fetchJSON(this: VXAFunctionContext, path: string, options:any = {}):Promise<any> {
   const userAccessToken = (this.props.user.token) ? {
-    // @ts-ignore
     [this.settings.accessTokenProperty]:this.props.user.token,
   } : {};
   options.headers = {
     ...options.headers,
-    // @ts-ignore
     ...this.settings.fetchHeaders,
-    // @ts-ignore
     ...this.props.user.fetchHeaders,
-    // @ts-ignore
     ...userAccessToken,
   };
-  // @ts-ignore
   if (this.settings.useWindowRequestQuery && window.location.search) {
     // const pathQuery = {
     //   body: Object.assign({},
@@ -101,7 +103,6 @@ export async function fetchJSON(path: string, options: any = {}) {
     options = getPathBody.options;
   }
   
-  // @ts-ignore
   if (options.method === 'socket') return await fetchJSONViaSocket.call(this, path, options);
   else {
     const response = await fetch(path, options);
@@ -111,45 +112,43 @@ export async function fetchJSON(path: string, options: any = {}) {
   } 
 }
 
-export async function fetchJSONViaSocket(path:string, options:any) {
+export async function fetchJSONViaSocket(this: VXAFunctionContext, path:string, options:any) {
   try {
-    // @ts-ignore
-    this.props.socket.emit(path, options, (successData) => {
+    this.props.socket.emit(path, options, (successData:any) => {
       return successData;
     });
-    
   } catch (e) {
     throw e;
   }
 }
 
-export async function fetchResources({ resources = {}, templateRoute = {} }) {
-  const results = {};
+/**
+ * Returns template resources for a vxt template. Resources are passed as resource props into the JSONX components
+ * @property this - function context
+ * @param options.resources - resourceprops for JSONX
+ * @param options.templateRoute - template route properties
+ */
+export async function fetchResources(this: VXAFunctionContext, { resources = {}, templateRoute }: { resources: vxtResource; templateRoute: vxtTemplateRoute; }):Promise<jsonxResourceProps> {
+  const results:jsonxResourceProps = {};
   const resourceProperties = Object.keys(resources);
-  // @ts-ignore
   const context = this;
+
   if (resourceProperties.length) {
     await Promise.all(
       resourceProperties.map(prop =>
-        (async function(prop) {
-          // @ts-ignore
+        (async function (prop) {
           const resource = resources[prop];
           const fetchPath =
             typeof resource === "string" ? resource : resource.fetchPath;
           const toPath = pathToRegexp.compile(fetchPath);
-          // @ts-ignore
           const basePath = toPath(templateRoute.params);
-          // @ts-ignore
           const fetchURL =
-            // @ts-ignore
             `${basePath}${
-            basePath.includes('?') ? window.location.search.replace('?','') : window.location.search}`;
+            basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search}`;
 
-          // @ts-ignore
           const fetchOptions =
             typeof resource === "string" ? {} : resource.fetchOptions;
-          // @ts-ignore
-          results[prop] = await fetchJSON.call(context,fetchURL, fetchOptions);
+          results[prop] = await fetchJSON.call(context, fetchURL, fetchOptions);
           return true;
         })(prop)
       )

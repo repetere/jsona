@@ -2,11 +2,18 @@
 import * as JSONX from "jsonx/src/main";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
-import { VXAOptions, VXALayer, VXAConfig } from "../../../types";
+import { VXAOptions, VXAConfig, VXALayer, VXAComponent, jsonxLibrary, } from "../../../types";
+import { customFileType, librariesAndComponents, VXALayerObject } from '../../internal_types/config';
 
-let addedReact = false;
-// @ts-ignore
-export function getFilePromise({ type, file, i, name }) {
+declare global {
+  interface Window {
+    [index:string]: any;
+  }
+}
+
+let addedReact:boolean = false;
+
+export function getFilePromise({ type, file, i, name }: { type: string; file: string; i: number; name: string;}): Promise<boolean | string> {
   return new Promise((resolve, reject) => {
     try {
       let returnedFile = false;
@@ -40,8 +47,8 @@ export function getFilePromise({ type, file, i, name }) {
     }
   });
 }
-// @ts-ignore
-export function getComponentPromise(customComponent) {
+
+export function getComponentPromise(customComponent: VXAComponent): Promise<string|boolean> {
   return new Promise((resolve, reject) => {
     let returnedFile = false;
     try {
@@ -59,9 +66,7 @@ export function getComponentPromise(customComponent) {
         }, 60000);
       }
       if (stylesheets.length) {
-        // @ts-ignore
         stylesheets.forEach((stylesheet, i) =>
-          // @ts-ignore
           insertStyleSheet({
             src: stylesheet,
             name: `${name}-${i}`
@@ -92,69 +97,61 @@ export function getComponentPromise(customComponent) {
   });
 }
 
-// @ts-ignore
-export async function getReactLibrariesAndComponents({ customComponents }) {
-  const componentLibraries = {};
-  const reactComponents = {};
+export async function getReactLibrariesAndComponents({ customComponents }:{ customComponents?:VXAComponent[] }): Promise<librariesAndComponents> {
+  const componentLibraries:VXAConfig['componentLibraries'] = {};
+  const reactComponents:VXAConfig['reactComponents'] = {};
 
+  if (customComponents && customComponents.length) {
+    
   await Promise.all(customComponents.map(getComponentPromise));
-
-  // @ts-ignore
-  customComponents.forEach(customComponent => {
-    const { type, name, jsonx, options, functionBody } = customComponent;
-    if (type === "library") {
-      if (jsonx) {
-        // @ts-ignore
-        componentLibraries[name] = Object.keys(jsonx).reduce((result, prop) => {
-          const libraryComponent = jsonx[prop];
-          const {
-            type,
-            name,
-            jsonxComponent,
-            options,
-            functionBody
-          } = libraryComponent;
-          if (type === "component") {
-            // @ts-ignore
-            result[name] = JSONX._jsonxComponents.getReactClassComponent(
+    customComponents.forEach(customComponent => {
+      const { type, name, jsonx, options, functionBody } = customComponent;
+      if (type === "library") {
+        if (jsonx) {
+          componentLibraries[name] = Object.keys(jsonx).reduce((result: jsonxLibrary, prop: string) => {
+            const libraryComponent = jsonx[prop]; 
+            const {
+              type,
+              name,
               jsonxComponent,
-              options
-            );
-          } else {
-            // @ts-ignore
-            result[name] = JSONX._jsonxComponents.getReactFunctionComponent(
-              jsonxComponent,
-              functionBody,
-              options
-            );
-          }
-          return result;
-        }, {});
-        // @ts-ignore
-      } else componentLibraries[name] = window[name];
-    } else if (type === "component") {
-      if (jsonx) {
-        // @ts-ignore
-        reactComponents[name] = JSONX._jsonxComponents.getReactClassComponent(
-          jsonx,
-          options
-        );
-        // @ts-ignore
-      } else reactComponents[name] = window[name];
-    } else if (type === "function") {
-      if (jsonx) {
-        // @ts-ignore
-        reactComponents[
-          name
-        ] = JSONX._jsonxComponents.getReactFunctionComponent(
-          jsonx,
-          functionBody,
-          options
-        );
-        // @ts-ignore
-      } else reactComponents[name] = window[name];
-    }
-  });
+              options,
+              functionBody
+            } = libraryComponent;
+            if (type === "component") {
+              result[name] = JSONX._jsonxComponents.getReactClassComponent(
+                jsonxComponent,
+                options
+              );
+            } else {
+              result[name] = JSONX._jsonxComponents.getReactFunctionComponent(
+                jsonxComponent,
+                functionBody,
+                options
+              );
+            }
+            return result;
+          }, {});
+        } else componentLibraries[name] = window[name];
+      } else if (type === "component") {
+        if (jsonx) {
+          reactComponents[name] = JSONX._jsonxComponents.getReactClassComponent(
+            jsonx,
+            options
+          );
+        } else reactComponents[name] = window[name];
+      } else if (type === "function") {
+        if (jsonx) {
+          reactComponents[
+            name
+          ] = JSONX._jsonxComponents.getReactFunctionComponent(
+            jsonx,
+            functionBody,
+            options
+          );
+        } else reactComponents[name] = window[name];
+      }
+    });
+  }
 
   return {
     componentLibraries,
@@ -162,10 +159,12 @@ export async function getReactLibrariesAndComponents({ customComponents }) {
   };
 }
 
-// @ts-ignore
-export async function addCustomFiles({ type, files }) {
+export async function addCustomFiles({ type, files }: {
+  type: string;
+  files: string[]|undefined;
+}): Promise<string[] | any> {
+  if (!files || !files.length) return [];
   return await Promise.all(
-    // @ts-ignore
     files.map((file, i) =>
       getFilePromise({
         type,
@@ -185,25 +184,19 @@ export async function configureViewx(
   const configuration: VXAConfig = { ...config };
   configuration.settings = {
     ...configuration.settings,
-    // @ts-ignore
     ...options.settings,
     routes: {
       ...configuration.settings.routes,
-      // @ts-ignore
       ...options.settings.routes
     }
   };
   configuration.Functions = {
     ...configuration.Functions,
-    // @ts-ignore
     ...options.customFunctions
   };
-  // @ts-ignore
-  const layerObject = []
-    // @ts-ignore
-    .concat(configuration.layers, options.layers)
-    // @ts-ignore
-    .reduce((result, layerObject) => {
+  const allLayers = [[],configuration.layers, options.layers].flat();
+  const layerObject: VXALayerObject = allLayers
+    .reduce((result:VXALayerObject, layerObject:VXALayer) => {
       const { order, name, type } = layerObject;
       if (order > layerMaxOrder) layerMaxOrder = order;
       if (type === "applicationRoot") applicationRootLayerName = name;
@@ -220,20 +213,18 @@ export async function configureViewx(
 
   const [reactJSONXComponents] = await Promise.all([
     getReactLibrariesAndComponents({
-      // @ts-ignore
       customComponents: options.customComponents
     }),
     addCustomFiles({
-      type: "script",
-      // @ts-ignore
+      type: customFileType.script,
       files: options.customScripts
     }),
     addCustomFiles({
-      type: "style",
-      // @ts-ignore
+      type: customFileType.style,
       files: options.customStyles
     })
   ]);
+
   configuration.componentLibraries = reactJSONXComponents.componentLibraries;
   configuration.reactComponents = reactJSONXComponents.reactComponents;
 

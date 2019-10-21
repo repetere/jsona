@@ -8,62 +8,50 @@ import React, {
 } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
+import { VXAFunctionContext, VXAFunctions, VXAOptions, VXADispatchAction, appLoadViewParams, } from "../../../types";
+
 // @ts-ignore
 import * as JSONX from "jsonx/src/main";
 import { loadTemplates, loadRoute, setup } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
 import { fetchJSON, } from "../util/data";
 
-// @ts-ignore
-export function bindFunctionContext({ Functions, functionContext }) {
-  // @ts-ignore
+/**
+ * bound default vxa functions to the vxafunctioncontext object
+*/
+export function bindFunctionContext({ Functions, functionContext }: { Functions: VXAFunctions, functionContext: VXAFunctionContext }): void {
   Functions.fetchJSON = fetchJSON.bind(functionContext);
-  // @ts-ignore
   Functions.loadUser = Functions.loadUser.bind(functionContext);
-  // @ts-ignore
   Functions.loginUser = Functions.loginUser.bind(functionContext);
-  // @ts-ignore
   Functions.getUserProfile = Functions.getUserProfile.bind(functionContext);
-  // @ts-ignore
   Functions.validateMFA = Functions.validateMFA.bind(functionContext);
-  // @ts-ignore
   Functions.logoutUser = Functions.logoutUser.bind(functionContext);
 }
 
 export default function getMainComponent(
-  options = {
-    application: { state: {} },
-    config: {
-      Functions: {},
-      componentLibraries: {},
-      reactComponents: {},
-      layers: [],
-      settings: { debug: true, setBodyPathnameID: true }
-    }
-  }
+  options:VXAOptions 
 ): FunctionComponent {
-  // @ts-ignore
-  const { dispatch, useGlobalState, config } = options;
+  if (!options) throw ReferenceError('invalid VXA Options');
+  else if (!options.config) throw ReferenceError('invalid VXA Options');
+  const { dispatch, useGlobalState, config, application, } = options;
   const { Functions, settings } = config;
-  // @ts-ignore
-  const dispatcher = action => dispatch(action);
-  // @ts-ignore
-  function Main(appProps) {
+  const dispatcher = (action:VXADispatchAction):void => dispatch(action);
+  function Main(appProps: any) {
     const [templates, setTemplates] = useGlobalState("templates");
     const [views] = useGlobalState("views");
     const [user] = useGlobalState("user");
     const [viewdata] = useGlobalState("viewdata");
     const [ui, setUI] = useGlobalState("ui");
-    const [state, setState] = useState(options.application.state);
+    const [state, setState] = useState(application?application.state:{});
     const { pathname } = appProps.location;
     const props = Object.assign(
       { dispatch, templates, views, viewdata, ui, user, setUI, setTemplates, updateState: (applicationState: any) => dispatch({ type: 'setApplicationState', state: applicationState, }) },
       appProps
     );
     const functionContext = { props, state, setState, settings, viewx: { Functions, settings, }, };
+    // eslint-disable-line
     const loadView = useMemo(() => {
-      // @ts-ignore
-      return function _loadView({ layerName, view, resourceprops, pathname }) {
+      return function _loadView({ layerName, view, resourceprops, pathname }:appLoadViewParams) {
         const loadViewPathname = pathname || `_loadView_${layerName}`;
         return loadRoute({
           ui,
@@ -76,17 +64,19 @@ export default function getMainComponent(
           },
           pathname: loadViewPathname,
           dispatcher,
-          // @ts-ignore
-          layers: config.layers.filter(layer => layer.name === layerName),
+          layers: config?config.layers.filter(layer => layer.name === layerName):[],
           Functions,
           resourceprops,
           functionContext
         });
       };
+    /* eslint-disable */
     }, [templates, functionContext]);
-    // @ts-ignore
+    /* eslint-enable */
+
     Functions.loadView = loadView;
-    bindFunctionContext({ Functions, functionContext });
+    bindFunctionContext({ Functions, functionContext, });
+
 
     const getReactElement = JSONX.getReactElement.bind({
       props,
@@ -99,24 +89,19 @@ export default function getMainComponent(
       reactComponents: Object.assign({ Link }, config.reactComponents)
     });
     useEffect(() => {
-      // @ts-ignore
       Functions.onLaunch.call(functionContext);
-      // @ts-ignore
       return () => Functions.onShutdown.call(functionContext);
+      /* eslint-disable */
     }, []);
+    /* eslint-enable */
     useEffect(() => {
       let viewxTemplates = templates;
-      // @ts-ignore
-      let action;
+      let action:VXADispatchAction;
       async function initialize() {
-        // @ts-ignore
         Functions.showLoader.call(functionContext, { ui, setUI });
         try {
-          // @ts-ignore
           setup.call(functionContext, { settings });
-          // @ts-ignore
           if (ui.hasLoadedInitialProcess === false) {
-            // @ts-ignore
             await Functions.loadUser.call(functionContext);
             const updatedTemplates = await loadTemplates({
               config,
@@ -142,35 +127,34 @@ export default function getMainComponent(
           });
           if (settings.setBodyPathnameID) setBodyPathnameId(pathname);
         } catch (e) {
-          // @ts-ignore
           Functions.log({ type: "error", error: e });
         }
-        // @ts-ignore
         Functions.hideLoader.call(functionContext, { ui: action.ui, setUI });
       }
       initialize();
       //   // return function cleanup(){}
+      /* eslint-disable */
     }, [pathname /* templates*/]);
+    /* eslint-enable */
+    
     return (
       <Fragment>
-        {options.config.layers.map(layer => {
+        {config.layers.map(layer => {
           const { name, type } = layer;
           const jsonxChildren = getReactElement(
             views[name] ? views[name].jsonx : null,
             viewdata[name] ? viewdata[name] : {}
-          );
-          // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
+          ); // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
           if (type === "applicationRoot") {
             return jsonxChildren;
           } else {
-            // @ts-ignore
             const el = document.querySelector(`#${name}`);
-            // @ts-ignore
-            return ReactDOM.createPortal(
-              jsonxChildren,
-              // @ts-ignore
-              el
-            );
+            return el
+              ? ReactDOM.createPortal(
+                jsonxChildren,
+                el
+              )
+              : null;
           }
         })}
       </Fragment>

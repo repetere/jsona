@@ -7,10 +7,11 @@ import { BrowserRouter, HashRouter } from "react-router-dom";
 
 import getMainComponent from "./Main";
 import { getGlobalStateHooks } from "../stores";
-import { VXAOptions, VXALayer, VXAConfig } from "../../../types";
+import { VXAOptions, VXAConfig } from "../../../types";
+import { ReactElementLike } from "prop-types";
 
-export async function getViewXapp(options: VXAOptions) {
-  console.log("getViewXapp options", options);
+export async function getViewXapp(options: VXAOptions):Promise<ReactElementLike> {
+  // console.log("getViewXapp options", options);
   const { settings } = options.config as VXAConfig;
   const {
     GlobalStateProvider,

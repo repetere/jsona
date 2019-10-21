@@ -5,11 +5,17 @@ import { findMatchingRoutePath } from "test-matching-route";
 import { fetchJSON, fetchResources } from "./data";
 // @ts-ignore
 import { setPageAttributes, setHTMLElementClass } from "./html";
+import { VXASettings, VXAFunctionContext, VXATemplates, appLoadTemplates, VXALayer, appGetTemplateRouteLayer, VXAFunction, VXAFunctions, VXADispatchAction, jsonxResourceProps, VXATemplateRouteLayer, appLoadRoute, } from "../../../types";
+// import { insertScriptParams } from '../../internal_types/config';
 
 import { initSockets, } from './socket';
-// @ts-ignore
-export async function setup({ settings }) {
-  // @ts-ignore
+
+/**
+ * initial one time setup call
+ * @property this 
+ * @param options.settings - vxa settings 
+ */
+export async function setup(this:VXAFunctionContext, { settings }: { settings: VXASettings;}):Promise<void> {
   initSockets.call(this, settings);
 
   if (settings.useBodyLoadedClass)
@@ -24,37 +30,31 @@ export async function setup({ settings }) {
     });
 }
 
-// @ts-ignore
-export async function loadTemplates({
-  // @ts-ignore
-  config,
-  // @ts-ignore
+/**
+ * load vxt templates 
+ * @param options 
+ */
+export async function loadTemplates ({
+  config, 
   viewxTemplates,
-  // @ts-ignore
   templates,
-  // @ts-ignore
   setTemplates,
-  // @ts-ignore
   setUI,
-  // @ts-ignore
   ui,
-  // @ts-ignore
   layers,
-  // @ts-ignore
   Functions,
-  // @ts-ignore
   functionContext
-}) {
+}:appLoadTemplates): Promise<{ viewxTemplates: VXATemplates; }> { 
   // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
   const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(
     functionContext
   );
-  // @ts-ignore
-  const loadedTemplates = (config.settings.hasPreloadedTemplates) ? {}: await fetchFunction(
+
+  const loadedTemplates = (config.settings.hasPreloadedTemplates) ? {} : await fetchFunction(
     config.settings.templatePath,
     config.settings.templateFetchOptions
   );
-  // @ts-ignore
+
   viewxTemplates = layers.reduce((result, layer) => {
     const { name } = layer;
     result[name] = {
@@ -74,14 +74,18 @@ export async function loadTemplates({
   };
 }
 
-// @ts-ignore
-export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
+/**
+ * get template route layer map function
+ * @param options.viewxTemplates - object of vxtTemplates
+ * @param options.pathname - vxtRoutePath
+ */
+export function getTemplateRouteLayer({ viewxTemplates, pathname }: appGetTemplateRouteLayer): (layer: VXALayer) => any {
   let hasOverlayLayer: boolean = false;
-  // @ts-ignore
-  return layer => {
+  
+  return (layer:VXALayer) => {
     let vxtObject;
     const { name, type } = layer;
-    const templateRoute = findMatchingRoutePath(
+    const templateRoute = findMatchingRoutePath( 
       viewxTemplates[name],
       pathname,
       {
@@ -113,37 +117,18 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }) {
   };
 }
 
-export async function loadRoute({
-  // @ts-ignore
-  ui,
-  // @ts-ignore
-  viewxTemplates,
-  // @ts-ignore
-  pathname,
-  // @ts-ignore
-  dispatcher,
-  // @ts-ignore
-  layers,
-  // @ts-ignore
-  Functions,
-  // @ts-ignore
-  functionContext,
-  // @ts-ignore
-  resourceprops = {}
-}) {
+export async function loadRoute({ ui, viewxTemplates, pathname, dispatcher, layers, Functions, functionContext, resourceprops = {} }: appLoadRoute): Promise<VXADispatchAction | boolean | undefined | any> {
   let applicationRootName = "root";
   try {
     const fetchResourcesFunction = Functions.fetchResources || fetchResources;
-
-    const templateRouteLayers = layers
+    const templateRouteLayers:VXATemplateRouteLayer[] = layers
       .map(
         getTemplateRouteLayer({
           viewxTemplates,
           pathname
         })
       )
-      // @ts-ignore
-      .filter(layer => layer);
+      .filter((layer: VXALayer) => layer);
 
     // @ts-ignore
     const preFunctions = await invokeWebhooks({
@@ -163,9 +148,9 @@ export async function loadRoute({
         templateRoute: templateRouteLayer.templateRoute
       })
     );
-    const templateViewData = await Promise.all(templateViewPromises);
+    const templateViewData:jsonxResourceProps[] = await Promise.all(templateViewPromises);
     const action = templateViewData.reduce(
-      (result: any, templateViewDatum, i: number) => {
+      (result: any, templateViewDatum:jsonxResourceProps, i: number) => {
         const {
           name,
           type,
@@ -301,13 +286,13 @@ export async function invokeWebhooks({
   }));
 }
 
-// @ts-ignore
-export function enforcePromise(val) {
+export function enforcePromise(val:any) {
   return val instanceof Promise ? val : Promise.resolve(val);
 }
-
+  
 // @ts-ignore
 export function promiseSeries(providers) {
+  // console.log('promiseSeries',{providers})
   const ret = Promise.resolve(null);
   // @ts-ignore
   const results = [];
@@ -326,27 +311,35 @@ export function promiseSeries(providers) {
       }, ret)
       .then(function() {
         // @ts-ignore
+        // console.log('promiseSeries', { results });
+        // @ts-ignore
         return results;
       })
   );
 }
 
-// @ts-ignore
+/**
+ * return bound function from function name string, e.g. func:this.props.debug
+ * @param options.Functions - VXA Functions
+ * @param options.functionContext - VXA Function Context
+ * @param options.functionName - function name string
+ */
 export function getFunctionFromNameString({
-  // @ts-ignore
   Functions,
-  // @ts-ignore
   functionContext,
-  // @ts-ignore
   functionName
-}) {
+}: {
+    Functions: VXAFunctions;
+    functionContext: VXAFunctionContext;
+    functionName: string;
+}): VXAFunction {
   let func;
   try {
     if (typeof functionName === "string") {
-      const name = getDynamicFunctionName(functionName);
+      const name:string = getDynamicFunctionName(functionName);
       if (
         functionName.includes("func:this.props") &&
-        typeof functionContext.props[name] === "function"
+        typeof functionContext.props[name] === "function" 
       ) {
         func = functionContext.props[name].bind(functionContext);
       } else if (
@@ -358,7 +351,6 @@ export function getFunctionFromNameString({
         functionName.includes("func:window") &&
         typeof window[name] === "function"
       ) {
-        // @ts-ignore
         func = window[name].bind(functionContext);
       }
     }
@@ -375,8 +367,13 @@ export function getFunctionFromNameString({
 }
 
 //func:this.props.login, func:window.alert, func:viewx.Functions.logout
+/* eslint-disable */
 export const FUNCTION_NAME_REGEXP = /func:(?:this\.props|window|viewx)(?:\.Functions)?\.(\D.+)*/;
-// @ts-ignore
-export function getDynamicFunctionName(function_name) {
+/* eslint-enable */
+/** 
+ * get function name from function name string i.e. func:viewx.Functions.logout => logout
+* @param function_name - function name string
+*/
+export function getDynamicFunctionName(function_name: string): string {
   return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
 }

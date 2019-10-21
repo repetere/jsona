@@ -1,5 +1,5 @@
-import { jsonx } from "./jsonx";
-import { vxtTemplate, VXAState } from "./vxt";
+import { jsonx, jsonxComponent, } from "./jsonx";
+import { vxtTemplate, VXAState, VXASettings, VXAFunction, VXAFunctions } from "./vxt";
 import { string } from "prop-types";
 import React from "react";
 import { createStore } from "react-hooks-global-state";
@@ -11,22 +11,23 @@ export enum VXAComponentFormats {
 
 export enum VXAComponentTypes {
   component = "component",
+  function = "function",
   library = "library"
 }
+
+export type customVXAJSONXLibrary = {
+  [index: string]: jsonx
+};
 
 export type VXAComponent = {
   name: string;
   format: VXAComponentFormats;
   type: VXAComponentTypes;
   umdFilePath: string;
-  jsonx: jsonx;
+  jsonx?: jsonxLibrary | jsonx ;
   stylesheets: string[];
-};
-
-export type VXAFunction = (...args: any[]) => any;
-
-export type VXAFunctions = {
-  [index: string | symbol]: VXAFunction;
+  options?: {};
+  functionBody?: string;
 };
 
 export enum VXALayerTypes {
@@ -44,56 +45,17 @@ export type VXALayer = {
 };
 
 export type stateObject = {
-  [index: string | symbol]: any;
+  [index: string ]: any;
 };
 
 export type VXAApplicationState = {
-  state: stateObject;
+  state?: stateObject;
 };
 
 export type layerName = string;
 
 export type VXATemplates = {
   [index: layerName]: vxtTemplate;
-};
-
-export type VXASettings = {
-  accessTokenProperty: string;
-  addJSONXToWindow: boolean;
-  addReactDOMToWindow: boolean;
-  addReactToWindow: boolean;
-  bodyLoadedClass: string;
-  cacheLoggedInUser: boolean;
-  cacheTemplatesOffline: boolean;
-  cacheUserTimeout: number;
-  debug: boolean;
-  dynamicTemplateFetchOptions: {};
-  dynamicTemplatePath?: string;
-  fetchHeaders: any;
-  htmlLoadedClass: string;
-  name: string;
-  router: string;
-  routes: {
-    user_login: string;
-    user_login_METHOD: string;
-    user_login_mfa: string;
-    user_login_mfa_METHOD: string;
-    user_profile: string;
-  };
-  setBodyPathnameID: boolean;
-  socket_disconnect_message: any;
-  socket_server?: string;
-  socket_server_options: any;
-  templateFetchOptions: any;
-  templatePath?: string;
-  uiLoadedClass: string;
-  uiLoadingClass: string;
-  useBodyLoadedClass: boolean;
-  useHTMLLoadedClass: boolean;
-  useWebSockets: boolean;
-  useWebSocketsAuth: boolean;
-  useWindowRequestQuery: boolean;
-  version: string;
 };
 
 export type VXAConfig = {
@@ -104,12 +66,7 @@ export type VXAConfig = {
   layers: VXALayer[];
   querySelector: string;
   reactComponents?: {
-    [index: string]:
-      | React.FunctionComponent
-      | React.PureComponent
-      | React.Component
-      | React.ReactElement
-      | function;
+    [index: string]: jsonxComponent;
   };
   settings: VXASettings;
 };
