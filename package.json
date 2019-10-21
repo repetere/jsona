@@ -1,6 +1,6 @@
 {
   "name": "@viewx/vxa",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "dist/viewx.vma.cjs.js",
   "module": "dist/viewx.vma.es.js",
   "browser": "dist/viewx.vma.umd.js",

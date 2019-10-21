@@ -46509,6 +46509,7 @@ var VXA = (function (exports) {
       return options && options.sensitive ? '' : 'i'
     }
 
+    // import { insertScriptParams } from '../../internal_types/config';
     var cacheKeyPrefix = 'exp@';
     var cacheKeySuffix = ';';
     function getNSKey(namespace, key) {
@@ -46535,7 +46536,6 @@ var VXA = (function (exports) {
         var keyArray = nsStore.keys();
         var cacheKey = (keyArray.length) ? keyArray[0] : undefined;
         if (cacheKey) {
-            // @ts-ignore
             var timeoutData = getKeyElements(cacheKey);
             var currentTime = new Date().valueOf();
             if (Number(timeoutData.timeout) < currentTime) {
@@ -46562,20 +46562,25 @@ var VXA = (function (exports) {
         delete options.body;
         return { path: path, options: options };
     }
+    /**
+     * Return JSON from remote path
+     * @property this - function context
+     * @param path - fetch path
+     * @param options  - fetch options
+     * @param options.method - fetch options
+     */
     function fetchJSON$1(path, options) {
         if (options === void 0) { options = {}; }
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var userAccessToken, getPathBody, response;
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         userAccessToken = (this.props.user.token) ? (_a = {},
-                            // @ts-ignore
                             _a[this.settings.accessTokenProperty] = this.props.user.token,
                             _a) : {};
                         options.headers = __assign(__assign(__assign(__assign({}, options.headers), this.settings.fetchHeaders), this.props.user.fetchHeaders), userAccessToken);
-                        // @ts-ignore
                         if (this.settings.useWindowRequestQuery && window.location.search) ;
                         if (options.method === 'GET' && options.body) {
                             getPathBody = getPath(path, options);
@@ -46602,7 +46607,6 @@ var VXA = (function (exports) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 try {
-                    // @ts-ignore
                     this.props.socket.emit(path, options, function (successData) {
                         return successData;
                     });
@@ -46614,12 +46618,18 @@ var VXA = (function (exports) {
             });
         });
     }
+    /**
+     * Returns template resources for a vxt template. Resources are passed as resource props into the JSONX components
+     * @property this - function context
+     * @param options.resources - resourceprops for JSONX
+     * @param options.templateRoute - template route properties
+     */
     function fetchResources(_a) {
-        var _b = _a.resources, resources = _b === void 0 ? {} : _b, _c = _a.templateRoute, templateRoute = _c === void 0 ? {} : _c;
-        return __awaiter(this, void 0, void 0, function () {
+        var _b = _a.resources, resources = _b === void 0 ? {} : _b, templateRoute = _a.templateRoute;
+        return __awaiter(this, void 0, Promise, function () {
             var results, resourceProperties, context;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         results = {};
                         resourceProperties = Object.keys(resources);
@@ -46636,16 +46646,12 @@ var VXA = (function (exports) {
                                                     fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
                                                     toPath = compile_1$2(fetchPath);
                                                     basePath = toPath(templateRoute.params);
-                                                    fetchURL = 
-                                                    // @ts-ignore
-                                                    "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
+                                                    fetchURL = "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                     fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
-                                                    // @ts-ignore
                                                     _a = results;
                                                     _b = prop;
                                                     return [4 /*yield*/, fetchJSON$1.call(context, fetchURL, fetchOptions)];
                                                 case 1:
-                                                    // @ts-ignore
                                                     _a[_b] = _c.sent();
                                                     return [2 /*return*/, true];
                                             }
@@ -46654,33 +46660,40 @@ var VXA = (function (exports) {
                                 })(prop);
                             }))];
                     case 1:
-                        _d.sent();
-                        _d.label = 2;
+                        _c.sent();
+                        _c.label = 2;
                     case 2: return [2 /*return*/, results];
                 }
             });
         });
     }
 
-    // @ts-ignore
+    /**
+     * add class to html element
+     * @param options.element - html element to modify
+     * @param options.className - css class to add
+     */
     function setHTMLElementClass(_a) {
         var element = _a.element, className = _a.className;
-        if (element.classList && element.classList.add) {
+        if (element && element.classList && element.classList.add) {
             element.classList.add(className);
         }
-        else if (element.className) {
+        else if (element && element.className) {
             element.className = element.className += className;
         }
         // if(window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf('Trident') !== -1) {
         //   document.body.style.zoom = 1;
         // }
     }
+    /**
+     * set id attribute on body based on pathname
+     * @param pathname - vxa template layer route
+     */
     function setBodyPathnameId(pathname) {
         if (document && document.body && document.body.setAttribute) {
             document.body.setAttribute('id', encodeURIComponent(pathname).replace(new RegExp(/%2F|%2/, 'g'), '_'));
         }
     }
-    // @ts-ignore
     function insertJavaScript(_a) {
         var src = _a.src, name = _a.name, _b = _a.async, async = _b === void 0 ? true : _b, onload = _a.onload;
         (function (d, s, id) {
@@ -46689,14 +46702,12 @@ var VXA = (function (exports) {
                 return;
             var s0 = d.getElementsByTagName(s)[0];
             var j = d.createElement(s);
-            // @ts-ignore
-            j.async = async;
+            j.setAttribute('async', async.toString());
             j.id = tagId;
-            // @ts-ignore
-            j.type = "text/javascript";
-            // @ts-ignore
-            j.src = src;
-            j.onload = onload;
+            j.setAttribute('type', "text/javascript");
+            j.setAttribute('src', src);
+            if (onload)
+                j.onload = onload;
             // @ts-ignore
             if (s0)
                 s0.parentNode.insertBefore(j, s0);
@@ -46704,7 +46715,6 @@ var VXA = (function (exports) {
                 document.head.prepend(j);
         })(document || window.document, "script", name);
     }
-    // @ts-ignore
     function insertStyleSheet(_a) {
         var src = _a.src, name = _a.name, onload = _a.onload;
         (function (d, l, id) {
@@ -46714,21 +46724,17 @@ var VXA = (function (exports) {
             var s0 = d.getElementsByTagName(l)[0];
             var ss = d.createElement(l);
             ss.id = tagId;
-            // @ts-ignore
-            ss.rel = "stylesheet";
-            // @ts-ignore
-            ss.type = "text/css";
-            // @ts-ignore
-            ss.href = src;
-            ss.onload = onload;
-            // @ts-ignore
-            if (s0)
+            ss.setAttribute('rel', "stylesheet");
+            ss.setAttribute('type', "text/css");
+            ss.setAttribute('href', src);
+            if (onload)
+                ss.onload = onload;
+            if (s0 && s0.parentNode)
                 s0.parentNode.insertBefore(ss, s0);
             else
                 document.head.prepend(ss);
         })(document || window.document, "link", name);
     }
-    // @ts-ignore
     function createLayer(_a) {
         var layer = _a.layer, app = _a.app;
         var name = layer.name, type = layer.type, order = layer.order;
@@ -46738,24 +46744,22 @@ var VXA = (function (exports) {
             var domEl = document.createElement("div");
             domEl.setAttribute("id", name);
             document.body.appendChild(domEl);
-            domEl.style.zIndex = order;
+            domEl.style.zIndex = String(order);
             layerDOM = domEl;
         }
-        if (type === "applicationRoot") {
+        if (type === "applicationRoot" && app) {
             reactDom.render(app, layerDOM);
         }
     }
-    // @ts-ignore
     function getElementSelector(_a) {
         var tagName = _a.tagName, _b = _a.attributes, attributes = _b === void 0 ? {} : _b;
         return "" + tagName + Object.keys(attributes)
-            // @ts-ignore
             .map(function (attr) { return "[" + attr + "=\"" + attributes[attr] + "\"]"; })
             .join();
     }
     function setPageAttributes(_a) {
         var _b = _a.pageData, pageData = _b === void 0 ? [] : _b;
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_c) {
                 pageData.forEach(function (pageDatum) {
                     var attributes = pageDatum.attributes, tagName = pageDatum.tagName, innerHTML = pageDatum.innerHTML;
@@ -47029,22 +47033,17 @@ var VXA = (function (exports) {
       }
     }
 
+    // import { insertScriptParams } from '../../internal_types/config';
     var once = false;
     function initSockets(settings) {
         var _this = this;
         if (settings === void 0) { settings = {}; }
-        // @ts-ignore
         var useWebSocketsAuth = settings.useWebSocketsAuth, socket_server_options = settings.socket_server_options, socket_server = settings.socket_server, socket_disconnect_message = settings.socket_disconnect_message;
-        // console.debug('CALLING initSockets');
-        // @ts-ignore
         var createNotification = this.viewx.Functions.log;
-        // @ts-ignore
         var getSocketFunction = function (_a) {
             var propFunc = _a.propFunc;
             return getFunctionFromNameString({
-                // @ts-ignore
                 Functions: _this.viewx.Functions,
-                // @ts-ignore
                 functionContext: _this,
                 functionName: propFunc
             });
@@ -47057,10 +47056,8 @@ var VXA = (function (exports) {
                 : [req.body,];
             // console.debug({ propFunc, props, once, req, });
             var reduxFunction = getSocketFunction({ propFunc: propFunc, });
-            // @ts-ignore
             if (reduxFunction)
                 reduxFunction.call.apply(reduxFunction, __spreadArrays([_this], props));
-            // @ts-ignore
             else
                 _this.viewx.Functions.log({ type: 'error', error: new Error('Invalid Live Update') });
         });
@@ -47072,24 +47069,20 @@ var VXA = (function (exports) {
             var socket_1 = (socket_server)
                 ? window.io(socket_server, socketOptions)
                 : window.io('', socketOptions);
-            // @ts-ignore
             this.props.dispatch({
                 type: "setSocket",
                 socket: socket_1,
             });
-            // @ts-ignore
             this.props.setSocket(socket_1);
             socket_1.once('connect', function () {
                 EventRouter({ socket: socket_1, router: router, });
                 socket_1.emit('authentication', {
                     user: useWebSocketsAuth
-                        // @ts-ignore
                         ? _this.props.user
                         : false,
                     reconnection: true,
                 });
             });
-            // @ts-ignore
             socket_1.on('error', function (e) { return createNotification({ type: 'error', error: e }); });
             socket_1.on('connect_error', function (e) { return console.debug(e); });
             socket_1.on('disconnect', function (reason) {
@@ -47103,7 +47096,6 @@ var VXA = (function (exports) {
             socket_1.on('reconnect', function (attemptNumber) {
                 socket_1.emit('authentication', {
                     user: useWebSocketsAuth
-                        // @ts-ignore
                         ? _this.props.user
                         : false,
                     reconnection: true,
@@ -47125,7 +47117,6 @@ var VXA = (function (exports) {
             if (useWebSocketsAuth) {
                 // console.debug('REAUTH',this.state.user)
                 socket_1.emit('authentication', {
-                    // @ts-ignore
                     user: this.props.user,
                     reconnection: true,
                 });
@@ -47134,7 +47125,6 @@ var VXA = (function (exports) {
                 // use the socket as usual
                 socket_1.emit('/user/createrepl', {
                     user: useWebSocketsAuth
-                        // @ts-ignore
                         ? _this.props.user
                         : false,
                     reconnection: true,
@@ -47145,12 +47135,15 @@ var VXA = (function (exports) {
         //   // this.previousRoute = {};
     }
 
-    // @ts-ignore
+    /**
+     * initial one time setup call
+     * @property this
+     * @param options.settings - vxa settings
+     */
     function setup(_a) {
         var settings = _a.settings;
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_b) {
-                // @ts-ignore
                 initSockets.call(this, settings);
                 if (settings.useBodyLoadedClass)
                     setHTMLElementClass({
@@ -47166,28 +47159,13 @@ var VXA = (function (exports) {
             });
         });
     }
-    // @ts-ignore
+    /**
+     * load vxt templates
+     * @param options
+     */
     function loadTemplates(_a) {
-        var 
-        // @ts-ignore
-        config = _a.config, 
-        // @ts-ignore
-        viewxTemplates = _a.viewxTemplates, 
-        // @ts-ignore
-        templates = _a.templates, 
-        // @ts-ignore
-        setTemplates = _a.setTemplates, 
-        // @ts-ignore
-        setUI = _a.setUI, 
-        // @ts-ignore
-        ui = _a.ui, 
-        // @ts-ignore
-        layers = _a.layers, 
-        // @ts-ignore
-        Functions = _a.Functions, 
-        // @ts-ignore
-        functionContext = _a.functionContext;
-        return __awaiter(this, void 0, void 0, function () {
+        var config = _a.config, viewxTemplates = _a.viewxTemplates, templates = _a.templates, setTemplates = _a.setTemplates, setUI = _a.setUI, ui = _a.ui, layers = _a.layers, Functions = _a.Functions, functionContext = _a.functionContext;
+        return __awaiter(this, void 0, Promise, function () {
             var fetchFunction, loadedTemplates, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
@@ -47202,7 +47180,6 @@ var VXA = (function (exports) {
                         _c.label = 3;
                     case 3:
                         loadedTemplates = _b;
-                        // @ts-ignore
                         viewxTemplates = layers.reduce(function (result, layer) {
                             var name = layer.name;
                             result[name] = __assign(__assign({}, loadedTemplates[name]), templates[name]);
@@ -47217,11 +47194,14 @@ var VXA = (function (exports) {
             });
         });
     }
-    // @ts-ignore
+    /**
+     * get template route layer map function
+     * @param options.viewxTemplates - object of vxtTemplates
+     * @param options.pathname - vxtRoutePath
+     */
     function getTemplateRouteLayer(_a) {
         var viewxTemplates = _a.viewxTemplates, pathname = _a.pathname;
         var hasOverlayLayer = false;
-        // @ts-ignore
         return function (layer) {
             var _a;
             var vxtObject;
@@ -47256,26 +47236,8 @@ var VXA = (function (exports) {
         };
     }
     function loadRoute(_a) {
-        var 
-        // @ts-ignore
-        ui = _a.ui, 
-        // @ts-ignore
-        viewxTemplates = _a.viewxTemplates, 
-        // @ts-ignore
-        pathname = _a.pathname, 
-        // @ts-ignore
-        dispatcher = _a.dispatcher, 
-        // @ts-ignore
-        layers = _a.layers, 
-        // @ts-ignore
-        Functions = _a.Functions, 
-        // @ts-ignore
-        functionContext = _a.functionContext, 
-        // @ts-ignore
-        _b = _a.resourceprops, 
-        // @ts-ignore
-        resourceprops = _b === void 0 ? {} : _b;
-        return __awaiter(this, void 0, void 0, function () {
+        var ui = _a.ui, viewxTemplates = _a.viewxTemplates, pathname = _a.pathname, dispatcher = _a.dispatcher, layers = _a.layers, Functions = _a.Functions, functionContext = _a.functionContext, _b = _a.resourceprops, resourceprops = _b === void 0 ? {} : _b;
+        return __awaiter(this, void 0, Promise, function () {
             var applicationRootName, fetchResourcesFunction_1, templateRouteLayers_1, preFunctions, templateViewPromises, templateViewData, action, e_1;
             var _c, _d;
             return __generator(this, function (_e) {
@@ -47291,7 +47253,6 @@ var VXA = (function (exports) {
                             viewxTemplates: viewxTemplates,
                             pathname: pathname
                         }))
-                            // @ts-ignore
                             .filter(function (layer) { return layer; });
                         return [4 /*yield*/, invokeWebhooks({
                                 Functions: Functions,
@@ -47444,12 +47405,12 @@ var VXA = (function (exports) {
             });
         });
     }
-    // @ts-ignore
     function enforcePromise(val) {
         return val instanceof Promise ? val : Promise.resolve(val);
     }
     // @ts-ignore
     function promiseSeries(providers) {
+        // console.log('promiseSeries',{providers})
         var ret = Promise.resolve(null);
         // @ts-ignore
         var results = [];
@@ -47466,18 +47427,19 @@ var VXA = (function (exports) {
         }, ret)
             .then(function () {
             // @ts-ignore
+            // console.log('promiseSeries', { results });
+            // @ts-ignore
             return results;
         }));
     }
-    // @ts-ignore
+    /**
+     * return bound function from function name string, e.g. func:this.props.debug
+     * @param options.Functions - VXA Functions
+     * @param options.functionContext - VXA Function Context
+     * @param options.functionName - function name string
+     */
     function getFunctionFromNameString(_a) {
-        var 
-        // @ts-ignore
-        Functions = _a.Functions, 
-        // @ts-ignore
-        functionContext = _a.functionContext, 
-        // @ts-ignore
-        functionName = _a.functionName;
+        var Functions = _a.Functions, functionContext = _a.functionContext, functionName = _a.functionName;
         var func;
         try {
             if (typeof functionName === "string") {
@@ -47492,7 +47454,6 @@ var VXA = (function (exports) {
                 }
                 else if (functionName.includes("func:window") &&
                     typeof window[name] === "function") {
-                    // @ts-ignore
                     func = window[name].bind(functionContext);
                 }
             }
@@ -47510,57 +47471,49 @@ var VXA = (function (exports) {
         }
     }
     //func:this.props.login, func:window.alert, func:viewx.Functions.logout
+    /* eslint-disable */
     var FUNCTION_NAME_REGEXP = /func:(?:this\.props|window|viewx)(?:\.Functions)?\.(\D.+)*/;
-    // @ts-ignore
+    /* eslint-enable */
+    /**
+     * get function name from function name string i.e. func:viewx.Functions.logout => logout
+    * @param function_name - function name string
+    */
     function getDynamicFunctionName(function_name) {
         return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
     }
 
-    // @ts-ignore
+    /**
+     * bound default vxa functions to the vxafunctioncontext object
+    */
     function bindFunctionContext(_a) {
         var Functions = _a.Functions, functionContext = _a.functionContext;
-        // @ts-ignore
         Functions.fetchJSON = fetchJSON$1.bind(functionContext);
-        // @ts-ignore
         Functions.loadUser = Functions.loadUser.bind(functionContext);
-        // @ts-ignore
         Functions.loginUser = Functions.loginUser.bind(functionContext);
-        // @ts-ignore
         Functions.getUserProfile = Functions.getUserProfile.bind(functionContext);
-        // @ts-ignore
         Functions.validateMFA = Functions.validateMFA.bind(functionContext);
-        // @ts-ignore
         Functions.logoutUser = Functions.logoutUser.bind(functionContext);
     }
     function getMainComponent(options) {
-        if (options === void 0) { options = {
-            application: { state: {} },
-            config: {
-                Functions: {},
-                componentLibraries: {},
-                reactComponents: {},
-                layers: [],
-                settings: { debug: true, setBodyPathnameID: true }
-            }
-        }; }
-        // @ts-ignore
-        var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config;
+        if (!options)
+            throw ReferenceError('invalid VXA Options');
+        else if (!options.config)
+            throw ReferenceError('invalid VXA Options');
+        var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config, application = options.application;
         var Functions = config.Functions, settings = config.settings;
-        // @ts-ignore
         var dispatcher = function (action) { return dispatch(action); };
-        // @ts-ignore
         function Main(appProps) {
             var _a = useGlobalState("templates"), templates = _a[0], setTemplates = _a[1];
             var views = useGlobalState("views")[0];
             var user = useGlobalState("user")[0];
             var viewdata = useGlobalState("viewdata")[0];
             var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
-            var _c = react_9(options.application.state), state = _c[0], setState = _c[1];
+            var _c = react_9(application ? application.state : {}), state = _c[0], setState = _c[1];
             var pathname = appProps.location.pathname;
             var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui, user: user, setUI: setUI, setTemplates: setTemplates, updateState: function (applicationState) { return dispatch({ type: 'setApplicationState', state: applicationState, }); } }, appProps);
             var functionContext = { props: props, state: state, setState: setState, settings: settings, viewx: { Functions: Functions, settings: settings, }, };
+            // eslint-disable-line
             var loadView = react_14(function () {
-                // @ts-ignore
                 return function _loadView(_a) {
                     var _b, _c;
                     var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
@@ -47570,17 +47523,17 @@ var VXA = (function (exports) {
                         viewxTemplates: __assign(__assign({}, templates), (_b = {}, _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)), _b)),
                         pathname: loadViewPathname,
                         dispatcher: dispatcher,
-                        // @ts-ignore
-                        layers: config.layers.filter(function (layer) { return layer.name === layerName; }),
+                        layers: config ? config.layers.filter(function (layer) { return layer.name === layerName; }) : [],
                         Functions: Functions,
                         resourceprops: resourceprops,
                         functionContext: functionContext
                     });
                 };
+                /* eslint-disable */
             }, [templates, functionContext]);
-            // @ts-ignore
+            /* eslint-enable */
             Functions.loadView = loadView;
-            bindFunctionContext({ Functions: Functions, functionContext: functionContext });
+            bindFunctionContext({ Functions: Functions, functionContext: functionContext, });
             var getReactElement$1 = getReactElement.bind({
                 props: props,
                 state: state,
@@ -47592,14 +47545,13 @@ var VXA = (function (exports) {
                 reactComponents: Object.assign({ Link: Link }, config.reactComponents)
             });
             react_10(function () {
-                // @ts-ignore
                 Functions.onLaunch.call(functionContext);
-                // @ts-ignore
                 return function () { return Functions.onShutdown.call(functionContext); };
+                /* eslint-disable */
             }, []);
+            /* eslint-enable */
             react_10(function () {
                 var viewxTemplates = templates;
-                // @ts-ignore
                 var action;
                 function initialize() {
                     return __awaiter(this, void 0, void 0, function () {
@@ -47607,18 +47559,14 @@ var VXA = (function (exports) {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
-                                    // @ts-ignore
                                     Functions.showLoader.call(functionContext, { ui: ui, setUI: setUI });
                                     _a.label = 1;
                                 case 1:
                                     _a.trys.push([1, 6, , 7]);
-                                    // @ts-ignore
                                     setup.call(functionContext, { settings: settings });
                                     if (!(ui.hasLoadedInitialProcess === false)) return [3 /*break*/, 4];
-                                    // @ts-ignore
                                     return [4 /*yield*/, Functions.loadUser.call(functionContext)];
                                 case 2:
-                                    // @ts-ignore
                                     _a.sent();
                                     return [4 /*yield*/, loadTemplates({
                                             config: config,
@@ -47651,11 +47599,9 @@ var VXA = (function (exports) {
                                     return [3 /*break*/, 7];
                                 case 6:
                                     e_1 = _a.sent();
-                                    // @ts-ignore
                                     Functions.log({ type: "error", error: e_1 });
                                     return [3 /*break*/, 7];
                                 case 7:
-                                    // @ts-ignore
                                     Functions.hideLoader.call(functionContext, { ui: action.ui, setUI: setUI });
                                     return [2 /*return*/];
                             }
@@ -47664,21 +47610,20 @@ var VXA = (function (exports) {
                 }
                 initialize();
                 //   // return function cleanup(){}
+                /* eslint-disable */
             }, [pathname /* templates*/]);
-            return (react.createElement(react_5, null, options.config.layers.map(function (layer) {
+            /* eslint-enable */
+            return (react.createElement(react_5, null, config.layers.map(function (layer) {
                 var name = layer.name, type = layer.type;
-                var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
-                // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
+                var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {}); // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
                 if (type === "applicationRoot") {
                     return jsonxChildren;
                 }
                 else {
-                    // @ts-ignore
                     var el = document.querySelector("#" + name);
-                    // @ts-ignore
-                    return reactDom.createPortal(jsonxChildren, 
-                    // @ts-ignore
-                    el);
+                    return el
+                        ? reactDom.createPortal(jsonxChildren, el)
+                        : null;
                 }
             })));
         }
@@ -47905,10 +47850,8 @@ var VXA = (function (exports) {
         });
     }
 
-    // @ts-ignore
     function getViewXapp(options) {
-        if (options === void 0) { options = { config: {} }; }
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var settings, _a, GlobalStateProvider, dispatch, useGlobalState, MainApp, Router;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -47917,12 +47860,10 @@ var VXA = (function (exports) {
                         return [4 /*yield*/, getGlobalStateHooks(options)];
                     case 1:
                         _a = _b.sent(), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
-                        // @ts-ignore
                         options.dispatch = dispatch;
-                        // @ts-ignore
                         options.useGlobalState = useGlobalState;
                         MainApp = getMainComponent(options);
-                        Router = settings.router === 'hash' ? HashRouter : BrowserRouter;
+                        Router = settings.router === "hash" ? HashRouter : BrowserRouter;
                         return [2 /*return*/, (react.createElement(GlobalStateProvider, null,
                                 react.createElement(Router, null,
                                     react.createElement(Route, { path: "*", component: MainApp }))))];
@@ -47931,308 +47872,434 @@ var VXA = (function (exports) {
         });
     }
 
-    const config = {
-      componentLibraries: {},
-      reactComponents: {},
-      querySelector: "#root",
-      settings: {
-        name:'VXA-SPA',
-        version:'0.0.1',
-        addReactToWindow: true,
-        addReactDOMToWindow: true,
-        addJSONXToWindow: true,
-        debug: true,
-        router: 'browser', //hash|memory|broswer,
-        cacheTemplatesOffline: false,
-        cacheLoggedInUser: true,
-        cacheUserTimeout: 1000*60*24*30,
-        templatePath: undefined,
-        templateFetchOptions: {},
-        fetchHeaders: {},
-        dynamicTemplatePath: undefined,
-        dynamicTemplateFetchOptions: {},
-        useBodyLoadedClass: true,
-        useHTMLLoadedClass: true,
-        setBodyPathnameID: true,
-        bodyLoadedClass: '__viewx_body_loaded',
-        htmlLoadedClass: '__viewx_html_loaded',
-        uiLoadedClass: '__viewx_ui_loaded',
-        uiLoadingClass: '__viewx_ui_loading',
-        useWindowRequestQuery: true,
-        useWebSockets: false,
-        useWebSocketsAuth: false,
-        socket_server_options: {},
-        socket_disconnect_message: {},
-        socket_server:undefined,//http://localhost:3000
-        accessTokenProperty: 'x-access-token',
-        routes: {
-          user_login: '/auth/user/login',
-          user_login_METHOD: 'POST',
-          user_login_mfa: '/auth/user/mfa',
-          user_login_mfa_METHOD: 'POST',
-          user_profile: '/auth/user/profile',
-          user_profile_METHOD: 'POST',
-          login: '/login',
-          login_mfa: '/login_mfa',
-          logged_in_homepage: '/home',
-          logged_out_homepage: '/',
-        }
-      },
-      Functions: {
-        log ({ type, data, error, meta }){
-          switch (type) {
-            case 'error':
-              console.error(error, { data, meta });
-              break;
-            case 'warning':
-              console.warn(data, { meta });
-              break;
-            case 'info':
-              console.info(data, { meta });
-              break;
-            default:
-              console.log(data, { meta });
-          }
-        },
-        debug (input) {
-          console.info('DEBUG', {
-            input
-          });
-        },
-        showLoader({
-          ui,
-          setUI,
-        }) {
-          const el = document.querySelector('#loading');
-          el.style.height = '100%';
-          el.style.width = '100%';
-          el.style.position = 'absolute';
-          el.style.background = 'whitesmoke';
-          el.style.textAlign = 'center';
-          el.style.display = 'block';
-          el.style.opacity = 0.8;
-
-          setUI({
-            ...ui,
-            isLoading: true,
-          });
-        },
-        hideLoader({
-          ui,
-          setUI,
-        }) {
-          const el = document.querySelector('#loading');
-          el.style.display = 'none';
-          setUI({
-            ...ui,
-            isLoading: false,
-          });
-        },
-        onPageChange() {
-          
-        },
-        onLaunch() {
-          // console.warn('default onlaunch')
-        },
-        onShutdown() {
-          // console.warn('default onshutdown')
-        },
-        requireAuth: async function requireAuth() {
-          if (this.props.user.loggedIn === false) {
-            let returnURL;
-            if (this.props.location.pathname !== this.settings.routes.login) {
-              this.props.dispatch({
-                type: "setReturnURL",
-                returnURL: this.props.location.pathname,
-              });
-              returnURL = '?returnURL=' + this.props.location.pathname;
+    var config = {
+        componentLibraries: {},
+        reactComponents: {},
+        querySelector: "#root",
+        settings: {
+            name: "VXA-SPA",
+            version: "0.0.1",
+            addReactToWindow: true,
+            addReactDOMToWindow: true,
+            addJSONXToWindow: true,
+            debug: true,
+            router: "browser",
+            cacheTemplatesOffline: false,
+            cacheLoggedInUser: true,
+            cacheUserTimeout: 1000 * 60 * 24 * 30,
+            templatePath: undefined,
+            templateFetchOptions: {},
+            fetchHeaders: {},
+            dynamicTemplatePath: undefined,
+            dynamicTemplateFetchOptions: {},
+            useBodyLoadedClass: true,
+            useHTMLLoadedClass: true,
+            setBodyPathnameID: true,
+            bodyLoadedClass: "__viewx_body_loaded",
+            htmlLoadedClass: "__viewx_html_loaded",
+            uiLoadedClass: "__viewx_ui_loaded",
+            uiLoadingClass: "__viewx_ui_loading",
+            useWindowRequestQuery: true,
+            useWebSockets: false,
+            useWebSocketsAuth: false,
+            socket_server_options: {},
+            socket_disconnect_message: {},
+            socket_server: undefined,
+            accessTokenProperty: "x-access-token",
+            routes: {
+                user_login: "/auth/user/login",
+                user_login_METHOD: "POST",
+                user_login_mfa: "/auth/user/mfa",
+                user_login_mfa_METHOD: "POST",
+                user_profile: "/auth/user/profile",
+                user_profile_METHOD: "POST",
+                login: "/login",
+                login_mfa: "/login_mfa",
+                logged_in_homepage: "/home",
+                logged_out_homepage: "/"
             }
-            this.props.history.push(this.settings.routes.login+returnURL);
-            return undefined;
-          } else return true;
         },
-        requireMFA: async function requireMFA() {
-          if (this.props.user.loggedIn === false) this.props.history.push(this.settings.routes.login);
-          else if (this.props.user.loggedInMFA === false && this.props.user.loggedIn) this.props.history.push(this.settings.routes.login_mfa);
-        },
-        loadUser: async function () {
-          // try {
-          //   if (results[results.length - 1] === 'true') {
-          //     this.props.authenticatedMFA();
-          //   }
-          //   let jwt_token = results[ 0 ];
-          //   let jwt_token_data = JSON.parse(results[ 1 ]);
-          //   let jwt_user_profile = {};
-          //   try {
-          //     jwt_user_profile = JSON.parse(results[ 2 ]);
-          //   } catch (e) {
-          //     this.props.getUserProfile(jwt_token);
-          //     this.props.initializeAuthenticatedUser(jwt_token, false);
-          //     this.props.errorNotification(new Error('Invalid User Profile'));
-          //   }
-          //   if (jwt_token_data && jwt_user_profile) {
-          //     let url = '/api/jwt/token';
-          //     let response = {};
-          //     let json = {
-          //       token: jwt_token_data.token,
-          //       expires: jwt_token_data.expires,
-          //       timeout: jwt_token_data.timeout,
-          //       user: jwt_user_profile,
-          //     };
-          //     let currentTime = new Date();
-              
-          //     if (moment(jwt_token_data.expires).isBefore(currentTime)) {
-          //       let expiredTokenError = new Error(`Access Token Expired ${moment(jwt_token_data.expires).format('LLLL')}`);
-          //       this.props.logoutUser();
-          //       throw expiredTokenError;
-          //     } else {
-          //       this.props.saveUserProfile(url, response, json);
-          //       this.props.initializeAuthenticatedUser(json.token, false);
-          //     }
-          //   } else if (jwt_token) {
-          //     this.props.getUserProfile(jwt_token);
-          //     this.props.initializeAuthenticatedUser(jwt_token, false);
-          //     this.props.createNotification({ text: 'welcome back', timeout:4000,  });
-          return true;
-        },
-        getSocketUser({ token, expires, timeout, profile, }) {
-            return {
-              email: profile.email,
-              username: profile.name || profile.username,
-              jwt_token: token,
-              jwt_token_expires: expires,
-              jwt_token_timeout: timeout,
-              userdata: profile,
-            };
-        },
-        loginUser: async function ({ username, password, remember_me, }) {
-          try {
-            const queryParams = qs.parse(window.location.search);
-            console.log('loginUser', { username, password, queryParams, }, this);
-            const tokenData = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
-              method: this.settings.routes.user_login_METHOD,
-              headers: { 'Accept': 'application/json','Content-Type': 'application/json' },
-              body: JSON.stringify({
-                username,
-                password,
-              })
-            });
-            // console.log({ tokenData });
-            const { token, expires, timeout, } = tokenData;
-            // console.log({ token, expires, timeout, } )
-            if (!token) throw new ReferenceError('Invalid login token');
-            const userLoginAction = {
-              type: 'setUser',
-              user: {
-                token,//AsyncStorage.getItem(constants.jwt_token.TOKEN_NAME),
-                tokenData,//AsyncStorage.getItem(constants.jwt_token.TOKEN_DATA),
-                expires,
-                timeout,
-                loggedIn: true,
-                rememberMe: typeof remember_me !== 'undefined' ? remember_me : true,
-                // loggedInMFA: false, 
-              },
-            };
-            this.viewx.Functions.showLoader.call(this,{ ui:this.props.ui, setUI:this.props.setUI, });
-            this.props.dispatch(userLoginAction);
-            const profile = await this.viewx.Functions.getUserProfile({ token });
-            this.props.dispatch({ type: 'setUser', user:{ profile}, });
-
-            //send welcome message
-            if (this.settings.useWebSockets) {
-              const user = this.viewx.Functions.getSocketUser({ token, expires, timeout, profile });
-              this.props.socket.emit('authentication', {
-                user,
-                reconnection: true,
-              });
+        Functions: {
+            // @ts-ignore
+            log: function (_a) {
+                var type = _a.type, data = _a.data, error = _a.error, meta = _a.meta;
+                switch (type) {
+                    case "error":
+                        console.error(error, { data: data, meta: meta });
+                        break;
+                    case "warning":
+                        console.warn(data, { meta: meta });
+                        break;
+                    case "info":
+                        console.info(data, { meta: meta });
+                        break;
+                    default:
+                        console.log(data, { meta: meta });
+                }
+            },
+            // @ts-ignore
+            debug: function (input) {
+                console.info("DEBUG", {
+                    input: input
+                });
+            },
+            // @ts-ignore
+            showLoader: function (_a) {
+                var ui = _a.ui, setUI = _a.setUI;
+                var el = document.querySelector("#loading");
+                if (el) {
+                    el.style.height = "100%";
+                    el.style.width = "100%";
+                    el.style.position = "absolute";
+                    el.style.background = "whitesmoke";
+                    el.style.textAlign = "center";
+                    el.style.display = "block";
+                    el.style.opacity = "0.8";
+                }
+                setUI(__assign(__assign({}, ui), { isLoading: true }));
+            },
+            // @ts-ignore
+            hideLoader: function (_a) {
+                var ui = _a.ui, setUI = _a.setUI;
+                var el = document.querySelector("#loading");
+                if (el)
+                    el.style.display = "none";
+                setUI(__assign(__assign({}, ui), { isLoading: false }));
+            },
+            onPageChange: function () { },
+            onLaunch: function () {
+                // console.warn('default onlaunch')
+            },
+            onShutdown: function () {
+                // console.warn('default onshutdown')
+            },
+            requireAuth: function requireAuth() {
+                return __awaiter(this, void 0, void 0, function () {
+                    var returnURL;
+                    return __generator(this, function (_a) {
+                        // @ts-ignore
+                        if (this.props.user.loggedIn === false) {
+                            returnURL = void 0;
+                            // @ts-ignore
+                            if (this.props.location.pathname !== this.settings.routes.login) {
+                                // @ts-ignore
+                                this.props.dispatch({
+                                    type: "setReturnURL",
+                                    // @ts-ignore
+                                    returnURL: this.props.location.pathname
+                                });
+                                // @ts-ignore
+                                returnURL = "?returnURL=" + this.props.location.pathname;
+                            }
+                            // @ts-ignore
+                            this.props.history.push(this.settings.routes.login + returnURL);
+                            return [2 /*return*/, undefined];
+                        }
+                        else
+                            return [2 /*return*/, true];
+                        return [2 /*return*/];
+                    });
+                });
+            },
+            requireMFA: function requireMFA() {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        // @ts-ignore
+                        if (this.props.user.loggedIn === false) {
+                            // @ts-ignore
+                            this.props.history.push(this.settings.routes.login);
+                        }
+                        else if (
+                        // @ts-ignore
+                        this.props.user.loggedInMFA === false &&
+                            // @ts-ignore
+                            this.props.user.loggedIn)
+                            // @ts-ignore
+                            this.props.history.push(this.settings.routes.login_mfa);
+                        return [2 /*return*/];
+                    });
+                });
+            },
+            loadUser: function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        // try {
+                        //   if (results[results.length - 1] === 'true') {
+                        //     this.props.authenticatedMFA();
+                        //   }
+                        //   let jwt_token = results[ 0 ];
+                        //   let jwt_token_data = JSON.parse(results[ 1 ]);
+                        //   let jwt_user_profile = {};
+                        //   try {
+                        //     jwt_user_profile = JSON.parse(results[ 2 ]);
+                        //   } catch (e) {
+                        //     this.props.getUserProfile(jwt_token);
+                        //     this.props.initializeAuthenticatedUser(jwt_token, false);
+                        //     this.props.errorNotification(new Error('Invalid User Profile'));
+                        //   }
+                        //   if (jwt_token_data && jwt_user_profile) {
+                        //     let url = '/api/jwt/token';
+                        //     let response = {};
+                        //     let json = {
+                        //       token: jwt_token_data.token,
+                        //       expires: jwt_token_data.expires,
+                        //       timeout: jwt_token_data.timeout,
+                        //       user: jwt_user_profile,
+                        //     };
+                        //     let currentTime = new Date();
+                        //     if (moment(jwt_token_data.expires).isBefore(currentTime)) {
+                        //       let expiredTokenError = new Error(`Access Token Expired ${moment(jwt_token_data.expires).format('LLLL')}`);
+                        //       this.props.logoutUser();
+                        //       throw expiredTokenError;
+                        //     } else {
+                        //       this.props.saveUserProfile(url, response, json);
+                        //       this.props.initializeAuthenticatedUser(json.token, false);
+                        //     }
+                        //   } else if (jwt_token) {
+                        //     this.props.getUserProfile(jwt_token);
+                        //     this.props.initializeAuthenticatedUser(jwt_token, false);
+                        //     this.props.createNotification({ text: 'welcome back', timeout:4000,  });
+                        return [2 /*return*/, true];
+                    });
+                });
+            },
+            // @ts-ignore
+            getSocketUser: function (_a) {
+                var token = _a.token, expires = _a.expires, timeout = _a.timeout, profile = _a.profile;
+                return {
+                    email: profile.email,
+                    username: profile.name || profile.username,
+                    jwt_token: token,
+                    jwt_token_expires: expires,
+                    jwt_token_timeout: timeout,
+                    userdata: profile
+                };
+            },
+            // @ts-ignore
+            loginUser: function (_a) {
+                var username = _a.username, password = _a.password, remember_me = _a.remember_me;
+                return __awaiter(this, void 0, void 0, function () {
+                    var queryParams, tokenData, token, expires, timeout, userLoginAction, profile, user, e_1;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _b.trys.push([0, 3, , 4]);
+                                queryParams = qs.parse(window.location.search);
+                                console.log("loginUser", { username: username, password: password, queryParams: queryParams }, this);
+                                return [4 /*yield*/, this.viewx.Functions.fetchJSON(
+                                    // @ts-ignore
+                                    this.settings.routes.user_login, {
+                                        // @ts-ignore
+                                        method: this.settings.routes.user_login_METHOD,
+                                        headers: {
+                                            Accept: "application/json",
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            username: username,
+                                            password: password
+                                        })
+                                    })];
+                            case 1:
+                                tokenData = _b.sent();
+                                token = tokenData.token, expires = tokenData.expires, timeout = tokenData.timeout;
+                                // console.log({ token, expires, timeout, } )
+                                if (!token)
+                                    throw new ReferenceError("Invalid login token");
+                                userLoginAction = {
+                                    type: "setUser",
+                                    user: {
+                                        token: token,
+                                        tokenData: tokenData,
+                                        expires: expires,
+                                        timeout: timeout,
+                                        loggedIn: true,
+                                        rememberMe: typeof remember_me !== "undefined" ? remember_me : true
+                                        // loggedInMFA: false,
+                                    }
+                                };
+                                // @ts-ignore
+                                this.viewx.Functions.showLoader.call(this, {
+                                    // @ts-ignore
+                                    ui: this.props.ui,
+                                    // @ts-ignore
+                                    setUI: this.props.setUI
+                                });
+                                // @ts-ignore
+                                this.props.dispatch(userLoginAction);
+                                return [4 /*yield*/, this.viewx.Functions.getUserProfile({ token: token })];
+                            case 2:
+                                profile = _b.sent();
+                                // @ts-ignore
+                                this.props.dispatch({ type: "setUser", user: { profile: profile } });
+                                //send welcome message
+                                // @ts-ignore
+                                if (this.settings.useWebSockets) {
+                                    user = this.viewx.Functions.getSocketUser({
+                                        token: token,
+                                        expires: expires,
+                                        timeout: timeout,
+                                        profile: profile
+                                    });
+                                    // @ts-ignore
+                                    this.props.socket.emit("authentication", {
+                                        user: user,
+                                        reconnection: true
+                                    });
+                                }
+                                // @ts-ignore
+                                console.log("this.props.ui.returnURL", this.props.ui.returnURL);
+                                // @ts-ignore
+                                this.props.history.push(
+                                // @ts-ignore
+                                this.props.ui.returnURL || this.settings.routes.logged_in_homepage);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_1 = _b.sent();
+                                // @ts-ignore
+                                this.viewx.Functions.log({ type: "error", error: e_1 });
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                });
+            },
+            // @ts-ignore
+            getUserProfile: function (_a) {
+                var token = _a.token;
+                return __awaiter(this, void 0, void 0, function () {
+                    var _b;
+                    return __generator(this, function (_c) {
+                        switch (_c.label) {
+                            case 0: return [4 /*yield*/, this.viewx.Functions.fetchJSON(
+                                // @ts-ignore
+                                this.settings.routes.user_profile, {
+                                    // @ts-ignore
+                                    method: this.settings.routes.user_profile_METHOD,
+                                    // @ts-ignore
+                                    headers: (_b = {}, _b[this.settings.accessTokenProperty] = token, _b)
+                                })];
+                            case 1: 
+                            // @ts-ignore
+                            return [2 /*return*/, _c.sent()];
+                        }
+                    });
+                });
+            },
+            // @ts-ignore
+            validateMFA: function (_a) {
+                var code = _a.code;
+                return __awaiter(this, void 0, void 0, function () {
+                    var response, e_2;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                _b.trys.push([0, 2, , 3]);
+                                return [4 /*yield*/, this.viewx.Functions.fetchJSON(
+                                    // @ts-ignore
+                                    this.settings.routes.user_login, {
+                                        // @ts-ignore
+                                        method: this.settings.routes.user_login_mfa_METHOD,
+                                        headers: { Accept: "application/json" },
+                                        body: JSON.stringify({
+                                            code: code
+                                        })
+                                    })];
+                            case 1:
+                                response = _b.sent();
+                                if (response && response.data && response.data.authenticated) ;
+                                else if (response.result === "error") {
+                                    throw new Error(response.data.error);
+                                    //           return this.enforceMFA()(dispatch, getState);
+                                }
+                                else
+                                    throw Error("Invalid Repsonse");
+                                return [3 /*break*/, 3];
+                            case 2:
+                                e_2 = _b.sent();
+                                // @ts-ignore
+                                this.viewx.Functions.log({ type: "error", error: e_2 });
+                                return [3 /*break*/, 3];
+                            case 3: return [2 /*return*/];
+                        }
+                    });
+                });
+            },
+            logoutUser: function () {
+                var userLoginProps = [
+                    "token",
+                    "tokenData",
+                    "expires",
+                    "timeout",
+                    "profile",
+                    "loggedIn",
+                    "loggedInMFA"
+                ];
+                //remove cache keys
+                // @ts-ignore
+                if (this.settings.cacheLoggedInUser)
+                    removeKeys("user", userLoginProps);
+                //remove from state
+                var userLogoutAction = userLoginProps.reduce(function (result, prop) {
+                    // @ts-ignore
+                    result.user[prop] = false;
+                    return result;
+                }, {
+                    type: "setUser",
+                    user: {}
+                });
+                // @ts-ignore
+                this.viewx.Functions.showLoader.call(this, {
+                    // @ts-ignore
+                    ui: this.props.ui,
+                    // @ts-ignore
+                    setUI: this.props.setUI
+                });
+                // @ts-ignore
+                this.props.dispatch(userLogoutAction);
+                // @ts-ignore
+                this.props.history.push(this.settings.routes.logged_out_homepage);
             }
-
-            console.log('this.props.ui.returnURL', this.props.ui.returnURL);
-            this.props.history.push(this.props.ui.returnURL || this.settings.routes.logged_in_homepage);
-            // this.props.dispatch({ type: 'setReturnURL', returnURL:undefined, });
-
-          } catch (e) {
-            this.viewx.Functions.log({ type: 'error', error: e, });
-          }
         },
-        getUserProfile: async function({ token }) {
-          return await this.viewx.Functions.fetchJSON(this.settings.routes.user_profile, {
-            method: this.settings.routes.user_profile_METHOD,
-            headers: { [this.settings.accessTokenProperty]: token},
-          });
-        },
-        validateMFA: async function({ code }) {
-          try {
-            const response = await this.viewx.Functions.fetchJSON(this.settings.routes.user_login, {
-              method: this.settings.routes.user_login_mfa_METHOD,
-              headers: { 'Accept': 'application/json' },
-              body: JSON.stringify({
-                code,
-              })
-            });
-            if (response && response.data && response.data.authenticated) {
-              //set auth mfa true
-              //login or redirect url
-            } else if (response.result === 'error') {
-              throw new Error(response.data.error);
-            //           return this.enforceMFA()(dispatch, getState);
-              
-            } else throw Error('Invalid Repsonse');
-            
-          } catch (e) {
-            this.viewx.Functions.log({ type: 'error', error: e, });
-          }
-        },
-        logoutUser() {
-          const userLoginProps = [ 'token', 'tokenData', 'expires', 'timeout', 'profile', 'loggedIn', 'loggedInMFA', ];
-          //remove cache keys
-          if(this.settings.cacheLoggedInUser) removeKeys('user', userLoginProps);
-          //remove from state
-          const userLogoutAction = userLoginProps.reduce((result, prop) => { 
-            result.user[ prop ] = false;
-            return result;
-          } ,{
-              type: 'setUser',
-              user:{},
-          });
-          this.viewx.Functions.showLoader.call(this,{ ui:this.props.ui, setUI:this.props.setUI, });
-          this.props.dispatch(userLogoutAction);
-          this.props.history.push(this.settings.routes.logged_out_homepage);
-        },
-      },
-      layers: [{
-          order: 100,
-          name: 'loading',
-          system: true,
-          type: 'loadingView',
-        },
-        {
-          order: 200,
-          name: 'modal',
-          system: true,
-          type:'overlay',
-        },
-        // overlay
-        {
-          order: 400,
-          name: 'header',
-          system: true,
-          type: 'view',
-        },
-        // nav
-        // footer
-        // error
-        {
-          order: 900,
-          name: 'root',
-          system: true,
-          type: 'applicationRoot',
-        },
-      ],
+        layers: [
+            {
+                order: 100,
+                name: "loading",
+                system: true,
+                type: "loadingView"
+            },
+            {
+                order: 200,
+                name: "modal",
+                system: true,
+                type: "overlay"
+            },
+            // overlay
+            {
+                order: 400,
+                name: "header",
+                system: true,
+                type: "view"
+            },
+            // nav
+            // footer
+            // error
+            {
+                order: 900,
+                name: "root",
+                system: true,
+                type: "applicationRoot"
+            }
+        ]
     };
 
+    var customFileType;
+    (function (customFileType) {
+        customFileType["script"] = "script";
+        customFileType["style"] = "style";
+    })(customFileType || (customFileType = {}));
+
     var addedReact = false;
-    // @ts-ignore
     function getFilePromise(_a) {
         var type = _a.type, file = _a.file, i = _a.i, name = _a.name;
         return new Promise(function (resolve, reject) {
@@ -48272,7 +48339,6 @@ var VXA = (function (exports) {
             }
         });
     }
-    // @ts-ignore
     function getComponentPromise(customComponent) {
         return new Promise(function (resolve, reject) {
             var returnedFile = false;
@@ -48288,9 +48354,7 @@ var VXA = (function (exports) {
                     }, 60000);
                 }
                 if (stylesheets.length) {
-                    // @ts-ignore
                     stylesheets.forEach(function (stylesheet, i) {
-                        // @ts-ignore
                         return insertStyleSheet({
                             src: stylesheet,
                             name: name_1 + "-" + i
@@ -48325,86 +48389,78 @@ var VXA = (function (exports) {
             }
         });
     }
-    // @ts-ignore
     function getReactLibrariesAndComponents(_a) {
         var customComponents = _a.customComponents;
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var componentLibraries, reactComponents;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         componentLibraries = {};
                         reactComponents = {};
+                        if (!(customComponents && customComponents.length)) return [3 /*break*/, 2];
                         return [4 /*yield*/, Promise.all(customComponents.map(getComponentPromise))];
                     case 1:
                         _b.sent();
-                        // @ts-ignore
                         customComponents.forEach(function (customComponent) {
                             var type = customComponent.type, name = customComponent.name, jsonx = customComponent.jsonx, options = customComponent.options, functionBody = customComponent.functionBody;
                             if (type === "library") {
                                 if (jsonx) {
-                                    // @ts-ignore
                                     componentLibraries[name] = Object.keys(jsonx).reduce(function (result, prop) {
                                         var libraryComponent = jsonx[prop];
                                         var type = libraryComponent.type, name = libraryComponent.name, jsonxComponent = libraryComponent.jsonxComponent, options = libraryComponent.options, functionBody = libraryComponent.functionBody;
                                         if (type === "component") {
-                                            // @ts-ignore
                                             result[name] = _jsonxComponents.getReactClassComponent(jsonxComponent, options);
                                         }
                                         else {
-                                            // @ts-ignore
                                             result[name] = _jsonxComponents.getReactFunctionComponent(jsonxComponent, functionBody, options);
                                         }
                                         return result;
                                     }, {});
-                                    // @ts-ignore
                                 }
                                 else
                                     componentLibraries[name] = window[name];
                             }
                             else if (type === "component") {
                                 if (jsonx) {
-                                    // @ts-ignore
                                     reactComponents[name] = _jsonxComponents.getReactClassComponent(jsonx, options);
-                                    // @ts-ignore
                                 }
                                 else
                                     reactComponents[name] = window[name];
                             }
                             else if (type === "function") {
                                 if (jsonx) {
-                                    // @ts-ignore
                                     reactComponents[name] = _jsonxComponents.getReactFunctionComponent(jsonx, functionBody, options);
-                                    // @ts-ignore
                                 }
                                 else
                                     reactComponents[name] = window[name];
                             }
                         });
-                        return [2 /*return*/, {
-                                componentLibraries: componentLibraries,
-                                reactComponents: reactComponents
-                            }];
+                        _b.label = 2;
+                    case 2: return [2 /*return*/, {
+                            componentLibraries: componentLibraries,
+                            reactComponents: reactComponents
+                        }];
                 }
             });
         });
     }
-    // @ts-ignore
     function addCustomFiles(_a) {
         var type = _a.type, files = _a.files;
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, Promise.all(
-                        // @ts-ignore
-                        files.map(function (file, i) {
-                            return getFilePromise({
-                                type: type,
-                                file: file,
-                                i: i,
-                                name: type
-                            });
-                        }))];
+                    case 0:
+                        if (!files || !files.length)
+                            return [2 /*return*/, []];
+                        return [4 /*yield*/, Promise.all(files.map(function (file, i) {
+                                return getFilePromise({
+                                    type: type,
+                                    file: file,
+                                    i: i,
+                                    name: type
+                                });
+                            }))];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -48412,8 +48468,8 @@ var VXA = (function (exports) {
     }
     function configureViewx(options) {
         if (options === void 0) { options = {}; }
-        return __awaiter(this, void 0, void 0, function () {
-            var layerMaxOrder, applicationRootLayerName, configuration, layerObject, reactJSONXComponents;
+        return __awaiter(this, void 0, Promise, function () {
+            var layerMaxOrder, applicationRootLayerName, configuration, allLayers, layerObject, reactJSONXComponents;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -48421,33 +48477,32 @@ var VXA = (function (exports) {
                         configuration = __assign({}, config);
                         configuration.settings = __assign(__assign(__assign({}, configuration.settings), options.settings), { routes: __assign(__assign({}, configuration.settings.routes), options.settings.routes) });
                         configuration.Functions = __assign(__assign({}, configuration.Functions), options.customFunctions);
-                        layerObject = [].concat(configuration.layers, options.layers)
-                            // @ts-ignore
+                        allLayers = [[], configuration.layers, options.layers].flat();
+                        layerObject = allLayers
                             .reduce(function (result, layerObject) {
                             var order = layerObject.order, name = layerObject.name, type = layerObject.type;
                             if (order > layerMaxOrder)
                                 layerMaxOrder = order;
-                            if (type === 'applicationRoot')
+                            if (type === "applicationRoot")
                                 applicationRootLayerName = name;
                             result[name] = layerObject;
                             return result;
                         }, {});
+                        if (!applicationRootLayerName)
+                            throw ReferenceError("Invalid/Missing ApplicationRoot Layer");
                         if (layerObject[applicationRootLayerName].order !== layerMaxOrder)
                             layerObject[applicationRootLayerName].order = layerMaxOrder + 1;
                         configuration.layers = Object.keys(layerObject).map(function (layerName) { return layerObject[layerName]; });
                         return [4 /*yield*/, Promise.all([
                                 getReactLibrariesAndComponents({
-                                    // @ts-ignore
                                     customComponents: options.customComponents
                                 }),
                                 addCustomFiles({
-                                    type: "script",
-                                    // @ts-ignore
+                                    type: customFileType.script,
                                     files: options.customScripts
                                 }),
                                 addCustomFiles({
-                                    type: "style",
-                                    // @ts-ignore
+                                    type: customFileType.style,
                                     files: options.customStyles
                                 })
                             ])];
@@ -48477,6 +48532,7 @@ var VXA = (function (exports) {
       customFunctions: {
         /*Function, */
       },
+      // config: {},
       layers: [
         // loading,
         // modal,
@@ -48590,26 +48646,25 @@ var VXA = (function (exports) {
                       password: ''
                     },
                   },
-                  __dangerouslyInsertFunctionComponents:{
+                  __dangerouslyInsertFunctionComponents: {
                     render: {
                       reactComponent: {
                         component: 'form',
                         thisprops: {
-                          onSubmit:['handleSubmit']
+                          onSubmit: ['handleSubmit']
                         },
-                        children: [
-                          {
+                        children: [{
                             component: 'Formik.Field',
                             props: {
                               type: 'text',
                               name: 'username',
-                              placeholder:'username',
+                              placeholder: 'username',
                             }
                           },
                           {
                             component: 'Formik.ErrorMessage',
                             props: {
-                              name:'username'
+                              name: 'username'
                             }
                           },
                           {
@@ -48622,9 +48677,9 @@ var VXA = (function (exports) {
                           {
                             component: 'button',
                             props: {
-                              type:'submit'
+                              type: 'submit'
                             },
-                            children:'Submit'
+                            children: 'Submit'
                           },
                         ]
                       }
@@ -48636,11 +48691,13 @@ var VXA = (function (exports) {
                   if (!values.username) {
                     errors.username = 'Required';
                   } 
+                  /* eslint-disable */
                   // else if (
-                  //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                    // eslint-disable-next-line
                   // ) {
                   //   errors.email = 'Invalid email address';
                   // }
+                  /* eslint-enable */
                   return errors;
                 })`,
                     onSubmit: `(function(values, { setSubmitting }){
@@ -48817,7 +48874,7 @@ var VXA = (function (exports) {
     };
 
     function ViewXApp(options$1) {
-        if (options$1 === void 0) { options$1 = { config: {} }; }
+        if (options$1 === void 0) { options$1 = {}; }
         return __awaiter(this, void 0, Promise, function () {
             var appOptions, _a, app;
             return __generator(this, function (_b) {
