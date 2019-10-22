@@ -3,7 +3,7 @@ import {
   // createGlobalState,
 } from "react-hooks-global-state";
 // @ts-ignore
-import { setCacheStore, getFromCacheStore, } from "../util/data";
+import { setCacheStore, getFromCacheStore } from "../util/data";
 
 export async function getGlobalStateHooks(options: any = {}) {
   const settings = options.config.settings;
@@ -38,7 +38,7 @@ export async function getGlobalStateHooks(options: any = {}) {
           }
         };
       case "setView":
-          // console.warn('setting setView', { action },state.ui);
+        // console.warn('setting setView', { action },state.ui);
         return {
           ...state,
           views: {
@@ -55,21 +55,26 @@ export async function getGlobalStateHooks(options: any = {}) {
           }
         };
       case "setReturnURL":
-          // console.warn('setting RETURN URL', { action },state.ui);
-          return {
+        // console.warn('setting RETURN URL', { action },state.ui);
+        return {
           ...state,
           ui: {
             ...state.ui,
-            returnURL: action.returnURL,
-          },
+            returnURL: action.returnURL
+          }
         };
       case "setUser":
         if (settings.cacheLoggedInUser || action.rememberMe) {
           // @ts-ignore
           Object.keys(action.user)
-            .filter(prop => prop !== 'type')
+            .filter(prop => prop !== "type")
             .forEach(prop => {
-              setCacheStore('user', prop, action.user[prop], settings.cacheUserTimeout);
+              setCacheStore(
+                "user",
+                prop,
+                action.user[prop],
+                settings.cacheUserTimeout
+              );
             });
         }
 
@@ -83,12 +88,12 @@ export async function getGlobalStateHooks(options: any = {}) {
       case "setSocket":
         return {
           ...state,
-          socker: action.socket,
+          socker: action.socket
         };
       case "setApplicationState":
         return {
           ...state,
-          ...action.state,
+          ...action.state
         };
       default:
         if (action.type.includes("toggleMatchedRouteLayer")) {
@@ -106,53 +111,50 @@ export async function getGlobalStateHooks(options: any = {}) {
     }
   };
 
-
   const initialState = {
     ...options.application.state,
     views: {
-      layout: null,
       ...options.vxaState.views
     },
     viewdata: {
-      layout: null,
       ...options.vxaState.viewdata
     },
     templates: {
       ...options.templates
     },
-    socket:{},
+    socket: {},
     ui: {
       isLoading: true,
       isModalOpen: false,
       hasOverlayLayer: false,
       hasLoadedInitialProcess: false,
-      hasPreloadedTemplates: settings.hasPreloadedTemplates||false,
+      hasPreloadedTemplates: settings.hasPreloadedTemplates || false,
       returnURL: undefined,
       ...layerOpenState,
       ...options.vxaState.ui
     },
     user: {
       token: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'token')
-        : undefined, 
+        ? getFromCacheStore("user", "token")
+        : undefined,
       tokenData: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'tokenData')
+        ? getFromCacheStore("user", "tokenData")
         : undefined,
       expires: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'expires')
+        ? getFromCacheStore("user", "expires")
         : undefined,
       timeout: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'timeout')
+        ? getFromCacheStore("user", "timeout")
         : undefined,
       profile: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'profile') || {}
+        ? getFromCacheStore("user", "profile") || {}
         : {},
       fetchHeaders: {},
       loggedIn: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'loggedIn') || false
+        ? getFromCacheStore("user", "loggedIn") || false
         : false,
       loggedInMFA: settings.cacheLoggedInUser
-        ? getFromCacheStore('user', 'loggedInMFA') || false
+        ? getFromCacheStore("user", "loggedInMFA") || false
         : false,
       ...options.vxaState.user
     }

@@ -5,17 +5,33 @@ import { findMatchingRoutePath } from "test-matching-route";
 import { fetchJSON, fetchResources } from "./data";
 // @ts-ignore
 import { setPageAttributes, setHTMLElementClass } from "./html";
-import { VXASettings, VXAFunctionContext, VXATemplates, appLoadTemplates, VXALayer, appGetTemplateRouteLayer, VXAFunction, VXAFunctions, VXADispatchAction, jsonxResourceProps, VXATemplateRouteLayer, appLoadRoute, } from "../../../types";
+import {
+  VXASettings,
+  VXAFunctionContext,
+  VXATemplates,
+  appLoadTemplates,
+  VXALayer,
+  appGetTemplateRouteLayer,
+  VXAFunction,
+  VXAFunctions,
+  VXADispatchAction,
+  jsonxResourceProps,
+  VXATemplateRouteLayer,
+  appLoadRoute
+} from "../../../types";
 // import { insertScriptParams } from '../../internal_types/config';
 
-import { initSockets, } from './socket';
+import { initSockets } from "./socket";
 
 /**
  * initial one time setup call
- * @property this 
- * @param options.settings - vxa settings 
+ * @property this
+ * @param options.settings - vxa settings
  */
-export async function setup(this:VXAFunctionContext, { settings }: { settings: VXASettings;}):Promise<void> {
+export async function setup(
+  this: VXAFunctionContext,
+  { settings }: { settings: VXASettings }
+): Promise<void> {
   initSockets.call(this, settings);
 
   if (settings.useBodyLoadedClass)
@@ -31,11 +47,11 @@ export async function setup(this:VXAFunctionContext, { settings }: { settings: V
 }
 
 /**
- * load vxt templates 
- * @param options 
+ * load vxt templates
+ * @param options
  */
-export async function loadTemplates ({
-  config, 
+export async function loadTemplates({
+  config,
   viewxTemplates,
   templates,
   setTemplates,
@@ -44,16 +60,18 @@ export async function loadTemplates ({
   layers,
   Functions,
   functionContext
-}:appLoadTemplates): Promise<{ viewxTemplates: VXATemplates; }> { 
+}: appLoadTemplates): Promise<{ viewxTemplates: VXATemplates }> {
   // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
   const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(
     functionContext
   );
 
-  const loadedTemplates = (config.settings.hasPreloadedTemplates) ? {} : await fetchFunction(
-    config.settings.templatePath,
-    config.settings.templateFetchOptions
-  );
+  const loadedTemplates = config.settings.hasPreloadedTemplates
+    ? {}
+    : await fetchFunction(
+        config.settings.templatePath,
+        config.settings.templateFetchOptions
+      );
 
   viewxTemplates = layers.reduce((result, layer) => {
     const { name } = layer;
@@ -79,19 +97,23 @@ export async function loadTemplates ({
  * @param options.viewxTemplates - object of vxtTemplates
  * @param options.pathname - vxtRoutePath
  */
-export function getTemplateRouteLayer({ viewxTemplates, pathname }: appGetTemplateRouteLayer): (layer: VXALayer) => any {
+export function getTemplateRouteLayer({
+  viewxTemplates,
+  pathname
+}: appGetTemplateRouteLayer): (layer: VXALayer) => any {
   let hasOverlayLayer: boolean = false;
-  
-  return (layer:VXALayer) => {
+
+  return (layer: VXALayer) => {
     let vxtObject;
     const { name, type } = layer;
-    const templateRoute = findMatchingRoutePath( 
+    const templateRoute = findMatchingRoutePath(
       viewxTemplates[name],
       pathname,
       {
         return_matching_keys: true
       }
     );
+    console.log({ templateRoute, name, type });
     if (type === "overlay" && templateRoute) hasOverlayLayer = true;
     if (
       !templateRoute &&
@@ -117,11 +139,20 @@ export function getTemplateRouteLayer({ viewxTemplates, pathname }: appGetTempla
   };
 }
 
-export async function loadRoute({ ui, viewxTemplates, pathname, dispatcher, layers, Functions, functionContext, resourceprops = {} }: appLoadRoute): Promise<VXADispatchAction | boolean | undefined | any> {
+export async function loadRoute({
+  ui,
+  viewxTemplates,
+  pathname,
+  dispatcher,
+  layers,
+  Functions,
+  functionContext,
+  resourceprops = {}
+}: appLoadRoute): Promise<VXADispatchAction | boolean | undefined | any> {
   let applicationRootName = "root";
   try {
     const fetchResourcesFunction = Functions.fetchResources || fetchResources;
-    const templateRouteLayers:VXATemplateRouteLayer[] = layers
+    const templateRouteLayers: VXATemplateRouteLayer[] = layers
       .map(
         getTemplateRouteLayer({
           viewxTemplates,
@@ -148,9 +179,11 @@ export async function loadRoute({ ui, viewxTemplates, pathname, dispatcher, laye
         templateRoute: templateRouteLayer.templateRoute
       })
     );
-    const templateViewData:jsonxResourceProps[] = await Promise.all(templateViewPromises);
+    const templateViewData: jsonxResourceProps[] = await Promise.all(
+      templateViewPromises
+    );
     const action = templateViewData.reduce(
-      (result: any, templateViewDatum:jsonxResourceProps, i: number) => {
+      (result: any, templateViewDatum: jsonxResourceProps, i: number) => {
         const {
           name,
           type,
@@ -286,10 +319,10 @@ export async function invokeWebhooks({
   }));
 }
 
-export function enforcePromise(val:any) {
+export function enforcePromise(val: any) {
   return val instanceof Promise ? val : Promise.resolve(val);
 }
-  
+
 // @ts-ignore
 export function promiseSeries(providers) {
   // console.log('promiseSeries',{providers})
@@ -329,17 +362,17 @@ export function getFunctionFromNameString({
   functionContext,
   functionName
 }: {
-    Functions: VXAFunctions;
-    functionContext: VXAFunctionContext;
-    functionName: string;
+  Functions: VXAFunctions;
+  functionContext: VXAFunctionContext;
+  functionName: string;
 }): VXAFunction {
   let func;
   try {
     if (typeof functionName === "string") {
-      const name:string = getDynamicFunctionName(functionName);
+      const name: string = getDynamicFunctionName(functionName);
       if (
         functionName.includes("func:this.props") &&
-        typeof functionContext.props[name] === "function" 
+        typeof functionContext.props[name] === "function"
       ) {
         func = functionContext.props[name].bind(functionContext);
       } else if (
@@ -370,10 +403,10 @@ export function getFunctionFromNameString({
 /* eslint-disable */
 export const FUNCTION_NAME_REGEXP = /func:(?:this\.props|window|viewx)(?:\.Functions)?\.(\D.+)*/;
 /* eslint-enable */
-/** 
+/**
  * get function name from function name string i.e. func:viewx.Functions.logout => logout
-* @param function_name - function name string
-*/
+ * @param function_name - function name string
+ */
 export function getDynamicFunctionName(function_name: string): string {
   return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
 }

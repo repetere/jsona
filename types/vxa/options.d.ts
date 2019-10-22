@@ -1,5 +1,11 @@
-import { jsonx, jsonxComponent, } from "./jsonx";
-import { vxtTemplate, VXAState, VXASettings, VXAFunction, VXAFunctions } from "./vxt";
+import { jsonx, jsonxComponent } from "./jsonx";
+import {
+  vxtTemplate,
+  VXAState,
+  VXASettings,
+  VXAFunction,
+  VXAFunctions
+} from "./vxt";
 import { string } from "prop-types";
 import React from "react";
 import { createStore } from "react-hooks-global-state";
@@ -16,7 +22,7 @@ export enum VXAComponentTypes {
 }
 
 export type customVXAJSONXLibrary = {
-  [index: string]: jsonx
+  [index: string]: jsonx;
 };
 
 export type VXAComponent = {
@@ -24,7 +30,7 @@ export type VXAComponent = {
   format: VXAComponentFormats;
   type: VXAComponentTypes;
   umdFilePath: string;
-  jsonx?: jsonxLibrary | jsonx ;
+  jsonx?: jsonxLibrary | jsonx;
   stylesheets: string[];
   options?: {};
   functionBody?: string;
@@ -45,7 +51,7 @@ export type VXALayer = {
 };
 
 export type stateObject = {
-  [index: string ]: any;
+  [index: string]: any;
 };
 
 export type VXAApplicationState = {
@@ -76,7 +82,7 @@ export interface VXAOptions {
   customScripts?: string[];
   customStyles?: string[];
   customFunctions?: VXAFunctions;
-  config?: VXAConfig;
+  config?: VXAConfig | undefined;
   // layers?: any[];
   layers?: VXALayer[];
   settings?: any;

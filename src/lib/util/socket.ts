@@ -1,7 +1,7 @@
 // @ts-ignore
-import { Router, EventRouter, } from 'simple-socket-router/lib/router.mjs';
-import { getFunctionFromNameString, } from './props';
-import { VXAFunctionContext, VXAFunction, } from "../../../types";
+import { Router, EventRouter } from "simple-socket-router/bundle/router.esm";
+import { getFunctionFromNameString } from "./props";
+import { VXAFunctionContext, VXAFunction } from "../../../types";
 // import { insertScriptParams } from '../../internal_types/config';
 let once = false;
 
@@ -10,98 +10,110 @@ declare global {
     io: any;
   }
 }
-export function initSockets(this:VXAFunctionContext, settings:any={}):void {
-  const { useWebSocketsAuth, socket_server_options, socket_server, socket_disconnect_message, } = settings;
+export function initSockets(
+  this: VXAFunctionContext,
+  settings: any = {}
+): void {
+  const {
+    useWebSocketsAuth,
+    socket_server_options,
+    socket_server,
+    socket_disconnect_message
+  } = settings;
   const createNotification = this.viewx.Functions.log;
 
-  const getSocketFunction = ({ propFunc }: { propFunc: string;}):VXAFunction => getFunctionFromNameString({
-    Functions: this.viewx.Functions,
-    functionContext: this,
-    functionName: propFunc
-  });
+  const getSocketFunction = ({ propFunc }: { propFunc: string }): VXAFunction =>
+    getFunctionFromNameString({
+      Functions: this.viewx.Functions,
+      functionContext: this,
+      functionName: propFunc
+    });
   const router = new Router();
-  router.addRoute('*',  (req:any)=> {
+  router.addRoute("*", (req: any) => {
     const propFunc = req.body.function || req.path;
-    const props = req.body && req.body.props && Array.isArray(req.body.props)
-      ? req.body.props
-      : [req.body,];
+    const props =
+      req.body && req.body.props && Array.isArray(req.body.props)
+        ? req.body.props
+        : [req.body];
     // console.debug({ propFunc, props, once, req, });
-    const reduxFunction = getSocketFunction({ propFunc, });
+    const reduxFunction = getSocketFunction({ propFunc });
     if (reduxFunction) reduxFunction.call(this, ...props);
-    else this.viewx.Functions.log({ type: 'error', error: new Error('Invalid Live Update') });
+    else
+      this.viewx.Functions.log({
+        type: "error",
+        error: new Error("Invalid Live Update")
+      });
   });
-  const socketOptions = Object.assign({
-    // transports: [ 'websocket', ],
-    reconnectionAttempts:10,
-  }, socket_server_options);
+  const socketOptions = Object.assign(
+    {
+      // transports: [ 'websocket', ],
+      reconnectionAttempts: 10
+    },
+    socket_server_options
+  );
   if (window.io) {
-    
-    const socket = (socket_server)
+    const socket = socket_server
       ? window.io(socket_server, socketOptions)
-      : window.io('', socketOptions);
+      : window.io("", socketOptions);
     this.props.dispatch({
       type: "setSocket",
-      socket,
+      socket
     });
     this.props.setSocket(socket);
-    socket.once('connect', () => {
-      EventRouter({ socket, router, });
-      socket.emit('authentication', {
-        user: useWebSocketsAuth
-        ? this.props.user
-          : false,
-        reconnection: true,
+    socket.once("connect", () => {
+      EventRouter({ socket, router });
+      socket.emit("authentication", {
+        user: useWebSocketsAuth ? this.props.user : false,
+        reconnection: true
       });
     });
 
-    socket.on('error', (e:Error) => createNotification({ type: 'error', error: e }) );
-    socket.on('connect_error', (e:Error) => console.debug(e));
-    socket.on('disconnect', (reason:string) => {
+    socket.on("error", (e: Error) =>
+      createNotification({ type: "error", error: e })
+    );
+    socket.on("connect_error", (e: Error) => console.debug(e));
+    socket.on("disconnect", (reason: string) => {
       if (once === false && socket_disconnect_message) {
         createNotification({
-          data: `Live Updated Disconnected: ${reason}. Refresh for live updates`,
+          data: `Live Updated Disconnected: ${reason}. Refresh for live updates`
         });
         once = true;
       }
     });
-    socket.on('reconnect', ( attemptNumber:number ) => {
-      socket.emit('authentication', {
-        user: useWebSocketsAuth
-          ? this.props.user
-          : false,
-        reconnection: true,
+    socket.on("reconnect", (attemptNumber: number) => {
+      socket.emit("authentication", {
+        user: useWebSocketsAuth ? this.props.user : false,
+        reconnection: true
       });
       createNotification({
-        type: 'info',
-        data:'Reconnected to Live',
-        meta: { attemptNumber, },
+        type: "info",
+        data: "Reconnected to Live",
+        meta: { attemptNumber }
       });
     });
-    socket.on('reconnecting', (attemptNumber:number) => {
+    socket.on("reconnecting", (attemptNumber: number) => {
       createNotification({
-        type: 'error',
-        data:'reconnecting socket',
-        meta: { attemptNumber, },
+        type: "error",
+        data: "reconnecting socket",
+        meta: { attemptNumber }
       });
       // console.debug('reconnecting', );
     });
     if (useWebSocketsAuth) {
       // console.debug('REAUTH',this.state.user)
-      socket.emit('authentication', {
+      socket.emit("authentication", {
         user: this.props.user,
-        reconnection: true,
+        reconnection: true
       });
     }
-    socket.on('authenticated', () => {
+    socket.on("authenticated", () => {
       // use the socket as usual
-      socket.emit('/user/createrepl', {
-        user: useWebSocketsAuth
-          ? this.props.user
-          : false,
+      socket.emit("/user/createrepl", {
+        user: useWebSocketsAuth ? this.props.user : false,
         reconnection: true,
-        authSend: 0,
+        authSend: 0
       });
     });
   }
-//   // this.previousRoute = {};
+  //   // this.previousRoute = {};
 }

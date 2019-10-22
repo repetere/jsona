@@ -2,18 +2,38 @@
 import * as JSONX from "jsonx/src/main";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
-import { VXAOptions, VXAConfig, VXALayer, VXAComponent, jsonxLibrary, } from "../../../types";
-import { customFileType, librariesAndComponents, VXALayerObject } from '../../internal_types/config';
+import {
+  VXAOptions,
+  VXAConfig,
+  VXALayer,
+  VXAComponent,
+  jsonxLibrary
+} from "../../../types";
+import {
+  customFileType,
+  librariesAndComponents,
+  VXALayerObject
+} from "../../internal_types/config";
 
 declare global {
   interface Window {
-    [index:string]: any;
+    [index: string]: any;
   }
 }
 
-let addedReact:boolean = false;
+let addedReact: boolean = false;
 
-export function getFilePromise({ type, file, i, name }: { type: string; file: string; i: number; name: string;}): Promise<boolean | string> {
+export function getFilePromise({
+  type,
+  file,
+  i,
+  name
+}: {
+  type: string;
+  file: string;
+  i: number;
+  name: string;
+}): Promise<boolean | string> {
   return new Promise((resolve, reject) => {
     try {
       let returnedFile = false;
@@ -48,7 +68,9 @@ export function getFilePromise({ type, file, i, name }: { type: string; file: st
   });
 }
 
-export function getComponentPromise(customComponent: VXAComponent): Promise<string|boolean> {
+export function getComponentPromise(
+  customComponent: VXAComponent
+): Promise<string | boolean> {
   return new Promise((resolve, reject) => {
     let returnedFile = false;
     try {
@@ -97,40 +119,46 @@ export function getComponentPromise(customComponent: VXAComponent): Promise<stri
   });
 }
 
-export async function getReactLibrariesAndComponents({ customComponents }:{ customComponents?:VXAComponent[] }): Promise<librariesAndComponents> {
-  const componentLibraries:VXAConfig['componentLibraries'] = {};
-  const reactComponents:VXAConfig['reactComponents'] = {};
+export async function getReactLibrariesAndComponents({
+  customComponents
+}: {
+  customComponents?: VXAComponent[];
+}): Promise<librariesAndComponents> {
+  const componentLibraries: VXAConfig["componentLibraries"] = {};
+  const reactComponents: VXAConfig["reactComponents"] = {};
 
   if (customComponents && customComponents.length) {
-    
-  await Promise.all(customComponents.map(getComponentPromise));
+    await Promise.all(customComponents.map(getComponentPromise));
     customComponents.forEach(customComponent => {
       const { type, name, jsonx, options, functionBody } = customComponent;
       if (type === "library") {
         if (jsonx) {
-          componentLibraries[name] = Object.keys(jsonx).reduce((result: jsonxLibrary, prop: string) => {
-            const libraryComponent = jsonx[prop]; 
-            const {
-              type,
-              name,
-              jsonxComponent,
-              options,
-              functionBody
-            } = libraryComponent;
-            if (type === "component") {
-              result[name] = JSONX._jsonxComponents.getReactClassComponent(
+          componentLibraries[name] = Object.keys(jsonx).reduce(
+            (result: jsonxLibrary, prop: string) => {
+              const libraryComponent = jsonx[prop];
+              const {
+                type,
+                name,
                 jsonxComponent,
-                options
-              );
-            } else {
-              result[name] = JSONX._jsonxComponents.getReactFunctionComponent(
-                jsonxComponent,
-                functionBody,
-                options
-              );
-            }
-            return result;
-          }, {});
+                options,
+                functionBody
+              } = libraryComponent;
+              if (type === "component") {
+                result[name] = JSONX._jsonxComponents.getReactClassComponent(
+                  jsonxComponent,
+                  options
+                );
+              } else {
+                result[name] = JSONX._jsonxComponents.getReactFunctionComponent(
+                  jsonxComponent,
+                  functionBody,
+                  options
+                );
+              }
+              return result;
+            },
+            {}
+          );
         } else componentLibraries[name] = window[name];
       } else if (type === "component") {
         if (jsonx) {
@@ -159,9 +187,12 @@ export async function getReactLibrariesAndComponents({ customComponents }:{ cust
   };
 }
 
-export async function addCustomFiles({ type, files }: {
+export async function addCustomFiles({
+  type,
+  files
+}: {
   type: string;
-  files: string[]|undefined;
+  files: string[] | undefined;
 }): Promise<string[] | any> {
   if (!files || !files.length) return [];
   return await Promise.all(
@@ -194,15 +225,21 @@ export async function configureViewx(
     ...configuration.Functions,
     ...options.customFunctions
   };
-  const allLayers = [[],configuration.layers, options.layers].flat();
-  const layerObject: VXALayerObject = allLayers
-    .reduce((result:VXALayerObject, layerObject:VXALayer) => {
+  configuration.layers = configuration.layers || [];
+  // const allLayers = [[],configuration.layers, options.layers].flat();
+  const allLayers = [];
+  allLayers.push(...configuration.layers);
+  allLayers.push(...(options.layers || []));
+  const layerObject: VXALayerObject = allLayers.reduce(
+    (result: VXALayerObject, layerObject: VXALayer) => {
       const { order, name, type } = layerObject;
       if (order > layerMaxOrder) layerMaxOrder = order;
       if (type === "applicationRoot") applicationRootLayerName = name;
       result[name] = layerObject;
       return result;
-    }, {});
+    },
+    {}
+  );
   if (!applicationRootLayerName)
     throw ReferenceError("Invalid/Missing ApplicationRoot Layer");
   if (layerObject[applicationRootLayerName].order !== layerMaxOrder)

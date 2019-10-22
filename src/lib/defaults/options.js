@@ -14,7 +14,14 @@ export const options = {
   customFunctions: {
     /*Function, */
   },
-  // config: {},
+  // config: {
+  //   Functions: {},
+  //   componentLibraries: {},
+  //   layers: [],
+  //   querySelector: '',
+  //   reactComponents: {},
+  //   // settings: {},
+  // },
   layers: [
     // loading,
     // modal,
