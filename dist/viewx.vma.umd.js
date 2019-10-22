@@ -47052,86 +47052,85 @@
             });
         };
         var router = new Router$1();
-        router.addRoute('*', function (req) {
+        router.addRoute("*", function (req) {
             var propFunc = req.body.function || req.path;
             var props = req.body && req.body.props && Array.isArray(req.body.props)
                 ? req.body.props
-                : [req.body,];
+                : [req.body];
             // console.debug({ propFunc, props, once, req, });
-            var reduxFunction = getSocketFunction({ propFunc: propFunc, });
+            var reduxFunction = getSocketFunction({ propFunc: propFunc });
             if (reduxFunction)
                 reduxFunction.call.apply(reduxFunction, __spreadArrays([_this], props));
             else
-                _this.viewx.Functions.log({ type: 'error', error: new Error('Invalid Live Update') });
+                _this.viewx.Functions.log({
+                    type: "error",
+                    error: new Error("Invalid Live Update")
+                });
         });
         var socketOptions = Object.assign({
             // transports: [ 'websocket', ],
-            reconnectionAttempts: 10,
+            reconnectionAttempts: 10
         }, socket_server_options);
         if (window.io) {
-            var socket_1 = (socket_server)
+            var socket_1 = socket_server
                 ? window.io(socket_server, socketOptions)
-                : window.io('', socketOptions);
+                : window.io("", socketOptions);
             this.props.dispatch({
                 type: "setSocket",
-                socket: socket_1,
+                socket: socket_1
             });
             this.props.setSocket(socket_1);
-            socket_1.once('connect', function () {
-                EventRouter({ socket: socket_1, router: router, });
-                socket_1.emit('authentication', {
-                    user: useWebSocketsAuth
-                        ? _this.props.user
-                        : false,
-                    reconnection: true,
+            socket_1.once("connect", function () {
+                EventRouter({ socket: socket_1, router: router });
+                socket_1.emit("authentication", {
+                    user: useWebSocketsAuth ? _this.props.user : false,
+                    reconnection: true
                 });
             });
-            socket_1.on('error', function (e) { return createNotification({ type: 'error', error: e }); });
-            socket_1.on('connect_error', function (e) { return console.debug(e); });
-            socket_1.on('disconnect', function (reason) {
+            socket_1.on("error", function (e) {
+                return createNotification({ type: "error", error: e });
+            });
+            socket_1.on("connect_error", function (e) { return console.debug(e); });
+            socket_1.on("disconnect", function (reason) {
                 if (once === false && socket_disconnect_message) {
                     createNotification({
-                        data: "Live Updated Disconnected: " + reason + ". Refresh for live updates",
+                        data: "Live Updated Disconnected: " + reason + ". Refresh for live updates"
                     });
                     once = true;
                 }
             });
-            socket_1.on('reconnect', function (attemptNumber) {
-                socket_1.emit('authentication', {
-                    user: useWebSocketsAuth
-                        ? _this.props.user
-                        : false,
-                    reconnection: true,
+            socket_1.on("reconnect", function (attemptNumber) {
+                socket_1.emit("authentication", {
+                    user: useWebSocketsAuth ? _this.props.user : false,
+                    reconnection: true
                 });
                 createNotification({
-                    type: 'info',
-                    data: 'Reconnected to Live',
-                    meta: { attemptNumber: attemptNumber, },
+                    type: "info",
+                    data: "Reconnected to Live",
+                    meta: { attemptNumber: attemptNumber }
                 });
             });
-            socket_1.on('reconnecting', function (attemptNumber) {
+            socket_1.on("reconnecting", function (attemptNumber) {
                 createNotification({
-                    type: 'error',
-                    data: 'reconnecting socket',
-                    meta: { attemptNumber: attemptNumber, },
+                    type: "error",
+                    data: "reconnecting socket",
+                    meta: { attemptNumber: attemptNumber }
                 });
                 // console.debug('reconnecting', );
             });
             if (useWebSocketsAuth) {
                 // console.debug('REAUTH',this.state.user)
-                socket_1.emit('authentication', {
+                socket_1.emit("authentication", {
                     user: this.props.user,
-                    reconnection: true,
+                    reconnection: true
                 });
             }
-            socket_1.on('authenticated', function () {
+            socket_1.on("authenticated", function () {
                 // use the socket as usual
-                socket_1.emit('/user/createrepl', {
-                    user: useWebSocketsAuth
-                        ? _this.props.user
-                        : false,
+                socket_1.emit("/user/createrepl", {
+                    user: useWebSocketsAuth ? _this.props.user : false,
                     reconnection: true,
-                    authSend: 0,
+                    authSend: 0
                 });
             });
         }
@@ -47174,7 +47173,7 @@
                 switch (_c.label) {
                     case 0:
                         fetchFunction = (Functions.fetchJSON || fetchJSON$1).bind(functionContext);
-                        if (!(config.settings.hasPreloadedTemplates)) return [3 /*break*/, 1];
+                        if (!config.settings.hasPreloadedTemplates) return [3 /*break*/, 1];
                         _b = {};
                         return [3 /*break*/, 3];
                     case 1: return [4 /*yield*/, fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions)];
@@ -47212,6 +47211,7 @@
             var templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
                 return_matching_keys: true
             });
+            console.log({ templateRoute: templateRoute, name: name, type: type });
             if (type === "overlay" && templateRoute)
                 hasOverlayLayer = true;
             if (!templateRoute &&
@@ -47479,15 +47479,15 @@
     /* eslint-enable */
     /**
      * get function name from function name string i.e. func:viewx.Functions.logout => logout
-    * @param function_name - function name string
-    */
+     * @param function_name - function name string
+     */
     function getDynamicFunctionName(function_name) {
         return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
     }
 
     /**
      * bound default vxa functions to the vxafunctioncontext object
-    */
+     */
     function bindFunctionContext(_a) {
         var Functions = _a.Functions, functionContext = _a.functionContext;
         Functions.fetchJSON = fetchJSON$1.bind(functionContext);
@@ -47499,9 +47499,9 @@
     }
     function getMainComponent(options) {
         if (!options)
-            throw ReferenceError('invalid VXA Options');
+            throw ReferenceError("invalid VXA Options");
         else if (!options.config)
-            throw ReferenceError('invalid VXA Options');
+            throw ReferenceError("invalid VXA Options");
         var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config, application = options.application;
         var Functions = config.Functions, settings = config.settings;
         var dispatcher = function (action) { return dispatch(action); };
@@ -47513,8 +47513,26 @@
             var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
             var _c = react_9(application ? application.state : {}), state = _c[0], setState = _c[1];
             var pathname = appProps.location.pathname;
-            var props = Object.assign({ dispatch: dispatch, templates: templates, views: views, viewdata: viewdata, ui: ui, user: user, setUI: setUI, setTemplates: setTemplates, updateState: function (applicationState) { return dispatch({ type: 'setApplicationState', state: applicationState, }); } }, appProps);
-            var functionContext = { props: props, state: state, setState: setState, settings: settings, viewx: { Functions: Functions, settings: settings, }, };
+            var props = Object.assign({
+                dispatch: dispatch,
+                templates: templates,
+                views: views,
+                viewdata: viewdata,
+                ui: ui,
+                user: user,
+                setUI: setUI,
+                setTemplates: setTemplates,
+                updateState: function (applicationState) {
+                    return dispatch({ type: "setApplicationState", state: applicationState });
+                }
+            }, appProps);
+            var functionContext = {
+                props: props,
+                state: state,
+                setState: setState,
+                settings: settings,
+                viewx: { Functions: Functions, settings: settings }
+            };
             // eslint-disable-line
             var loadView = react_14(function () {
                 return function _loadView(_a) {
@@ -47526,7 +47544,9 @@
                         viewxTemplates: __assign(__assign({}, templates), (_b = {}, _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)), _b)),
                         pathname: loadViewPathname,
                         dispatcher: dispatcher,
-                        layers: config ? config.layers.filter(function (layer) { return layer.name === layerName; }) : [],
+                        layers: config
+                            ? config.layers.filter(function (layer) { return layer.name === layerName; })
+                            : [],
                         Functions: Functions,
                         resourceprops: resourceprops,
                         functionContext: functionContext
@@ -47536,12 +47556,12 @@
             }, [templates, functionContext]);
             /* eslint-enable */
             Functions.loadView = loadView;
-            bindFunctionContext({ Functions: Functions, functionContext: functionContext, });
+            bindFunctionContext({ Functions: Functions, functionContext: functionContext });
             var getReactElement$1 = getReactElement.bind({
                 props: props,
                 state: state,
                 setState: setState,
-                viewx: { Functions: Functions, settings: settings, },
+                viewx: { Functions: Functions, settings: settings },
                 // state:{counter, setCounter},
                 debug: settings.debug,
                 componentLibraries: Object.assign({}, config.componentLibraries),
@@ -47618,15 +47638,21 @@
             /* eslint-enable */
             return (react.createElement(react_5, null, config.layers.map(function (layer) {
                 var name = layer.name, type = layer.type;
-                var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {}); // console.log('LAYER',{name,type,jsonxChildren},'views[name]',views[name],'viewdata[name]',viewdata[name])
+                var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
+                // console.log(
+                //   "LAYER",
+                //   { name, type, jsonxChildren },
+                //   "views[name]",
+                //   views[name],
+                //   "viewdata[name]",
+                //   viewdata[name]
+                // );
                 if (type === "applicationRoot") {
                     return jsonxChildren;
                 }
                 else {
                     var el = document.querySelector("#" + name);
-                    return el
-                        ? reactDom.createPortal(jsonxChildren, el)
-                        : null;
+                    return el ? reactDom.createPortal(jsonxChildren, el) : null;
                 }
             })));
         }
@@ -47809,9 +47835,9 @@
                             if (settings.cacheLoggedInUser || action.rememberMe) {
                                 // @ts-ignore
                                 Object.keys(action.user)
-                                    .filter(function (prop) { return prop !== 'type'; })
+                                    .filter(function (prop) { return prop !== "type"; })
                                     .forEach(function (prop) {
-                                    setCacheStore('user', prop, action.user[prop], settings.cacheUserTimeout);
+                                    setCacheStore("user", prop, action.user[prop], settings.cacheUserTimeout);
                                 });
                             }
                             return __assign(__assign({}, state), { user: __assign(__assign({}, state.user), action.user) });
@@ -47828,20 +47854,20 @@
                             return state;
                     }
                 };
-                initialState = __assign(__assign({}, options.application.state), { views: __assign({ layout: null }, options.vxaState.views), viewdata: __assign({ layout: null }, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'token')
+                initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
+                            ? getFromCacheStore("user", "token")
                             : undefined, tokenData: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'tokenData')
+                            ? getFromCacheStore("user", "tokenData")
                             : undefined, expires: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'expires')
+                            ? getFromCacheStore("user", "expires")
                             : undefined, timeout: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'timeout')
+                            ? getFromCacheStore("user", "timeout")
                             : undefined, profile: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'profile') || {}
+                            ? getFromCacheStore("user", "profile") || {}
                             : {}, fetchHeaders: {}, loggedIn: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'loggedIn') || false
+                            ? getFromCacheStore("user", "loggedIn") || false
                             : false, loggedInMFA: settings.cacheLoggedInUser
-                            ? getFromCacheStore('user', 'loggedInMFA') || false
+                            ? getFromCacheStore("user", "loggedInMFA") || false
                             : false }, options.vxaState.user) });
                 _a = createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
                 return [2 /*return*/, {
@@ -47866,7 +47892,21 @@
                         options.dispatch = dispatch;
                         options.useGlobalState = useGlobalState;
                         MainApp = getMainComponent(options);
-                        Router = settings.router === "hash" ? HashRouter : BrowserRouter;
+                        switch (settings.router) {
+                            case "static":
+                                Router = StaticRouter;
+                                break;
+                            case "hash":
+                                Router = HashRouter;
+                                break;
+                            case "memory":
+                                Router = MemoryRouter;
+                                break;
+                            default:
+                                Router = BrowserRouter;
+                                break;
+                        }
+                        //  = settings.router === "hash" ? HashRouter : BrowserRouter;
                         return [2 /*return*/, (react.createElement(GlobalStateProvider, null,
                                 react.createElement(Router, null,
                                     react.createElement(Route, { path: "*", component: MainApp }))))];
@@ -48480,9 +48520,11 @@
                         configuration = __assign({}, config);
                         configuration.settings = __assign(__assign(__assign({}, configuration.settings), options.settings), { routes: __assign(__assign({}, configuration.settings.routes), options.settings.routes) });
                         configuration.Functions = __assign(__assign({}, configuration.Functions), options.customFunctions);
-                        allLayers = [[], configuration.layers, options.layers].flat();
-                        layerObject = allLayers
-                            .reduce(function (result, layerObject) {
+                        configuration.layers = configuration.layers || [];
+                        allLayers = [];
+                        allLayers.push.apply(allLayers, configuration.layers);
+                        allLayers.push.apply(allLayers, (options.layers || []));
+                        layerObject = allLayers.reduce(function (result, layerObject) {
                             var order = layerObject.order, name = layerObject.name, type = layerObject.type;
                             if (order > layerMaxOrder)
                                 layerMaxOrder = order;
@@ -48535,7 +48577,14 @@
       customFunctions: {
         /*Function, */
       },
-      // config: {},
+      // config: {
+      //   Functions: {},
+      //   componentLibraries: {},
+      //   layers: [],
+      //   querySelector: '',
+      //   reactComponents: {},
+      //   // settings: {},
+      // },
       layers: [
         // loading,
         // modal,
