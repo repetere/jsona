@@ -1,5 +1,4 @@
-// @ts-ignore
-import { Router, EventRouter } from "simple-socket-router/bundle/router.esm";
+import { Router, EventRouter } from "simple-socket-router";
 import { getFunctionFromNameString } from "./props";
 import { VXAFunctionContext, VXAFunction } from "../../../types";
 // import { insertScriptParams } from '../../internal_types/config';

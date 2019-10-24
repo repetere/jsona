@@ -14,9 +14,9 @@
     "react-hooks-global-state": "^0.15.0",
     "react-router": "^5.1.1",
     "react-router-dom": "^5.1.1",
-    "simple-socket-router": "^0.9.3",
+    "simple-socket-router": "^1.0.0",
     "store2": "^2.10.0",
-    "test-matching-route": "^1.2.0"
+    "test-matching-route": "^2.0.0"
   },
   "scripts": {
     "compile": "rollup -c",
@@ -76,5 +76,16 @@
     "ts-jest": "^24.1.0",
     "typescript": "^3.6.3",
     "typings": "^2.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/repetere/viewx-app.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/repetere/viewx-app/issues"
+  },
+  "engines": {
+    "node": ">=10"
   }
 }

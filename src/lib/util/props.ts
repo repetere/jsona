@@ -1,9 +1,5 @@
-// import Promisie from "promisie";
-// @ts-ignore
 import { findMatchingRoutePath } from "test-matching-route";
-// @ts-ignore
 import { fetchJSON, fetchResources } from "./data";
-// @ts-ignore
 import { setPageAttributes, setHTMLElementClass } from "./html";
 import {
   VXASettings,
