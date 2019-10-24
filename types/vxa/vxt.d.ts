@@ -1,7 +1,5 @@
 import { jsonx } from "./jsonx";
 import React,{Dispatch,SetStateAction} from 'react';
-import { valueToNode } from "@babel/types";
-import { any, string } from "prop-types";
 
 export type pageAttribute = {
   tagName: string;
