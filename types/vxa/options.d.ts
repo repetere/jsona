@@ -78,6 +78,7 @@ export type VXAConfig = {
 };
 
 export interface VXAOptions {
+  initialScripts?: string[];
   customComponents?: VXAComponent[];
   customScripts?: string[];
   customStyles?: string[];

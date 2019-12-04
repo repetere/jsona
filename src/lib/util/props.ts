@@ -109,7 +109,7 @@ export function getTemplateRouteLayer({
         return_matching_keys: true
       }
     );
-    console.log({ templateRoute, name, type });
+    // console.log({ templateRoute, name, type });
     if (type === "overlay" && templateRoute) hasOverlayLayer = true;
     if (
       !templateRoute &&
@@ -214,6 +214,7 @@ export async function loadRoute({
         }
       }
     );
+    // console.log({ action });
     dispatcher(action);
     invokeWebhooks({
       Functions,

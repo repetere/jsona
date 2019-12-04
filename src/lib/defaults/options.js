@@ -128,7 +128,10 @@ export const options = {
               children: 'Login'
             },
             {
-              component: 'Formik.Formik',
+              // component: 'form',
+              debug: true,
+
+              component: 'formik.Formik',
               props: {
                 initialValues: {
                   username: '',
@@ -136,14 +139,15 @@ export const options = {
                 },
               },
               __dangerouslyInsertFunctionComponents: {
-                render: {
+                component: {
+                  functionBody: `let exposeProps={}`,
                   reactComponent: {
                     component: 'form',
                     thisprops: {
                       onSubmit: ['handleSubmit']
                     },
                     children: [{
-                        component: 'Formik.Field',
+                        component: 'formik.Field',
                         props: {
                           type: 'text',
                           name: 'username',
@@ -151,13 +155,13 @@ export const options = {
                         }
                       },
                       {
-                        component: 'Formik.ErrorMessage',
+                        component: 'formik.ErrorMessage',
                         props: {
                           name: 'username'
                         }
                       },
                       {
-                        component: 'Formik.Field',
+                        component: 'formik.Field',
                         props: {
                           type: 'password',
                           name: 'password',

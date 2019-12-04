@@ -22,11 +22,14 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-        <!-- TODO: REMOVE start -->
-<!-- 
+  <!-- TODO: REMOVE start -->
+  <!-- 
     <script type="text/javascript" src="temp/debounce.js"></script>
     <script type="text/javascript" src="temp/templates.js"></script> -->
-    <!-- TODO: REMOVE end -->
+  <!-- TODO: REMOVE end -->
+  <script>
+
+  </script>
   <script type="text/javascript">
     var __ViewXAppConfig = {
       // application: {//TODO: remove
@@ -37,10 +40,17 @@
       //           }
       //       },//TODO: remove
       // templates: window.placeholderTemplates.templates,//TODO: remove
+
+      initialScripts: [
+        'https://unpkg.com/deepmerge@4.2.2/dist/umd.js',
+        // 'https://unpkg.com/scheduler@0.18.0/umd/scheduler.production.min.js',
+        'https://unpkg.com/tiny-warning@1.0.3/dist/tiny-warning.js',
+        'temp/formik_dependencies.js',
+      ],
       settings: {
         templatePath: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/templates',
         // hasPreloadedTemplates:true, //TODO:remove
-
+        debug: true,
         routes: {
           user_login_METHOD: 'GET',
           user_login_mfa_METHOD: 'GET',
@@ -88,10 +98,13 @@
           stylesheets: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', ],
         },
         {
-          name: 'Formik',
           format: 'umd',
           type: 'library',
-          umdFilePath: 'https://unpkg.com/formik/dist/formik.umd.production.js',
+          // name: 'Formik',
+          // umdFilePath: 'https://unpkg.com/formik@2.0.0/dist/formik.umd.development.js',
+          name: 'formik',
+          // umdFilePath: 'https://unpkg.com/formik@2.0.6/dist/formik.umd.production.min.js',
+          umdFilePath: 'https://unpkg.com/formik@2.0.6/dist/formik.umd.development.js',
           // jsonx,
           // stylesheets: [ ],
         },
