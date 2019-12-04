@@ -234,7 +234,10 @@ export const options = {
           },
           children: [{
               component: 'div',
-              children: 'hello world!',
+              thiscontext: {
+                _children: ['state', 'name']
+              }
+              // children: 'hello world!',
             },
             {
               component: 'sayHello',
@@ -265,9 +268,10 @@ export const options = {
                   __dangerouslyBindEvalProps: {
                     onChange: `(function(e){
                       //console.log({e});
-                      //console.log('this',this)
+                      console.log('this',this)
                       //console.log('e.target.value',e.target.value)
-                      this.setState({name:e.target.value})
+                      this.props.updateState({name:e.target.value})
+                      // this.setState({name:e.target.value})
                     })`
                   },
                 },

@@ -67,7 +67,8 @@ export default function getMainComponent(
         user,
         setUI,
         setTemplates,
-        updateState: (applicationState: any) =>
+        updateState: (applicationState: any) => setState(applicationState),
+        setApplicationState: (applicationState: any) =>
           dispatch({ type: "setApplicationState", state: applicationState })
       },
       appProps
