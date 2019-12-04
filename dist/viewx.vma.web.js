@@ -1,5 +1,7 @@
-var VXA = (function (exports) {
+var VXA = (function (exports, main) {
     'use strict';
+
+    main = main && main.hasOwnProperty('default') ? main['default'] : main;
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -73,10 +75,6 @@ var VXA = (function (exports) {
     }
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-    function commonjsRequire () {
-    	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-    }
 
     function unwrapExports (x) {
     	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -292,7 +290,7 @@ var VXA = (function (exports) {
 
     // TODO: this is special because it gets imported during build.
 
-    var ReactVersion = '16.10.1';
+    var ReactVersion = '16.12.0';
 
     // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
     // nor polyfill, then a plain number is used for performance.
@@ -333,16 +331,8 @@ var VXA = (function (exports) {
     }
 
     // Do not require this module directly! Use normal `invariant` calls with
-    // template literal strings. The messages will be converted to ReactError during
-    // build, and in production they will be minified.
-
-    // Do not require this module directly! Use normal `invariant` calls with
-    // template literal strings. The messages will be converted to ReactError during
-    // build, and in production they will be minified.
-    function ReactError(error) {
-      error.name = 'Invariant Violation';
-      return error;
-    }
+    // template literal strings. The messages will be replaced with error codes
+    // during build.
 
     /**
      * Use invariant() to assert state which your program assumes to be true.
@@ -596,13 +586,11 @@ var VXA = (function (exports) {
      */
 
     Component.prototype.setState = function (partialState, callback) {
-      (function () {
-        if (!(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null)) {
-          {
-            throw ReactError(Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables."));
-          }
+      if (!(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null)) {
+        {
+          throw Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
         }
-      })();
+      }
 
       this.updater.enqueueSetState(this, partialState, callback, 'setState');
     };
@@ -992,8 +980,8 @@ var VXA = (function (exports) {
     }
     /**
      * Factory method to create a new React element. This no longer adheres to
-     * the class pattern, so do not use new to call it. Also, no instanceof check
-     * will work. Instead test $$typeof field against Symbol.for('react.element') to check
+     * the class pattern, so do not use new to call it. Also, instanceof check
+     * will not work. Instead test $$typeof field against Symbol.for('react.element') to check
      * if something is a React Element.
      *
      * @param {*} type
@@ -1163,13 +1151,11 @@ var VXA = (function (exports) {
      */
 
     function cloneElement(element, config, children) {
-      (function () {
-        if (!!(element === null || element === undefined)) {
-          {
-            throw ReactError(Error("React.cloneElement(...): The argument must be a React element, but you passed " + element + "."));
-          }
+      if (!!(element === null || element === undefined)) {
+        {
+          throw Error("React.cloneElement(...): The argument must be a React element, but you passed " + element + ".");
         }
-      })();
+      }
 
       var propName; // Original props are copied
 
@@ -1402,13 +1388,11 @@ var VXA = (function (exports) {
 
           var childrenString = '' + children;
 
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Objects are not valid as a React child (found: " + (childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString) + ")." + addendum));
-              }
+              throw Error("Objects are not valid as a React child (found: " + (childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString) + ")." + addendum);
             }
-          })();
+          }
         }
       }
 
@@ -1594,13 +1578,11 @@ var VXA = (function (exports) {
 
 
     function onlyChild(children) {
-      (function () {
-        if (!isValidElement(children)) {
-          {
-            throw ReactError(Error("React.Children.only expected to receive a single React element child."));
-          }
+      if (!isValidElement(children)) {
+        {
+          throw Error("React.Children.only expected to receive a single React element child.");
         }
-      })();
+      }
 
       return children;
     }
@@ -1801,13 +1783,11 @@ var VXA = (function (exports) {
     function resolveDispatcher() {
       var dispatcher = ReactCurrentDispatcher.current;
 
-      (function () {
-        if (!(dispatcher !== null)) {
-          {
-            throw ReactError(Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem."));
-          }
+      if (!(dispatcher !== null)) {
+        {
+          throw Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem.");
         }
-      })();
+      }
 
       return dispatcher;
     }
@@ -1868,17 +1848,6 @@ var VXA = (function (exports) {
       {
         var dispatcher = resolveDispatcher();
         return dispatcher.useDebugValue(value, formatterFn);
-      }
-    }
-
-    function withSuspenseConfig(scope, config) {
-      var previousConfig = ReactCurrentBatchConfig.suspense;
-      ReactCurrentBatchConfig.suspense = config === undefined ? null : config;
-
-      try {
-        scope();
-      } finally {
-        ReactCurrentBatchConfig.suspense = previousConfig;
       }
     }
 
@@ -2208,14 +2177,10 @@ var VXA = (function (exports) {
       } catch (e) {
       }
     }
-    // Till then, we warn about the missing mock, but still fallback to a sync mode compatible version
+    // Till then, we warn about the missing mock, but still fallback to a legacy mode compatible version
 
      // For tests, we flush suspense fallbacks in an act scope;
     // *except* in some of our own tests, where we test incremental loading states.
-
-     // Changes priority of some events like mousemove to user-blocking priority,
-    // but without making them discrete. The flag exists in case it causes
-    // starvation problems.
 
      // Add a callback property to suspense to notify which promises are currently
     // in the update queue. This allows reporting and tracing of what is causing
@@ -2226,6 +2191,12 @@ var VXA = (function (exports) {
      // Part of the simplification of React.createElement so we can eventually move
     // from React.createElement to React.jsx
     // https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md
+
+
+
+
+
+     // Flag to turn event.target and event.currentTarget in ReactNative from a reactTag to a component instance
 
     var React = {
       Children: {
@@ -2256,13 +2227,11 @@ var VXA = (function (exports) {
       Profiler: REACT_PROFILER_TYPE,
       StrictMode: REACT_STRICT_MODE_TYPE,
       Suspense: REACT_SUSPENSE_TYPE,
-      unstable_SuspenseList: REACT_SUSPENSE_LIST_TYPE,
       createElement: createElementWithValidation,
       cloneElement: cloneElementWithValidation,
       createFactory: createFactoryWithValidation,
       isValidElement: isValidElement,
       version: ReactVersion,
-      unstable_withSuspenseConfig: withSuspenseConfig,
       __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReactSharedInternals
     };
 
@@ -4536,7 +4505,7 @@ var VXA = (function (exports) {
      * @return {!function(Object=, Object=)}
      */
     function compile (str, options) {
-      return tokensToFunction(parse(str, options))
+      return tokensToFunction(parse(str, options), options)
     }
 
     /**
@@ -4566,14 +4535,14 @@ var VXA = (function (exports) {
     /**
      * Expose a method for transforming tokens into the path function.
      */
-    function tokensToFunction (tokens) {
+    function tokensToFunction (tokens, options) {
       // Compile all the tokens into regexps.
       var matches = new Array(tokens.length);
 
       // Compile all the patterns before compilation.
       for (var i = 0; i < tokens.length; i++) {
         if (typeof tokens[i] === 'object') {
-          matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$');
+          matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$', flags(options));
         }
       }
 
@@ -4686,7 +4655,7 @@ var VXA = (function (exports) {
      * @return {string}
      */
     function flags (options) {
-      return options.sensitive ? '' : 'i'
+      return options && options.sensitive ? '' : 'i'
     }
 
     /**
@@ -4873,13 +4842,12 @@ var VXA = (function (exports) {
     }
 
     var FORWARD_REF_STATICS = {
-        '$$typeof': true,
-        render: true,
-        defaultProps: true,
-        displayName: true,
-        propTypes: true
+      '$$typeof': true,
+      render: true,
+      defaultProps: true,
+      displayName: true,
+      propTypes: true
     };
-
     var TYPE_STATICS = {};
     TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
 
@@ -5683,8 +5651,8 @@ var VXA = (function (exports) {
           rest = _objectWithoutPropertiesLoose(_ref, ["innerRef", "navigate", "onClick"]);
 
       var target = rest.target;
-      return react.createElement("a", _extends({}, rest, {
-        ref: forwardedRef || innerRef,
+
+      var props = _extends({}, rest, {
         onClick: function onClick(event) {
           try {
             if (_onClick) _onClick(event);
@@ -5702,7 +5670,16 @@ var VXA = (function (exports) {
               navigate();
             }
         }
-      }));
+      }); // React 15 compat
+
+
+      if (forwardRefShim !== forwardRef) {
+        props.ref = forwardedRef || innerRef;
+      } else {
+        props.ref = innerRef;
+      }
+
+      return react.createElement("a", props);
     });
 
     {
@@ -5740,7 +5717,6 @@ var VXA = (function (exports) {
         if (forwardRefShim !== forwardRef) {
           props.ref = forwardedRef || innerRef;
         } else {
-          // TODO: deprecate
           props.innerRef = innerRef;
         }
 
@@ -5830,7 +5806,6 @@ var VXA = (function (exports) {
         if (forwardRefShim$1 !== forwardRef$1) {
           props.ref = forwardedRef || innerRef;
         } else {
-          // TODO: deprecate
           props.innerRef = innerRef;
         }
 
@@ -5865,13 +5840,6 @@ var VXA = (function (exports) {
 
     var enableSchedulerDebugging = false;
     var enableProfiling = true;
-
-    // works by scheduling a requestAnimationFrame, storing the time for the start
-    // of the frame, then scheduling a postMessage which gets scheduled after paint.
-    // Within the postMessage handler do as much work as possible until time + frame
-    // rate. By separating the idle call into a separate event tick we ensure that
-    // layout, paint and other browser work is counted against the available time.
-    // The frame rate is dynamically adjusted.
 
     var requestHostCallback;
 
@@ -5942,11 +5910,14 @@ var VXA = (function (exports) {
       var _Date = window.Date;
       var _setTimeout = window.setTimeout;
       var _clearTimeout = window.clearTimeout;
-      var requestAnimationFrame = window.requestAnimationFrame;
-      var cancelAnimationFrame = window.cancelAnimationFrame;
 
       if (typeof console !== 'undefined') {
-        // TODO: Remove fb.me link
+        // TODO: Scheduler no longer requires these methods to be polyfilled. But
+        // maybe we want to continue warning if they don't exist, to preserve the
+        // option to rely on it in the future?
+        var requestAnimationFrame = window.requestAnimationFrame;
+        var cancelAnimationFrame = window.cancelAnimationFrame; // TODO: Remove fb.me link
+
         if (typeof requestAnimationFrame !== 'function') {
           console.error("This browser doesn't support requestAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
         }
@@ -5967,20 +5938,22 @@ var VXA = (function (exports) {
           return _Date.now() - _initialTime;
         };
       }
+
       var isMessageLoopRunning = false;
       var scheduledHostCallback = null;
-      var taskTimeoutID = -1;
-      var frameLength =  // We won't attempt to align with the vsync. Instead we'll yield multiple
-      // times per frame, often enough to keep it responsive even at really
-      // high frame rates > 120.
-      5 ;
-      var frameDeadline = 0;
+      var taskTimeoutID = -1; // Scheduler periodically yields in case there is other work on the main
+      // thread, like user events. By default, it yields multiple times per frame.
+      // It does not attempt to align with frame boundaries, since most tasks don't
+      // need to be frame aligned; for those that do, use requestAnimationFrame.
+
+      var yieldInterval = 5;
+      var deadline = 0; // TODO: Make this configurable
 
       {
         // `isInputPending` is not available. Since we have no way of knowing if
         // there's pending input, always yield at the end of the frame.
         shouldYieldToHost = function () {
-          return exports.unstable_now() >= frameDeadline;
+          return exports.unstable_now() >= deadline;
         }; // Since we yield every frame regardless, `requestPaint` has no effect.
 
 
@@ -5994,44 +5967,42 @@ var VXA = (function (exports) {
         }
 
         if (fps > 0) {
-          frameLength = Math.floor(1000 / fps);
+          yieldInterval = Math.floor(1000 / fps);
         } else {
           // reset the framerate
-          frameLength = 33.33;
+          yieldInterval = 5;
         }
       };
 
       var performWorkUntilDeadline = function () {
-        {
-          if (scheduledHostCallback !== null) {
-            var currentTime = exports.unstable_now(); // Yield after `frameLength` ms, regardless of where we are in the vsync
-            // cycle. This means there's always time remaining at the beginning of
-            // the message event.
+        if (scheduledHostCallback !== null) {
+          var currentTime = exports.unstable_now(); // Yield after `yieldInterval` ms, regardless of where we are in the vsync
+          // cycle. This means there's always time remaining at the beginning of
+          // the message event.
 
-            frameDeadline = currentTime + frameLength;
-            var hasTimeRemaining = true;
+          deadline = currentTime + yieldInterval;
+          var hasTimeRemaining = true;
 
-            try {
-              var hasMoreWork = scheduledHostCallback(hasTimeRemaining, currentTime);
+          try {
+            var hasMoreWork = scheduledHostCallback(hasTimeRemaining, currentTime);
 
-              if (!hasMoreWork) {
-                isMessageLoopRunning = false;
-                scheduledHostCallback = null;
-              } else {
-                // If there's more work, schedule the next message event at the end
-                // of the preceding one.
-                port.postMessage(null);
-              }
-            } catch (error) {
-              // If a scheduler task throws, exit the current browser task so the
-              // error can be observed.
+            if (!hasMoreWork) {
+              isMessageLoopRunning = false;
+              scheduledHostCallback = null;
+            } else {
+              // If there's more work, schedule the next message event at the end
+              // of the preceding one.
               port.postMessage(null);
-              throw error;
             }
-          } else {
-            isMessageLoopRunning = false;
-          } // Yielding to the browser will give it a chance to paint, so we can
-        }
+          } catch (error) {
+            // If a scheduler task throws, exit the current browser task so the
+            // error can be observed.
+            port.postMessage(null);
+            throw error;
+          }
+        } else {
+          isMessageLoopRunning = false;
+        } // Yielding to the browser will give it a chance to paint, so we can
       };
 
       var channel = new MessageChannel();
@@ -6041,11 +6012,9 @@ var VXA = (function (exports) {
       requestHostCallback = function (callback) {
         scheduledHostCallback = callback;
 
-        {
-          if (!isMessageLoopRunning) {
-            isMessageLoopRunning = true;
-            port.postMessage(null);
-          }
+        if (!isMessageLoopRunning) {
+          isMessageLoopRunning = true;
+          port.postMessage(null);
         }
       };
 
@@ -6229,47 +6198,50 @@ var VXA = (function (exports) {
       eventLogIndex = 0;
       return buffer;
     }
-    function markTaskStart(task, time) {
+    function markTaskStart(task, ms) {
       {
         profilingState[QUEUE_SIZE]++;
 
         if (eventLog !== null) {
-          logEvent([TaskStartEvent, time, task.id, task.priorityLevel]);
+          // performance.now returns a float, representing milliseconds. When the
+          // event is logged, it's coerced to an int. Convert to microseconds to
+          // maintain extra degrees of precision.
+          logEvent([TaskStartEvent, ms * 1000, task.id, task.priorityLevel]);
         }
       }
     }
-    function markTaskCompleted(task, time) {
+    function markTaskCompleted(task, ms) {
       {
         profilingState[PRIORITY] = NoPriority;
         profilingState[CURRENT_TASK_ID] = 0;
         profilingState[QUEUE_SIZE]--;
 
         if (eventLog !== null) {
-          logEvent([TaskCompleteEvent, time, task.id]);
+          logEvent([TaskCompleteEvent, ms * 1000, task.id]);
         }
       }
     }
-    function markTaskCanceled(task, time) {
+    function markTaskCanceled(task, ms) {
       {
         profilingState[QUEUE_SIZE]--;
 
         if (eventLog !== null) {
-          logEvent([TaskCancelEvent, time, task.id]);
+          logEvent([TaskCancelEvent, ms * 1000, task.id]);
         }
       }
     }
-    function markTaskErrored(task, time) {
+    function markTaskErrored(task, ms) {
       {
         profilingState[PRIORITY] = NoPriority;
         profilingState[CURRENT_TASK_ID] = 0;
         profilingState[QUEUE_SIZE]--;
 
         if (eventLog !== null) {
-          logEvent([TaskErrorEvent, time, task.id]);
+          logEvent([TaskErrorEvent, ms * 1000, task.id]);
         }
       }
     }
-    function markTaskRun(task, time) {
+    function markTaskRun(task, ms) {
       {
         runIdCounter++;
         profilingState[PRIORITY] = task.priorityLevel;
@@ -6277,34 +6249,34 @@ var VXA = (function (exports) {
         profilingState[CURRENT_RUN_ID] = runIdCounter;
 
         if (eventLog !== null) {
-          logEvent([TaskRunEvent, time, task.id, runIdCounter]);
+          logEvent([TaskRunEvent, ms * 1000, task.id, runIdCounter]);
         }
       }
     }
-    function markTaskYield(task, time) {
+    function markTaskYield(task, ms) {
       {
         profilingState[PRIORITY] = NoPriority;
         profilingState[CURRENT_TASK_ID] = 0;
         profilingState[CURRENT_RUN_ID] = 0;
 
         if (eventLog !== null) {
-          logEvent([TaskYieldEvent, time, task.id, runIdCounter]);
+          logEvent([TaskYieldEvent, ms * 1000, task.id, runIdCounter]);
         }
       }
     }
-    function markSchedulerSuspended(time) {
+    function markSchedulerSuspended(ms) {
       {
         mainThreadIdCounter++;
 
         if (eventLog !== null) {
-          logEvent([SchedulerSuspendEvent, time, mainThreadIdCounter]);
+          logEvent([SchedulerSuspendEvent, ms * 1000, mainThreadIdCounter]);
         }
       }
     }
-    function markSchedulerUnsuspended(time) {
+    function markSchedulerUnsuspended(ms) {
       {
         if (eventLog !== null) {
-          logEvent([SchedulerResumeEvent, time, mainThreadIdCounter]);
+          logEvent([SchedulerResumeEvent, ms * 1000, mainThreadIdCounter]);
         }
       }
     }
@@ -6745,7 +6717,6 @@ var VXA = (function (exports) {
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-     // TODO: true? Here it might just be false.
 
      // Only used in www builds.
 
@@ -6760,9 +6731,6 @@ var VXA = (function (exports) {
     // Control this behavior with a flag to support 16.6 minor releases in the meanwhile.
 
 
-     // See https://github.com/react-native-community/discussions-and-proposals/issues/72 for more information
-    // This is a flag so we can fix warnings in RN core before turning it on
-
      // Experimental React Flare event system and event components support.
 
      // Experimental Host Component support.
@@ -6772,14 +6740,10 @@ var VXA = (function (exports) {
      // New API for JSX transforms to target - https://github.com/reactjs/rfcs/pull/107
 
      // We will enforce mocking scheduler with scheduler/unstable_mock at some point. (v17?)
-    // Till then, we warn about the missing mock, but still fallback to a sync mode compatible version
+    // Till then, we warn about the missing mock, but still fallback to a legacy mode compatible version
 
      // For tests, we flush suspense fallbacks in an act scope;
     // *except* in some of our own tests, where we test incremental loading states.
-
-     // Changes priority of some events like mousemove to user-blocking priority,
-    // but without making them discrete. The flag exists in case it causes
-    // starvation problems.
 
      // Add a callback property to suspense to notify which promises are currently
     // in the update queue. This allows reporting and tracing of what is causing
@@ -6790,6 +6754,12 @@ var VXA = (function (exports) {
      // Part of the simplification of React.createElement so we can eventually move
     // from React.createElement to React.jsx
     // https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md
+
+
+
+
+
+     // Flag to turn event.target and event.currentTarget in ReactNative from a reactTag to a component instance
 
     var DEFAULT_THREAD_ID = 0; // Counters used to generate unique IDs.
 
@@ -7158,16 +7128,8 @@ var VXA = (function (exports) {
     var tracing$1 = tracing;
 
     // Do not require this module directly! Use normal `invariant` calls with
-    // template literal strings. The messages will be converted to ReactError during
-    // build, and in production they will be minified.
-
-    // Do not require this module directly! Use normal `invariant` calls with
-    // template literal strings. The messages will be converted to ReactError during
-    // build, and in production they will be minified.
-    function ReactError(error) {
-      error.name = 'Invariant Violation';
-      return error;
-    }
+    // template literal strings. The messages will be replaced with error codes
+    // during build.
 
     /**
      * Use invariant() to assert state which your program assumes to be true.
@@ -7180,13 +7142,11 @@ var VXA = (function (exports) {
      * will remain to ensure logic does not differ in production.
      */
 
-    (function () {
-      if (!React) {
-        {
-          throw ReactError(Error("ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM."));
-        }
+    if (!React) {
+      {
+        throw Error("ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.");
       }
-    })();
+    }
 
     /**
      * Injectable ordering of event plugins.
@@ -7213,37 +7173,31 @@ var VXA = (function (exports) {
         var pluginModule = namesToPlugins[pluginName];
         var pluginIndex = eventPluginOrder.indexOf(pluginName);
 
-        (function () {
-          if (!(pluginIndex > -1)) {
-            {
-              throw ReactError(Error("EventPluginRegistry: Cannot inject event plugins that do not exist in the plugin ordering, `" + pluginName + "`."));
-            }
+        if (!(pluginIndex > -1)) {
+          {
+            throw Error("EventPluginRegistry: Cannot inject event plugins that do not exist in the plugin ordering, `" + pluginName + "`.");
           }
-        })();
+        }
 
         if (plugins[pluginIndex]) {
           continue;
         }
 
-        (function () {
-          if (!pluginModule.extractEvents) {
-            {
-              throw ReactError(Error("EventPluginRegistry: Event plugins must implement an `extractEvents` method, but `" + pluginName + "` does not."));
-            }
+        if (!pluginModule.extractEvents) {
+          {
+            throw Error("EventPluginRegistry: Event plugins must implement an `extractEvents` method, but `" + pluginName + "` does not.");
           }
-        })();
+        }
 
         plugins[pluginIndex] = pluginModule;
         var publishedEvents = pluginModule.eventTypes;
 
         for (var eventName in publishedEvents) {
-          (function () {
-            if (!publishEventForPlugin(publishedEvents[eventName], pluginModule, eventName)) {
-              {
-                throw ReactError(Error("EventPluginRegistry: Failed to publish event `" + eventName + "` for plugin `" + pluginName + "`."));
-              }
+          if (!publishEventForPlugin(publishedEvents[eventName], pluginModule, eventName)) {
+            {
+              throw Error("EventPluginRegistry: Failed to publish event `" + eventName + "` for plugin `" + pluginName + "`.");
             }
-          })();
+          }
         }
       }
     }
@@ -7258,13 +7212,11 @@ var VXA = (function (exports) {
 
 
     function publishEventForPlugin(dispatchConfig, pluginModule, eventName) {
-      (function () {
-        if (!!eventNameDispatchConfigs.hasOwnProperty(eventName)) {
-          {
-            throw ReactError(Error("EventPluginHub: More than one plugin attempted to publish the same event name, `" + eventName + "`."));
-          }
+      if (!!eventNameDispatchConfigs.hasOwnProperty(eventName)) {
+        {
+          throw Error("EventPluginHub: More than one plugin attempted to publish the same event name, `" + eventName + "`.");
         }
-      })();
+      }
 
       eventNameDispatchConfigs[eventName] = dispatchConfig;
       var phasedRegistrationNames = dispatchConfig.phasedRegistrationNames;
@@ -7295,13 +7247,11 @@ var VXA = (function (exports) {
 
 
     function publishRegistrationName(registrationName, pluginModule, eventName) {
-      (function () {
-        if (!!registrationNameModules[registrationName]) {
-          {
-            throw ReactError(Error("EventPluginHub: More than one plugin attempted to publish the same registration name, `" + registrationName + "`."));
-          }
+      if (!!registrationNameModules[registrationName]) {
+        {
+          throw Error("EventPluginHub: More than one plugin attempted to publish the same registration name, `" + registrationName + "`.");
         }
-      })();
+      }
 
       registrationNameModules[registrationName] = pluginModule;
       registrationNameDependencies[registrationName] = pluginModule.eventTypes[eventName].dependencies;
@@ -7362,13 +7312,11 @@ var VXA = (function (exports) {
      */
 
     function injectEventPluginOrder(injectedEventPluginOrder) {
-      (function () {
-        if (!!eventPluginOrder) {
-          {
-            throw ReactError(Error("EventPluginRegistry: Cannot inject event plugin ordering more than once. You are likely trying to load more than one copy of React."));
-          }
+      if (!!eventPluginOrder) {
+        {
+          throw Error("EventPluginRegistry: Cannot inject event plugin ordering more than once. You are likely trying to load more than one copy of React.");
         }
-      })(); // Clone the ordering so it cannot be dynamically mutated.
+      } // Clone the ordering so it cannot be dynamically mutated.
 
 
       eventPluginOrder = Array.prototype.slice.call(injectedEventPluginOrder);
@@ -7396,13 +7344,11 @@ var VXA = (function (exports) {
         var pluginModule = injectedNamesToPlugins[pluginName];
 
         if (!namesToPlugins.hasOwnProperty(pluginName) || namesToPlugins[pluginName] !== pluginModule) {
-          (function () {
-            if (!!namesToPlugins[pluginName]) {
-              {
-                throw ReactError(Error("EventPluginRegistry: Cannot inject two different event plugins using the same name, `" + pluginName + "`."));
-              }
+          if (!!namesToPlugins[pluginName]) {
+            {
+              throw Error("EventPluginRegistry: Cannot inject two different event plugins using the same name, `" + pluginName + "`.");
             }
-          })();
+          }
 
           namesToPlugins[pluginName] = pluginModule;
           isOrderingDirty = true;
@@ -7453,13 +7399,11 @@ var VXA = (function (exports) {
           // when we call document.createEvent(). However this can cause confusing
           // errors: https://github.com/facebookincubator/create-react-app/issues/3482
           // So we preemptively throw with a better message instead.
-          (function () {
-            if (!(typeof document !== 'undefined')) {
-              {
-                throw ReactError(Error("The `document` global was defined when React was initialized, but is not defined anymore. This can happen in a test environment if a component schedules an update from an asynchronous callback, but the test has already finished running. To solve this, you can either unmount the component at the end of your test (and ensure that any asynchronous operations get canceled in `componentWillUnmount`), or you can change the test itself to be asynchronous."));
-              }
+          if (!(typeof document !== 'undefined')) {
+            {
+              throw Error("The `document` global was defined when React was initialized, but is not defined anymore. This can happen in a test environment if a component schedules an update from an asynchronous callback, but the test has already finished running. To solve this, you can either unmount the component at the end of your test (and ensure that any asynchronous operations get canceled in `componentWillUnmount`), or you can change the test itself to be asynchronous.");
             }
-          })();
+          }
 
           var evt = document.createEvent('Event'); // Keeps track of whether the user-provided callback threw an error. We
           // set this to true at the beginning, then set it to false right after
@@ -7647,13 +7591,11 @@ var VXA = (function (exports) {
         caughtError = null;
         return error;
       } else {
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error("clearCaughtError was called but no error was captured. This error is likely caused by a bug in React. Please file an issue."));
-            }
+            throw Error("clearCaughtError was called but no error was captured. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
       }
     }
 
@@ -7812,13 +7754,11 @@ var VXA = (function (exports) {
      */
 
     function accumulateInto(current, next) {
-      (function () {
-        if (!(next != null)) {
-          {
-            throw ReactError(Error("accumulateInto(...): Accumulated items must not be null or undefined."));
-          }
+      if (!(next != null)) {
+        {
+          throw Error("accumulateInto(...): Accumulated items must not be null or undefined.");
         }
-      })();
+      }
 
       if (current == null) {
         return next;
@@ -7904,13 +7844,11 @@ var VXA = (function (exports) {
 
       forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
 
-      (function () {
-        if (!!eventQueue) {
-          {
-            throw ReactError(Error("processEventQueue(): Additional events were enqueued while processing an event queue. Support for this has not yet been implemented."));
-          }
+      if (!!eventQueue) {
+        {
+          throw Error("processEventQueue(): Additional events were enqueued while processing an event queue. Support for this has not yet been implemented.");
         }
-      })(); // This would be a good time to rethrow if any of the event handlers threw.
+      } // This would be a good time to rethrow if any of the event handlers threw.
 
 
       rethrowCaughtError();
@@ -8008,13 +7946,11 @@ var VXA = (function (exports) {
         return null;
       }
 
-      (function () {
-        if (!(!listener || typeof listener === 'function')) {
-          {
-            throw ReactError(Error("Expected `" + registrationName + "` listener to be a function, instead got a value of `" + typeof listener + "` type."));
-          }
+      if (!(!listener || typeof listener === 'function')) {
+        {
+          throw Error("Expected `" + registrationName + "` listener to be a function, instead got a value of `" + typeof listener + "` type.");
         }
-      })();
+      }
 
       return listener;
     }
@@ -8026,7 +7962,7 @@ var VXA = (function (exports) {
      * @internal
      */
 
-    function extractPluginEvents(topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
+    function extractPluginEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
       var events = null;
 
       for (var i = 0; i < plugins.length; i++) {
@@ -8034,7 +7970,7 @@ var VXA = (function (exports) {
         var possiblePlugin = plugins[i];
 
         if (possiblePlugin) {
-          var extractedEvents = possiblePlugin.extractEvents(topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget);
+          var extractedEvents = possiblePlugin.extractEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags);
 
           if (extractedEvents) {
             events = accumulateInto(events, extractedEvents);
@@ -8045,8 +7981,8 @@ var VXA = (function (exports) {
       return events;
     }
 
-    function runExtractedPluginEventsInBatch(topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
-      var events = extractPluginEvents(topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget);
+    function runExtractedPluginEventsInBatch(topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
+      var events = extractPluginEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags);
       runEventsInBatch(events);
     }
 
@@ -8407,13 +8343,11 @@ var VXA = (function (exports) {
         return;
       }
 
-      (function () {
-        if (!(typeof restoreImpl === 'function')) {
-          {
-            throw ReactError(Error("setRestoreImplementation() needs to be called to handle a target for controlled events. This error is likely caused by a bug in React. Please file an issue."));
-          }
+      if (!(typeof restoreImpl === 'function')) {
+        {
+          throw Error("setRestoreImplementation() needs to be called to handle a target for controlled events. This error is likely caused by a bug in React. Please file an issue.");
         }
-      })();
+      }
 
       var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
       restoreImpl(internalInstance.stateNode, internalInstance.type, props);
@@ -8455,9 +8389,6 @@ var VXA = (function (exports) {
     }
 
     var enableProfilerTimer = true; // Trace which interactions trigger each commit.
-    // This is a flag so we can fix warnings in RN core before turning it on
-
-     // Experimental React Flare event system and event components support.
 
     var enableFlareAPI = false; // Experimental Host Component support.
 
@@ -9496,13 +9427,11 @@ var VXA = (function (exports) {
 
           var otherProps = getFiberCurrentPropsFromNode$1(otherNode);
 
-          (function () {
-            if (!otherProps) {
-              {
-                throw ReactError(Error("ReactDOMInput: Mixing React and non-React radio inputs with the same `name` is not supported."));
-              }
+          if (!otherProps) {
+            {
+              throw Error("ReactDOMInput: Mixing React and non-React radio inputs with the same `name` is not supported.");
             }
-          })(); // We need update the tracked value on the named cousin since the value
+          } // We need update the tracked value on the named cousin since the value
           // was changed but the input saw no event or value set
 
 
@@ -9805,13 +9734,11 @@ var VXA = (function (exports) {
     function getHostProps$3(element, props) {
       var node = element;
 
-      (function () {
-        if (!(props.dangerouslySetInnerHTML == null)) {
-          {
-            throw ReactError(Error("`dangerouslySetInnerHTML` does not make sense on <textarea>."));
-          }
+      if (!(props.dangerouslySetInnerHTML == null)) {
+        {
+          throw Error("`dangerouslySetInnerHTML` does not make sense on <textarea>.");
         }
-      })(); // Always set children to the same thing. In IE9, the selection range will
+      } // Always set children to the same thing. In IE9, the selection range will
       // get reset if `textContent` is mutated.  We could add a check in setTextContent
       // to only set the value if/when the value differs from the node value (which would
       // completely solve this IE9 bug), but Sebastian+Sophie seemed to like this
@@ -9851,22 +9778,18 @@ var VXA = (function (exports) {
             warning$1(false, 'Use the `defaultValue` or `value` props instead of setting ' + 'children on <textarea>.');
           }
 
-          (function () {
-            if (!(defaultValue == null)) {
-              {
-                throw ReactError(Error("If you supply `defaultValue` on a <textarea>, do not pass children."));
-              }
+          if (!(defaultValue == null)) {
+            {
+              throw Error("If you supply `defaultValue` on a <textarea>, do not pass children.");
             }
-          })();
+          }
 
           if (Array.isArray(children)) {
-            (function () {
-              if (!(children.length <= 1)) {
-                {
-                  throw ReactError(Error("<textarea> can only have at most one child."));
-                }
+            if (!(children.length <= 1)) {
+              {
+                throw Error("<textarea> can only have at most one child.");
               }
-            })();
+            }
 
             children = children[0];
           }
@@ -10238,266 +10161,6 @@ var VXA = (function (exports) {
     function getRawEventName(topLevelType) {
       return unsafeCastDOMTopLevelTypeToString(topLevelType);
     }
-    // has this definition built-in.
-
-    var hasScheduledReplayAttempt = false; // The queue of discrete events to be replayed.
-
-    var queuedDiscreteEvents = []; // Indicates if any continuous event targets are non-null for early bailout.
-
-    // if the last target was dehydrated.
-
-    var queuedFocus = null;
-    var queuedDrag = null;
-    var queuedMouse = null; // For pointer events there can be one latest event per pointerId.
-
-    var queuedPointers = new Map();
-    var queuedPointerCaptures = new Map(); // We could consider replaying selectionchange and touchmoves too.
-
-    function hasQueuedDiscreteEvents() {
-      return queuedDiscreteEvents.length > 0;
-    }
-
-    var discreteReplayableEvents = [TOP_MOUSE_DOWN, TOP_MOUSE_UP, TOP_TOUCH_CANCEL, TOP_TOUCH_END, TOP_TOUCH_START, TOP_AUX_CLICK, TOP_DOUBLE_CLICK, TOP_POINTER_CANCEL, TOP_POINTER_DOWN, TOP_POINTER_UP, TOP_DRAG_END, TOP_DRAG_START, TOP_DROP, TOP_COMPOSITION_END, TOP_COMPOSITION_START, TOP_KEY_DOWN, TOP_KEY_PRESS, TOP_KEY_UP, TOP_INPUT, TOP_TEXT_INPUT, TOP_CLOSE, TOP_CANCEL, TOP_COPY, TOP_CUT, TOP_PASTE, TOP_CLICK, TOP_CHANGE, TOP_CONTEXT_MENU, TOP_RESET, TOP_SUBMIT];
-    var continuousReplayableEvents = [TOP_FOCUS, TOP_BLUR, TOP_DRAG_ENTER, TOP_DRAG_LEAVE, TOP_MOUSE_OVER, TOP_MOUSE_OUT, TOP_POINTER_OVER, TOP_POINTER_OUT, TOP_GOT_POINTER_CAPTURE, TOP_LOST_POINTER_CAPTURE];
-    function isReplayableDiscreteEvent(eventType) {
-      return discreteReplayableEvents.indexOf(eventType) > -1;
-    }
-
-    function trapReplayableEvent(topLevelType, document, listeningSet) {
-      listenToTopLevel(topLevelType, document, listeningSet);
-    }
-
-    function eagerlyTrapReplayableEvents(document) {
-      var listeningSet = getListeningSetForElement(document); // Discrete
-
-      discreteReplayableEvents.forEach(function (topLevelType) {
-        trapReplayableEvent(topLevelType, document, listeningSet);
-      }); // Continuous
-
-      continuousReplayableEvents.forEach(function (topLevelType) {
-        trapReplayableEvent(topLevelType, document, listeningSet);
-      });
-    }
-
-    function createQueuedReplayableEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
-      return {
-        blockedOn: blockedOn,
-        topLevelType: topLevelType,
-        eventSystemFlags: eventSystemFlags | IS_REPLAYED,
-        nativeEvent: nativeEvent
-      };
-    }
-
-    function queueDiscreteEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
-      var queuedEvent = createQueuedReplayableEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent);
-      queuedDiscreteEvents.push(queuedEvent);
-    } // Resets the replaying for this type of continuous event to no event.
-
-    function clearIfContinuousEvent(topLevelType, nativeEvent) {
-      switch (topLevelType) {
-        case TOP_FOCUS:
-        case TOP_BLUR:
-          queuedFocus = null;
-          break;
-
-        case TOP_DRAG_ENTER:
-        case TOP_DRAG_LEAVE:
-          queuedDrag = null;
-          break;
-
-        case TOP_MOUSE_OVER:
-        case TOP_MOUSE_OUT:
-          queuedMouse = null;
-          break;
-
-        case TOP_POINTER_OVER:
-        case TOP_POINTER_OUT:
-          {
-            var pointerId = nativeEvent.pointerId;
-            queuedPointers.delete(pointerId);
-            break;
-          }
-
-        case TOP_GOT_POINTER_CAPTURE:
-        case TOP_LOST_POINTER_CAPTURE:
-          {
-            var _pointerId = nativeEvent.pointerId;
-            queuedPointerCaptures.delete(_pointerId);
-            break;
-          }
-      }
-    }
-
-    function accumulateOrCreateQueuedReplayableEvent(existingQueuedEvent, blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
-      if (existingQueuedEvent === null || existingQueuedEvent.nativeEvent !== nativeEvent) {
-        return createQueuedReplayableEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent);
-      } // If we have already queued this exact event, then it's because
-      // the different event systems have different DOM event listeners.
-      // We can accumulate the flags and store a single event to be
-      // replayed.
-
-
-      existingQueuedEvent.eventSystemFlags |= eventSystemFlags;
-      return existingQueuedEvent;
-    }
-
-    function queueIfContinuousEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
-      // These set relatedTarget to null because the replayed event will be treated as if we
-      // moved from outside the window (no target) onto the target once it hydrates.
-      // Instead of mutating we could clone the event.
-      switch (topLevelType) {
-        case TOP_FOCUS:
-          {
-            var focusEvent = nativeEvent;
-            queuedFocus = accumulateOrCreateQueuedReplayableEvent(queuedFocus, blockedOn, topLevelType, eventSystemFlags, focusEvent);
-            return true;
-          }
-
-        case TOP_DRAG_ENTER:
-          {
-            var dragEvent = nativeEvent;
-            queuedDrag = accumulateOrCreateQueuedReplayableEvent(queuedDrag, blockedOn, topLevelType, eventSystemFlags, dragEvent);
-            return true;
-          }
-
-        case TOP_MOUSE_OVER:
-          {
-            var mouseEvent = nativeEvent;
-            queuedMouse = accumulateOrCreateQueuedReplayableEvent(queuedMouse, blockedOn, topLevelType, eventSystemFlags, mouseEvent);
-            return true;
-          }
-
-        case TOP_POINTER_OVER:
-          {
-            var pointerEvent = nativeEvent;
-            var pointerId = pointerEvent.pointerId;
-            queuedPointers.set(pointerId, accumulateOrCreateQueuedReplayableEvent(queuedPointers.get(pointerId) || null, blockedOn, topLevelType, eventSystemFlags, pointerEvent));
-            return true;
-          }
-
-        case TOP_GOT_POINTER_CAPTURE:
-          {
-            var _pointerEvent = nativeEvent;
-            var _pointerId2 = _pointerEvent.pointerId;
-            queuedPointerCaptures.set(_pointerId2, accumulateOrCreateQueuedReplayableEvent(queuedPointerCaptures.get(_pointerId2) || null, blockedOn, topLevelType, eventSystemFlags, _pointerEvent));
-            return true;
-          }
-      }
-
-      return false;
-    }
-
-    function attemptReplayQueuedEvent(queuedEvent) {
-      if (queuedEvent.blockedOn !== null) {
-        return false;
-      }
-
-      var nextBlockedOn = attemptToDispatchEvent(queuedEvent.topLevelType, queuedEvent.eventSystemFlags, queuedEvent.nativeEvent);
-
-      if (nextBlockedOn !== null) {
-        // We're still blocked. Try again later.
-        queuedEvent.blockedOn = nextBlockedOn;
-        return false;
-      }
-
-      return true;
-    }
-
-    function attemptReplayQueuedEventInMap(queuedEvent, key, map) {
-      if (attemptReplayQueuedEvent(queuedEvent)) {
-        map.delete(key);
-      }
-    }
-
-    function replayUnblockedEvents() {
-      hasScheduledReplayAttempt = false; // First replay discrete events.
-
-      while (queuedDiscreteEvents.length > 0) {
-        var nextDiscreteEvent = queuedDiscreteEvents[0];
-
-        if (nextDiscreteEvent.blockedOn !== null) {
-          // We're still blocked.
-          break;
-        }
-
-        var nextBlockedOn = attemptToDispatchEvent(nextDiscreteEvent.topLevelType, nextDiscreteEvent.eventSystemFlags, nextDiscreteEvent.nativeEvent);
-
-        if (nextBlockedOn !== null) {
-          // We're still blocked. Try again later.
-          nextDiscreteEvent.blockedOn = nextBlockedOn;
-        } else {
-          // We've successfully replayed the first event. Let's try the next one.
-          queuedDiscreteEvents.shift();
-        }
-      } // Next replay any continuous events.
-
-
-      if (queuedFocus !== null && attemptReplayQueuedEvent(queuedFocus)) {
-        queuedFocus = null;
-      }
-
-      if (queuedDrag !== null && attemptReplayQueuedEvent(queuedDrag)) {
-        queuedDrag = null;
-      }
-
-      if (queuedMouse !== null && attemptReplayQueuedEvent(queuedMouse)) {
-        queuedMouse = null;
-      }
-
-      queuedPointers.forEach(attemptReplayQueuedEventInMap);
-      queuedPointerCaptures.forEach(attemptReplayQueuedEventInMap);
-    }
-
-    function scheduleCallbackIfUnblocked(queuedEvent, unblocked) {
-      if (queuedEvent.blockedOn === unblocked) {
-        queuedEvent.blockedOn = null;
-
-        if (!hasScheduledReplayAttempt) {
-          hasScheduledReplayAttempt = true; // Schedule a callback to attempt replaying as many events as are
-          // now unblocked. This first might not actually be unblocked yet.
-          // We could check it early to avoid scheduling an unnecessary callback.
-
-          Scheduler.unstable_scheduleCallback(Scheduler.unstable_NormalPriority, replayUnblockedEvents);
-        }
-      }
-    }
-
-    function retryIfBlockedOn(unblocked) {
-      // Mark anything that was blocked on this as no longer blocked
-      // and eligible for a replay.
-      if (queuedDiscreteEvents.length > 0) {
-        scheduleCallbackIfUnblocked(queuedDiscreteEvents[0], unblocked); // This is a exponential search for each boundary that commits. I think it's
-        // worth it because we expect very few discrete events to queue up and once
-        // we are actually fully unblocked it will be fast to replay them.
-
-        for (var i = 1; i < queuedDiscreteEvents.length; i++) {
-          var queuedEvent = queuedDiscreteEvents[i];
-
-          if (queuedEvent.blockedOn === unblocked) {
-            queuedEvent.blockedOn = null;
-          }
-        }
-      }
-
-      if (queuedFocus !== null) {
-        scheduleCallbackIfUnblocked(queuedFocus, unblocked);
-      }
-
-      if (queuedDrag !== null) {
-        scheduleCallbackIfUnblocked(queuedDrag, unblocked);
-      }
-
-      if (queuedMouse !== null) {
-        scheduleCallbackIfUnblocked(queuedMouse, unblocked);
-      }
-
-      var unblock = function (queuedEvent) {
-        return scheduleCallbackIfUnblocked(queuedEvent, unblocked);
-      };
-
-      queuedPointers.forEach(unblock);
-      queuedPointerCaptures.forEach(unblock);
-    }
 
     /**
      * `ReactInstanceMap` maintains a mapping from a public facing stateful
@@ -10584,7 +10247,7 @@ var VXA = (function (exports) {
     /*         */
     4096;
 
-    var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
+    var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
     function getNearestMountedFiber(fiber) {
       var node = fiber;
       var nearestMounted = fiber;
@@ -10649,7 +10312,7 @@ var VXA = (function (exports) {
     }
     function isMounted(component) {
       {
-        var owner = ReactCurrentOwner$1.current;
+        var owner = ReactCurrentOwner.current;
 
         if (owner !== null && owner.tag === ClassComponent) {
           var ownerFiber = owner;
@@ -10669,13 +10332,11 @@ var VXA = (function (exports) {
     }
 
     function assertIsMounted(fiber) {
-      (function () {
-        if (!(getNearestMountedFiber(fiber) === fiber)) {
-          {
-            throw ReactError(Error("Unable to find node on an unmounted component."));
-          }
+      if (!(getNearestMountedFiber(fiber) === fiber)) {
+        {
+          throw Error("Unable to find node on an unmounted component.");
         }
-      })();
+      }
     }
 
     function findCurrentFiberUsingSlowPath(fiber) {
@@ -10685,13 +10346,11 @@ var VXA = (function (exports) {
         // If there is no alternate, then we only need to check if it is mounted.
         var nearestMounted = getNearestMountedFiber(fiber);
 
-        (function () {
-          if (!(nearestMounted !== null)) {
-            {
-              throw ReactError(Error("Unable to find node on an unmounted component."));
-            }
+        if (!(nearestMounted !== null)) {
+          {
+            throw Error("Unable to find node on an unmounted component.");
           }
-        })();
+        }
 
         if (nearestMounted !== fiber) {
           return null;
@@ -10756,13 +10415,11 @@ var VXA = (function (exports) {
           // way this could possibly happen is if this was unmounted, if at all.
 
 
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Unable to find node on an unmounted component."));
-              }
+              throw Error("Unable to find node on an unmounted component.");
             }
-          })();
+          }
         }
 
         if (a.return !== b.return) {
@@ -10821,34 +10478,28 @@ var VXA = (function (exports) {
               _child = _child.sibling;
             }
 
-            (function () {
-              if (!didFindChild) {
-                {
-                  throw ReactError(Error("Child was not found in either parent set. This indicates a bug in React related to the return pointer. Please file an issue."));
-                }
+            if (!didFindChild) {
+              {
+                throw Error("Child was not found in either parent set. This indicates a bug in React related to the return pointer. Please file an issue.");
               }
-            })();
+            }
           }
         }
 
-        (function () {
-          if (!(a.alternate === b)) {
-            {
-              throw ReactError(Error("Return fibers should always be each others' alternates. This error is likely caused by a bug in React. Please file an issue."));
-            }
+        if (!(a.alternate === b)) {
+          {
+            throw Error("Return fibers should always be each others' alternates. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
       } // If the root is not a host container, we're in a disconnected tree. I.e.
       // unmounted.
 
 
-      (function () {
-        if (!(a.tag === HostRoot)) {
-          {
-            throw ReactError(Error("Unable to find node on an unmounted component."));
-          }
+      if (!(a.tag === HostRoot)) {
+        {
+          throw Error("Unable to find node on an unmounted component.");
         }
-      })();
+      }
 
       if (a.stateNode.current === a) {
         // We've determined that A is the current branch.
@@ -10935,6 +10586,368 @@ var VXA = (function (exports) {
 
 
       return null;
+    }
+    var attemptUserBlockingHydration;
+    function setAttemptUserBlockingHydration(fn) {
+      attemptUserBlockingHydration = fn;
+    }
+    var attemptContinuousHydration;
+    function setAttemptContinuousHydration(fn) {
+      attemptContinuousHydration = fn;
+    }
+    var attemptHydrationAtCurrentPriority;
+    function setAttemptHydrationAtCurrentPriority(fn) {
+      attemptHydrationAtCurrentPriority = fn;
+    } // TODO: Upgrade this definition once we're on a newer version of Flow that
+    // has this definition built-in.
+
+    var hasScheduledReplayAttempt = false; // The queue of discrete events to be replayed.
+
+    var queuedDiscreteEvents = []; // Indicates if any continuous event targets are non-null for early bailout.
+
+    // if the last target was dehydrated.
+
+    var queuedFocus = null;
+    var queuedDrag = null;
+    var queuedMouse = null; // For pointer events there can be one latest event per pointerId.
+
+    var queuedPointers = new Map();
+    var queuedPointerCaptures = new Map(); // We could consider replaying selectionchange and touchmoves too.
+
+    var queuedExplicitHydrationTargets = [];
+    function hasQueuedDiscreteEvents() {
+      return queuedDiscreteEvents.length > 0;
+    }
+
+    var discreteReplayableEvents = [TOP_MOUSE_DOWN, TOP_MOUSE_UP, TOP_TOUCH_CANCEL, TOP_TOUCH_END, TOP_TOUCH_START, TOP_AUX_CLICK, TOP_DOUBLE_CLICK, TOP_POINTER_CANCEL, TOP_POINTER_DOWN, TOP_POINTER_UP, TOP_DRAG_END, TOP_DRAG_START, TOP_DROP, TOP_COMPOSITION_END, TOP_COMPOSITION_START, TOP_KEY_DOWN, TOP_KEY_PRESS, TOP_KEY_UP, TOP_INPUT, TOP_TEXT_INPUT, TOP_CLOSE, TOP_CANCEL, TOP_COPY, TOP_CUT, TOP_PASTE, TOP_CLICK, TOP_CHANGE, TOP_CONTEXT_MENU, TOP_RESET, TOP_SUBMIT];
+    var continuousReplayableEvents = [TOP_FOCUS, TOP_BLUR, TOP_DRAG_ENTER, TOP_DRAG_LEAVE, TOP_MOUSE_OVER, TOP_MOUSE_OUT, TOP_POINTER_OVER, TOP_POINTER_OUT, TOP_GOT_POINTER_CAPTURE, TOP_LOST_POINTER_CAPTURE];
+    function isReplayableDiscreteEvent(eventType) {
+      return discreteReplayableEvents.indexOf(eventType) > -1;
+    }
+
+    function trapReplayableEvent(topLevelType, document, listeningSet) {
+      listenToTopLevel(topLevelType, document, listeningSet);
+    }
+
+    function eagerlyTrapReplayableEvents(document) {
+      var listeningSet = getListeningSetForElement(document); // Discrete
+
+      discreteReplayableEvents.forEach(function (topLevelType) {
+        trapReplayableEvent(topLevelType, document, listeningSet);
+      }); // Continuous
+
+      continuousReplayableEvents.forEach(function (topLevelType) {
+        trapReplayableEvent(topLevelType, document, listeningSet);
+      });
+    }
+
+    function createQueuedReplayableEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
+      return {
+        blockedOn: blockedOn,
+        topLevelType: topLevelType,
+        eventSystemFlags: eventSystemFlags | IS_REPLAYED,
+        nativeEvent: nativeEvent
+      };
+    }
+
+    function queueDiscreteEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
+      var queuedEvent = createQueuedReplayableEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent);
+      queuedDiscreteEvents.push(queuedEvent);
+    } // Resets the replaying for this type of continuous event to no event.
+
+    function clearIfContinuousEvent(topLevelType, nativeEvent) {
+      switch (topLevelType) {
+        case TOP_FOCUS:
+        case TOP_BLUR:
+          queuedFocus = null;
+          break;
+
+        case TOP_DRAG_ENTER:
+        case TOP_DRAG_LEAVE:
+          queuedDrag = null;
+          break;
+
+        case TOP_MOUSE_OVER:
+        case TOP_MOUSE_OUT:
+          queuedMouse = null;
+          break;
+
+        case TOP_POINTER_OVER:
+        case TOP_POINTER_OUT:
+          {
+            var pointerId = nativeEvent.pointerId;
+            queuedPointers.delete(pointerId);
+            break;
+          }
+
+        case TOP_GOT_POINTER_CAPTURE:
+        case TOP_LOST_POINTER_CAPTURE:
+          {
+            var _pointerId = nativeEvent.pointerId;
+            queuedPointerCaptures.delete(_pointerId);
+            break;
+          }
+      }
+    }
+
+    function accumulateOrCreateContinuousQueuedReplayableEvent(existingQueuedEvent, blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
+      if (existingQueuedEvent === null || existingQueuedEvent.nativeEvent !== nativeEvent) {
+        var queuedEvent = createQueuedReplayableEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent);
+
+        if (blockedOn !== null) {
+          var _fiber2 = getInstanceFromNode$1(blockedOn);
+
+          if (_fiber2 !== null) {
+            // Attempt to increase the priority of this target.
+            attemptContinuousHydration(_fiber2);
+          }
+        }
+
+        return queuedEvent;
+      } // If we have already queued this exact event, then it's because
+      // the different event systems have different DOM event listeners.
+      // We can accumulate the flags and store a single event to be
+      // replayed.
+
+
+      existingQueuedEvent.eventSystemFlags |= eventSystemFlags;
+      return existingQueuedEvent;
+    }
+
+    function queueIfContinuousEvent(blockedOn, topLevelType, eventSystemFlags, nativeEvent) {
+      // These set relatedTarget to null because the replayed event will be treated as if we
+      // moved from outside the window (no target) onto the target once it hydrates.
+      // Instead of mutating we could clone the event.
+      switch (topLevelType) {
+        case TOP_FOCUS:
+          {
+            var focusEvent = nativeEvent;
+            queuedFocus = accumulateOrCreateContinuousQueuedReplayableEvent(queuedFocus, blockedOn, topLevelType, eventSystemFlags, focusEvent);
+            return true;
+          }
+
+        case TOP_DRAG_ENTER:
+          {
+            var dragEvent = nativeEvent;
+            queuedDrag = accumulateOrCreateContinuousQueuedReplayableEvent(queuedDrag, blockedOn, topLevelType, eventSystemFlags, dragEvent);
+            return true;
+          }
+
+        case TOP_MOUSE_OVER:
+          {
+            var mouseEvent = nativeEvent;
+            queuedMouse = accumulateOrCreateContinuousQueuedReplayableEvent(queuedMouse, blockedOn, topLevelType, eventSystemFlags, mouseEvent);
+            return true;
+          }
+
+        case TOP_POINTER_OVER:
+          {
+            var pointerEvent = nativeEvent;
+            var pointerId = pointerEvent.pointerId;
+            queuedPointers.set(pointerId, accumulateOrCreateContinuousQueuedReplayableEvent(queuedPointers.get(pointerId) || null, blockedOn, topLevelType, eventSystemFlags, pointerEvent));
+            return true;
+          }
+
+        case TOP_GOT_POINTER_CAPTURE:
+          {
+            var _pointerEvent = nativeEvent;
+            var _pointerId2 = _pointerEvent.pointerId;
+            queuedPointerCaptures.set(_pointerId2, accumulateOrCreateContinuousQueuedReplayableEvent(queuedPointerCaptures.get(_pointerId2) || null, blockedOn, topLevelType, eventSystemFlags, _pointerEvent));
+            return true;
+          }
+      }
+
+      return false;
+    } // Check if this target is unblocked. Returns true if it's unblocked.
+
+    function attemptExplicitHydrationTarget(queuedTarget) {
+      // TODO: This function shares a lot of logic with attemptToDispatchEvent.
+      // Try to unify them. It's a bit tricky since it would require two return
+      // values.
+      var targetInst = getClosestInstanceFromNode(queuedTarget.target);
+
+      if (targetInst !== null) {
+        var nearestMounted = getNearestMountedFiber(targetInst);
+
+        if (nearestMounted !== null) {
+          var tag = nearestMounted.tag;
+
+          if (tag === SuspenseComponent) {
+            var instance = getSuspenseInstanceFromFiber(nearestMounted);
+
+            if (instance !== null) {
+              // We're blocked on hydrating this boundary.
+              // Increase its priority.
+              queuedTarget.blockedOn = instance;
+              Scheduler.unstable_runWithPriority(queuedTarget.priority, function () {
+                attemptHydrationAtCurrentPriority(nearestMounted);
+              });
+              return;
+            }
+          } else if (tag === HostRoot) {
+            var root = nearestMounted.stateNode;
+
+            if (root.hydrate) {
+              queuedTarget.blockedOn = getContainerFromFiber(nearestMounted); // We don't currently have a way to increase the priority of
+              // a root other than sync.
+
+              return;
+            }
+          }
+        }
+      }
+
+      queuedTarget.blockedOn = null;
+    }
+
+    function attemptReplayContinuousQueuedEvent(queuedEvent) {
+      if (queuedEvent.blockedOn !== null) {
+        return false;
+      }
+
+      var nextBlockedOn = attemptToDispatchEvent(queuedEvent.topLevelType, queuedEvent.eventSystemFlags, queuedEvent.nativeEvent);
+
+      if (nextBlockedOn !== null) {
+        // We're still blocked. Try again later.
+        var _fiber3 = getInstanceFromNode$1(nextBlockedOn);
+
+        if (_fiber3 !== null) {
+          attemptContinuousHydration(_fiber3);
+        }
+
+        queuedEvent.blockedOn = nextBlockedOn;
+        return false;
+      }
+
+      return true;
+    }
+
+    function attemptReplayContinuousQueuedEventInMap(queuedEvent, key, map) {
+      if (attemptReplayContinuousQueuedEvent(queuedEvent)) {
+        map.delete(key);
+      }
+    }
+
+    function replayUnblockedEvents() {
+      hasScheduledReplayAttempt = false; // First replay discrete events.
+
+      while (queuedDiscreteEvents.length > 0) {
+        var nextDiscreteEvent = queuedDiscreteEvents[0];
+
+        if (nextDiscreteEvent.blockedOn !== null) {
+          // We're still blocked.
+          // Increase the priority of this boundary to unblock
+          // the next discrete event.
+          var _fiber4 = getInstanceFromNode$1(nextDiscreteEvent.blockedOn);
+
+          if (_fiber4 !== null) {
+            attemptUserBlockingHydration(_fiber4);
+          }
+
+          break;
+        }
+
+        var nextBlockedOn = attemptToDispatchEvent(nextDiscreteEvent.topLevelType, nextDiscreteEvent.eventSystemFlags, nextDiscreteEvent.nativeEvent);
+
+        if (nextBlockedOn !== null) {
+          // We're still blocked. Try again later.
+          nextDiscreteEvent.blockedOn = nextBlockedOn;
+        } else {
+          // We've successfully replayed the first event. Let's try the next one.
+          queuedDiscreteEvents.shift();
+        }
+      } // Next replay any continuous events.
+
+
+      if (queuedFocus !== null && attemptReplayContinuousQueuedEvent(queuedFocus)) {
+        queuedFocus = null;
+      }
+
+      if (queuedDrag !== null && attemptReplayContinuousQueuedEvent(queuedDrag)) {
+        queuedDrag = null;
+      }
+
+      if (queuedMouse !== null && attemptReplayContinuousQueuedEvent(queuedMouse)) {
+        queuedMouse = null;
+      }
+
+      queuedPointers.forEach(attemptReplayContinuousQueuedEventInMap);
+      queuedPointerCaptures.forEach(attemptReplayContinuousQueuedEventInMap);
+    }
+
+    function scheduleCallbackIfUnblocked(queuedEvent, unblocked) {
+      if (queuedEvent.blockedOn === unblocked) {
+        queuedEvent.blockedOn = null;
+
+        if (!hasScheduledReplayAttempt) {
+          hasScheduledReplayAttempt = true; // Schedule a callback to attempt replaying as many events as are
+          // now unblocked. This first might not actually be unblocked yet.
+          // We could check it early to avoid scheduling an unnecessary callback.
+
+          Scheduler.unstable_scheduleCallback(Scheduler.unstable_NormalPriority, replayUnblockedEvents);
+        }
+      }
+    }
+
+    function retryIfBlockedOn(unblocked) {
+      // Mark anything that was blocked on this as no longer blocked
+      // and eligible for a replay.
+      if (queuedDiscreteEvents.length > 0) {
+        scheduleCallbackIfUnblocked(queuedDiscreteEvents[0], unblocked); // This is a exponential search for each boundary that commits. I think it's
+        // worth it because we expect very few discrete events to queue up and once
+        // we are actually fully unblocked it will be fast to replay them.
+
+        for (var i = 1; i < queuedDiscreteEvents.length; i++) {
+          var queuedEvent = queuedDiscreteEvents[i];
+
+          if (queuedEvent.blockedOn === unblocked) {
+            queuedEvent.blockedOn = null;
+          }
+        }
+      }
+
+      if (queuedFocus !== null) {
+        scheduleCallbackIfUnblocked(queuedFocus, unblocked);
+      }
+
+      if (queuedDrag !== null) {
+        scheduleCallbackIfUnblocked(queuedDrag, unblocked);
+      }
+
+      if (queuedMouse !== null) {
+        scheduleCallbackIfUnblocked(queuedMouse, unblocked);
+      }
+
+      var unblock = function (queuedEvent) {
+        return scheduleCallbackIfUnblocked(queuedEvent, unblocked);
+      };
+
+      queuedPointers.forEach(unblock);
+      queuedPointerCaptures.forEach(unblock);
+
+      for (var _i = 0; _i < queuedExplicitHydrationTargets.length; _i++) {
+        var queuedTarget = queuedExplicitHydrationTargets[_i];
+
+        if (queuedTarget.blockedOn === unblocked) {
+          queuedTarget.blockedOn = null;
+        }
+      }
+
+      while (queuedExplicitHydrationTargets.length > 0) {
+        var nextExplicitTarget = queuedExplicitHydrationTargets[0];
+
+        if (nextExplicitTarget.blockedOn !== null) {
+          // We're still blocked.
+          break;
+        } else {
+          attemptExplicitHydrationTarget(nextExplicitTarget);
+
+          if (nextExplicitTarget.blockedOn === null) {
+            // We're unblocked.
+            queuedExplicitHydrationTargets.shift();
+          }
+        }
+      }
     }
 
     function addEventBubbleListener(element, eventType, listener) {
@@ -11474,13 +11487,11 @@ var VXA = (function (exports) {
     function releasePooledEvent(event) {
       var EventConstructor = this;
 
-      (function () {
-        if (!(event instanceof EventConstructor)) {
-          {
-            throw ReactError(Error("Trying to release an event instance into a pool of a different type."));
-          }
+      if (!(event instanceof EventConstructor)) {
+        {
+          throw Error("Trying to release an event instance into a pool of a different type.");
         }
-      })();
+      }
 
       event.destructor();
 
@@ -11944,7 +11955,7 @@ var VXA = (function (exports) {
         var config = topLevelEventsToDispatchConfig[topLevelType];
         return config !== undefined ? config.eventPriority : ContinuousEvent;
       },
-      extractEvents: function (topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
+      extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
         var dispatchConfig = topLevelEventsToDispatchConfig[topLevelType];
 
         if (!dispatchConfig) {
@@ -12168,7 +12179,7 @@ var VXA = (function (exports) {
         var eventTarget = getEventTarget(bookKeeping.nativeEvent);
         var topLevelType = bookKeeping.topLevelType;
         var nativeEvent = bookKeeping.nativeEvent;
-        runExtractedPluginEventsInBatch(topLevelType, bookKeeping.eventSystemFlags, targetInst, nativeEvent, eventTarget);
+        runExtractedPluginEventsInBatch(topLevelType, targetInst, nativeEvent, eventTarget, bookKeeping.eventSystemFlags);
       }
     } // TODO: can we stop exporting these?
 
@@ -12220,9 +12231,7 @@ var VXA = (function (exports) {
     }
 
     function dispatchUserBlockingUpdate(topLevelType, eventSystemFlags, nativeEvent) {
-      {
-        dispatchEvent(topLevelType, eventSystemFlags, nativeEvent);
-      }
+      runWithPriority$1(UserBlockingPriority$1, dispatchEvent.bind(null, topLevelType, eventSystemFlags, nativeEvent));
     }
 
     function dispatchEventForPluginEventSystem(topLevelType, eventSystemFlags, nativeEvent, targetInst) {
@@ -12982,44 +12991,36 @@ var VXA = (function (exports) {
 
 
       if (voidElementTags[tag]) {
-        (function () {
-          if (!(props.children == null && props.dangerouslySetInnerHTML == null)) {
-            {
-              throw ReactError(Error(tag + " is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`." + (ReactDebugCurrentFrame$3.getStackAddendum())));
-            }
+        if (!(props.children == null && props.dangerouslySetInnerHTML == null)) {
+          {
+            throw Error(tag + " is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`." + (ReactDebugCurrentFrame$3.getStackAddendum()));
           }
-        })();
+        }
       }
 
       if (props.dangerouslySetInnerHTML != null) {
-        (function () {
-          if (!(props.children == null)) {
-            {
-              throw ReactError(Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`."));
-            }
+        if (!(props.children == null)) {
+          {
+            throw Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`.");
           }
-        })();
+        }
 
-        (function () {
-          if (!(typeof props.dangerouslySetInnerHTML === 'object' && HTML$1 in props.dangerouslySetInnerHTML)) {
-            {
-              throw ReactError(Error("`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://fb.me/react-invariant-dangerously-set-inner-html for more information."));
-            }
+        if (!(typeof props.dangerouslySetInnerHTML === 'object' && HTML$1 in props.dangerouslySetInnerHTML)) {
+          {
+            throw Error("`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://fb.me/react-invariant-dangerously-set-inner-html for more information.");
           }
-        })();
+        }
       }
 
       {
         !(props.suppressContentEditableWarning || !props.contentEditable || props.children == null) ? warning$1(false, 'A component is `contentEditable` and contains `children` managed by ' + 'React. It is now your responsibility to guarantee that none of ' + 'those nodes are unexpectedly modified or duplicated. This is ' + 'probably not intentional.') : void 0;
       }
 
-      (function () {
-        if (!(props.style == null || typeof props.style === 'object')) {
-          {
-            throw ReactError(Error("The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX." + (ReactDebugCurrentFrame$3.getStackAddendum())));
-          }
+      if (!(props.style == null || typeof props.style === 'object')) {
+        {
+          throw Error("The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX." + (ReactDebugCurrentFrame$3.getStackAddendum()));
         }
-      })();
+      }
     }
 
     function isCustomComponent(tagName, props) {
@@ -15839,7 +15840,8 @@ var VXA = (function (exports) {
       } else {
         container.insertBefore(child, beforeChild);
       }
-    }
+    } // This is a specific event for the React Flare
+
     function removeChild(parentInstance, child) {
       parentInstance.removeChild(child);
     }
@@ -16063,11 +16065,17 @@ var VXA = (function (exports) {
     }
     function markContainerAsRoot(hostRoot, node) {
       node[internalContainerInstanceKey] = hostRoot;
+    }
+    function unmarkContainerAsRoot(node) {
+      node[internalContainerInstanceKey] = null;
+    }
+    function isContainerMarkedAsRoot(node) {
+      return !!node[internalContainerInstanceKey];
     } // Given a DOM node, return the closest HostComponent or HostText fiber ancestor.
     // If the target node is part of a hydrated or not yet rendered subtree, then
     // this may also return a SuspenseComponent or HostRoot to indicate that.
     // Conceptually the HostRoot fiber is a child of the Container node. So if you
-    // pass the Container node as the targetNode, you wiill not actually get the
+    // pass the Container node as the targetNode, you will not actually get the
     // HostRoot back. To get to the HostRoot, you need to pass a child of it.
     // The same thing applies to Suspense boundaries.
 
@@ -16181,13 +16189,11 @@ var VXA = (function (exports) {
       // invariant for a missing parent, which is super confusing.
 
 
-      (function () {
+      {
         {
-          {
-            throw ReactError(Error("getNodeFromInstance: Invalid argument."));
-          }
+          throw Error("getNodeFromInstance: Invalid argument.");
         }
-      })();
+      }
     }
     function getFiberCurrentPropsFromNode$1(node) {
       return node[internalEventHandlersKey] || null;
@@ -16667,7 +16673,7 @@ var VXA = (function (exports) {
 
     var BeforeInputEventPlugin = {
       eventTypes: eventTypes$1,
-      extractEvents: function (topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
+      extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
         var composition = extractCompositionEvent(topLevelType, targetInst, nativeEvent, nativeEventTarget);
         var beforeInput = extractBeforeInputEvent(topLevelType, targetInst, nativeEvent, nativeEventTarget);
 
@@ -16927,7 +16933,7 @@ var VXA = (function (exports) {
     var ChangeEventPlugin = {
       eventTypes: eventTypes$2,
       _isInputEventSupported: isInputEventSupported,
-      extractEvents: function (topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
+      extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
         var targetNode = targetInst ? getNodeFromInstance$1(targetInst) : window;
         var getTargetInstFunc, handleEventFunc;
 
@@ -16992,7 +16998,12 @@ var VXA = (function (exports) {
         registrationName: 'onPointerLeave',
         dependencies: [TOP_POINTER_OUT, TOP_POINTER_OVER]
       }
-    };
+    }; // We track the lastNativeEvent to ensure that when we encounter
+    // cases where we process the same nativeEvent multiple times,
+    // which can happen when have multiple ancestors, that we don't
+    // duplicate enter
+
+    var lastNativeEvent;
     var EnterLeaveEventPlugin = {
       eventTypes: eventTypes$3,
 
@@ -17003,7 +17014,7 @@ var VXA = (function (exports) {
        * browser from outside will not fire a `mouseout` event. In this case, we use
        * the `mouseover` top-level event.
        */
-      extractEvents: function (topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
+      extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
         var isOverEvent = topLevelType === TOP_MOUSE_OVER || topLevelType === TOP_POINTER_OVER;
         var isOutEvent = topLevelType === TOP_MOUSE_OUT || topLevelType === TOP_POINTER_OUT;
 
@@ -17087,6 +17098,13 @@ var VXA = (function (exports) {
         enter.target = toNode;
         enter.relatedTarget = fromNode;
         accumulateEnterLeaveDispatches(leave, enter, from, to);
+
+        if (nativeEvent === lastNativeEvent) {
+          lastNativeEvent = null;
+          return [leave];
+        }
+
+        lastNativeEvent = nativeEvent;
         return [leave, enter];
       }
     };
@@ -17239,7 +17257,7 @@ var VXA = (function (exports) {
 
     var SelectEventPlugin = {
       eventTypes: eventTypes$4,
-      extractEvents: function (topLevelType, eventSystemFlags, targetInst, nativeEvent, nativeEventTarget) {
+      extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
         var doc = getEventTargetDocument(nativeEventTarget); // Track whether all listeners exists for this plugin. If none exist, we do
         // not extract events. See #3639.
 
@@ -17906,13 +17924,11 @@ var VXA = (function (exports) {
 
     function pushTopLevelContextObject(fiber, context, didChange) {
       {
-        (function () {
-          if (!(contextStackCursor.current === emptyContextObject)) {
-            {
-              throw ReactError(Error("Unexpected context found on stack. This error is likely caused by a bug in React. Please file an issue."));
-            }
+        if (!(contextStackCursor.current === emptyContextObject)) {
+          {
+            throw Error("Unexpected context found on stack. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
 
         push(contextStackCursor, context, fiber);
         push(didPerformWorkStackCursor, didChange, fiber);
@@ -17953,13 +17969,11 @@ var VXA = (function (exports) {
         }
 
         for (var contextKey in childContext) {
-          (function () {
-            if (!(contextKey in childContextTypes)) {
-              {
-                throw ReactError(Error((getComponentName(type) || 'Unknown') + ".getChildContext(): key \"" + contextKey + "\" is not defined in childContextTypes."));
-              }
+          if (!(contextKey in childContextTypes)) {
+            {
+              throw Error((getComponentName(type) || 'Unknown') + ".getChildContext(): key \"" + contextKey + "\" is not defined in childContextTypes.");
             }
-          })();
+          }
         }
 
         {
@@ -17996,13 +18010,11 @@ var VXA = (function (exports) {
       {
         var instance = workInProgress.stateNode;
 
-        (function () {
-          if (!instance) {
-            {
-              throw ReactError(Error("Expected to have an instance by this point. This error is likely caused by a bug in React. Please file an issue."));
-            }
+        if (!instance) {
+          {
+            throw Error("Expected to have an instance by this point. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
 
         if (didChange) {
           // Merge parent and own context.
@@ -18028,13 +18040,11 @@ var VXA = (function (exports) {
       {
         // Currently this is only used with renderSubtreeIntoContainer; not sure if it
         // makes sense elsewhere
-        (function () {
-          if (!(isFiberMounted(fiber) && fiber.tag === ClassComponent)) {
-            {
-              throw ReactError(Error("Expected subtree parent to be a mounted class component. This error is likely caused by a bug in React. Please file an issue."));
-            }
+        if (!(isFiberMounted(fiber) && fiber.tag === ClassComponent)) {
+          {
+            throw Error("Expected subtree parent to be a mounted class component. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
 
         var node = fiber;
 
@@ -18058,18 +18068,16 @@ var VXA = (function (exports) {
           node = node.return;
         } while (node !== null);
 
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error("Found unexpected detached subtree parent. This error is likely caused by a bug in React. Please file an issue."));
-            }
+            throw Error("Found unexpected detached subtree parent. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
       }
     }
 
     var LegacyRoot = 0;
-    var BatchedRoot = 1;
+    var BlockingRoot = 1;
     var ConcurrentRoot = 2;
 
     // Intentionally not named imports because Rollup would use dynamic dispatch for
@@ -18091,13 +18099,11 @@ var VXA = (function (exports) {
       // Provide explicit error message when production+profiling bundle of e.g.
       // react-dom is used with production (non-profiling) bundle of
       // scheduler/tracing
-      (function () {
-        if (!(tracing$1.__interactionsRef != null && tracing$1.__interactionsRef.current != null)) {
-          {
-            throw ReactError(Error("It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"));
-          }
+      if (!(tracing$1.__interactionsRef != null && tracing$1.__interactionsRef.current != null)) {
+        {
+          throw Error("It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling");
         }
-      })();
+      }
     }
 
     var fakeCallbackNode = {}; // Except for NoPriority, these correspond to Scheduler priorities. We use
@@ -18146,13 +18152,11 @@ var VXA = (function (exports) {
           return IdlePriority;
 
         default:
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Unknown priority level."));
-              }
+              throw Error("Unknown priority level.");
             }
-          })();
+          }
 
       }
     }
@@ -18175,13 +18179,11 @@ var VXA = (function (exports) {
           return Scheduler_IdlePriority;
 
         default:
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Unknown priority level."));
-              }
+              throw Error("Unknown priority level.");
             }
-          })();
+          }
 
       }
     }
@@ -18259,10 +18261,10 @@ var VXA = (function (exports) {
     }
 
     var NoMode = 0;
-    var StrictMode = 1; // TODO: Remove BatchedMode and ConcurrentMode by reading from the root
+    var StrictMode = 1; // TODO: Remove BlockingMode and ConcurrentMode by reading from the root
     // tag instead
 
-    var BatchedMode = 2;
+    var BlockingMode = 2;
     var ConcurrentMode = 4;
     var ProfileMode = 8;
 
@@ -18282,7 +18284,11 @@ var VXA = (function (exports) {
     var Never = 1; // Idle is slightly higher priority than Never. It must completely finish in
     // order to be consistent.
 
-    var Idle = 2;
+    var Idle = 2; // Continuous Hydration is a moving priority. It is slightly higher than Idle
+    // and is used to increase priority of hover targets. It is increasing with
+    // each usage so that last always wins.
+
+    var ContinuousHydration = 3;
     var Sync = MAX_SIGNED_31_BIT_INT;
     var Batched = Sync - 1;
     var UNIT_SIZE = 10;
@@ -18330,6 +18336,12 @@ var VXA = (function (exports) {
     var HIGH_PRIORITY_BATCH_SIZE = 100;
     function computeInteractiveExpiration(currentTime) {
       return computeExpirationBucket(currentTime, HIGH_PRIORITY_EXPIRATION, HIGH_PRIORITY_BATCH_SIZE);
+    }
+    function computeContinuousHydrationExpiration(currentTime) {
+      // Each time we ask for a new one of these we increase the priority.
+      // This ensures that the last one always wins since we can't deprioritize
+      // once we've scheduled work already.
+      return ContinuousHydration++;
     }
     function inferPriorityFromExpirationTime(currentTime, expirationTime) {
       if (expirationTime === Sync) {
@@ -18834,7 +18846,9 @@ var VXA = (function (exports) {
         }
 
         flushPassiveEffects();
-        updateContainerAtExpirationTime(element, root, null, Sync, null);
+        syncUpdates(function () {
+          updateContainer(element, root, null, null);
+        });
       }
     };
 
@@ -19301,13 +19315,11 @@ var VXA = (function (exports) {
         };
 
         if (lastContextDependency === null) {
-          (function () {
-            if (!(currentlyRenderingFiber !== null)) {
-              {
-                throw ReactError(Error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo()."));
-              }
+          if (!(currentlyRenderingFiber !== null)) {
+            {
+              throw Error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
             }
-          })(); // This is the first dependency for this component. Create a new list.
+          } // This is the first dependency for this component. Create a new list.
 
 
           lastContextDependency = contextItem;
@@ -19593,7 +19605,7 @@ var VXA = (function (exports) {
               {
                 enterDisallowedContextReadInDEV();
 
-                if (  workInProgress.mode & StrictMode) {
+                if ( workInProgress.mode & StrictMode) {
                   payload.call(instance, prevState, nextProps);
                 }
               }
@@ -19627,7 +19639,7 @@ var VXA = (function (exports) {
               {
                 enterDisallowedContextReadInDEV();
 
-                if (  workInProgress.mode & StrictMode) {
+                if ( workInProgress.mode & StrictMode) {
                   _payload.call(instance, prevState, nextProps);
                 }
               }
@@ -19811,13 +19823,11 @@ var VXA = (function (exports) {
     }
 
     function callCallback(callback, context) {
-      (function () {
-        if (!(typeof callback === 'function')) {
-          {
-            throw ReactError(Error("Invalid argument passed as callback. Expected a function. Instead received: " + callback));
-          }
+      if (!(typeof callback === 'function')) {
+        {
+          throw Error("Invalid argument passed as callback. Expected a function. Instead received: " + callback);
         }
-      })();
+      }
 
       callback.call(context);
     }
@@ -19928,13 +19938,11 @@ var VXA = (function (exports) {
       Object.defineProperty(fakeInternalInstance, '_processChildContext', {
         enumerable: false,
         value: function () {
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("_processChildContext is not available in React 16+. This likely means you have multiple copies of React and are attempting to nest a React 15 tree inside a React 16 tree using unstable_renderSubtreeIntoContainer, which isn't supported. Try to make sure you have only one copy of React (and ideally, switch to ReactDOM.createPortal)."));
-              }
+              throw Error("_processChildContext is not available in React 16+. This likely means you have multiple copies of React and are attempting to nest a React 15 tree inside a React 16 tree using unstable_renderSubtreeIntoContainer, which isn't supported. Try to make sure you have only one copy of React (and ideally, switch to ReactDOM.createPortal).");
             }
-          })();
+          }
         }
       });
       Object.freeze(fakeInternalInstance);
@@ -19944,7 +19952,7 @@ var VXA = (function (exports) {
       var prevState = workInProgress.memoizedState;
 
       {
-        if (  workInProgress.mode & StrictMode) {
+        if ( workInProgress.mode & StrictMode) {
           // Invoke the function an extra time to help detect side-effects.
           getDerivedStateFromProps(nextProps, prevState);
         }
@@ -19971,7 +19979,7 @@ var VXA = (function (exports) {
       isMounted: isMounted,
       enqueueSetState: function (inst, payload, callback) {
         var fiber = get(inst);
-        var currentTime = requestCurrentTime();
+        var currentTime = requestCurrentTimeForUpdate();
         var suspenseConfig = requestCurrentSuspenseConfig();
         var expirationTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
         var update = createUpdate(expirationTime, suspenseConfig);
@@ -19990,7 +19998,7 @@ var VXA = (function (exports) {
       },
       enqueueReplaceState: function (inst, payload, callback) {
         var fiber = get(inst);
-        var currentTime = requestCurrentTime();
+        var currentTime = requestCurrentTimeForUpdate();
         var suspenseConfig = requestCurrentSuspenseConfig();
         var expirationTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
         var update = createUpdate(expirationTime, suspenseConfig);
@@ -20010,7 +20018,7 @@ var VXA = (function (exports) {
       },
       enqueueForceUpdate: function (inst, callback) {
         var fiber = get(inst);
-        var currentTime = requestCurrentTime();
+        var currentTime = requestCurrentTimeForUpdate();
         var suspenseConfig = requestCurrentSuspenseConfig();
         var expirationTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
         var update = createUpdate(expirationTime, suspenseConfig);
@@ -20183,7 +20191,7 @@ var VXA = (function (exports) {
 
 
       {
-        if (  workInProgress.mode & StrictMode) {
+        if ( workInProgress.mode & StrictMode) {
           new ctor(props, context); // eslint-disable-line no-new
         }
       }
@@ -20615,13 +20623,11 @@ var VXA = (function (exports) {
           return;
         }
 
-        (function () {
-          if (!(typeof child._store === 'object')) {
-            {
-              throw ReactError(Error("React Component in warnForMissingKey should have a _store. This error is likely caused by a bug in React. Please file an issue."));
-            }
+        if (!(typeof child._store === 'object')) {
+          {
+            throw Error("React Component in warnForMissingKey should have a _store. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
 
         child._store.validated = true;
         var currentComponentErrorInfo = 'Each child in a list should have a unique ' + '"key" prop. See https://fb.me/react-warning-keys for ' + 'more information.' + getCurrentFiberStackInDev();
@@ -20664,24 +20670,20 @@ var VXA = (function (exports) {
           if (owner) {
             var ownerFiber = owner;
 
-            (function () {
-              if (!(ownerFiber.tag === ClassComponent)) {
-                {
-                  throw ReactError(Error("Function components cannot have refs. Did you mean to use React.forwardRef()?"));
-                }
+            if (!(ownerFiber.tag === ClassComponent)) {
+              {
+                throw Error("Function components cannot have refs. Did you mean to use React.forwardRef()?");
               }
-            })();
+            }
 
             inst = ownerFiber.stateNode;
           }
 
-          (function () {
-            if (!inst) {
-              {
-                throw ReactError(Error("Missing owner for string ref " + mixedRef + ". This error is likely caused by a bug in React. Please file an issue."));
-              }
+          if (!inst) {
+            {
+              throw Error("Missing owner for string ref " + mixedRef + ". This error is likely caused by a bug in React. Please file an issue.");
             }
-          })();
+          }
 
           var stringRef = '' + mixedRef; // Check if previous string ref matches new string ref
 
@@ -20707,21 +20709,17 @@ var VXA = (function (exports) {
           ref._stringRef = stringRef;
           return ref;
         } else {
-          (function () {
-            if (!(typeof mixedRef === 'string')) {
-              {
-                throw ReactError(Error("Expected ref to be a function, a string, an object returned by React.createRef(), or null."));
-              }
+          if (!(typeof mixedRef === 'string')) {
+            {
+              throw Error("Expected ref to be a function, a string, an object returned by React.createRef(), or null.");
             }
-          })();
+          }
 
-          (function () {
-            if (!element._owner) {
-              {
-                throw ReactError(Error("Element ref was specified as a string (" + mixedRef + ") but no owner was set. This could happen for one of the following reasons:\n1. You may be adding a ref to a function component\n2. You may be adding a ref to a component that was not created inside a component's render method\n3. You have multiple copies of React loaded\nSee https://fb.me/react-refs-must-have-owner for more information."));
-              }
+          if (!element._owner) {
+            {
+              throw Error("Element ref was specified as a string (" + mixedRef + ") but no owner was set. This could happen for one of the following reasons:\n1. You may be adding a ref to a function component\n2. You may be adding a ref to a component that was not created inside a component's render method\n3. You have multiple copies of React loaded\nSee https://fb.me/react-refs-must-have-owner for more information.");
             }
-          })();
+          }
         }
       }
 
@@ -20736,13 +20734,11 @@ var VXA = (function (exports) {
           addendum = ' If you meant to render a collection of children, use an array ' + 'instead.' + getCurrentFiberStackInDev();
         }
 
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error("Objects are not valid as a React child (found: " + (Object.prototype.toString.call(newChild) === '[object Object]' ? 'object with keys {' + Object.keys(newChild).join(', ') + '}' : newChild) + ")." + addendum));
-            }
+            throw Error("Objects are not valid as a React child (found: " + (Object.prototype.toString.call(newChild) === '[object Object]' ? 'object with keys {' + Object.keys(newChild).join(', ') + '}' : newChild) + ")." + addendum);
           }
-        })();
+        }
       }
     }
 
@@ -21290,13 +21286,11 @@ var VXA = (function (exports) {
         // but using the iterator instead.
         var iteratorFn = getIteratorFn(newChildrenIterable);
 
-        (function () {
-          if (!(typeof iteratorFn === 'function')) {
-            {
-              throw ReactError(Error("An object is not an iterable. This error is likely caused by a bug in React. Please file an issue."));
-            }
+        if (!(typeof iteratorFn === 'function')) {
+          {
+            throw Error("An object is not an iterable. This error is likely caused by a bug in React. Please file an issue.");
           }
-        })();
+        }
 
         {
           // We don't support rendering Generators because it's a mutation.
@@ -21331,13 +21325,11 @@ var VXA = (function (exports) {
 
         var newChildren = iteratorFn.call(newChildrenIterable);
 
-        (function () {
-          if (!(newChildren != null)) {
-            {
-              throw ReactError(Error("An iterable object provided no iterator."));
-            }
+        if (!(newChildren != null)) {
+          {
+            throw Error("An iterable object provided no iterator.");
           }
-        })();
+        }
 
         var resultingFirstChild = null;
         var previousNewFiber = null;
@@ -21635,13 +21627,11 @@ var VXA = (function (exports) {
               {
                 var Component = returnFiber.type;
 
-                (function () {
+                {
                   {
-                    {
-                      throw ReactError(Error((Component.displayName || Component.name || 'Component') + "(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null."));
-                    }
+                    throw Error((Component.displayName || Component.name || 'Component') + "(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null.");
                   }
-                })();
+                }
               }
           }
         } // Remaining cases are all treated as empty.
@@ -21656,13 +21646,11 @@ var VXA = (function (exports) {
     var reconcileChildFibers = ChildReconciler(true);
     var mountChildFibers = ChildReconciler(false);
     function cloneChildFibers(current$$1, workInProgress) {
-      (function () {
-        if (!(current$$1 === null || workInProgress.child === current$$1.child)) {
-          {
-            throw ReactError(Error("Resuming work not yet implemented."));
-          }
+      if (!(current$$1 === null || workInProgress.child === current$$1.child)) {
+        {
+          throw Error("Resuming work not yet implemented.");
         }
-      })();
+      }
 
       if (workInProgress.child === null) {
         return;
@@ -21697,13 +21685,11 @@ var VXA = (function (exports) {
     var rootInstanceStackCursor = createCursor(NO_CONTEXT);
 
     function requiredContext(c) {
-      (function () {
-        if (!(c !== NO_CONTEXT)) {
-          {
-            throw ReactError(Error("Expected host context to exist. This error is likely caused by a bug in React. Please file an issue."));
-          }
+      if (!(c !== NO_CONTEXT)) {
+        {
+          throw Error("Expected host context to exist. This error is likely caused by a bug in React. Please file an issue.");
         }
-      })();
+      }
 
       return c;
     }
@@ -21926,6 +21912,7 @@ var VXA = (function (exports) {
     128;
 
     var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher;
+    var ReactCurrentBatchConfig$1 = ReactSharedInternals.ReactCurrentBatchConfig;
     var didWarnAboutMismatchedHooksForComponent;
 
     {
@@ -22043,13 +22030,11 @@ var VXA = (function (exports) {
     }
 
     function throwInvalidHookError() {
-      (function () {
+      {
         {
-          {
-            throw ReactError(Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem."));
-          }
+          throw Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem.");
         }
-      })();
+      }
     }
 
     function areHookInputsEqual(nextDeps, prevDeps) {
@@ -22199,13 +22184,11 @@ var VXA = (function (exports) {
       // renderPhaseUpdates = null;
       // numberOfReRenders = 0;
 
-      (function () {
-        if (!!didRenderTooFewHooks) {
-          {
-            throw ReactError(Error("Rendered fewer hooks than expected. This may be caused by an accidental early return statement."));
-          }
+      if (!!didRenderTooFewHooks) {
+        {
+          throw Error("Rendered fewer hooks than expected. This may be caused by an accidental early return statement.");
         }
-      })();
+      }
 
       return children;
     }
@@ -22280,13 +22263,11 @@ var VXA = (function (exports) {
         nextCurrentHook = currentHook !== null ? currentHook.next : null;
       } else {
         // Clone from the current hook.
-        (function () {
-          if (!(nextCurrentHook !== null)) {
-            {
-              throw ReactError(Error("Rendered more hooks than during the previous render."));
-            }
+        if (!(nextCurrentHook !== null)) {
+          {
+            throw Error("Rendered more hooks than during the previous render.");
           }
-        })();
+        }
 
         currentHook = nextCurrentHook;
         var newHook = {
@@ -22347,13 +22328,11 @@ var VXA = (function (exports) {
       var hook = updateWorkInProgressHook();
       var queue = hook.queue;
 
-      (function () {
-        if (!(queue !== null)) {
-          {
-            throw ReactError(Error("Should have a queue. This is likely a bug in React. Please file an issue."));
-          }
+      if (!(queue !== null)) {
+        {
+          throw Error("Should have a queue. This is likely a bug in React. Please file an issue.");
         }
-      })();
+      }
 
       queue.lastRenderedReducer = reducer;
 
@@ -22734,14 +22713,96 @@ var VXA = (function (exports) {
       return nextValue;
     }
 
-    function dispatchAction(fiber, queue, action) {
-      (function () {
-        if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
-          {
-            throw ReactError(Error("Too many re-renders. React limits the number of renders to prevent an infinite loop."));
+    function mountDeferredValue(value, config) {
+      var _mountState = mountState(value),
+          prevValue = _mountState[0],
+          setValue = _mountState[1];
+
+      mountEffect(function () {
+        Scheduler.unstable_next(function () {
+          var previousConfig = ReactCurrentBatchConfig$1.suspense;
+          ReactCurrentBatchConfig$1.suspense = config === undefined ? null : config;
+
+          try {
+            setValue(value);
+          } finally {
+            ReactCurrentBatchConfig$1.suspense = previousConfig;
           }
+        });
+      }, [value, config]);
+      return prevValue;
+    }
+
+    function updateDeferredValue(value, config) {
+      var _updateState = updateState(),
+          prevValue = _updateState[0],
+          setValue = _updateState[1];
+
+      updateEffect(function () {
+        Scheduler.unstable_next(function () {
+          var previousConfig = ReactCurrentBatchConfig$1.suspense;
+          ReactCurrentBatchConfig$1.suspense = config === undefined ? null : config;
+
+          try {
+            setValue(value);
+          } finally {
+            ReactCurrentBatchConfig$1.suspense = previousConfig;
+          }
+        });
+      }, [value, config]);
+      return prevValue;
+    }
+
+    function mountTransition(config) {
+      var _mountState2 = mountState(false),
+          isPending = _mountState2[0],
+          setPending = _mountState2[1];
+
+      var startTransition = mountCallback(function (callback) {
+        setPending(true);
+        Scheduler.unstable_next(function () {
+          var previousConfig = ReactCurrentBatchConfig$1.suspense;
+          ReactCurrentBatchConfig$1.suspense = config === undefined ? null : config;
+
+          try {
+            setPending(false);
+            callback();
+          } finally {
+            ReactCurrentBatchConfig$1.suspense = previousConfig;
+          }
+        });
+      }, [config, isPending]);
+      return [startTransition, isPending];
+    }
+
+    function updateTransition(config) {
+      var _updateState2 = updateState(),
+          isPending = _updateState2[0],
+          setPending = _updateState2[1];
+
+      var startTransition = updateCallback(function (callback) {
+        setPending(true);
+        Scheduler.unstable_next(function () {
+          var previousConfig = ReactCurrentBatchConfig$1.suspense;
+          ReactCurrentBatchConfig$1.suspense = config === undefined ? null : config;
+
+          try {
+            setPending(false);
+            callback();
+          } finally {
+            ReactCurrentBatchConfig$1.suspense = previousConfig;
+          }
+        });
+      }, [config, isPending]);
+      return [startTransition, isPending];
+    }
+
+    function dispatchAction(fiber, queue, action) {
+      if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
+        {
+          throw Error("Too many re-renders. React limits the number of renders to prevent an infinite loop.");
         }
-      })();
+      }
 
       {
         !(typeof arguments[3] !== 'function') ? warning$1(false, "State updates from the useState() and useReducer() Hooks don't support the " + 'second callback argument. To execute a side effect after ' + 'rendering, declare it in the component body with useEffect().') : void 0;
@@ -22786,7 +22847,7 @@ var VXA = (function (exports) {
           lastRenderPhaseUpdate.next = update;
         }
       } else {
-        var currentTime = requestCurrentTime();
+        var currentTime = requestCurrentTimeForUpdate();
         var suspenseConfig = requestCurrentSuspenseConfig();
         var expirationTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
         var _update2 = {
@@ -22885,7 +22946,9 @@ var VXA = (function (exports) {
       useRef: throwInvalidHookError,
       useState: throwInvalidHookError,
       useDebugValue: throwInvalidHookError,
-      useResponder: throwInvalidHookError
+      useResponder: throwInvalidHookError,
+      useDeferredValue: throwInvalidHookError,
+      useTransition: throwInvalidHookError
     };
     var HooksDispatcherOnMountInDEV = null;
     var HooksDispatcherOnMountWithHookTypesInDEV = null;
@@ -22986,6 +23049,16 @@ var VXA = (function (exports) {
           currentHookNameInDev = 'useResponder';
           mountHookTypesDev();
           return createResponderListener(responder, props);
+        },
+        useDeferredValue: function (value, config) {
+          currentHookNameInDev = 'useDeferredValue';
+          mountHookTypesDev();
+          return mountDeferredValue(value, config);
+        },
+        useTransition: function (config) {
+          currentHookNameInDev = 'useTransition';
+          mountHookTypesDev();
+          return mountTransition(config);
         }
       };
       HooksDispatcherOnMountWithHookTypesInDEV = {
@@ -23067,6 +23140,16 @@ var VXA = (function (exports) {
           currentHookNameInDev = 'useResponder';
           updateHookTypesDev();
           return createResponderListener(responder, props);
+        },
+        useDeferredValue: function (value, config) {
+          currentHookNameInDev = 'useDeferredValue';
+          updateHookTypesDev();
+          return mountDeferredValue(value, config);
+        },
+        useTransition: function (config) {
+          currentHookNameInDev = 'useTransition';
+          updateHookTypesDev();
+          return mountTransition(config);
         }
       };
       HooksDispatcherOnUpdateInDEV = {
@@ -23148,6 +23231,16 @@ var VXA = (function (exports) {
           currentHookNameInDev = 'useResponder';
           updateHookTypesDev();
           return createResponderListener(responder, props);
+        },
+        useDeferredValue: function (value, config) {
+          currentHookNameInDev = 'useDeferredValue';
+          updateHookTypesDev();
+          return updateDeferredValue(value, config);
+        },
+        useTransition: function (config) {
+          currentHookNameInDev = 'useTransition';
+          updateHookTypesDev();
+          return updateTransition(config);
         }
       };
       InvalidNestedHooksDispatcherOnMountInDEV = {
@@ -23241,6 +23334,18 @@ var VXA = (function (exports) {
           warnInvalidHookAccess();
           mountHookTypesDev();
           return createResponderListener(responder, props);
+        },
+        useDeferredValue: function (value, config) {
+          currentHookNameInDev = 'useDeferredValue';
+          warnInvalidHookAccess();
+          mountHookTypesDev();
+          return mountDeferredValue(value, config);
+        },
+        useTransition: function (config) {
+          currentHookNameInDev = 'useTransition';
+          warnInvalidHookAccess();
+          mountHookTypesDev();
+          return mountTransition(config);
         }
       };
       InvalidNestedHooksDispatcherOnUpdateInDEV = {
@@ -23334,6 +23439,18 @@ var VXA = (function (exports) {
           warnInvalidHookAccess();
           updateHookTypesDev();
           return createResponderListener(responder, props);
+        },
+        useDeferredValue: function (value, config) {
+          currentHookNameInDev = 'useDeferredValue';
+          warnInvalidHookAccess();
+          updateHookTypesDev();
+          return updateDeferredValue(value, config);
+        },
+        useTransition: function (config) {
+          currentHookNameInDev = 'useTransition';
+          warnInvalidHookAccess();
+          updateHookTypesDev();
+          return updateTransition(config);
         }
       };
     }
@@ -23626,9 +23743,10 @@ var VXA = (function (exports) {
       var suspenseState = fiber.memoizedState;
       var suspenseInstance = suspenseState !== null ? suspenseState.dehydrated : null;
 
-      if (suspenseInstance === null) {
-        // This Suspense boundary was hydrated without a match.
-        return nextHydratableInstance;
+      if (!suspenseInstance) {
+        {
+          throw Error("Expected to have a hydrated suspense instance. This error is likely caused by a bug in React. Please file an issue.");
+        }
       }
 
       return getNextHydratableInstanceAfterSuspenseInstance(suspenseInstance);
@@ -23780,7 +23898,7 @@ var VXA = (function (exports) {
         setCurrentPhase('render');
         nextChildren = renderWithHooks(current$$1, workInProgress, render, nextProps, ref, renderExpirationTime);
 
-        if (  workInProgress.mode & StrictMode) {
+        if ( workInProgress.mode & StrictMode) {
           // Only double-render components with Hooks
           if (workInProgress.memoizedState !== null) {
             nextChildren = renderWithHooks(current$$1, workInProgress, render, nextProps, ref, renderExpirationTime);
@@ -23984,7 +24102,7 @@ var VXA = (function (exports) {
         setCurrentPhase('render');
         nextChildren = renderWithHooks(current$$1, workInProgress, Component, nextProps, context, renderExpirationTime);
 
-        if (  workInProgress.mode & StrictMode) {
+        if ( workInProgress.mode & StrictMode) {
           // Only double-render components with Hooks
           if (workInProgress.memoizedState !== null) {
             nextChildren = renderWithHooks(current$$1, workInProgress, Component, nextProps, context, renderExpirationTime);
@@ -24107,7 +24225,7 @@ var VXA = (function (exports) {
           setCurrentPhase('render');
           nextChildren = instance.render();
 
-          if (  workInProgress.mode & StrictMode) {
+          if ( workInProgress.mode & StrictMode) {
             instance.render();
           }
 
@@ -24156,13 +24274,11 @@ var VXA = (function (exports) {
       pushHostRootContext(workInProgress);
       var updateQueue = workInProgress.updateQueue;
 
-      (function () {
-        if (!(updateQueue !== null)) {
-          {
-            throw ReactError(Error("If the root does not have an updateQueue, we should have already bailed out. This error is likely caused by a bug in React. Please file an issue."));
-          }
+      if (!(updateQueue !== null)) {
+        {
+          throw Error("If the root does not have an updateQueue, we should have already bailed out. This error is likely caused by a bug in React. Please file an issue.");
         }
-      })();
+      }
 
       var nextProps = workInProgress.pendingProps;
       var prevState = workInProgress.memoizedState;
@@ -24349,13 +24465,11 @@ var VXA = (function (exports) {
             // implementation detail.
 
 
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Element type is invalid. Received a promise that resolves to: " + Component + ". Lazy element type must resolve to a class or function." + hint));
-                }
+                throw Error("Element type is invalid. Received a promise that resolves to: " + Component + ". Lazy element type must resolve to a class or function." + hint);
               }
-            })();
+            }
           }
       }
 
@@ -24481,7 +24595,7 @@ var VXA = (function (exports) {
 
         {
 
-          if (  workInProgress.mode & StrictMode) {
+          if ( workInProgress.mode & StrictMode) {
             // Only double-render components with Hooks
             if (workInProgress.memoizedState !== null) {
               value = renderWithHooks(null, workInProgress, Component, props, context, renderExpirationTime);
@@ -24546,7 +24660,7 @@ var VXA = (function (exports) {
 
     var SUSPENDED_MARKER = {
       dehydrated: null,
-      retryTime: Never
+      retryTime: NoWork
     };
 
     function shouldRemainOnFallback(suspenseContext, current$$1, workInProgress) {
@@ -24622,6 +24736,11 @@ var VXA = (function (exports) {
 
 
       if (current$$1 === null) {
+        // If we're currently hydrating, try to hydrate this boundary.
+        // But only if this has a fallback.
+        if (nextProps.fallback !== undefined) {
+          tryToClaimNextHydratableInstance(workInProgress); // This could've been a dehydrated suspense component.
+        } // This is the initial mount. This branch is pretty simple because there's
         // no previous state that needs to be preserved.
 
 
@@ -24631,8 +24750,8 @@ var VXA = (function (exports) {
           var primaryChildFragment = createFiberFromFragment(null, mode, NoWork, null);
           primaryChildFragment.return = workInProgress;
 
-          if ((workInProgress.mode & BatchedMode) === NoMode) {
-            // Outside of batched mode, we commit the effects from the
+          if ((workInProgress.mode & BlockingMode) === NoMode) {
+            // Outside of blocking mode, we commit the effects from the
             // partially completed, timed-out tree, too.
             var progressedState = workInProgress.memoizedState;
             var progressedPrimaryChild = progressedState !== null ? workInProgress.child.child : workInProgress.child;
@@ -24680,8 +24799,8 @@ var VXA = (function (exports) {
 
             _primaryChildFragment2.return = workInProgress;
 
-            if ((workInProgress.mode & BatchedMode) === NoMode) {
-              // Outside of batched mode, we commit the effects from the
+            if ((workInProgress.mode & BlockingMode) === NoMode) {
+              // Outside of blocking mode, we commit the effects from the
               // partially completed, timed-out tree, too.
               var _progressedState = workInProgress.memoizedState;
 
@@ -24765,8 +24884,8 @@ var VXA = (function (exports) {
             // primaryChildFragment.effectTag |= Placement;
 
 
-            if ((workInProgress.mode & BatchedMode) === NoMode) {
-              // Outside of batched mode, we commit the effects from the
+            if ((workInProgress.mode & BlockingMode) === NoMode) {
+              // Outside of blocking mode, we commit the effects from the
               // partially completed, timed-out tree, too.
               var _progressedState2 = workInProgress.memoizedState;
 
@@ -24819,6 +24938,20 @@ var VXA = (function (exports) {
       }
     }
 
+    function scheduleWorkOnFiber(fiber, renderExpirationTime) {
+      if (fiber.expirationTime < renderExpirationTime) {
+        fiber.expirationTime = renderExpirationTime;
+      }
+
+      var alternate = fiber.alternate;
+
+      if (alternate !== null && alternate.expirationTime < renderExpirationTime) {
+        alternate.expirationTime = renderExpirationTime;
+      }
+
+      scheduleWorkOnParentPath(fiber.return, renderExpirationTime);
+    }
+
     function propagateSuspenseContextChange(workInProgress, firstChild, renderExpirationTime) {
       // Mark any Suspense boundaries with fallbacks as having work to do.
       // If they were previously forced into fallbacks, they may now be able
@@ -24830,18 +24963,15 @@ var VXA = (function (exports) {
           var state = node.memoizedState;
 
           if (state !== null) {
-            if (node.expirationTime < renderExpirationTime) {
-              node.expirationTime = renderExpirationTime;
-            }
-
-            var alternate = node.alternate;
-
-            if (alternate !== null && alternate.expirationTime < renderExpirationTime) {
-              alternate.expirationTime = renderExpirationTime;
-            }
-
-            scheduleWorkOnParentPath(node.return, renderExpirationTime);
+            scheduleWorkOnFiber(node, renderExpirationTime);
           }
+        } else if (node.tag === SuspenseListComponent) {
+          // If the tail is hidden there might not be an Suspense boundaries
+          // to schedule work on. In this case we have to schedule it on the
+          // list itself.
+          // We don't have to traverse to the children of the list since
+          // the list will propagate the change when it rerenders.
+          scheduleWorkOnFiber(node, renderExpirationTime);
         } else if (node.child !== null) {
           node.child.return = node;
           node = node.child;
@@ -24986,7 +25116,7 @@ var VXA = (function (exports) {
       }
     }
 
-    function initSuspenseListRenderState(workInProgress, isBackwards, tail, lastContentRow, tailMode) {
+    function initSuspenseListRenderState(workInProgress, isBackwards, tail, lastContentRow, tailMode, lastEffectBeforeRendering) {
       var renderState = workInProgress.memoizedState;
 
       if (renderState === null) {
@@ -24996,7 +25126,8 @@ var VXA = (function (exports) {
           last: lastContentRow,
           tail: tail,
           tailExpiration: 0,
-          tailMode: tailMode
+          tailMode: tailMode,
+          lastEffect: lastEffectBeforeRendering
         };
       } else {
         // We can reuse the existing object from previous renders.
@@ -25006,6 +25137,7 @@ var VXA = (function (exports) {
         renderState.tail = tail;
         renderState.tailExpiration = 0;
         renderState.tailMode = tailMode;
+        renderState.lastEffect = lastEffectBeforeRendering;
       }
     } // This can end up rendering this component multiple passes.
     // The first pass splits the children fibers into two sets. A head and tail.
@@ -25046,8 +25178,8 @@ var VXA = (function (exports) {
 
       pushSuspenseContext(workInProgress, suspenseContext);
 
-      if ((workInProgress.mode & BatchedMode) === NoMode) {
-        // Outside of batched mode, SuspenseList doesn't work so we just
+      if ((workInProgress.mode & BlockingMode) === NoMode) {
+        // Outside of blocking mode, SuspenseList doesn't work so we just
         // use make it a noop by treating it as the default revealOrder.
         workInProgress.memoizedState = null;
       } else {
@@ -25070,7 +25202,7 @@ var VXA = (function (exports) {
               }
 
               initSuspenseListRenderState(workInProgress, false, // isBackwards
-              tail, lastContentRow, tailMode);
+              tail, lastContentRow, tailMode, workInProgress.lastEffect);
               break;
             }
 
@@ -25102,7 +25234,7 @@ var VXA = (function (exports) {
 
               initSuspenseListRenderState(workInProgress, true, // isBackwards
               _tail, null, // last
-              tailMode);
+              tailMode, workInProgress.lastEffect);
               break;
             }
 
@@ -25111,7 +25243,7 @@ var VXA = (function (exports) {
               initSuspenseListRenderState(workInProgress, false, // isBackwards
               null, // tail
               null, // last
-              undefined);
+              undefined, workInProgress.lastEffect);
               break;
             }
 
@@ -25399,7 +25531,12 @@ var VXA = (function (exports) {
 
             case Profiler:
               {
-                workInProgress.effectTag |= Update;
+                // Profiler should only call onRender when one of its descendants actually rendered.
+                var hasChildWork = workInProgress.childExpirationTime >= renderExpirationTime;
+
+                if (hasChildWork) {
+                  workInProgress.effectTag |= Update;
+                }
               }
 
               break;
@@ -25445,10 +25582,11 @@ var VXA = (function (exports) {
             case SuspenseListComponent:
               {
                 var didSuspendBefore = (current$$1.effectTag & DidCapture) !== NoEffect;
-                var hasChildWork = workInProgress.childExpirationTime >= renderExpirationTime;
+
+                var _hasChildWork = workInProgress.childExpirationTime >= renderExpirationTime;
 
                 if (didSuspendBefore) {
-                  if (hasChildWork) {
+                  if (_hasChildWork) {
                     // If something was in fallback state last time, and we have all the
                     // same children then we're still in progressive loading state.
                     // Something might get unblocked by state updates or retries in the
@@ -25477,7 +25615,7 @@ var VXA = (function (exports) {
 
                 pushSuspenseContext(workInProgress, suspenseStackCursor.current);
 
-                if (hasChildWork) {
+                if (_hasChildWork) {
                   break;
                 } else {
                   // If none of the children had any work, that means that none of
@@ -25628,13 +25766,11 @@ var VXA = (function (exports) {
           }
       }
 
-      (function () {
+      {
         {
-          {
-            throw ReactError(Error("Unknown unit of work tag (" + workInProgress.tag + "). This error is likely caused by a bug in React. Please file an issue."));
-          }
+          throw Error("Unknown unit of work tag (" + workInProgress.tag + "). This error is likely caused by a bug in React. Please file an issue.");
         }
-      })();
+      }
     }
 
     function markUpdate(workInProgress) {
@@ -25866,13 +26002,11 @@ var VXA = (function (exports) {
               }
             } else {
               if (!newProps) {
-                (function () {
-                  if (!(workInProgress.stateNode !== null)) {
-                    {
-                      throw ReactError(Error("We must have new props for new mounts. This error is likely caused by a bug in React. Please file an issue."));
-                    }
+                if (!(workInProgress.stateNode !== null)) {
+                  {
+                    throw Error("We must have new props for new mounts. This error is likely caused by a bug in React. Please file an issue.");
                   }
-                })(); // This can happen when we abort work.
+                } // This can happen when we abort work.
 
 
                 break;
@@ -25927,13 +26061,11 @@ var VXA = (function (exports) {
               updateHostText$1(current, workInProgress, oldText, newText);
             } else {
               if (typeof newText !== 'string') {
-                (function () {
-                  if (!(workInProgress.stateNode !== null)) {
-                    {
-                      throw ReactError(Error("We must have new props for new mounts. This error is likely caused by a bug in React. Please file an issue."));
-                    }
+                if (!(workInProgress.stateNode !== null)) {
+                  {
+                    throw Error("We must have new props for new mounts. This error is likely caused by a bug in React. Please file an issue.");
                   }
-                })(); // This can happen when we abort work.
+                } // This can happen when we abort work.
 
               }
 
@@ -25974,10 +26106,9 @@ var VXA = (function (exports) {
             var prevDidTimeout = false;
 
             if (current === null) {
-              // In cases where we didn't find a suitable hydration boundary we never
-              // put this in dehydrated mode, but we still need to pop the hydration
-              // state since we might be inside the insertion tree.
-              popHydrationState(workInProgress);
+              if (workInProgress.memoizedProps.fallback !== undefined) {
+                popHydrationState(workInProgress);
+              }
             } else {
               var prevState = current.memoizedState;
               prevDidTimeout = prevState !== null;
@@ -26007,12 +26138,12 @@ var VXA = (function (exports) {
             }
 
             if (nextDidTimeout && !prevDidTimeout) {
-              // If this subtreee is running in batched mode we can suspend,
+              // If this subtreee is running in blocking mode we can suspend,
               // otherwise we won't suspend.
               // TODO: This will still suspend a synchronous tree if anything
               // in the concurrent tree already suspended during this render.
               // This is a known bug.
-              if ((workInProgress.mode & BatchedMode) !== NoMode) {
+              if ((workInProgress.mode & BlockingMode) !== NoMode) {
                 // TODO: Move this back to throwException because this is too late
                 // if this is a large tree which is common for initial loads. We
                 // don't know if we should restart a render or not until we get
@@ -26147,7 +26278,11 @@ var VXA = (function (exports) {
                       // Reset the effect list before doing the second pass since that's now invalid.
 
 
-                      workInProgress.firstEffect = workInProgress.lastEffect = null; // Reset the child fibers to their original state.
+                      if (renderState.lastEffect === null) {
+                        workInProgress.firstEffect = null;
+                      }
+
+                      workInProgress.lastEffect = renderState.lastEffect; // Reset the child fibers to their original state.
 
                       resetChildFibers(workInProgress, renderExpirationTime); // Set up the Suspense Context to force suspense and immediately
                       // rerender the children.
@@ -26170,21 +26305,22 @@ var VXA = (function (exports) {
 
                 if (_suspended !== null) {
                   workInProgress.effectTag |= DidCapture;
-                  didSuspendAlready = true;
+                  didSuspendAlready = true; // Ensure we transfer the update queue to the parent so that it doesn't
+                  // get lost if this row ends up dropped during a second pass.
+
+                  var _newThennables = _suspended.updateQueue;
+
+                  if (_newThennables !== null) {
+                    workInProgress.updateQueue = _newThennables;
+                    workInProgress.effectTag |= Update;
+                  }
+
                   cutOffTailIfNeeded(renderState, true); // This might have been modified.
 
-                  if (renderState.tail === null && renderState.tailMode === 'hidden') {
+                  if (renderState.tail === null && renderState.tailMode === 'hidden' && !renderedTail.alternate) {
                     // We need to delete the row we just rendered.
-                    // Ensure we transfer the update queue to the parent.
-                    var _newThennables = _suspended.updateQueue;
-
-                    if (_newThennables !== null) {
-                      workInProgress.updateQueue = _newThennables;
-                      workInProgress.effectTag |= Update;
-                    } // Reset the effect list to what it w as before we rendered this
+                    // Reset the effect list to what it was before we rendered this
                     // child. The nested children have already appended themselves.
-
-
                     var lastEffect = workInProgress.lastEffect = renderState.lastEffect; // Remove any effects that were appended after this point.
 
                     if (lastEffect !== null) {
@@ -26283,13 +26419,11 @@ var VXA = (function (exports) {
           }
 
         default:
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Unknown unit of work tag (" + workInProgress.tag + "). This error is likely caused by a bug in React. Please file an issue."));
-              }
+              throw Error("Unknown unit of work tag (" + workInProgress.tag + "). This error is likely caused by a bug in React. Please file an issue.");
             }
-          })();
+          }
 
       }
 
@@ -26322,13 +26456,11 @@ var VXA = (function (exports) {
             popTopLevelContextObject(workInProgress);
             var _effectTag = workInProgress.effectTag;
 
-            (function () {
-              if (!((_effectTag & DidCapture) === NoEffect)) {
-                {
-                  throw ReactError(Error("The root failed to unmount after an error. This is likely a bug in React. Please file an issue."));
-                }
+            if (!((_effectTag & DidCapture) === NoEffect)) {
+              {
+                throw Error("The root failed to unmount after an error. This is likely a bug in React. Please file an issue.");
               }
-            })();
+            }
 
             workInProgress.effectTag = _effectTag & ~ShouldCapture | DidCapture;
             return workInProgress;
@@ -26637,13 +26769,11 @@ var VXA = (function (exports) {
 
         default:
           {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."));
-                }
+                throw Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
               }
-            })();
+            }
           }
       }
     }
@@ -26863,13 +26993,11 @@ var VXA = (function (exports) {
 
         default:
           {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."));
-                }
+                throw Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
               }
-            })();
+            }
           }
       }
     }
@@ -27140,13 +27268,11 @@ var VXA = (function (exports) {
         parent = parent.return;
       }
 
-      (function () {
+      {
         {
-          {
-            throw ReactError(Error("Expected to find a host parent. This error is likely caused by a bug in React. Please file an issue."));
-          }
+          throw Error("Expected to find a host parent. This error is likely caused by a bug in React. Please file an issue.");
         }
-      })();
+      }
     }
 
     function isHostParent(fiber) {
@@ -27232,13 +27358,11 @@ var VXA = (function (exports) {
         // eslint-disable-next-line-no-fallthrough
 
         default:
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Invalid host parent fiber. This error is likely caused by a bug in React. Please file an issue."));
-              }
+              throw Error("Invalid host parent fiber. This error is likely caused by a bug in React. Please file an issue.");
             }
-          })();
+          }
 
       }
 
@@ -27312,13 +27436,11 @@ var VXA = (function (exports) {
           var parent = node.return;
 
           findParent: while (true) {
-            (function () {
-              if (!(parent !== null)) {
-                {
-                  throw ReactError(Error("Expected to find a host parent. This error is likely caused by a bug in React. Please file an issue."));
-                }
+            if (!(parent !== null)) {
+              {
+                throw Error("Expected to find a host parent. This error is likely caused by a bug in React. Please file an issue.");
               }
-            })();
+            }
 
             var parentStateNode = parent.stateNode;
 
@@ -27458,13 +27580,11 @@ var VXA = (function (exports) {
 
         case HostText:
           {
-            (function () {
-              if (!(finishedWork.stateNode !== null)) {
-                {
-                  throw ReactError(Error("This should have a text node initialized. This error is likely caused by a bug in React. Please file an issue."));
-                }
+            if (!(finishedWork.stateNode !== null)) {
+              {
+                throw Error("This should have a text node initialized. This error is likely caused by a bug in React. Please file an issue.");
               }
-            })();
+            }
 
             var textInstance = finishedWork.stateNode;
             var newText = finishedWork.memoizedProps; // For hydration we reuse the update path but we treat the oldProps
@@ -27528,13 +27648,11 @@ var VXA = (function (exports) {
 
         default:
           {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."));
-                }
+                throw Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
               }
-            })();
+            }
           }
       }
     }
@@ -27748,17 +27866,17 @@ var VXA = (function (exports) {
               _workInProgress.updateQueue = updateQueue;
             } else {
               thenables.add(thenable);
-            } // If the boundary is outside of batched mode, we should *not*
+            } // If the boundary is outside of blocking mode, we should *not*
             // suspend the commit. Pretend as if the suspended component rendered
             // null and keep rendering. In the commit phase, we'll schedule a
             // subsequent synchronous update to re-render the Suspense.
             //
             // Note: It doesn't matter whether the component that suspended was
-            // inside a batched mode tree. If the Suspense is outside of it, we
+            // inside a blocking mode tree. If the Suspense is outside of it, we
             // should *not* suspend the commit.
 
 
-            if ((_workInProgress.mode & BatchedMode) === NoMode) {
+            if ((_workInProgress.mode & BlockingMode) === NoMode) {
               _workInProgress.effectTag |= DidCapture; // We're going to commit this fiber even though it didn't complete.
               // But we shouldn't call any lifecycle methods or callbacks. Remove
               // all lifecycle effect tags.
@@ -27924,7 +28042,6 @@ var VXA = (function (exports) {
     var RootSuspended = 3;
     var RootSuspendedWithDelay = 4;
     var RootCompleted = 5;
-    var RootLocked = 6;
     // Describes where we are in the React execution stack
     var executionContext = NoContext; // The root we're working on
 
@@ -27984,7 +28101,7 @@ var VXA = (function (exports) {
     // receive the same expiration time. Otherwise we get tearing.
 
     var currentEventTime = NoWork;
-    function requestCurrentTime() {
+    function requestCurrentTimeForUpdate() {
       if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
         // We're inside React, so it's fine to read the actual time.
         return msToExpirationTime(now());
@@ -28000,10 +28117,13 @@ var VXA = (function (exports) {
       currentEventTime = msToExpirationTime(now());
       return currentEventTime;
     }
+    function getCurrentTime() {
+      return msToExpirationTime(now());
+    }
     function computeExpirationForFiber(currentTime, fiber, suspenseConfig) {
       var mode = fiber.mode;
 
-      if ((mode & BatchedMode) === NoMode) {
+      if ((mode & BlockingMode) === NoMode) {
         return Sync;
       }
 
@@ -28048,13 +28168,11 @@ var VXA = (function (exports) {
             break;
 
           default:
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Expected a valid priority level"));
-                }
+                throw Error("Expected a valid priority level");
               }
-            })();
+            }
 
         }
       } // If we're in the middle of rendering a tree, do not update at the same
@@ -28070,21 +28188,6 @@ var VXA = (function (exports) {
       }
 
       return expirationTime;
-    }
-    var lastUniqueAsyncExpiration = NoWork;
-    function computeUniqueAsyncExpiration() {
-      var currentTime = requestCurrentTime();
-      var result = computeAsyncExpiration(currentTime);
-
-      if (result <= lastUniqueAsyncExpiration) {
-        // Since we assume the current time monotonically increases, we only hit
-        // this branch when computeUniqueAsyncExpiration is fired multiple times
-        // within a 200ms window (or whatever the async bucket size is).
-        result -= 1;
-      }
-
-      lastUniqueAsyncExpiration = result;
-      return result;
     }
     function scheduleUpdateOnFiber(fiber, expirationTime) {
       checkForNestedUpdates();
@@ -28121,7 +28224,7 @@ var VXA = (function (exports) {
             // a batch. This is intentionally inside scheduleUpdateOnFiber instead of
             // scheduleCallbackForFiber to preserve the ability to schedule a callback
             // without immediately flushing it. We only do this for user-initiated
-            // updates, to preserve historical behavior of sync mode.
+            // updates, to preserve historical behavior of legacy mode.
             flushSyncCallbackQueue();
           }
         }
@@ -28282,7 +28385,7 @@ var VXA = (function (exports) {
       // time as an argument.
 
 
-      var currentTime = requestCurrentTime();
+      var currentTime = requestCurrentTimeForUpdate();
       var priorityLevel = inferPriorityFromExpirationTime(currentTime, expirationTime); // If there's an existing render task, confirm it has the correct priority and
       // expiration time. Otherwise, we'll cancel it and schedule a new one.
 
@@ -28331,7 +28434,7 @@ var VXA = (function (exports) {
       if (didTimeout) {
         // The render task took too long to complete. Mark the current time as
         // expired to synchronously render all expired work in a single batch.
-        var currentTime = requestCurrentTime();
+        var currentTime = requestCurrentTimeForUpdate();
         markRootExpiredAtTime(root, currentTime); // This will schedule a synchronous callback.
 
         ensureRootIsScheduled(root);
@@ -28345,13 +28448,11 @@ var VXA = (function (exports) {
       if (expirationTime !== NoWork) {
         var originalCallbackNode = root.callbackNode;
 
-        (function () {
-          if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-            {
-              throw ReactError(Error("Should not already be working."));
-            }
+        if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
+          {
+            throw Error("Should not already be working.");
           }
-        })();
+        }
 
         flushPassiveEffects(); // If the root or expiration time have changed, throw out the existing stack
         // and prepare a fresh one. Otherwise we'll continue where we left off.
@@ -28405,7 +28506,6 @@ var VXA = (function (exports) {
             stopFinishedWorkLoopTimer();
             var finishedWork = root.finishedWork = root.current.alternate;
             root.finishedExpirationTime = expirationTime;
-            resolveLocksOnRoot(root, expirationTime);
             finishConcurrentRender(root, finishedWork, workInProgressRootExitStatus, expirationTime);
           }
 
@@ -28430,13 +28530,11 @@ var VXA = (function (exports) {
         case RootIncomplete:
         case RootFatalErrored:
           {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Root did not complete. This is a bug in React."));
-                }
+                throw Error("Root did not complete. This is a bug in React.");
               }
-            })();
+            }
           }
         // Flow knows about invariant, so it complains if I add a break
         // statement, but eslint doesn't know about invariant, so it complains
@@ -28444,18 +28542,16 @@ var VXA = (function (exports) {
 
         case RootErrored:
           {
-            if (expirationTime !== Idle) {
-              // If this was an async render, the error may have happened due to
-              // a mutation in a concurrent event. Try rendering one more time,
-              // synchronously, to see if the error goes away. If there are
-              // lower priority updates, let's include those, too, in case they
-              // fix the inconsistency. Render at Idle to include all updates.
-              markRootExpiredAtTime(root, Idle);
-              break;
-            } // Commit the root in its errored state.
+            // If this was an async render, the error may have happened due to
+            // a mutation in a concurrent event. Try rendering one more time,
+            // synchronously, to see if the error goes away. If there are
+            // lower priority updates, let's include those, too, in case they
+            // fix the inconsistency. Render at Idle to include all updates.
+            // If it was Idle or Never or some not-yet-invented time, render
+            // at that time.
+            markRootExpiredAtTime(root, expirationTime > Idle ? Idle : expirationTime); // We assume that this second render pass will be synchronous
+            // and therefore not hit this path again.
 
-
-            commitRoot(root);
             break;
           }
 
@@ -28639,24 +28735,13 @@ var VXA = (function (exports) {
             break;
           }
 
-        case RootLocked:
-          {
-            // This root has a lock that prevents it from committing. Exit. If
-            // we begin work on the root again, without any intervening updates,
-            // it will finish without doing additional work.
-            markRootSuspendedAtTime(root, expirationTime);
-            break;
-          }
-
         default:
           {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Unknown root exit status."));
-                }
+                throw Error("Unknown root exit status.");
               }
-            })();
+            }
           }
       }
     } // This is the entry point for synchronous tasks that don't go
@@ -28674,13 +28759,11 @@ var VXA = (function (exports) {
         // batch.commit() API.
         commitRoot(root);
       } else {
-        (function () {
-          if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-            {
-              throw ReactError(Error("Should not already be working."));
-            }
+        if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
+          {
+            throw Error("Should not already be working.");
           }
-        })();
+        }
 
         flushPassiveEffects(); // If the root or expiration time have changed, throw out the existing stack
         // and prepare a fresh one. Otherwise we'll continue where we left off.
@@ -28727,22 +28810,18 @@ var VXA = (function (exports) {
 
           if (workInProgress !== null) {
             // This is a sync render, so we should have finished the whole tree.
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Cannot commit an incomplete root. This error is likely caused by a bug in React. Please file an issue."));
-                }
+                throw Error("Cannot commit an incomplete root. This error is likely caused by a bug in React. Please file an issue.");
               }
-            })();
+            }
           } else {
             // We now have a consistent tree. Because this is a sync render, we
-            // will commit it even if something suspended. The only exception is
-            // if the root is locked (using the unstable_createBatch API).
+            // will commit it even if something suspended.
             stopFinishedWorkLoopTimer();
             root.finishedWork = root.current.alternate;
             root.finishedExpirationTime = expirationTime;
-            resolveLocksOnRoot(root, expirationTime);
-            finishSyncRender(root, workInProgressRootExitStatus, expirationTime);
+            finishSyncRender(root, workInProgressRootExitStatus);
           } // Before exiting, make sure there's a callback scheduled for the next
           // pending level.
 
@@ -28755,39 +28834,16 @@ var VXA = (function (exports) {
     }
 
     function finishSyncRender(root, exitStatus, expirationTime) {
-      if (exitStatus === RootLocked) {
-        // This root has a lock that prevents it from committing. Exit. If we
-        // begin work on the root again, without any intervening updates, it
-        // will finish without doing additional work.
-        markRootSuspendedAtTime(root, expirationTime);
-      } else {
-        // Set this to null to indicate there's no in-progress render.
-        workInProgressRoot = null;
+      // Set this to null to indicate there's no in-progress render.
+      workInProgressRoot = null;
 
-        {
-          if (exitStatus === RootSuspended || exitStatus === RootSuspendedWithDelay) {
-            flushSuspensePriorityWarningInDEV();
-          }
+      {
+        if (exitStatus === RootSuspended || exitStatus === RootSuspendedWithDelay) {
+          flushSuspensePriorityWarningInDEV();
         }
-
-        commitRoot(root);
-      }
-    }
-
-    function flushRoot(root, expirationTime) {
-      if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
-        (function () {
-          {
-            {
-              throw ReactError(Error("work.commit(): Cannot commit while already rendering. This likely means you attempted to commit from inside a lifecycle method."));
-            }
-          }
-        })();
       }
 
-      markRootExpiredAtTime(root, expirationTime);
-      ensureRootIsScheduled(root);
-      flushSyncCallbackQueue();
+      commitRoot(root);
     }
     function flushDiscreteUpdates() {
       // TODO: Should be able to flush inside batchedUpdates, but not inside `act`.
@@ -28811,21 +28867,9 @@ var VXA = (function (exports) {
       flushPassiveEffects();
     }
 
-    function resolveLocksOnRoot(root, expirationTime) {
-      var firstBatch = root.firstBatch;
-
-      if (firstBatch !== null && firstBatch._defer && firstBatch._expirationTime >= expirationTime) {
-        scheduleCallback(NormalPriority, function () {
-          firstBatch._onComplete();
-
-          return null;
-        });
-        workInProgressRootExitStatus = RootLocked;
-      }
+    function syncUpdates(fn, a, b, c) {
+      return runWithPriority$2(ImmediatePriority, fn.bind(null, a, b, c));
     }
-
-
-
 
     function flushPendingDiscreteUpdates() {
       if (rootsWithPendingDiscreteUpdates !== null) {
@@ -28906,13 +28950,11 @@ var VXA = (function (exports) {
     }
     function flushSync(fn, a) {
       if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error("flushSync was called from inside a lifecycle method. It cannot be called when React is already rendering."));
-            }
+            throw Error("flushSync was called from inside a lifecycle method. It cannot be called when React is already rendering.");
           }
-        })();
+        }
       }
 
       var prevExecutionContext = executionContext;
@@ -28926,21 +28968,6 @@ var VXA = (function (exports) {
         // the stack.
 
         flushSyncCallbackQueue();
-      }
-    }
-    function flushControlled(fn) {
-      var prevExecutionContext = executionContext;
-      executionContext |= BatchedContext;
-
-      try {
-        runWithPriority$2(ImmediatePriority, fn);
-      } finally {
-        executionContext = prevExecutionContext;
-
-        if (executionContext === NoContext) {
-          // Flush the immediate callbacks that were scheduled during this batch
-          flushSyncCallbackQueue();
-        }
       }
     }
 
@@ -28993,6 +29020,7 @@ var VXA = (function (exports) {
           // Reset module-level state that was set during the render phase.
           resetContextDependencies();
           resetHooks();
+          resetCurrentFiber();
 
           if (workInProgress === null || workInProgress.return === null) {
             // Expected to be working on a non-root fiber. This is a fatal error
@@ -29389,16 +29417,23 @@ var VXA = (function (exports) {
     }
 
     function commitRootImpl(root, renderPriorityLevel) {
-      flushPassiveEffects();
+      do {
+        // `flushPassiveEffects` will call `flushSyncUpdateQueue` at the end, which
+        // means `flushPassiveEffects` will sometimes result in additional
+        // passive effects. So we need to keep flushing in a loop until there are
+        // no more pending effects.
+        // TODO: Might be better if `flushPassiveEffects` did not automatically
+        // flush synchronous work at the end, to avoid factoring hazards like this.
+        flushPassiveEffects();
+      } while (rootWithPendingPassiveEffects !== null);
+
       flushRenderPhaseStrictModeWarningsInDEV();
 
-      (function () {
-        if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-          {
-            throw ReactError(Error("Should not already be working."));
-          }
+      if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
+        {
+          throw Error("Should not already be working.");
         }
-      })();
+      }
 
       var finishedWork = root.finishedWork;
       var expirationTime = root.finishedExpirationTime;
@@ -29410,13 +29445,11 @@ var VXA = (function (exports) {
       root.finishedWork = null;
       root.finishedExpirationTime = NoWork;
 
-      (function () {
-        if (!(finishedWork !== root.current)) {
-          {
-            throw ReactError(Error("Cannot commit the same tree as before. This error is likely caused by a bug in React. Please file an issue."));
-          }
+      if (!(finishedWork !== root.current)) {
+        {
+          throw Error("Cannot commit the same tree as before. This error is likely caused by a bug in React. Please file an issue.");
         }
-      })(); // commitRoot never returns a continuation; it always finishes synchronously.
+      } // commitRoot never returns a continuation; it always finishes synchronously.
       // So we can clear these now to allow a new callback to be scheduled.
 
 
@@ -29480,13 +29513,11 @@ var VXA = (function (exports) {
             invokeGuardedCallback(null, commitBeforeMutationEffects, null);
 
             if (hasCaughtError()) {
-              (function () {
-                if (!(nextEffect !== null)) {
-                  {
-                    throw ReactError(Error("Should be working on an effect."));
-                  }
+              if (!(nextEffect !== null)) {
+                {
+                  throw Error("Should be working on an effect.");
                 }
-              })();
+              }
 
               var error = clearCaughtError();
               captureCommitPhaseError(nextEffect, error);
@@ -29512,13 +29543,11 @@ var VXA = (function (exports) {
             invokeGuardedCallback(null, commitMutationEffects, null, root, renderPriorityLevel);
 
             if (hasCaughtError()) {
-              (function () {
-                if (!(nextEffect !== null)) {
-                  {
-                    throw ReactError(Error("Should be working on an effect."));
-                  }
+              if (!(nextEffect !== null)) {
+                {
+                  throw Error("Should be working on an effect.");
                 }
-              })();
+              }
 
               var _error = clearCaughtError();
 
@@ -29546,13 +29575,11 @@ var VXA = (function (exports) {
             invokeGuardedCallback(null, commitLayoutEffects, null, root, expirationTime);
 
             if (hasCaughtError()) {
-              (function () {
-                if (!(nextEffect !== null)) {
-                  {
-                    throw ReactError(Error("Should be working on an effect."));
-                  }
+              if (!(nextEffect !== null)) {
+                {
+                  throw Error("Should be working on an effect.");
                 }
-              })();
+              }
 
               var _error2 = clearCaughtError();
 
@@ -29838,13 +29865,11 @@ var VXA = (function (exports) {
       rootWithPendingPassiveEffects = null;
       pendingPassiveEffectsExpirationTime = NoWork;
 
-      (function () {
-        if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-          {
-            throw ReactError(Error("Cannot flush passive effects while already rendering."));
-          }
+      if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
+        {
+          throw Error("Cannot flush passive effects while already rendering.");
         }
-      })();
+      }
 
       var prevExecutionContext = executionContext;
       executionContext |= CommitContext;
@@ -29860,13 +29885,11 @@ var VXA = (function (exports) {
           invokeGuardedCallback(null, commitPassiveHookEffects, null, effect);
 
           if (hasCaughtError()) {
-            (function () {
-              if (!(effect !== null)) {
-                {
-                  throw ReactError(Error("Should be working on an effect."));
-                }
+            if (!(effect !== null)) {
+              {
+                throw Error("Should be working on an effect.");
               }
-            })();
+            }
 
             var error = clearCaughtError();
             captureCommitPhaseError(effect, error);
@@ -30027,10 +30050,10 @@ var VXA = (function (exports) {
       // previously was rendered in its fallback state. One of the promises that
       // suspended it has resolved, which means at least part of the tree was
       // likely unblocked. Try rendering again, at a new expiration time.
-      if (retryTime === Never) {
+      if (retryTime === NoWork) {
         var suspenseConfig = null; // Retries don't carry over the already committed update.
 
-        var currentTime = requestCurrentTime();
+        var currentTime = requestCurrentTimeForUpdate();
         retryTime = computeExpirationForFiber(currentTime, boundaryFiber, suspenseConfig);
       } // TODO: Special case idle priority?
 
@@ -30043,7 +30066,7 @@ var VXA = (function (exports) {
       }
     }
     function resolveRetryThenable(boundaryFiber, thenable) {
-      var retryTime = Never; // Default
+      var retryTime = NoWork; // Default
 
       var retryCache;
 
@@ -30101,13 +30124,11 @@ var VXA = (function (exports) {
         nestedUpdateCount = 0;
         rootWithNestedUpdates = null;
 
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error("Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops."));
-            }
+            throw Error("Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.");
           }
-        })();
+        }
       }
 
       {
@@ -30195,12 +30216,14 @@ var VXA = (function (exports) {
           if (originalError !== null && typeof originalError === 'object' && typeof originalError.then === 'function') {
             // Don't replay promises. Treat everything else like an error.
             throw originalError;
-          } // Keep this code in sync with renderRoot; any changes here must have
+          } // Keep this code in sync with handleError; any changes here must have
           // corresponding changes there.
 
 
           resetContextDependencies();
-          resetHooks(); // Unwind the failed stack frame
+          resetHooks(); // Don't reset current debug fiber, since we're about to work on the
+          // same fiber again.
+          // Unwind the failed stack frame
 
           unwindInterruptedWork(unitOfWork); // Restore the original properties of the fiber.
 
@@ -30293,7 +30316,7 @@ var VXA = (function (exports) {
     function warnIfUnmockedScheduler(fiber) {
       {
         if (didWarnAboutUnmockedScheduler === false && Scheduler.unstable_flushAllWithoutAsserting === undefined) {
-          if (fiber.mode & BatchedMode || fiber.mode & ConcurrentMode) {
+          if (fiber.mode & BlockingMode || fiber.mode & ConcurrentMode) {
             didWarnAboutUnmockedScheduler = true;
             warningWithoutStack$1(false, 'In Concurrent or Sync modes, the "scheduler" module needs to be mocked ' + 'to guarantee consistent behaviour across tests and browsers. ' + 'For example, with jest: \n' + "jest.mock('scheduler', () => require('scheduler/unstable_mock'));\n\n" + 'For more info, visit https://fb.me/react-mock-scheduler');
           }
@@ -30394,7 +30417,7 @@ var VXA = (function (exports) {
           componentsThatTriggeredHighPriSuspend = null;
 
           if (componentNames.length > 0) {
-            warningWithoutStack$1(false, '%s triggered a user-blocking update that suspended.' + '\n\n' + 'The fix is to split the update into multiple parts: a user-blocking ' + 'update to provide immediate feedback, and another update that ' + 'triggers the bulk of the changes.' + '\n\n' + 'Refer to the documentation for useSuspenseTransition to learn how ' + 'to implement this pattern.', // TODO: Add link to React docs with more information, once it exists
+            warningWithoutStack$1(false, '%s triggered a user-blocking update that suspended.' + '\n\n' + 'The fix is to split the update into multiple parts: a user-blocking ' + 'update to provide immediate feedback, and another update that ' + 'triggers the bulk of the changes.' + '\n\n' + 'Refer to the documentation for useTransition to learn how ' + 'to implement this pattern.', // TODO: Add link to React docs with more information, once it exists
             componentNames.sort().join(', '));
           }
         }
@@ -30465,10 +30488,10 @@ var VXA = (function (exports) {
           });
         }
       }); // Store the current set of interactions on the FiberRoot for a few reasons:
-      // We can re-use it in hot functions like renderRoot() without having to
-      // recalculate it. We will also use it in commitWork() to pass to any Profiler
-      // onRender() hooks. This also provides DevTools with a way to access it when
-      // the onCommitRoot() hook is called.
+      // We can re-use it in hot functions like performConcurrentWorkOnRoot()
+      // without having to recalculate it. We will also use it in commitWork() to
+      // pass to any Profiler onRender() hooks. This also provides DevTools with a
+      // way to access it when the onCommitRoot() hook is called.
 
       root.memoizedInteractions = interactions;
 
@@ -30573,7 +30596,7 @@ var VXA = (function (exports) {
             var didError = (root.current.effectTag & DidCapture) === DidCapture;
 
             if (enableProfilerTimer) {
-              var currentTime = requestCurrentTime();
+              var currentTime = getCurrentTime();
               var priorityLevel = inferPriorityFromExpirationTime(currentTime, expirationTime);
               hook.onCommitFiberRoot(rendererID, root, priorityLevel, didError);
             } else {
@@ -30914,9 +30937,9 @@ var VXA = (function (exports) {
       var mode;
 
       if (tag === ConcurrentRoot) {
-        mode = ConcurrentMode | BatchedMode | StrictMode;
-      } else if (tag === BatchedRoot) {
-        mode = BatchedMode | StrictMode;
+        mode = ConcurrentMode | BlockingMode | StrictMode;
+      } else if (tag === BlockingRoot) {
+        mode = BlockingMode | StrictMode;
       } else {
         mode = NoMode;
       }
@@ -30958,7 +30981,7 @@ var VXA = (function (exports) {
 
           case REACT_CONCURRENT_MODE_TYPE:
             fiberTag = Mode;
-            mode |= ConcurrentMode | BatchedMode | StrictMode;
+            mode |= ConcurrentMode | BlockingMode | StrictMode;
             break;
 
           case REACT_STRICT_MODE_TYPE:
@@ -31030,13 +31053,11 @@ var VXA = (function (exports) {
                 }
               }
 
-              (function () {
+              {
                 {
-                  {
-                    throw ReactError(Error("Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " + (type == null ? type : typeof type) + "." + info));
-                  }
+                  throw Error("Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " + (type == null ? type : typeof type) + "." + info);
                 }
-              })();
+              }
             }
         }
       }
@@ -31200,7 +31221,6 @@ var VXA = (function (exports) {
       this.context = null;
       this.pendingContext = null;
       this.hydrate = hydrate;
-      this.firstBatch = null;
       this.callbackNode = null;
       this.callbackPriority = NoPriority;
       this.firstPendingTime = NoWork;
@@ -31339,67 +31359,22 @@ var VXA = (function (exports) {
       return parentContext;
     }
 
-    function scheduleRootUpdate(current$$1, element, expirationTime, suspenseConfig, callback) {
-      {
-        if (phase === 'render' && current !== null && !didWarnAboutNestedUpdates) {
-          didWarnAboutNestedUpdates = true;
-          warningWithoutStack$1(false, 'Render methods should be a pure function of props and state; ' + 'triggering nested component updates from render is not allowed. ' + 'If necessary, trigger nested updates in componentDidUpdate.\n\n' + 'Check the render method of %s.', getComponentName(current.type) || 'Unknown');
-        }
-      }
-
-      var update = createUpdate(expirationTime, suspenseConfig); // Caution: React DevTools currently depends on this property
-      // being called "element".
-
-      update.payload = {
-        element: element
-      };
-      callback = callback === undefined ? null : callback;
-
-      if (callback !== null) {
-        !(typeof callback === 'function') ? warningWithoutStack$1(false, 'render(...): Expected the last optional `callback` argument to be a ' + 'function. Instead received: %s.', callback) : void 0;
-        update.callback = callback;
-      }
-
-      enqueueUpdate(current$$1, update);
-      scheduleWork(current$$1, expirationTime);
-      return expirationTime;
-    }
-
-    function updateContainerAtExpirationTime(element, container, parentComponent, expirationTime, suspenseConfig, callback) {
-      // TODO: If this is a nested container, this won't be the root.
-      var current$$1 = container.current;
-
-      var context = getContextForSubtree(parentComponent);
-
-      if (container.context === null) {
-        container.context = context;
-      } else {
-        container.pendingContext = context;
-      }
-
-      return scheduleRootUpdate(current$$1, element, expirationTime, suspenseConfig, callback);
-    }
-
     function findHostInstance(component) {
       var fiber = get(component);
 
       if (fiber === undefined) {
         if (typeof component.render === 'function') {
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Unable to find node on an unmounted component."));
-              }
+              throw Error("Unable to find node on an unmounted component.");
             }
-          })();
+          }
         } else {
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Argument appears to not be a ReactComponent. Keys: " + Object.keys(component)));
-              }
+              throw Error("Argument appears to not be a ReactComponent. Keys: " + Object.keys(component));
             }
-          })();
+          }
         }
       }
 
@@ -31418,21 +31393,17 @@ var VXA = (function (exports) {
 
         if (fiber === undefined) {
           if (typeof component.render === 'function') {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Unable to find node on an unmounted component."));
-                }
+                throw Error("Unable to find node on an unmounted component.");
               }
-            })();
+            }
           } else {
-            (function () {
+            {
               {
-                {
-                  throw ReactError(Error("Argument appears to not be a ReactComponent. Keys: " + Object.keys(component)));
-                }
+                throw Error("Argument appears to not be a ReactComponent. Keys: " + Object.keys(component));
               }
-            })();
+            }
           }
         }
 
@@ -31467,7 +31438,7 @@ var VXA = (function (exports) {
     }
     function updateContainer(element, container, parentComponent, callback) {
       var current$$1 = container.current;
-      var currentTime = requestCurrentTime();
+      var currentTime = requestCurrentTimeForUpdate();
 
       {
         // $FlowExpectedError - jest isn't a global, and isn't recognized outside of tests
@@ -31479,7 +31450,38 @@ var VXA = (function (exports) {
 
       var suspenseConfig = requestCurrentSuspenseConfig();
       var expirationTime = computeExpirationForFiber(currentTime, current$$1, suspenseConfig);
-      return updateContainerAtExpirationTime(element, container, parentComponent, expirationTime, suspenseConfig, callback);
+
+      var context = getContextForSubtree(parentComponent);
+
+      if (container.context === null) {
+        container.context = context;
+      } else {
+        container.pendingContext = context;
+      }
+
+      {
+        if (phase === 'render' && current !== null && !didWarnAboutNestedUpdates) {
+          didWarnAboutNestedUpdates = true;
+          warningWithoutStack$1(false, 'Render methods should be a pure function of props and state; ' + 'triggering nested component updates from render is not allowed. ' + 'If necessary, trigger nested updates in componentDidUpdate.\n\n' + 'Check the render method of %s.', getComponentName(current.type) || 'Unknown');
+        }
+      }
+
+      var update = createUpdate(expirationTime, suspenseConfig); // Caution: React DevTools currently depends on this property
+      // being called "element".
+
+      update.payload = {
+        element: element
+      };
+      callback = callback === undefined ? null : callback;
+
+      if (callback !== null) {
+        !(typeof callback === 'function') ? warningWithoutStack$1(false, 'render(...): Expected the last optional `callback` argument to be a ' + 'function. Instead received: %s.', callback) : void 0;
+        update.callback = callback;
+      }
+
+      enqueueUpdate(current$$1, update);
+      scheduleWork(current$$1, expirationTime);
+      return expirationTime;
     }
     function getPublicRootInstance(container) {
       var containerFiber = container.current;
@@ -31495,6 +31497,65 @@ var VXA = (function (exports) {
         default:
           return containerFiber.child.stateNode;
       }
+    }
+
+    function markRetryTimeImpl(fiber, retryTime) {
+      var suspenseState = fiber.memoizedState;
+
+      if (suspenseState !== null && suspenseState.dehydrated !== null) {
+        if (suspenseState.retryTime < retryTime) {
+          suspenseState.retryTime = retryTime;
+        }
+      }
+    } // Increases the priority of thennables when they resolve within this boundary.
+
+
+    function markRetryTimeIfNotHydrated(fiber, retryTime) {
+      markRetryTimeImpl(fiber, retryTime);
+      var alternate = fiber.alternate;
+
+      if (alternate) {
+        markRetryTimeImpl(alternate, retryTime);
+      }
+    }
+
+    function attemptUserBlockingHydration$1(fiber) {
+      if (fiber.tag !== SuspenseComponent) {
+        // We ignore HostRoots here because we can't increase
+        // their priority and they should not suspend on I/O,
+        // since you have to wrap anything that might suspend in
+        // Suspense.
+        return;
+      }
+
+      var expTime = computeInteractiveExpiration(requestCurrentTimeForUpdate());
+      scheduleWork(fiber, expTime);
+      markRetryTimeIfNotHydrated(fiber, expTime);
+    }
+    function attemptContinuousHydration$1(fiber) {
+      if (fiber.tag !== SuspenseComponent) {
+        // We ignore HostRoots here because we can't increase
+        // their priority and they should not suspend on I/O,
+        // since you have to wrap anything that might suspend in
+        // Suspense.
+        return;
+      }
+
+      var expTime = computeContinuousHydrationExpiration(requestCurrentTimeForUpdate());
+      scheduleWork(fiber, expTime);
+      markRetryTimeIfNotHydrated(fiber, expTime);
+    }
+    function attemptHydrationAtCurrentPriority$1(fiber) {
+      if (fiber.tag !== SuspenseComponent) {
+        // We ignore HostRoots here because we can't increase
+        // their priority other than synchronously flush it.
+        return;
+      }
+
+      var currentTime = requestCurrentTimeForUpdate();
+      var expTime = computeExpirationForFiber(currentTime, fiber, null);
+      scheduleWork(fiber, expTime);
+      markRetryTimeIfNotHydrated(fiber, expTime);
     }
     function findHostInstanceWithNoPortals(fiber) {
       var hostFiber = findCurrentHostFiberWithNoPortals(fiber);
@@ -31625,245 +31686,43 @@ var VXA = (function (exports) {
     // This file intentionally does *not* have the Flow annotation.
     // Don't add it. See `./inline-typed.js` for an explanation.
 
-    function createPortal$1(children, containerInfo, // TODO: figure out the API for cross-renderer implementation.
-    implementation) {
-      var key = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-      return {
-        // This tag allow us to uniquely identify this as a React Portal
-        $$typeof: REACT_PORTAL_TYPE,
-        key: key == null ? null : '' + key,
-        children: children,
-        containerInfo: containerInfo,
-        implementation: implementation
-      };
+    // TODO: This type is shared between the reconciler and ReactDOM, but will
+    // eventually be lifted out to the renderer.
+    function ReactDOMRoot(container, options) {
+      this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
     }
 
-    // TODO: this is special because it gets imported during build.
-
-    var ReactVersion = '16.10.1';
-    var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
-    var topLevelUpdateWarnings;
-    var warnOnInvalidCallback;
-    var didWarnAboutUnstableCreatePortal = false;
-
-    {
-      if (typeof Map !== 'function' || // $FlowIssue Flow incorrectly thinks Map has no prototype
-      Map.prototype == null || typeof Map.prototype.forEach !== 'function' || typeof Set !== 'function' || // $FlowIssue Flow incorrectly thinks Set has no prototype
-      Set.prototype == null || typeof Set.prototype.clear !== 'function' || typeof Set.prototype.forEach !== 'function') {
-        warningWithoutStack$1(false, 'React depends on Map and Set built-in types. Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
-      }
-
-      topLevelUpdateWarnings = function (container) {
-        if (container._reactRootContainer && container.nodeType !== COMMENT_NODE) {
-          var hostInstance = findHostInstanceWithNoPortals(container._reactRootContainer._internalRoot.current);
-
-          if (hostInstance) {
-            !(hostInstance.parentNode === container) ? warningWithoutStack$1(false, 'render(...): It looks like the React-rendered content of this ' + 'container was removed without using React. This is not ' + 'supported and will cause errors. Instead, call ' + 'ReactDOM.unmountComponentAtNode to empty a container.') : void 0;
-          }
-        }
-
-        var isRootRenderedBySomeReact = !!container._reactRootContainer;
-        var rootEl = getReactRootElementInContainer(container);
-        var hasNonRootReactChild = !!(rootEl && getInstanceFromNode$1(rootEl));
-        !(!hasNonRootReactChild || isRootRenderedBySomeReact) ? warningWithoutStack$1(false, 'render(...): Replacing React-rendered children with a new root ' + 'component. If you intended to update the children of this node, ' + 'you should instead have the existing children update their state ' + 'and render the new components instead of calling ReactDOM.render.') : void 0;
-        !(container.nodeType !== ELEMENT_NODE || !container.tagName || container.tagName.toUpperCase() !== 'BODY') ? warningWithoutStack$1(false, 'render(): Rendering components directly into document.body is ' + 'discouraged, since its children are often manipulated by third-party ' + 'scripts and browser extensions. This may lead to subtle ' + 'reconciliation issues. Try rendering into a container element created ' + 'for your app.') : void 0;
-      };
-
-      warnOnInvalidCallback = function (callback, callerName) {
-        !(callback === null || typeof callback === 'function') ? warningWithoutStack$1(false, '%s(...): Expected the last optional `callback` argument to be a ' + 'function. Instead received: %s.', callerName, callback) : void 0;
-      };
+    function ReactDOMBlockingRoot(container, tag, options) {
+      this._internalRoot = createRootImpl(container, tag, options);
     }
 
-    setRestoreImplementation(restoreControlledState$$1);
+    ReactDOMRoot.prototype.render = ReactDOMBlockingRoot.prototype.render = function (children, callback) {
+      var root = this._internalRoot;
+      var cb = callback === undefined ? null : callback;
 
-    function ReactBatch(root) {
-      var expirationTime = computeUniqueAsyncExpiration();
-      this._expirationTime = expirationTime;
-      this._root = root;
-      this._next = null;
-      this._callbacks = null;
-      this._didComplete = false;
-      this._hasChildren = false;
-      this._children = null;
-      this._defer = true;
-    }
+      {
+        warnOnInvalidCallback(cb, 'render');
+      }
 
-    ReactBatch.prototype.render = function (children) {
-      var _this = this;
+      updateContainer(children, root, null, cb);
+    };
 
-      (function () {
-        if (!_this._defer) {
-          {
-            throw ReactError(Error("batch.render: Cannot render a batch that already committed."));
-          }
+    ReactDOMRoot.prototype.unmount = ReactDOMBlockingRoot.prototype.unmount = function (callback) {
+      var root = this._internalRoot;
+      var cb = callback === undefined ? null : callback;
+
+      {
+        warnOnInvalidCallback(cb, 'render');
+      }
+
+      var container = root.containerInfo;
+      updateContainer(null, root, null, function () {
+        unmarkContainerAsRoot(container);
+
+        if (cb !== null) {
+          cb();
         }
-      })();
-
-      this._hasChildren = true;
-      this._children = children;
-      var internalRoot = this._root._internalRoot;
-      var expirationTime = this._expirationTime;
-      var work = new ReactWork();
-      updateContainerAtExpirationTime(children, internalRoot, null, expirationTime, null, work._onCommit);
-      return work;
-    };
-
-    ReactBatch.prototype.then = function (onComplete) {
-      if (this._didComplete) {
-        onComplete();
-        return;
-      }
-
-      var callbacks = this._callbacks;
-
-      if (callbacks === null) {
-        callbacks = this._callbacks = [];
-      }
-
-      callbacks.push(onComplete);
-    };
-
-    ReactBatch.prototype.commit = function () {
-      var _this2 = this;
-
-      var internalRoot = this._root._internalRoot;
-      var firstBatch = internalRoot.firstBatch;
-
-      (function () {
-        if (!(_this2._defer && firstBatch !== null)) {
-          {
-            throw ReactError(Error("batch.commit: Cannot commit a batch multiple times."));
-          }
-        }
-      })();
-
-      if (!this._hasChildren) {
-        // This batch is empty. Return.
-        this._next = null;
-        this._defer = false;
-        return;
-      }
-
-      var expirationTime = this._expirationTime; // Ensure this is the first batch in the list.
-
-      if (firstBatch !== this) {
-        // This batch is not the earliest batch. We need to move it to the front.
-        // Update its expiration time to be the expiration time of the earliest
-        // batch, so that we can flush it without flushing the other batches.
-        if (this._hasChildren) {
-          expirationTime = this._expirationTime = firstBatch._expirationTime; // Rendering this batch again ensures its children will be the final state
-          // when we flush (updates are processed in insertion order: last
-          // update wins).
-          // TODO: This forces a restart. Should we print a warning?
-
-          this.render(this._children);
-        } // Remove the batch from the list.
-
-
-        var previous = null;
-        var batch = firstBatch;
-
-        while (batch !== this) {
-          previous = batch;
-          batch = batch._next;
-        }
-
-        (function () {
-          if (!(previous !== null)) {
-            {
-              throw ReactError(Error("batch.commit: Cannot commit a batch multiple times."));
-            }
-          }
-        })();
-
-        previous._next = batch._next; // Add it to the front.
-
-        this._next = firstBatch;
-        firstBatch = internalRoot.firstBatch = this;
-      } // Synchronously flush all the work up to this batch's expiration time.
-
-
-      this._defer = false;
-      flushRoot(internalRoot, expirationTime); // Pop the batch from the list.
-
-      var next = this._next;
-      this._next = null;
-      firstBatch = internalRoot.firstBatch = next; // Append the next earliest batch's children to the update queue.
-
-      if (firstBatch !== null && firstBatch._hasChildren) {
-        firstBatch.render(firstBatch._children);
-      }
-    };
-
-    ReactBatch.prototype._onComplete = function () {
-      if (this._didComplete) {
-        return;
-      }
-
-      this._didComplete = true;
-      var callbacks = this._callbacks;
-
-      if (callbacks === null) {
-        return;
-      } // TODO: Error handling.
-
-
-      for (var i = 0; i < callbacks.length; i++) {
-        var _callback = callbacks[i];
-
-        _callback();
-      }
-    };
-
-    function ReactWork() {
-      this._callbacks = null;
-      this._didCommit = false; // TODO: Avoid need to bind by replacing callbacks in the update queue with
-      // list of Work objects.
-
-      this._onCommit = this._onCommit.bind(this);
-    }
-
-    ReactWork.prototype.then = function (onCommit) {
-      if (this._didCommit) {
-        onCommit();
-        return;
-      }
-
-      var callbacks = this._callbacks;
-
-      if (callbacks === null) {
-        callbacks = this._callbacks = [];
-      }
-
-      callbacks.push(onCommit);
-    };
-
-    ReactWork.prototype._onCommit = function () {
-      if (this._didCommit) {
-        return;
-      }
-
-      this._didCommit = true;
-      var callbacks = this._callbacks;
-
-      if (callbacks === null) {
-        return;
-      } // TODO: Error handling.
-
-
-      for (var i = 0; i < callbacks.length; i++) {
-        var _callback2 = callbacks[i];
-
-        (function () {
-          if (!(typeof _callback2 === 'function')) {
-            {
-              throw ReactError(Error("Invalid argument passed as callback. Expected a function. Instead received: " + _callback2));
-            }
-          }
-        })();
-
-        _callback2();
-      }
+      });
     };
 
     function createRootImpl(container, tag, options) {
@@ -31880,89 +31739,38 @@ var VXA = (function (exports) {
 
       return root;
     }
-
-    function ReactSyncRoot(container, tag, options) {
-      this._internalRoot = createRootImpl(container, tag, options);
+    function createLegacyRoot(container, options) {
+      return new ReactDOMBlockingRoot(container, LegacyRoot, options);
     }
-
-    function ReactRoot(container, options) {
-      this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
-    }
-
-    ReactRoot.prototype.render = ReactSyncRoot.prototype.render = function (children, callback) {
-      var root = this._internalRoot;
-      var work = new ReactWork();
-      callback = callback === undefined ? null : callback;
-
-      {
-        warnOnInvalidCallback(callback, 'render');
-      }
-
-      if (callback !== null) {
-        work.then(callback);
-      }
-
-      updateContainer(children, root, null, work._onCommit);
-      return work;
-    };
-
-    ReactRoot.prototype.unmount = ReactSyncRoot.prototype.unmount = function (callback) {
-      var root = this._internalRoot;
-      var work = new ReactWork();
-      callback = callback === undefined ? null : callback;
-
-      {
-        warnOnInvalidCallback(callback, 'render');
-      }
-
-      if (callback !== null) {
-        work.then(callback);
-      }
-
-      updateContainer(null, root, null, work._onCommit);
-      return work;
-    }; // Sync roots cannot create batches. Only concurrent ones.
-
-
-    ReactRoot.prototype.createBatch = function () {
-      var batch = new ReactBatch(this);
-      var expirationTime = batch._expirationTime;
-      var internalRoot = this._internalRoot;
-      var firstBatch = internalRoot.firstBatch;
-
-      if (firstBatch === null) {
-        internalRoot.firstBatch = batch;
-        batch._next = null;
-      } else {
-        // Insert sorted by expiration time then insertion order
-        var insertAfter = null;
-        var insertBefore = firstBatch;
-
-        while (insertBefore !== null && insertBefore._expirationTime >= expirationTime) {
-          insertAfter = insertBefore;
-          insertBefore = insertBefore._next;
-        }
-
-        batch._next = insertBefore;
-
-        if (insertAfter !== null) {
-          insertAfter._next = batch;
-        }
-      }
-
-      return batch;
-    };
-    /**
-     * True if the supplied DOM node is a valid node element.
-     *
-     * @param {?DOMElement} node The candidate DOM node.
-     * @return {boolean} True if the DOM is a valid DOM node.
-     * @internal
-     */
-
-
     function isValidContainer(node) {
       return !!(node && (node.nodeType === ELEMENT_NODE || node.nodeType === DOCUMENT_NODE || node.nodeType === DOCUMENT_FRAGMENT_NODE || node.nodeType === COMMENT_NODE && node.nodeValue === ' react-mount-point-unstable '));
+    }
+    function warnOnInvalidCallback(callback, callerName) {
+      {
+        !(callback === null || typeof callback === 'function') ? warningWithoutStack$1(false, '%s(...): Expected the last optional `callback` argument to be a ' + 'function. Instead received: %s.', callerName, callback) : void 0;
+      }
+    }
+
+    var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
+    var topLevelUpdateWarnings;
+    var warnedAboutHydrateAPI = false;
+
+    {
+      topLevelUpdateWarnings = function (container) {
+        if (container._reactRootContainer && container.nodeType !== COMMENT_NODE) {
+          var hostInstance = findHostInstanceWithNoPortals(container._reactRootContainer._internalRoot.current);
+
+          if (hostInstance) {
+            !(hostInstance.parentNode === container) ? warningWithoutStack$1(false, 'render(...): It looks like the React-rendered content of this ' + 'container was removed without using React. This is not ' + 'supported and will cause errors. Instead, call ' + 'ReactDOM.unmountComponentAtNode to empty a container.') : void 0;
+          }
+        }
+
+        var isRootRenderedBySomeReact = !!container._reactRootContainer;
+        var rootEl = getReactRootElementInContainer(container);
+        var hasNonRootReactChild = !!(rootEl && getInstanceFromNode$1(rootEl));
+        !(!hasNonRootReactChild || isRootRenderedBySomeReact) ? warningWithoutStack$1(false, 'render(...): Replacing React-rendered children with a new root ' + 'component. If you intended to update the children of this node, ' + 'you should instead have the existing children update their state ' + 'and render the new components instead of calling ReactDOM.render.') : void 0;
+        !(container.nodeType !== ELEMENT_NODE || !container.tagName || container.tagName.toUpperCase() !== 'BODY') ? warningWithoutStack$1(false, 'render(): Rendering components directly into document.body is ' + 'discouraged, since its children are often manipulated by third-party ' + 'scripts and browser extensions. This may lead to subtle ' + 'reconciliation issues. Try rendering into a container element created ' + 'for your app.') : void 0;
+      };
     }
 
     function getReactRootElementInContainer(container) {
@@ -31981,9 +31789,6 @@ var VXA = (function (exports) {
       var rootElement = getReactRootElementInContainer(container);
       return !!(rootElement && rootElement.nodeType === ELEMENT_NODE && rootElement.hasAttribute(ROOT_ATTRIBUTE_NAME));
     }
-
-    setBatchingImplementation(batchedUpdates$1, discreteUpdates$1, flushDiscreteUpdates, batchedEventUpdates$1);
-    var warnedAboutHydrateAPI = false;
 
     function legacyCreateRootFromDOMContainer(container, forceHydrate) {
       var shouldHydrate = forceHydrate || shouldHydrateDueToLegacyHeuristic(container); // First clear any existing content.
@@ -32009,10 +31814,9 @@ var VXA = (function (exports) {
           warnedAboutHydrateAPI = true;
           lowPriorityWarningWithoutStack$1(false, 'render(): Calling ReactDOM.render() to hydrate server-rendered markup ' + 'will stop working in React v17. Replace the ReactDOM.render() call ' + 'with ReactDOM.hydrate() if you want React to attach to the server HTML.');
         }
-      } // Legacy roots are not batched.
+      }
 
-
-      return new ReactSyncRoot(container, LegacyRoot, shouldHydrate ? {
+      return createLegacyRoot(container, shouldHydrate ? {
         hydrate: true
       } : undefined);
     }
@@ -32066,16 +31870,167 @@ var VXA = (function (exports) {
       return getPublicRootInstance(fiberRoot);
     }
 
+    function findDOMNode(componentOrElement) {
+      {
+        var owner = ReactCurrentOwner$1.current;
+
+        if (owner !== null && owner.stateNode !== null) {
+          var warnedAboutRefsInRender = owner.stateNode._warnedAboutRefsInRender;
+          !warnedAboutRefsInRender ? warningWithoutStack$1(false, '%s is accessing findDOMNode inside its render(). ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', getComponentName(owner.type) || 'A component') : void 0;
+          owner.stateNode._warnedAboutRefsInRender = true;
+        }
+      }
+
+      if (componentOrElement == null) {
+        return null;
+      }
+
+      if (componentOrElement.nodeType === ELEMENT_NODE) {
+        return componentOrElement;
+      }
+
+      {
+        return findHostInstanceWithWarning(componentOrElement, 'findDOMNode');
+      }
+
+      return findHostInstance(componentOrElement);
+    }
+    function hydrate(element, container, callback) {
+      if (!isValidContainer(container)) {
+        {
+          throw Error("Target container is not a DOM element.");
+        }
+      }
+
+      {
+        var isModernRoot = isContainerMarkedAsRoot(container) && container._reactRootContainer === undefined;
+
+        if (isModernRoot) {
+          warningWithoutStack$1(false, 'You are calling ReactDOM.hydrate() on a container that was previously ' + 'passed to ReactDOM.createRoot(). This is not supported. ' + 'Did you mean to call createRoot(container, {hydrate: true}).render(element)?');
+        }
+      } // TODO: throw or warn if we couldn't hydrate?
+
+
+      return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
+    }
+    function render(element, container, callback) {
+      if (!isValidContainer(container)) {
+        {
+          throw Error("Target container is not a DOM element.");
+        }
+      }
+
+      {
+        var isModernRoot = isContainerMarkedAsRoot(container) && container._reactRootContainer === undefined;
+
+        if (isModernRoot) {
+          warningWithoutStack$1(false, 'You are calling ReactDOM.render() on a container that was previously ' + 'passed to ReactDOM.createRoot(). This is not supported. ' + 'Did you mean to call root.render(element)?');
+        }
+      }
+
+      return legacyRenderSubtreeIntoContainer(null, element, container, false, callback);
+    }
+    function unstable_renderSubtreeIntoContainer(parentComponent, element, containerNode, callback) {
+      if (!isValidContainer(containerNode)) {
+        {
+          throw Error("Target container is not a DOM element.");
+        }
+      }
+
+      if (!(parentComponent != null && has(parentComponent))) {
+        {
+          throw Error("parentComponent must be a valid React Component");
+        }
+      }
+
+      return legacyRenderSubtreeIntoContainer(parentComponent, element, containerNode, false, callback);
+    }
+    function unmountComponentAtNode(container) {
+      if (!isValidContainer(container)) {
+        {
+          throw Error("unmountComponentAtNode(...): Target container is not a DOM element.");
+        }
+      }
+
+      {
+        var isModernRoot = isContainerMarkedAsRoot(container) && container._reactRootContainer === undefined;
+
+        if (isModernRoot) {
+          warningWithoutStack$1(false, 'You are calling ReactDOM.unmountComponentAtNode() on a container that was previously ' + 'passed to ReactDOM.createRoot(). This is not supported. Did you mean to call root.unmount()?');
+        }
+      }
+
+      if (container._reactRootContainer) {
+        {
+          var rootEl = getReactRootElementInContainer(container);
+          var renderedByDifferentReact = rootEl && !getInstanceFromNode$1(rootEl);
+          !!renderedByDifferentReact ? warningWithoutStack$1(false, "unmountComponentAtNode(): The node you're attempting to unmount " + 'was rendered by another copy of React.') : void 0;
+        } // Unmount should not be batched.
+
+
+        unbatchedUpdates(function () {
+          legacyRenderSubtreeIntoContainer(null, null, container, false, function () {
+            container._reactRootContainer = null;
+            unmarkContainerAsRoot(container);
+          });
+        }); // If you call unmountComponentAtNode twice in quick succession, you'll
+        // get `true` twice. That's probably fine?
+
+        return true;
+      } else {
+        {
+          var _rootEl = getReactRootElementInContainer(container);
+
+          var hasNonRootReactChild = !!(_rootEl && getInstanceFromNode$1(_rootEl)); // Check if the container itself is a React root node.
+
+          var isContainerReactRoot = container.nodeType === ELEMENT_NODE && isValidContainer(container.parentNode) && !!container.parentNode._reactRootContainer;
+          !!hasNonRootReactChild ? warningWithoutStack$1(false, "unmountComponentAtNode(): The node you're attempting to unmount " + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.') : void 0;
+        }
+
+        return false;
+      }
+    }
+
+    function createPortal$1(children, containerInfo, // TODO: figure out the API for cross-renderer implementation.
+    implementation) {
+      var key = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+      return {
+        // This tag allow us to uniquely identify this as a React Portal
+        $$typeof: REACT_PORTAL_TYPE,
+        key: key == null ? null : '' + key,
+        children: children,
+        containerInfo: containerInfo,
+        implementation: implementation
+      };
+    }
+
+    // TODO: this is special because it gets imported during build.
+
+    var ReactVersion = '16.12.0';
+    setAttemptUserBlockingHydration(attemptUserBlockingHydration$1);
+    setAttemptContinuousHydration(attemptContinuousHydration$1);
+    setAttemptHydrationAtCurrentPriority(attemptHydrationAtCurrentPriority$1);
+    var didWarnAboutUnstableCreatePortal = false;
+
+    {
+      if (typeof Map !== 'function' || // $FlowIssue Flow incorrectly thinks Map has no prototype
+      Map.prototype == null || typeof Map.prototype.forEach !== 'function' || typeof Set !== 'function' || // $FlowIssue Flow incorrectly thinks Set has no prototype
+      Set.prototype == null || typeof Set.prototype.clear !== 'function' || typeof Set.prototype.forEach !== 'function') {
+        warningWithoutStack$1(false, 'React depends on Map and Set built-in types. Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
+      }
+    }
+
+    setRestoreImplementation(restoreControlledState$$1);
+    setBatchingImplementation(batchedUpdates$1, discreteUpdates$1, flushDiscreteUpdates, batchedEventUpdates$1);
+
     function createPortal$$1(children, container) {
       var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
-      (function () {
-        if (!isValidContainer(container)) {
-          {
-            throw ReactError(Error("Target container is not a DOM element."));
-          }
+      if (!isValidContainer(container)) {
+        {
+          throw Error("Target container is not a DOM element.");
         }
-      })(); // TODO: pass ReactDOM portal implementation as third argument
+      } // TODO: pass ReactDOM portal implementation as third argument
 
 
       return createPortal$1(children, container, null, key);
@@ -32083,123 +32038,12 @@ var VXA = (function (exports) {
 
     var ReactDOM = {
       createPortal: createPortal$$1,
-      findDOMNode: function (componentOrElement) {
-        {
-          var owner = ReactCurrentOwner.current;
-
-          if (owner !== null && owner.stateNode !== null) {
-            var warnedAboutRefsInRender = owner.stateNode._warnedAboutRefsInRender;
-            !warnedAboutRefsInRender ? warningWithoutStack$1(false, '%s is accessing findDOMNode inside its render(). ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', getComponentName(owner.type) || 'A component') : void 0;
-            owner.stateNode._warnedAboutRefsInRender = true;
-          }
-        }
-
-        if (componentOrElement == null) {
-          return null;
-        }
-
-        if (componentOrElement.nodeType === ELEMENT_NODE) {
-          return componentOrElement;
-        }
-
-        {
-          return findHostInstanceWithWarning(componentOrElement, 'findDOMNode');
-        }
-
-        return findHostInstance(componentOrElement);
-      },
-      hydrate: function (element, container, callback) {
-        (function () {
-          if (!isValidContainer(container)) {
-            {
-              throw ReactError(Error("Target container is not a DOM element."));
-            }
-          }
-        })();
-
-        {
-          !!container._reactHasBeenPassedToCreateRootDEV ? warningWithoutStack$1(false, 'You are calling ReactDOM.hydrate() on a container that was previously ' + 'passed to ReactDOM.%s(). This is not supported. ' + 'Did you mean to call createRoot(container, {hydrate: true}).render(element)?',  'unstable_createRoot') : void 0;
-        } // TODO: throw or warn if we couldn't hydrate?
-
-
-        return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
-      },
-      render: function (element, container, callback) {
-        (function () {
-          if (!isValidContainer(container)) {
-            {
-              throw ReactError(Error("Target container is not a DOM element."));
-            }
-          }
-        })();
-
-        {
-          !!container._reactHasBeenPassedToCreateRootDEV ? warningWithoutStack$1(false, 'You are calling ReactDOM.render() on a container that was previously ' + 'passed to ReactDOM.%s(). This is not supported. ' + 'Did you mean to call root.render(element)?',  'unstable_createRoot') : void 0;
-        }
-
-        return legacyRenderSubtreeIntoContainer(null, element, container, false, callback);
-      },
-      unstable_renderSubtreeIntoContainer: function (parentComponent, element, containerNode, callback) {
-        (function () {
-          if (!isValidContainer(containerNode)) {
-            {
-              throw ReactError(Error("Target container is not a DOM element."));
-            }
-          }
-        })();
-
-        (function () {
-          if (!(parentComponent != null && has(parentComponent))) {
-            {
-              throw ReactError(Error("parentComponent must be a valid React Component"));
-            }
-          }
-        })();
-
-        return legacyRenderSubtreeIntoContainer(parentComponent, element, containerNode, false, callback);
-      },
-      unmountComponentAtNode: function (container) {
-        (function () {
-          if (!isValidContainer(container)) {
-            {
-              throw ReactError(Error("unmountComponentAtNode(...): Target container is not a DOM element."));
-            }
-          }
-        })();
-
-        {
-          !!container._reactHasBeenPassedToCreateRootDEV ? warningWithoutStack$1(false, 'You are calling ReactDOM.unmountComponentAtNode() on a container that was previously ' + 'passed to ReactDOM.%s(). This is not supported. Did you mean to call root.unmount()?',  'unstable_createRoot') : void 0;
-        }
-
-        if (container._reactRootContainer) {
-          {
-            var rootEl = getReactRootElementInContainer(container);
-            var renderedByDifferentReact = rootEl && !getInstanceFromNode$1(rootEl);
-            !!renderedByDifferentReact ? warningWithoutStack$1(false, "unmountComponentAtNode(): The node you're attempting to unmount " + 'was rendered by another copy of React.') : void 0;
-          } // Unmount should not be batched.
-
-
-          unbatchedUpdates(function () {
-            legacyRenderSubtreeIntoContainer(null, null, container, false, function () {
-              container._reactRootContainer = null;
-            });
-          }); // If you call unmountComponentAtNode twice in quick succession, you'll
-          // get `true` twice. That's probably fine?
-
-          return true;
-        } else {
-          {
-            var _rootEl = getReactRootElementInContainer(container);
-
-            var hasNonRootReactChild = !!(_rootEl && getInstanceFromNode$1(_rootEl)); // Check if the container itself is a React root node.
-
-            var isContainerReactRoot = container.nodeType === ELEMENT_NODE && isValidContainer(container.parentNode) && !!container.parentNode._reactRootContainer;
-            !!hasNonRootReactChild ? warningWithoutStack$1(false, "unmountComponentAtNode(): The node you're attempting to unmount " + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.') : void 0;
-          }
-
-          return false;
-        }
-      },
+      // Legacy
+      findDOMNode: findDOMNode,
+      hydrate: hydrate,
+      render: render,
+      unstable_renderSubtreeIntoContainer: unstable_renderSubtreeIntoContainer,
+      unmountComponentAtNode: unmountComponentAtNode,
       // Temporary alias since we already shipped React 16 RC with it.
       // TODO: remove in React 17.
       unstable_createPortal: function () {
@@ -32211,60 +32055,13 @@ var VXA = (function (exports) {
         return createPortal$$1.apply(void 0, arguments);
       },
       unstable_batchedUpdates: batchedUpdates$1,
-      // TODO remove this legacy method, unstable_discreteUpdates replaces it
-      unstable_interactiveUpdates: function (fn, a, b, c) {
-        flushDiscreteUpdates();
-        return discreteUpdates$1(fn, a, b, c);
-      },
-      unstable_discreteUpdates: discreteUpdates$1,
-      unstable_flushDiscreteUpdates: flushDiscreteUpdates,
       flushSync: flushSync,
-      unstable_createRoot: createRoot,
-      unstable_createSyncRoot: createSyncRoot,
-      unstable_flushControlled: flushControlled,
       __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
         // Keep in sync with ReactDOMUnstableNativeDependencies.js
         // ReactTestUtils.js, and ReactTestUtilsAct.js. This is an array for better minification.
         Events: [getInstanceFromNode$1, getNodeFromInstance$1, getFiberCurrentPropsFromNode$1, injection.injectEventPluginsByName, eventNameDispatchConfigs, accumulateTwoPhaseDispatches, accumulateDirectDispatches, enqueueStateRestore, restoreStateIfNeeded, dispatchEvent, runEventsInBatch, flushPassiveEffects, IsThisRendererActing]
       }
     };
-
-    function createRoot(container, options) {
-      var functionName =  'unstable_createRoot';
-
-      (function () {
-        if (!isValidContainer(container)) {
-          {
-            throw ReactError(Error(functionName + "(...): Target container is not a DOM element."));
-          }
-        }
-      })();
-
-      warnIfReactDOMContainerInDEV(container);
-      return new ReactRoot(container, options);
-    }
-
-    function createSyncRoot(container, options) {
-      var functionName =  'unstable_createRoot';
-
-      (function () {
-        if (!isValidContainer(container)) {
-          {
-            throw ReactError(Error(functionName + "(...): Target container is not a DOM element."));
-          }
-        }
-      })();
-
-      warnIfReactDOMContainerInDEV(container);
-      return new ReactSyncRoot(container, BatchedRoot, options);
-    }
-
-    function warnIfReactDOMContainerInDEV(container) {
-      {
-        !!container._reactRootContainer ? warningWithoutStack$1(false, 'You are calling ReactDOM.%s() on a container that was previously ' + 'passed to ReactDOM.render(). This is not supported.',  'unstable_createRoot') : void 0;
-        container._reactHasBeenPassedToCreateRootDEV = true;
-      }
-    }
 
     var foundDevTools = injectIntoDevTools({
       findFiberByHostInstance: getClosestInstanceFromNode,
@@ -32311,6 +32108,10 @@ var VXA = (function (exports) {
       module.exports = reactDom_development;
     }
     });
+
+    var global$2 = (typeof global !== "undefined" ? global :
+                typeof self !== "undefined" ? self :
+                typeof window !== "undefined" ? window : {});
 
     var domain;
 
@@ -32777,10 +32578,6 @@ var VXA = (function (exports) {
       }
       return ret;
     }
-
-    var global$2 = (typeof global !== "undefined" ? global :
-                typeof self !== "undefined" ? self :
-                typeof window !== "undefined" ? window : {});
 
     var lookup = [];
     var revLookup = [];
@@ -37295,19 +37092,11 @@ var VXA = (function (exports) {
 
     // TODO: this is special because it gets imported during build.
 
-    var ReactVersion = '16.10.1';
+    var ReactVersion = '16.12.0';
 
     // Do not require this module directly! Use normal `invariant` calls with
-    // template literal strings. The messages will be converted to ReactError during
-    // build, and in production they will be minified.
-
-    // Do not require this module directly! Use normal `invariant` calls with
-    // template literal strings. The messages will be converted to ReactError during
-    // build, and in production they will be minified.
-    function ReactError(error) {
-      error.name = 'Invariant Violation';
-      return error;
-    }
+    // template literal strings. The messages will be replaced with error codes
+    // during build.
 
     /**
      * Use invariant() to assert state which your program assumes to be true.
@@ -37640,21 +37429,20 @@ var VXA = (function (exports) {
 
      // Trace which interactions trigger each commit.
 
-     // Only used in www builds.
+     // SSR experiments
 
-    var enableSuspenseServerRenderer = false; // TODO: true? Here it might just be false.
+    var enableSuspenseServerRenderer = false;
     // with their related DOM properties
 
      // These APIs will no longer be "unstable" in the upcoming 16.7 release,
     // Control this behavior with a flag to support 16.6 minor releases in the meanwhile.
 
 
-     // See https://github.com/react-native-community/discussions-and-proposals/issues/72 for more information
-    // This is a flag so we can fix warnings in RN core before turning it on
-
      // Experimental React Flare event system and event components support.
 
     var enableFlareAPI = false; // Experimental Host Component support.
+
+     // Flag to turn event.target and event.currentTarget in ReactNative from a reactTag to a component instance
 
     var ReactDebugCurrentFrame$1;
     var didWarnAboutInvalidateContextType;
@@ -37783,13 +37571,11 @@ var VXA = (function (exports) {
       var oldSize = oldArray.length;
       var newSize = oldSize * 2;
 
-      (function () {
-        if (!(newSize <= 0x10000)) {
-          {
-            throw ReactError(Error("Maximum number of concurrent React renderers exceeded. This can happen if you are not properly destroying the Readable provided by React. Ensure that you call .destroy() on it if you no longer want to read from it, and did not read to the end. If you use .pipe() this should be automatic."));
-          }
+      if (!(newSize <= 0x10000)) {
+        {
+          throw Error("Maximum number of concurrent React renderers exceeded. This can happen if you are not properly destroying the Readable provided by React. Ensure that you call .destroy() on it if you no longer want to read from it, and did not read to the end. If you use .pipe() this should be automatic.");
         }
-      })();
+      }
 
       var newArray = new Uint16Array(newSize);
       newArray.set(oldArray);
@@ -38329,13 +38115,11 @@ var VXA = (function (exports) {
     var currentHookNameInDev;
 
     function resolveCurrentlyRenderingComponent() {
-      (function () {
-        if (!(currentlyRenderingComponent !== null)) {
-          {
-            throw ReactError(Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem."));
-          }
+      if (!(currentlyRenderingComponent !== null)) {
+        {
+          throw Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem.");
         }
-      })();
+      }
 
       {
         !!isInHookUserCodeInDev ? warning$1(false, 'Do not call Hooks inside useEffect(...), useMemo(...), or other built-in Hooks. ' + 'You can only call Hooks at the top level of your React function. ' + 'For more information, see ' + 'https://fb.me/rules-of-hooks') : void 0;
@@ -38374,13 +38158,11 @@ var VXA = (function (exports) {
 
     function createHook() {
       if (numberOfReRenders > 0) {
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error("Rendered more hooks than during the previous render"));
-            }
+            throw Error("Rendered more hooks than during the previous render");
           }
-        })();
+        }
       }
 
       return {
@@ -38642,13 +38424,11 @@ var VXA = (function (exports) {
     }
 
     function dispatchAction(componentIdentity, queue, action) {
-      (function () {
-        if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
-          {
-            throw ReactError(Error("Too many re-renders. React limits the number of renders to prevent an infinite loop."));
-          }
+      if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
+        {
+          throw Error("Too many re-renders. React limits the number of renders to prevent an infinite loop.");
         }
-      })();
+      }
 
       if (componentIdentity === currentlyRenderingComponent) {
         // This is a render phase update. Stash it in a lazily-created map of
@@ -38693,6 +38473,21 @@ var VXA = (function (exports) {
       };
     }
 
+    function useDeferredValue(value, config) {
+      resolveCurrentlyRenderingComponent();
+      return value;
+    }
+
+    function useTransition(config) {
+      resolveCurrentlyRenderingComponent();
+
+      var startTransition = function (callback) {
+        callback();
+      };
+
+      return [startTransition, false];
+    }
+
     function noop() {}
 
     var currentThreadID = 0;
@@ -38714,7 +38509,9 @@ var VXA = (function (exports) {
       useEffect: noop,
       // Debugging effect
       useDebugValue: noop,
-      useResponder: useResponder
+      useResponder: useResponder,
+      useDeferredValue: useDeferredValue,
+      useTransition: useTransition
     };
 
     var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
@@ -38838,44 +38635,36 @@ var VXA = (function (exports) {
 
 
       if (voidElementTags[tag]) {
-        (function () {
-          if (!(props.children == null && props.dangerouslySetInnerHTML == null)) {
-            {
-              throw ReactError(Error(tag + " is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`." + (ReactDebugCurrentFrame$4.getStackAddendum())));
-            }
+        if (!(props.children == null && props.dangerouslySetInnerHTML == null)) {
+          {
+            throw Error(tag + " is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`." + (ReactDebugCurrentFrame$4.getStackAddendum()));
           }
-        })();
+        }
       }
 
       if (props.dangerouslySetInnerHTML != null) {
-        (function () {
-          if (!(props.children == null)) {
-            {
-              throw ReactError(Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`."));
-            }
+        if (!(props.children == null)) {
+          {
+            throw Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`.");
           }
-        })();
+        }
 
-        (function () {
-          if (!(typeof props.dangerouslySetInnerHTML === 'object' && HTML in props.dangerouslySetInnerHTML)) {
-            {
-              throw ReactError(Error("`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://fb.me/react-invariant-dangerously-set-inner-html for more information."));
-            }
+        if (!(typeof props.dangerouslySetInnerHTML === 'object' && HTML in props.dangerouslySetInnerHTML)) {
+          {
+            throw Error("`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://fb.me/react-invariant-dangerously-set-inner-html for more information.");
           }
-        })();
+        }
       }
 
       {
         !(props.suppressContentEditableWarning || !props.contentEditable || props.children == null) ? warning$1(false, 'A component is `contentEditable` and contains `children` managed by ' + 'React. It is now your responsibility to guarantee that none of ' + 'those nodes are unexpectedly modified or duplicated. This is ' + 'probably not intentional.') : void 0;
       }
 
-      (function () {
-        if (!(props.style == null || typeof props.style === 'object')) {
-          {
-            throw ReactError(Error("The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX." + (ReactDebugCurrentFrame$4.getStackAddendum())));
-          }
+      if (!(props.style == null || typeof props.style === 'object')) {
+        {
+          throw Error("The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX." + (ReactDebugCurrentFrame$4.getStackAddendum()));
         }
-      })();
+      }
     }
 
     /**
@@ -40120,13 +39909,11 @@ var VXA = (function (exports) {
 
     function validateDangerousTag(tag) {
       if (!validatedTagCache.hasOwnProperty(tag)) {
-        (function () {
-          if (!VALID_TAG_REGEX.test(tag)) {
-            {
-              throw ReactError(Error("Invalid tag: " + tag));
-            }
+        if (!VALID_TAG_REGEX.test(tag)) {
+          {
+            throw Error("Invalid tag: " + tag);
           }
-        })();
+        }
 
         validatedTagCache[tag] = true;
       }
@@ -40312,13 +40099,11 @@ var VXA = (function (exports) {
 
     function validateRenderResult(child, type) {
       if (child === undefined) {
-        (function () {
+        {
           {
-            {
-              throw ReactError(Error((getComponentName(type) || 'Component') + "(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null."));
-            }
+            throw Error((getComponentName(type) || 'Component') + "(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null.");
           }
-        })();
+        }
       }
     }
 
@@ -40526,13 +40311,11 @@ var VXA = (function (exports) {
               childContext = inst.getChildContext();
 
               for (var contextKey in childContext) {
-                (function () {
-                  if (!(contextKey in _childContextTypes)) {
-                    {
-                      throw ReactError(Error((getComponentName(Component) || 'Unknown') + ".getChildContext(): key \"" + contextKey + "\" is not defined in childContextTypes."));
-                    }
+                if (!(contextKey in _childContextTypes)) {
+                  {
+                    throw Error((getComponentName(Component) || 'Unknown') + ".getChildContext(): key \"" + contextKey + "\" is not defined in childContextTypes.");
                   }
-                })();
+                }
               }
             } else {
               warningWithoutStack$1(false, '%s.getChildContext(): childContextTypes must be defined in order to ' + 'use getChildContext().', getComponentName(Component) || 'Unknown');
@@ -40665,8 +40448,6 @@ var VXA = (function (exports) {
       };
 
       _proto.read = function read(bytes) {
-        var _this = this;
-
         if (this.exhausted) {
           return null;
         }
@@ -40714,13 +40495,11 @@ var VXA = (function (exports) {
 
                   var fallbackFrame = frame.fallbackFrame;
 
-                  (function () {
-                    if (!fallbackFrame) {
-                      {
-                        throw ReactError(Error("ReactDOMServer did not find an internal fallback frame for Suspense. This is a bug in React. Please file an issue."));
-                      }
+                  if (!fallbackFrame) {
+                    {
+                      throw Error("ReactDOMServer did not find an internal fallback frame for Suspense. This is a bug in React. Please file an issue.");
                     }
-                  })();
+                  }
 
                   this.stack.push(fallbackFrame);
                   out[this.suspenseDepth] += '<!--$!-->'; // Skip flushing output since we're switching to the fallback
@@ -40750,23 +40529,19 @@ var VXA = (function (exports) {
             } catch (err) {
               if (err != null && typeof err.then === 'function') {
                 if (enableSuspenseServerRenderer) {
-                  (function () {
-                    if (!(_this.suspenseDepth > 0)) {
-                      {
-                        throw ReactError(Error("A React component suspended while rendering, but no fallback UI was specified.\n\nAdd a <Suspense fallback=...> component higher in the tree to provide a loading indicator or placeholder to display."));
-                      }
+                  if (!(this.suspenseDepth > 0)) {
+                    {
+                      throw Error("A React component suspended while rendering, but no fallback UI was specified.\n\nAdd a <Suspense fallback=...> component higher in the tree to provide a loading indicator or placeholder to display.");
                     }
-                  })();
+                  }
 
                   suspended = true;
                 } else {
-                  (function () {
+                  {
                     {
-                      {
-                        throw ReactError(Error("ReactDOMServer does not yet support Suspense."));
-                      }
+                      throw Error("ReactDOMServer does not yet support Suspense.");
                     }
-                  })();
+                  }
                 }
               } else {
                 throw err;
@@ -40824,22 +40599,18 @@ var VXA = (function (exports) {
               // Catch unexpected special types early.
               var $$typeof = nextChild.$$typeof;
 
-              (function () {
-                if (!($$typeof !== REACT_PORTAL_TYPE)) {
-                  {
-                    throw ReactError(Error("Portals are not currently supported by the server renderer. Render them conditionally so that they only appear on the client render."));
-                  }
-                }
-              })(); // Catch-all to prevent an infinite loop if React.Children.toArray() supports some new type.
-
-
-              (function () {
+              if (!($$typeof !== REACT_PORTAL_TYPE)) {
                 {
-                  {
-                    throw ReactError(Error("Unknown element-like object type: " + $$typeof.toString() + ". This is likely a bug in React. Please file an issue."));
-                  }
+                  throw Error("Portals are not currently supported by the server renderer. Render them conditionally so that they only appear on the client render.");
                 }
-              })();
+              } // Catch-all to prevent an infinite loop if React.Children.toArray() supports some new type.
+
+
+              {
+                {
+                  throw Error("Unknown element-like object type: " + $$typeof.toString() + ". This is likely a bug in React. Please file an issue.");
+                }
+              }
             }
 
             var nextChildren = toArray(nextChild);
@@ -40897,13 +40668,11 @@ var VXA = (function (exports) {
             case REACT_SUSPENSE_TYPE:
               {
                 {
-                  (function () {
+                  {
                     {
-                      {
-                        throw ReactError(Error("ReactDOMServer does not yet support Suspense."));
-                      }
+                      throw Error("ReactDOMServer does not yet support Suspense.");
                     }
-                  })();
+                  }
                 }
               }
             // eslint-disable-next-line-no-fallthrough
@@ -41044,13 +40813,11 @@ var VXA = (function (exports) {
               case REACT_FUNDAMENTAL_TYPE:
                 {
 
-                  (function () {
+                  {
                     {
-                      {
-                        throw ReactError(Error("ReactDOMServer does not yet support the fundamental API."));
-                      }
+                      throw Error("ReactDOMServer does not yet support the fundamental API.");
                     }
-                  })();
+                  }
                 }
               // eslint-disable-next-line-no-fallthrough
 
@@ -41091,13 +40858,11 @@ var VXA = (function (exports) {
 
                     case Pending:
                     default:
-                      (function () {
+                      {
                         {
-                          {
-                            throw ReactError(Error("ReactDOMServer does not yet support lazy-loaded components."));
-                          }
+                          throw Error("ReactDOMServer does not yet support lazy-loaded components.");
                         }
-                      })();
+                      }
 
                   }
                 }
@@ -41106,13 +40871,11 @@ var VXA = (function (exports) {
               case REACT_SCOPE_TYPE:
                 {
 
-                  (function () {
+                  {
                     {
-                      {
-                        throw ReactError(Error("ReactDOMServer does not yet support scope components."));
-                      }
+                      throw Error("ReactDOMServer does not yet support scope components.");
                     }
-                  })();
+                  }
                 }
             }
           }
@@ -41133,13 +40896,11 @@ var VXA = (function (exports) {
             }
           }
 
-          (function () {
+          {
             {
-              {
-                throw ReactError(Error("Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " + (elementType == null ? elementType : typeof elementType) + "." + info));
-              }
+              throw Error("Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " + (elementType == null ? elementType : typeof elementType) + "." + info);
             }
-          })();
+          }
         }
       };
 
@@ -41207,22 +40968,18 @@ var VXA = (function (exports) {
                 warning$1(false, 'Use the `defaultValue` or `value` props instead of setting ' + 'children on <textarea>.');
               }
 
-              (function () {
-                if (!(defaultValue == null)) {
-                  {
-                    throw ReactError(Error("If you supply `defaultValue` on a <textarea>, do not pass children."));
-                  }
+              if (!(defaultValue == null)) {
+                {
+                  throw Error("If you supply `defaultValue` on a <textarea>, do not pass children.");
                 }
-              })();
+              }
 
               if (Array.isArray(textareaChildren)) {
-                (function () {
-                  if (!(textareaChildren.length <= 1)) {
-                    {
-                      throw ReactError(Error("<textarea> can only have at most one child."));
-                    }
+                if (!(textareaChildren.length <= 1)) {
+                  {
+                    throw Error("<textarea> can only have at most one child.");
                   }
-                })();
+                }
 
                 textareaChildren = textareaChildren[0];
               }
@@ -42748,449 +42505,6 @@ var VXA = (function (exports) {
     var uaParser_1 = uaParser.UAParser;
 
     /**
-     * Used to evaluate whether or not to render a component
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
-     * @param {Object} options.props - Props to test comparison values against, usually Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops) 
-     * @returns {Boolean} returns true if all comparisons are true or if using or comparisons, at least one condition is true
-     * @example
-     const sampleJSONX = {
-      component: 'div',
-      props: {
-        id: 'generatedJSONX',
-        className: 'jsonx',
-        bigNum: 1430931039,
-        smallNum: 0.425,
-        falsey: false,
-        truthy: true,
-      },
-      children: 'some div',
-    };
-    const testJSONX = Object.assign({}, sampleJSONX, {
-      comparisonprops: [{
-        left: ['truthy',],
-        operation:'==',
-        right:['falsey',],
-      }],
-    });
-    displayComponent({ jsonx: testJSONX, props: testJSONX2.props, }) // => false
-     */
-    function displayComponent(options = {}) {
-      const { jsonx = {}, props, } = options;
-      const propsToCompare = jsonx.comparisonprops;
-      const comparisons = Array.isArray(propsToCompare) ? propsToCompare.map(comp => {
-        const compares = {};
-        if (Array.isArray(comp.left)) {
-          compares.left = comp.left;
-        }
-        if (Array.isArray(comp.right)) {
-          compares.right = comp.right;
-        }
-        const propcompares = traverse(compares, props||jsonx.props);
-        const opscompares = Object.assign({}, comp, propcompares);
-        // console.debug({ opscompares, compares, renderedCompProps });
-        switch (opscompares.operation) {
-        case 'eq':
-        case '==':
-          // return opscompares.left == opscompares.right;
-          // eslint-disable-next-line
-          return opscompares.left == opscompares.right;
-        case 'dneq':
-        case '!=':
-        case '!':
-          // return opscompares.left != opscompares.right;
-          return opscompares.left !== opscompares.right;
-        case 'dnseq':
-        case '!==':
-          return opscompares.left !== opscompares.right;
-        case 'seq':
-        case '===':
-          return opscompares.left === opscompares.right;
-        case 'lt':
-        case '<':
-          return opscompares.left < opscompares.right;
-        case 'lte':
-        case '<=':
-          return opscompares.left <= opscompares.right;
-        case 'gt':
-        case '>':
-          return opscompares.left > opscompares.right;
-        case 'gte':
-        case '>=':
-          return opscompares.left >= opscompares.right;
-        case 'dne':
-        case 'undefined':
-        case 'null':
-          return opscompares.left === undefined || opscompares.left === null; 
-        case '!null':
-        case '!undefined':
-        case 'exists':
-        default://'exists'
-          return opscompares.left !== undefined && opscompares.left !== null;
-        }
-        // }
-        // if (opscompares.operation === 'eq') {
-        //   // return opscompares.left == opscompares.right;
-        //   // eslint-disable-next-line
-        //   return opscompares.left == opscompares.right;
-        // } else if (opscompares.operation === 'dneq') {
-        //   // return opscompares.left != opscompares.right;
-        //   return opscompares.left !== opscompares.right;
-        // } else if (opscompares.operation === 'dnseq') {
-        //   return opscompares.left !== opscompares.right;
-        // } else if (opscompares.operation === 'seq') {
-        //   return opscompares.left === opscompares.right;
-        // } else if (opscompares.operation === 'lt') {
-        //   return opscompares.left < opscompares.right;
-        // } else if (opscompares.operation === 'lte') {
-        //   return opscompares.left <= opscompares.right;
-        // } else if (opscompares.operation === 'gt') {
-        //   return opscompares.left > opscompares.right;
-        // } else if (opscompares.operation === 'gte') {
-        //   return opscompares.left >= opscompares.right;
-        // } else if (opscompares.operation === 'dne') {
-        //   return opscompares.left === undefined || opscompares.left === null;
-        // } else { //'exists'
-        //   return opscompares.left !== undefined && opscompares.left !== null;
-        // }
-      }) : [];
-      const validProps = comparisons.filter(comp => comp === true);
-      if (!jsonx.comparisonprops) {
-        return true;
-      } else if (jsonx.comparisonorprops && validProps.length < 1) {
-        return false;
-      } else if (validProps.length !== comparisons.length && !jsonx.comparisonorprops) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-
-    /**
-     * Use to test if can bind components this context for react-redux-router 
-     * @returns {Boolean} true if browser is not IE or old android / chrome
-     */
-    function getAdvancedBinding() {
-      
-      if (typeof window === 'undefined') {
-        var window = (this && this.window)
-          ? this.window
-          : (typeof global$2!=="undefined" ? global$2 : window).window || {};
-        if (!window.navigator) return false;
-      }
-      try {
-        if (window && window.navigator && window.navigator.userAgent && typeof window.navigator.userAgent === 'string') {
-          // console.log('window.navigator.userAgent',window.navigator.userAgent)
-          if(window.navigator.userAgent.indexOf('Trident') !== -1) {
-            return false;
-          }
-          const uastring = window.navigator.userAgent;
-          const parser = new uaParser();
-          parser.setUA(uastring);
-          const parseUserAgent = parser.getResult();
-          // console.log({ parseUserAgent, });
-          if ((parseUserAgent.browser.name === 'Chrome' || parseUserAgent.browser.name === 'Chrome WebView' ) && parseUserAgent.os.name === 'Android' && parseInt(parseUserAgent.browser.version, 10) < 50) {
-            return false;
-          }
-          if (parseUserAgent.browser.name === 'Android Browser') {
-            return false;
-          }
-        }
-      } catch (e) {
-        console.error(e);
-        // console.warn('could not detect browser support', e);
-        return false;
-      }
-      return true;
-    }
-
-    /**
-     * take an object of array paths to traverse and resolve
-     * @example
-     * const testObj = {
-          user: {
-            name: 'jsonx',
-            description: 'react withouth javascript',
-          },
-          stats: {
-            logins: 102,
-            comments: 3,
-          },
-          authentication: 'OAuth2',
-        };
-    const testVals = { auth: ['authentication', ], username: ['user', 'name', ], };
-
-     traverse(testVals, testObj) // =>{ auth:'OAuth2', username:'jsonx',  }
-     * @param {Object} paths - an object to resolve array property paths 
-     * @param {Object} data - object to traverse
-     * @returns {Object} resolved object with traversed properties
-     * @throws {TypeError} 
-     */
-    function traverse(paths = {}, data = {}) {
-      let keys = Object.keys(paths);
-      if (!keys.length) return paths;
-      return keys.reduce((result, key) => {
-        if (typeof paths[key] === 'string') result[key] = data[paths[key]];
-        else if (Array.isArray(paths[key])) {
-          let _path = Object.assign([], paths[key]);
-          let value = data;
-          while (_path.length && value && typeof value === 'object') {
-            let prop = _path.shift();
-            value = value[prop];
-          }
-          result[key] = (_path.length) ? undefined : value;
-        } else throw new TypeError('dynamic property paths must be a string or an array of strings or numeric indexes');
-        return result;
-      }, {});
-    }
-
-    /**
-     * Validates JSONX JSON Syntax
-     * @example
-     * validateJSONX({component:'p',children:'hello world'})=>true
-     * validateJSONX({children:'hello world'})=>throw SyntaxError('[0001] Missing React Component')
-     * @param {Object} jsonx - JSONX JSON to validate 
-     * @param {Boolean} [returnAllErrors=false] - flag to either throw error or to return all errors in an array of errors
-     * @returns {Boolean|Error[]} either returns true if JSONX is valid, or throws validation error or returns list of errors in array
-     * @throws {SyntaxError|TypeError|ReferenceError}
-     */
-    function validateJSONX(jsonx = {}, returnAllErrors = false) {
-      const dynamicPropsNames = ['asyncprops', 'resourceprops', 'windowprops', 'thisprops', 'thisstate',];
-      const evalPropNames = ['__dangerouslyEvalProps', '__dangerouslyBindEvalProps',];
-      const validKeys = ['component', 'props', 'children', '__spreadComponent', '__inline','__functionargs', '__dangerouslyInsertComponents', '__dangerouslyInsertComponentProps', '__dangerouslyInsertJSONXComponents', '__functionProps', '__functionparams', '__windowComponents', '__windowComponentProps', 'comparisonprops', 'comparisonorprops', 'passprops', 'debug' ].concat(dynamicPropsNames, evalPropNames);
-      let errors = [];
-      if (!jsonx.component) {
-        errors.push(SyntaxError('[0001] Missing React Component'));
-      }
-      if (jsonx.props) {
-        if (typeof jsonx.props !== 'object' || Array.isArray(jsonx.props)) {
-          errors.push(TypeError('[0002] '+jsonx.component+': props must be an Object / valid React props'));
-        }
-        if (jsonx.props.children && (typeof jsonx.props.children !== 'string' || !Array.isArray(jsonx.props.children))) {
-          errors.push(TypeError('[0003] '+jsonx.component+': props.children must be an array of JSONX JSON objects or a string'));
-        }
-        if (jsonx.props._children && (typeof jsonx.props._children !== 'string' || !Array.isArray(jsonx.props._children))) {
-          errors.push(TypeError('[0004] '+jsonx.component+': props._children must be an array of JSONX JSON objects or a string'));
-        }
-      }
-      if (jsonx.children) {
-        if (typeof jsonx.children !== 'string' && !Array.isArray(jsonx.children)) {
-          errors.push(TypeError('[0005] '+jsonx.component+': children must be an array of JSONX JSON objects or a string'));
-        }
-        if (Array.isArray(jsonx.children)) {
-          const childrenErrors = jsonx.children
-            .filter(c => typeof c === 'object')
-            .map(c => validateJSONX(c, returnAllErrors));
-          errors = errors.concat(...childrenErrors);
-        }
-      }
-      dynamicPropsNames.forEach(dynamicprop => {
-        const jsonxDynamicProps = jsonx[ dynamicprop ];
-        if (jsonxDynamicProps) {
-          // if (dynamicprop === 'thisprops') {
-          //   console.log({ dynamicprop, jsonxDynamicProps });
-          // }
-          if (typeof jsonxDynamicProps !== 'object') {
-            errors.push(TypeError(`[0006] ${dynamicprop} must be an object`));
-          }
-          Object.keys(jsonxDynamicProps).forEach(resolvedDynamicProp => {
-            if (!Array.isArray(jsonxDynamicProps[ resolvedDynamicProp ])) {
-              errors.push(TypeError(`[0007] jsonx.${dynamicprop}.${resolvedDynamicProp} must be an array of strings`));
-            }
-            if (Array.isArray(jsonxDynamicProps[resolvedDynamicProp])) {
-              const allStringArray = jsonxDynamicProps[resolvedDynamicProp].filter(propArrayItem => typeof propArrayItem === 'string');
-              
-              if (allStringArray.length !== jsonxDynamicProps[ resolvedDynamicProp ].length) {
-                errors.push(TypeError(`[0008] jsonx.${dynamicprop}.${resolvedDynamicProp} must be an array of strings`));
-              }
-            }
-          });
-        }
-      });
-      const evalProps = jsonx.__dangerouslyEvalProps;
-      const boundEvalProps = jsonx.__dangerouslyBindEvalProps;
-      if (evalProps || boundEvalProps) {
-        if ((evalProps && typeof evalProps !== 'object') || (boundEvalProps && typeof boundEvalProps !== 'object')) {
-          errors.push(TypeError('[0009] __dangerouslyEvalProps must be an object of strings to convert to valid javascript'));
-        }
-        evalPropNames
-          .filter(evalProp => jsonx[ evalProp ])
-          .forEach(eProps => {
-            const evProp = jsonx[ eProps ];
-            const scopedEval = eval; 
-            Object.keys(evProp).forEach(propToEval => {
-              if (typeof evProp[ propToEval ] !== 'string') {
-                errors.push(TypeError(`[0010] jsonx.${eProps}.${evProp} must be a string`));
-              }
-              try {
-                // console.log({ eProps });
-                if (eProps === '__dangerouslyBindEvalProps') {
-                  const funcToBind = scopedEval(`(${evProp[ propToEval ]})`);
-                  funcToBind.call({ bounded: true, });
-                } else {
-                  scopedEval(evProp[ propToEval ]);
-                }
-              } catch (e) {
-                errors.push(e);
-              }
-            });
-          });
-      }
-      if (jsonx.__dangerouslyInsertComponents) {
-        Object.keys(jsonx.__dangerouslyInsertComponents).forEach(insertedComponents => {
-          try {
-            validateJSONX(jsonx.__dangerouslyInsertComponents[ insertedComponents ]);
-          } catch (e) {
-            errors.push(TypeError(`[0011] jsonx.__dangerouslyInsertComponents.${insertedComponents} must be a valid JSONX JSON Object: ${e.toString()}`));
-          }
-        });
-      }
-      if (jsonx.__functionProps) {
-        if (typeof jsonx.__functionProps !== 'object') {
-          errors.push(TypeError('[0012] jsonx.__functionProps  must be an object'));
-        } else {
-          
-          Object.keys(jsonx.__functionProps)
-            .forEach(fProp => {
-              if (jsonx.__functionProps[fProp] &&( typeof jsonx.__functionProps[fProp] !=='string' || jsonx.__functionProps[fProp].indexOf('func:') === -1)) {
-                errors.push(ReferenceError(`[0013] jsonx.__functionProps.${fProp} must reference a function (i.e. func:this.props.logoutUser())`));
-              }
-            });
-        }
-      }
-      if (jsonx.__windowComponentProps && (typeof jsonx.__windowComponentProps !=='object' || Array.isArray(jsonx.__windowComponentProps))) {
-        errors.push(TypeError('[0013] jsonx.__windowComponentProps  must be an object'));
-      }
-      if (jsonx.__windowComponents) {
-        if (typeof jsonx.__windowComponents !== 'object') {
-          errors.push(TypeError('[0014] jsonx.__windowComponents must be an object'));
-        }
-        Object.keys(jsonx.__windowComponents)
-          .forEach(cProp => {
-            if (typeof jsonx.__windowComponents[cProp]!=='string'||jsonx.__windowComponents[cProp].indexOf('func:') === -1) {
-              errors.push(ReferenceError(`[0015] jsonx.__windowComponents.${cProp} must reference a window element on window.__jsonx_custom_elements (i.e. func:window.__jsonx_custom_elements.bootstrapModal)`));
-            }
-          });
-      }
-      if (typeof jsonx.comparisonorprops !== 'undefined' && typeof jsonx.comparisonorprops !== 'boolean') {
-        errors.push(TypeError('[0016] jsonx.comparisonorprops  must be boolean'));
-      }
-      if (jsonx.comparisonprops) {
-        if(!Array.isArray(jsonx.comparisonprops)) {
-          errors.push(TypeError('[0017] jsonx.comparisonprops  must be an array or comparisons'));
-        } else {
-          jsonx.comparisonprops.forEach(c => {
-            if (typeof c !== 'object') {
-              errors.push(TypeError('[0018] jsonx.comparisonprops  must be an array or comparisons objects'));
-            } else if(typeof c.left==='undefined') {
-              errors.push(TypeError('[0019] jsonx.comparisonprops  must be have a left comparison value'));
-            }
-          });
-        }
-      }
-      if (typeof jsonx.passprops !== 'undefined' && typeof jsonx.passprops !== 'boolean') {
-        errors.push(TypeError('[0020] jsonx.passprops  must be boolean'));
-      }
-      const invalidKeys = Object.keys(jsonx).filter(key => validKeys.indexOf(key) === -1);
-      if (errors.length) {
-        if (returnAllErrors) return errors;
-        throw errors[ 0 ];
-      }
-      return invalidKeys.length
-        ? `Warning: Invalid Keys [${invalidKeys.join()}]`
-        : true;
-    }
-
-    /**
-     * validates simple JSONX Syntax {[component]:{props,children}}
-     * @param {Object} simpleJSONX - Any valid simple JSONX Syntax
-     * @return {Boolean} returns true if simpleJSONX is valid
-     */
-    function validSimpleJSONXSyntax(simpleJSONX = {}) {
-      if (Object.keys(simpleJSONX).length !== 1 && !simpleJSONX.component) {
-        return false;
-      } else {
-        const componentName = Object.keys(simpleJSONX)[ 0 ];
-        return (Object.keys(simpleJSONX).length === 1  && !simpleJSONX[componentName].component && typeof simpleJSONX[componentName]==='object')
-          ? true
-          : false; 
-      }
-    }
-
-    /**
-     * Transforms SimpleJSONX to Valid JSONX JSON {[component]:{props,children}} => {component,props,children}
-     * @param {Object} simpleJSONX JSON Object 
-     * @return {Object} - returns a valid JSONX JSON Object from a simple JSONX JSON Object
-     */
-    function simpleJSONXSyntax(simpleJSONX = {}) {
-      const component = Object.keys(simpleJSONX)[ 0 ];
-      try {
-        return Object.assign({},
-          {
-            component,
-          },
-          simpleJSONX[ component ], {
-            children: (simpleJSONX[ component ].children && Array.isArray(simpleJSONX[ component ].children))
-              ? simpleJSONX[ component ].children
-                .map(simpleJSONXSyntax)
-              : simpleJSONX[ component ].children,
-          });
-      } catch (e) {
-        throw SyntaxError('Invalid Simple JSONX Syntax', e);
-      }   
-    }
-
-    /**
-     * Transforms Valid JSONX JSON to SimpleJSONX  {component,props,children} => {[component]:{props,children}}
-     * @param {Object} jsonx Valid JSONX JSON object 
-     * @return {Object} - returns a simple JSONX JSON Object from a valid JSONX JSON Object 
-     */
-    function getSimplifiedJSONX(jsonx = {}) {
-      try {
-        if (!jsonx.component) return jsonx; //already simple
-        const componentName = jsonx.component;
-        jsonx.children = (Array.isArray(jsonx.children))
-          ? jsonx.children
-            .filter(child => child)//remove empty children
-            .map(getSimplifiedJSONX) 
-          : jsonx.children;
-        delete jsonx.component;
-        return {
-          [ componentName ]: jsonx,
-        };
-      } catch (e) {
-        throw e;
-      }
-    }
-
-    /**
-     * Fetches JSON from remote path
-     * @param {String} path - fetch path url
-     * @param {Object} options - fetch options
-     * @return {Object} - returns fetched JSON data
-     */
-    async function fetchJSON(path='', options={}) {
-      try {
-        const response = await fetch(path, options);
-        return await response.json();
-      } catch (e) {
-        throw e;
-      }
-    }
-
-    var jsonxUtils = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        displayComponent: displayComponent,
-        getAdvancedBinding: getAdvancedBinding,
-        traverse: traverse,
-        validateJSONX: validateJSONX,
-        validSimpleJSONXSyntax: validSimpleJSONXSyntax,
-        simpleJSONXSyntax: simpleJSONXSyntax,
-        getSimplifiedJSONX: getSimplifiedJSONX,
-        fetchJSON: fetchJSON
-    });
-
-    /**
      * Copyright (c) 2013-present, Facebook, Inc.
      *
      * This source code is licensed under the MIT license found in the
@@ -44270,70 +43584,545 @@ var VXA = (function (exports) {
       ReactNoopUpdateQueue
     );
 
+    var global$1$1 = typeof global$1$1 !== 'undefined'
+        ? global$1$1
+        : typeof globalThis !== 'undefined'
+            ? globalThis
+            : {};
+    /**
+     * Used to evaluate whether or not to render a component
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} options.props - Props to test comparison values against, usually Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
+     * @returns {Boolean} returns true if all comparisons are true or if using or comparisons, at least one condition is true
+     * @example
+     const sampleJSONX = {
+      component: 'div',
+      props: {
+        id: 'generatedJSONX',
+        className: 'jsonx',
+        bigNum: 1430931039,
+        smallNum: 0.425,
+        falsey: false,
+        truthy: true,
+      },
+      children: 'some div',
+    };
+    const testJSONX = Object.assign({}, sampleJSONX, {
+      comparisonprops: [{
+        left: ['truthy',],
+        operation:'==',
+        right:['falsey',],
+      }],
+    });
+    displayComponent({ jsonx: testJSONX, props: testJSONX2.props, }) // => false
+     */
+    function displayComponent(options = {}) {
+        const { jsonx = {}, props, } = options;
+        const propsToCompare = jsonx.comparisonprops;
+        const comparisons = Array.isArray(propsToCompare) ? propsToCompare.map(comp => {
+            const compares = {};
+            if (Array.isArray(comp.left)) {
+                compares.left = comp.left;
+            }
+            if (Array.isArray(comp.right)) {
+                compares.right = comp.right;
+            }
+            const propcompares = traverse(compares, props || jsonx.props);
+            const opscompares = Object.assign({}, comp, propcompares);
+            // console.debug({ opscompares, compares, renderedCompProps });
+            switch (opscompares.operation) {
+                case 'eq':
+                case '==':
+                    // return opscompares.left == opscompares.right;
+                    // eslint-disable-next-line
+                    return opscompares.left == opscompares.right;
+                case 'dneq':
+                case '!=':
+                case '!':
+                    // return opscompares.left != opscompares.right;
+                    return opscompares.left !== opscompares.right;
+                case 'dnseq':
+                case '!==':
+                    return opscompares.left !== opscompares.right;
+                case 'seq':
+                case '===':
+                    return opscompares.left === opscompares.right;
+                case 'lt':
+                case '<':
+                    return opscompares.left < opscompares.right;
+                case 'lte':
+                case '<=':
+                    return opscompares.left <= opscompares.right;
+                case 'gt':
+                case '>':
+                    return opscompares.left > opscompares.right;
+                case 'gte':
+                case '>=':
+                    return opscompares.left >= opscompares.right;
+                case 'dne':
+                case 'undefined':
+                case 'null':
+                    return opscompares.left === undefined || opscompares.left === null;
+                case '!null':
+                case '!undefined':
+                case 'exists':
+                default: //'exists'
+                    return opscompares.left !== undefined && opscompares.left !== null;
+            }
+            // }
+            // if (opscompares.operation === 'eq') {
+            //   // return opscompares.left == opscompares.right;
+            //   // eslint-disable-next-line
+            //   return opscompares.left == opscompares.right;
+            // } else if (opscompares.operation === 'dneq') {
+            //   // return opscompares.left != opscompares.right;
+            //   return opscompares.left !== opscompares.right;
+            // } else if (opscompares.operation === 'dnseq') {
+            //   return opscompares.left !== opscompares.right;
+            // } else if (opscompares.operation === 'seq') {
+            //   return opscompares.left === opscompares.right;
+            // } else if (opscompares.operation === 'lt') {
+            //   return opscompares.left < opscompares.right;
+            // } else if (opscompares.operation === 'lte') {
+            //   return opscompares.left <= opscompares.right;
+            // } else if (opscompares.operation === 'gt') {
+            //   return opscompares.left > opscompares.right;
+            // } else if (opscompares.operation === 'gte') {
+            //   return opscompares.left >= opscompares.right;
+            // } else if (opscompares.operation === 'dne') {
+            //   return opscompares.left === undefined || opscompares.left === null;
+            // } else { //'exists'
+            //   return opscompares.left !== undefined && opscompares.left !== null;
+            // }
+        }) : [];
+        const validProps = comparisons.filter(comp => comp === true);
+        if (!jsonx.comparisonprops) {
+            return true;
+        }
+        else if (jsonx.comparisonorprops && validProps.length < 1) {
+            return false;
+        }
+        else if (validProps.length !== comparisons.length && !jsonx.comparisonorprops) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    /**
+     * Use to test if can bind components this context for react-redux-router
+     * @returns {Boolean} true if browser is not IE or old android / chrome
+     */
+    function getAdvancedBinding() {
+        var window = window;
+        if (typeof window === 'undefined') {
+            if (this && this.window) {
+                window = this.window;
+            }
+            else if (typeof global$1$1 !== 'undefined' && global$1$1.window) {
+                window = global$1$1.window;
+            }
+            else if (typeof globalThis !== 'undefined' && globalThis.window) {
+                window = globalThis.window;
+            }
+            if (!window.navigator)
+                return false;
+        }
+        try {
+            if (window && window.navigator && window.navigator.userAgent && typeof window.navigator.userAgent === 'string') {
+                // console.log('window.navigator.userAgent',window.navigator.userAgent)
+                if (window.navigator.userAgent.indexOf('Trident') !== -1) {
+                    return false;
+                }
+                const uastring = window.navigator.userAgent;
+                //@ts-ignore
+                const parser = new uaParser();
+                parser.setUA(uastring);
+                const parseUserAgent = parser.getResult();
+                // console.log({ parseUserAgent, });
+                if ((parseUserAgent.browser.name === 'Chrome' || parseUserAgent.browser.name === 'Chrome WebView') && parseUserAgent.os.name === 'Android' && parseInt(parseUserAgent.browser.version, 10) < 50) {
+                    return false;
+                }
+                if (parseUserAgent.browser.name === 'Android Browser') {
+                    return false;
+                }
+            }
+        }
+        catch (e) {
+            console.error(e);
+            // console.warn('could not detect browser support', e);
+            return false;
+        }
+        return true;
+    }
+    /**
+     * take an object of array paths to traverse and resolve
+     * @example
+     * const testObj = {
+          user: {
+            name: 'jsonx',
+            description: 'react withouth javascript',
+          },
+          stats: {
+            logins: 102,
+            comments: 3,
+          },
+          authentication: 'OAuth2',
+        };
+    const testVals = { auth: ['authentication', ], username: ['user', 'name', ], };
+
+     traverse(testVals, testObj) // =>{ auth:'OAuth2', username:'jsonx',  }
+     * @param {Object} paths - an object to resolve array property paths
+     * @param {Object} data - object to traverse
+     * @returns {Object} resolved object with traversed properties
+     * @throws {TypeError}
+     */
+    function traverse(paths = {}, data = {}) {
+        let keys = Object.keys(paths);
+        if (!keys.length)
+            return paths;
+        return keys.reduce((result, key) => {
+            //@ts-ignore
+            if (typeof paths[key] === 'string')
+                result[key] = data[paths[key]];
+            else if (Array.isArray(paths[key])) {
+                let _path = Object.assign([], paths[key]);
+                let value = data;
+                while (_path.length && value && typeof value === 'object') {
+                    let prop = _path.shift();
+                    //@ts-ignore
+                    value = value[prop];
+                }
+                result[key] = (_path.length) ? undefined : value;
+            }
+            else
+                throw new TypeError('dynamic property paths must be a string or an array of strings or numeric indexes');
+            return result;
+        }, {});
+    }
+    /**
+     * Validates JSONX JSON Syntax
+     * @example
+     * validateJSONX({component:'p',children:'hello world'})=>true
+     * validateJSONX({children:'hello world'})=>throw SyntaxError('[0001] Missing React Component')
+     * @param {Object} jsonx - JSONX JSON to validate
+     * @param {Boolean} [returnAllErrors=false] - flag to either throw error or to return all errors in an array of errors
+     * @returns {Boolean|Error[]} either returns true if JSONX is valid, or throws validation error or returns list of errors in array
+     * @throws {SyntaxError|TypeError|ReferenceError}
+     */
+    function validateJSONX(jsonx = {}, returnAllErrors = false) {
+        const dynamicPropsNames = ['asyncprops', 'resourceprops', 'windowprops', 'thisprops', 'thisstate', 'thiscontext',];
+        const evalPropNames = ['__dangerouslyEvalProps', '__dangerouslyBindEvalProps',];
+        const validKeys = ['component', 'props', 'children', '__spreadComponent', '__inline', '__functionargs', '__dangerouslyInsertComponents', '__dangerouslyInsertComponentProps', '__dangerouslyInsertJSONXComponents', '__functionProps', '__functionparams', '__windowComponents', '__windowComponentProps', 'comparisonprops', 'comparisonorprops', 'passprops', 'exposeprops', 'debug'].concat(dynamicPropsNames, evalPropNames);
+        let errors = [];
+        if (!jsonx.component) {
+            errors.push(SyntaxError('[0001] Missing React Component'));
+        }
+        if (jsonx.props) {
+            if (typeof jsonx.props !== 'object' || Array.isArray(jsonx.props)) {
+                errors.push(TypeError('[0002] ' + jsonx.component + ': props must be an Object / valid React props'));
+            }
+            if (jsonx.props.children && (typeof jsonx.props.children !== 'string' || !Array.isArray(jsonx.props.children))) {
+                errors.push(TypeError('[0003] ' + jsonx.component + ': props.children must be an array of JSONX JSON objects or a string'));
+            }
+            if (jsonx.props._children && (typeof jsonx.props._children !== 'string' || !Array.isArray(jsonx.props._children))) {
+                errors.push(TypeError('[0004] ' + jsonx.component + ': props._children must be an array of JSONX JSON objects or a string'));
+            }
+        }
+        if (jsonx.children) {
+            if (typeof jsonx.children !== 'string' && !Array.isArray(jsonx.children)) {
+                errors.push(TypeError('[0005] ' + jsonx.component + ': children must be an array of JSONX JSON objects or a string'));
+            }
+            if (Array.isArray(jsonx.children)) {
+                const childrenErrors = jsonx.children
+                    .filter(c => typeof c === 'object')
+                    .map(c => validateJSONX(c, returnAllErrors));
+                errors = errors.concat(...childrenErrors);
+            }
+        }
+        dynamicPropsNames.forEach((dynamicprop) => {
+            const jsonxDynamicProps = jsonx[dynamicprop];
+            if (jsonxDynamicProps) {
+                // if (dynamicprop === 'thisprops') {
+                //   console.log({ dynamicprop, jsonxDynamicProps });
+                // }
+                if (typeof jsonxDynamicProps !== 'object') {
+                    errors.push(TypeError(`[0006] ${dynamicprop} must be an object`));
+                }
+                Object.keys(jsonxDynamicProps).forEach(resolvedDynamicProp => {
+                    if (!Array.isArray(jsonxDynamicProps[resolvedDynamicProp])) {
+                        errors.push(TypeError(`[0007] jsonx.${dynamicprop}.${resolvedDynamicProp} must be an array of strings`));
+                    }
+                    if (Array.isArray(jsonxDynamicProps[resolvedDynamicProp])) {
+                        //@ts-ignore
+                        const allStringArray = jsonxDynamicProps[resolvedDynamicProp].filter(propArrayItem => typeof propArrayItem === 'string');
+                        if (allStringArray.length !== jsonxDynamicProps[resolvedDynamicProp].length) {
+                            errors.push(TypeError(`[0008] jsonx.${dynamicprop}.${resolvedDynamicProp} must be an array of strings`));
+                        }
+                    }
+                });
+            }
+        });
+        const evalProps = jsonx.__dangerouslyEvalProps;
+        const boundEvalProps = jsonx.__dangerouslyBindEvalProps;
+        if (evalProps || boundEvalProps) {
+            if ((evalProps && typeof evalProps !== 'object') || (boundEvalProps && typeof boundEvalProps !== 'object')) {
+                errors.push(TypeError('[0009] __dangerouslyEvalProps must be an object of strings to convert to valid javascript'));
+            }
+            evalPropNames
+                .filter(evalProp => jsonx[evalProp])
+                .forEach(eProps => {
+                const evProp = jsonx[eProps];
+                const scopedEval = eval;
+                Object.keys(evProp).forEach(propToEval => {
+                    if (typeof evProp[propToEval] !== 'string') {
+                        errors.push(TypeError(`[0010] jsonx.${eProps}.${evProp} must be a string`));
+                    }
+                    try {
+                        // console.log({ eProps });
+                        if (eProps === '__dangerouslyBindEvalProps') {
+                            const funcToBind = scopedEval(`(${evProp[propToEval]})`);
+                            funcToBind.call({ bounded: true, });
+                        }
+                        else {
+                            scopedEval(evProp[propToEval]);
+                        }
+                    }
+                    catch (e) {
+                        errors.push(e);
+                    }
+                });
+            });
+        }
+        if (jsonx.__dangerouslyInsertComponents) {
+            Object.keys(jsonx.__dangerouslyInsertComponents).forEach(insertedComponents => {
+                try {
+                    if (jsonx.__dangerouslyInsertComponents)
+                        validateJSONX(jsonx.__dangerouslyInsertComponents[insertedComponents]);
+                }
+                catch (e) {
+                    errors.push(TypeError(`[0011] jsonx.__dangerouslyInsertComponents.${insertedComponents} must be a valid JSONX JSON Object: ${e.toString()}`));
+                }
+            });
+        }
+        if (jsonx.__functionProps) {
+            if (typeof jsonx.__functionProps !== 'object') {
+                errors.push(TypeError('[0012] jsonx.__functionProps  must be an object'));
+            }
+            else {
+                Object.keys(jsonx.__functionProps)
+                    .forEach(fProp => {
+                    if (jsonx.__functionProps && jsonx.__functionProps[fProp] && (typeof jsonx.__functionProps[fProp] !== 'string' || jsonx.__functionProps[fProp].indexOf('func:') === -1)) {
+                        errors.push(ReferenceError(`[0013] jsonx.__functionProps.${fProp} must reference a function (i.e. func:this.props.logoutUser())`));
+                    }
+                });
+            }
+        }
+        if (jsonx.__windowComponentProps && (typeof jsonx.__windowComponentProps !== 'object' || Array.isArray(jsonx.__windowComponentProps))) {
+            errors.push(TypeError('[0013] jsonx.__windowComponentProps  must be an object'));
+        }
+        if (jsonx.__windowComponents) {
+            if (typeof jsonx.__windowComponents !== 'object') {
+                errors.push(TypeError('[0014] jsonx.__windowComponents must be an object'));
+            }
+            Object.keys(jsonx.__windowComponents)
+                .forEach(cProp => {
+                if (typeof jsonx.__windowComponents[cProp] !== 'string' || jsonx.__windowComponents[cProp].indexOf('func:') === -1) {
+                    errors.push(ReferenceError(`[0015] jsonx.__windowComponents.${cProp} must reference a window element on window.__jsonx_custom_elements (i.e. func:window.__jsonx_custom_elements.bootstrapModal)`));
+                }
+            });
+        }
+        if (typeof jsonx.comparisonorprops !== 'undefined' && typeof jsonx.comparisonorprops !== 'boolean') {
+            errors.push(TypeError('[0016] jsonx.comparisonorprops  must be boolean'));
+        }
+        if (jsonx.comparisonprops) {
+            if (!Array.isArray(jsonx.comparisonprops)) {
+                errors.push(TypeError('[0017] jsonx.comparisonprops  must be an array or comparisons'));
+            }
+            else {
+                jsonx.comparisonprops.forEach(c => {
+                    if (typeof c !== 'object') {
+                        errors.push(TypeError('[0018] jsonx.comparisonprops  must be an array or comparisons objects'));
+                    }
+                    else if (typeof c.left === 'undefined') {
+                        errors.push(TypeError('[0019] jsonx.comparisonprops  must be have a left comparison value'));
+                    }
+                });
+            }
+        }
+        if (typeof jsonx.passprops !== 'undefined' && typeof jsonx.passprops !== 'boolean') {
+            errors.push(TypeError('[0020] jsonx.passprops  must be boolean'));
+        }
+        const invalidKeys = Object.keys(jsonx).filter(key => validKeys.indexOf(key) === -1);
+        if (errors.length) {
+            if (returnAllErrors)
+                return errors;
+            throw errors[0];
+        }
+        return invalidKeys.length
+            ? `Warning: Invalid Keys [${invalidKeys.join()}]`
+            : true;
+    }
+    /**
+     * validates simple JSONX Syntax {[component]:{props,children}}
+     * @param {Object} simpleJSONX - Any valid simple JSONX Syntax
+     * @return {Boolean} returns true if simpleJSONX is valid
+     */
+    function validSimpleJSONXSyntax(simpleJSONX = {}) {
+        if (Object.keys(simpleJSONX).length !== 1 && !simpleJSONX.component) {
+            return false;
+        }
+        else {
+            const componentName = Object.keys(simpleJSONX)[0];
+            return (Object.keys(simpleJSONX).length === 1 && !simpleJSONX[componentName].component && typeof simpleJSONX[componentName] === 'object')
+                ? true
+                : false;
+        }
+    }
+    /**
+     * Transforms SimpleJSONX to Valid JSONX JSON {[component]:{props,children}} => {component,props,children}
+     * @param {Object} simpleJSONX JSON Object
+     * @return {Object} - returns a valid JSONX JSON Object from a simple JSONX JSON Object
+     */
+    function simpleJSONXSyntax(simpleJSONX = {}) {
+        const component = Object.keys(simpleJSONX)[0];
+        try {
+            return Object.assign({}, {
+                component,
+            }, simpleJSONX[component], {
+                children: (simpleJSONX[component] &&
+                    simpleJSONX[component].children &&
+                    Array.isArray(simpleJSONX[component].children))
+                    //@ts-ignore  
+                    ? simpleJSONX[component].children
+                        //@ts-ignore  
+                        .map(simpleJSONXSyntax)
+                    : simpleJSONX[component].children,
+            });
+        }
+        catch (e) {
+            throw SyntaxError('Invalid Simple JSONX Syntax');
+        }
+    }
+    /**
+     * Transforms Valid JSONX JSON to SimpleJSONX  {component,props,children} => {[component]:{props,children}}
+     * @param {Object} jsonx Valid JSONX JSON object
+     * @return {Object} - returns a simple JSONX JSON Object from a valid JSONX JSON Object
+     */
+    function getSimplifiedJSONX(jsonx = {}) {
+        try {
+            if (!jsonx.component)
+                return jsonx; //already simple
+            const componentName = jsonx.component;
+            jsonx.children = (Array.isArray(jsonx.children))
+                ? jsonx.children
+                    .filter(child => child) //remove empty children
+                    .map(getSimplifiedJSONX)
+                : jsonx.children;
+            delete jsonx.component;
+            return {
+                [componentName]: jsonx,
+            };
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+    /**
+     * Fetches JSON from remote path
+     * @param {String} path - fetch path url
+     * @param {Object} options - fetch options
+     * @return {Object} - returns fetched JSON data
+     */
+    async function fetchJSON(path = '', options = {}) {
+        try {
+            const response = await fetch(path, options);
+            return await response.json();
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+
+    var jsonxUtils = /*#__PURE__*/Object.freeze({
+      displayComponent: displayComponent,
+      getAdvancedBinding: getAdvancedBinding,
+      traverse: traverse,
+      validateJSONX: validateJSONX,
+      validSimpleJSONXSyntax: validSimpleJSONXSyntax,
+      simpleJSONXSyntax: simpleJSONXSyntax,
+      getSimplifiedJSONX: getSimplifiedJSONX,
+      fetchJSON: fetchJSON
+    });
+
     const cache$2 = new Cache_1();
     // if (typeof window === 'undefined') {
     //   var window = window || (typeof global!=="undefined" ? global : window).window || {};
     // }
     /**
-     * @memberOf components
+     
      */
+    //@ts-ignore
     let advancedBinding = getAdvancedBinding();
     // require;
     /**
      * object of all react components available for JSONX
-     * @memberOf components
+     
      */
-    let componentMap = Object.assign({ Fragment: react_5, Suspense: react_6, }, reactDomFactories, (typeof window ==='object') ? window.__jsonx_custom_elements : {});
-
+    //@ts-ignore
+    let componentMap = Object.assign({ Fragment: react_5, Suspense: react_6, }, reactDomFactories, (typeof window === 'object') ? window.__jsonx_custom_elements : {});
     /**
-     * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list 
-     * @memberOf components
-     * @param {Object} options - options for getBoundedComponents 
+     * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
+     
+     * @param {Object} options - options for getBoundedComponents
      * @param {Object} options.reactComponents - all react components available for JSONX
      * @param {string[]} boundedComponents - list of components to bind JSONX this context (usually helpful for navigation and redux-router)
      * @returns {Object} reactComponents object of all react components available for JSONX
      */
     function getBoundedComponents(options = {}) {
-      const { reactComponents, boundedComponents=[], } = options;
-      if (advancedBinding || options.advancedBinding) {
-        return Object.assign({}, reactComponents, boundedComponents.reduce((result, componentName) => {
-          result[ componentName ] = reactComponents[ componentName ].bind(this);
-          return result;
-        }, {}));
-        // reactComponents.ResponsiveLink = ResponsiveLink.bind(this);
-      } else return reactComponents;
+        const { reactComponents, boundedComponents = [], } = options;
+        if (advancedBinding || options.advancedBinding) {
+            return Object.assign({}, reactComponents, boundedComponents.reduce((result, componentName) => {
+                result[componentName] = reactComponents[componentName].bind(this);
+                return result;
+            }, {}));
+            // reactComponents.ResponsiveLink = ResponsiveLink.bind(this);
+        }
+        else
+            return reactComponents;
     }
-
     /**
      * returns a react component from a component library
-     * @memberOf components
+     
      * @param {Object} options - options for getComponentFromLibrary
      * @param {Object} [options.componentLibraries={}] - react component library like bootstrap
      * @param {Object} [options.jsonx={}] - any valid JSONX JSON
      * @returns {function|undefined} react component from react library like bootstrap, material design or bulma
      */
-    function getComponentFromLibrary(options = {}) {
-      const { componentLibraries = {}, jsonx = {}, } = options;
-      const libComponent = Object.keys(componentLibraries)
-        .map(libraryName => {
-          const cleanLibraryName = jsonx.component.replace(`${libraryName}.`, '');
-          const libraryNameArray = cleanLibraryName.split('.');
-          if (libraryNameArray.length === 2
-            && componentLibraries[ libraryName ]
-            && componentLibraries[ libraryName ][ libraryNameArray[ 0 ] ]
-            && typeof componentLibraries[ libraryName ][ libraryNameArray[ 0 ] ][ libraryNameArray[ 1 ] ] !== 'undefined') {
-            return componentLibraries[ libraryName ][ libraryNameArray[ 0 ] ][ libraryNameArray[ 1 ] ];
-          } else if (typeof componentLibraries[ libraryName ][ cleanLibraryName ] !== 'undefined') {
-            return componentLibraries[ libraryName ][ cleanLibraryName ];
-          }
+    function getComponentFromLibrary(options = { jsonx: {} }) {
+        const { componentLibraries = {}, jsonx = {}, } = options;
+        const libComponent = Object.keys(componentLibraries)
+            .map(libraryName => {
+            //@ts-ignore
+            const cleanLibraryName = jsonx.component.replace(`${libraryName}.`, '');
+            const libraryNameArray = cleanLibraryName.split('.');
+            if (libraryNameArray.length === 2
+                && componentLibraries[libraryName]
+                && componentLibraries[libraryName][libraryNameArray[0]]
+                && typeof componentLibraries[libraryName][libraryNameArray[0]][libraryNameArray[1]] !== 'undefined') {
+                return componentLibraries[libraryName][libraryNameArray[0]][libraryNameArray[1]];
+            }
+            else if (typeof componentLibraries[libraryName][cleanLibraryName] !== 'undefined') {
+                return componentLibraries[libraryName][cleanLibraryName];
+            }
         })
-        .filter(val => val)[ 0 ];
-      return libComponent;
+            .filter(val => val)[0];
+        return libComponent;
     }
-
     /**
      * returns a react element from jsonx.component
-     * @memberOf components
+     
      * @example
      * // returns react elements
      * getComponentFromMap({jsonx:{component:'div'}})=>div
@@ -44348,51 +44137,58 @@ var VXA = (function (exports) {
      * @returns {string|function|class} valid react element
      */
     function getComponentFromMap(options = {}) {
-      // eslint-disable-next-line
-      const { jsonx = {}, reactComponents = {}, componentLibraries = {}, logError = console.error, debug } = options;
-
-      try {
-        if (typeof jsonx.component !== 'string' && typeof jsonx.component === 'function') {
-          return jsonx.component;
-        } else if (reactDomFactories[jsonx.component]) {
-          return jsonx.component;
-        } else if (reactComponents[ jsonx.component ]) {
-          return reactComponents[jsonx.component];
-        } else if (typeof jsonx.component ==='string' && jsonx.component.indexOf('.') > 0 && getComponentFromLibrary({ jsonx, componentLibraries, })) {
-          return getComponentFromLibrary({ jsonx, componentLibraries, });
-        } else {
-          throw new ReferenceError(`Invalid React Component (${jsonx.component})`);
+        // eslint-disable-next-line
+        const { jsonx = {}, reactComponents = {}, componentLibraries = {}, logError = console.error, debug } = options;
+        try {
+            if (typeof jsonx.component !== 'string' && typeof jsonx.component === 'function') {
+                return jsonx.component;
+                //@ts-ignore
+            }
+            else if (reactDomFactories[jsonx.component]) {
+                return jsonx.component;
+                //@ts-ignore
+            }
+            else if (reactComponents[jsonx.component]) {
+                //@ts-ignore
+                return reactComponents[jsonx.component];
+            }
+            else if (typeof jsonx.component === 'string' && jsonx.component.indexOf('.') > 0 && getComponentFromLibrary({ jsonx, componentLibraries, })) {
+                return getComponentFromLibrary({ jsonx, componentLibraries, });
+            }
+            else {
+                throw new ReferenceError(`Invalid React Component (${jsonx.component})`);
+            }
         }
-      } catch (e) {
-        if(debug) logError(e, (e.stack) ? e.stack : 'no stack');
-        throw e;
-      }
+        catch (e) {
+            if (debug)
+                logError(e, (e.stack) ? e.stack : 'no stack');
+            throw e;
+        }
     }
-
     /**
      * Returns a new function from an options object
-     * @memberOf components
-     * @param {Object} options 
+     
+     * @param {Object} options
      * @param {String} [options.body=''] - Function string body
      * @param {String[]} [options.args=[]] - Function arguments
-     * @returns {Function} 
+     * @returns {Function}
      */
     function getFunctionFromEval(options = {}) {
-      if (typeof options === 'function') return options;
-      const { body = '', args = [], name, } = options;
-      const argus = [].concat(args);
-      argus.push(body);
-      const evalFunction = Function.prototype.constructor.apply({ name, }, argus);
-      if (name) {
-        Object.defineProperty(evalFunction, 'name', { value: name, });
-      }
-      return evalFunction;
+        if (typeof options === 'function')
+            return options;
+        const { body = '', args = [], name, } = options;
+        const argus = [].concat(args);
+        argus.push(body);
+        const evalFunction = Function.prototype.constructor.apply({ name, }, argus);
+        if (name) {
+            Object.defineProperty(evalFunction, 'name', { value: name, });
+        }
+        return evalFunction;
     }
-
     /**
      * Returns a new React Component
-     * @memberOf components
-     * @param {Boolean} [options.returnFactory=true] - returns a React component if true otherwise returns Component Class 
+     
+     * @param {Boolean} [options.returnFactory=true] - returns a React component if true otherwise returns Component Class
      * @param {Object} [options.resources={}] - asyncprops for component
      * @param {String} [options.name ] - Component name
      * @param {Function} [options.lazy ] - function that resolves {reactComponent,options} to lazy load component for code splitting
@@ -44404,142 +44200,156 @@ var VXA = (function (exports) {
      * @param {Object} reactComponent.render.body - Valid JSONX JSON
      * @param {String} reactComponent.getDefaultProps.body - return an object for the default props
      * @param {String} reactComponent.getInitialState.body - return an object for the default state
-     * @returns {Function} 
-     * @see {@link https://reactjs.org/docs/react-without-es6.html} 
+     * @returns {Function}
+     * @see {@link https://reactjs.org/docs/react-without-es6.html}
      */
     function getReactClassComponent(reactComponent = {}, options = {}) {
-      // const util = require('util');
-      // console.log(util.inspect({ reactComponent },{depth:20}));
-      if (options.lazy) {
-        return react_7(() => options.lazy(reactComponent, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
-          return {
-            default: getReactClassComponent(...lazyComponent),
-          };
-        }));
-      }
-      const context = this || {};
-      const { returnFactory = true, resources = {}, use_getState=true, bindContext=true, disableRenderIndexKey = true, } = options;
-      const rjc = Object.assign({
-        getDefaultProps: {
-          body:'return {};',
-        },
-        getInitialState: {
-          body:'return {};',
-        },
-      }, reactComponent);
-      const rjcKeys = Object.keys(rjc);
-      if (rjcKeys.includes('render') === false) {
-        throw new ReferenceError('React components require a render method');
-      }
-      const classOptions = rjcKeys.reduce((result, val) => { 
-        if (typeof rjc[ val ] === 'function') rjc[ val ] = { body: rjc[ val ], };
-        const args = rjc[ val ].arguments;
-        const body = rjc[ val ].body;
-        if (!body) {
-          console.warn({ rjc, });
-          throw new SyntaxError(`Function(${val}) requires a function body`);
+        // const util = require('util');
+        // console.log(util.inspect({ reactComponent },{depth:20}));
+        if (options.lazy) {
+            //@ts-ignore
+            return react_7(() => options.lazy(reactComponent, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
+                return {
+                    //@ts-ignore
+                    default: getReactClassComponent(...lazyComponent),
+                };
+            }));
         }
-        if (args && !Array.isArray(args) && (args.length &&(args.length && args.filter(arg=>typeof arg==='string').length)) ) {
-          throw new TypeError(`Function(${val}) arguments must be an array or variable names`);
+        const context = this || {};
+        const { returnFactory = true, resources = {}, use_getState = true, bindContext = true, disableRenderIndexKey = true, } = options;
+        const rjc = Object.assign({
+            getDefaultProps: {
+                body: 'return {};',
+            },
+            getInitialState: {
+                body: 'return {};',
+            },
+        }, reactComponent);
+        const rjcKeys = Object.keys(rjc);
+        if (rjcKeys.includes('render') === false) {
+            throw new ReferenceError('React components require a render method');
         }
-        if (val === 'render') {
-          result[ val ] = function () {
-            if (options.passprops && this.props) body.props = Object.assign({}, body.props, this.props);
-            if (options.passstate && this.state) body.props = Object.assign({}, body.props, this.state);
-            return getReactElementFromJSONX.call(Object.assign(
-              {},
-              context,
-              bindContext ? this : {},
-              { disableRenderIndexKey, },
-              {
-                props: use_getState
-                  ? Object.assign({}, this.props, { getState: () => this.state, })
-                  : this.props,
-              }
-            ), body, resources);
-          };
-        } else {
-          result[ val ] = typeof body === 'function'
-            ? body
-            : getFunctionFromEval({
-              body,
-              args,
+        const classOptions = rjcKeys.reduce((result, val) => {
+            if (typeof rjc[val] === 'function')
+                rjc[val] = { body: rjc[val], };
+            const args = rjc[val].arguments;
+            const body = rjc[val].body;
+            if (!body) {
+                console.warn({ rjc, });
+                throw new SyntaxError(`Function(${val}) requires a function body`);
+            }
+            if (args && !Array.isArray(args) && (args.length && (args.length && args.filter((arg) => typeof arg === 'string').length))) {
+                throw new TypeError(`Function(${val}) arguments must be an array or variable names`);
+            }
+            if (val === 'render') {
+                //@ts-ignore
+                result[val] = function () {
+                    //@ts-ignore
+                    if (options.passprops && this.props)
+                        body.props = Object.assign({}, body.props, this.props);
+                    //@ts-ignore
+                    if (options.passstate && this.state)
+                        body.props = Object.assign({}, body.props, this.state);
+                    return getReactElementFromJSONX.call(Object.assign({}, context, bindContext ? this : {}, { disableRenderIndexKey, }, {
+                        props: use_getState
+                            //@ts-ignore
+                            ? Object.assign({}, this.props, { getState: () => this.state, })
+                            //@ts-ignore
+                            : this.props,
+                    }), body, resources);
+                };
+            }
+            else {
+                //@ts-ignore
+                result[val] = typeof body === 'function'
+                    ? body
+                    : getFunctionFromEval({
+                        body,
+                        args,
+                    });
+            }
+            return result;
+        }, {});
+        const reactComponentClass = createReactClass(classOptions);
+        if (options.name) {
+            Object.defineProperty(reactComponentClass, 'name', {
+                value: options.name,
             });
         }
-
-        return result;
-      }, {});
-      const reactComponentClass = createReactClass(classOptions);
-      if (options.name) {
-        Object.defineProperty(
-          reactComponentClass,
-          'name',
-          {
-            value: options.name,
-          }
-        );
-      }
-      const reactClass = returnFactory
-        ? react.createFactory(reactComponentClass)
-        : reactComponentClass;
-      return reactClass;
+        const reactClass = returnFactory
+            ? react.createFactory(reactComponentClass)
+            : reactComponentClass;
+        return reactClass;
     }
-
-    function DynamicComponent(props={}) {
-      const { useCache = true, cacheTimeout = 60 * 60 * 5, loadingJSONX= { component:'div', children:'...Loading', },
-      loadingErrorJSONX= { component:'div', children:[{component:'span',children:'Error: '},{ component:'span',  resourceprops:{_children:['error','message']}, }], }, cacheTimeoutFunction = () => { }, jsonx, transformFunction = data => data, fetchURL, fetchOptions, fetchFunction, } = props;
-      const context = this || {};
-      const [ state, setState ] = react_9({ hasLoaded: false, hasError: false, resources: {}, error:undefined, });
-      const transformer = react_14(()=>getFunctionFromEval(transformFunction), [ transformFunction ]);
-      const timeoutFunction = react_14(()=>getFunctionFromEval(cacheTimeoutFunction), [ cacheTimeoutFunction ]);
-      const renderJSONX = react_14(()=>getReactElementFromJSONX.bind(context), [ context ]);
-      const loadingComponent = react_14(()=>renderJSONX(loadingJSONX), [ loadingJSONX ]);
-      const loadingError = react_14(()=>renderJSONX(loadingErrorJSONX,{error:state.error}), [ loadingErrorJSONX, state.error ]);
-
-      react_10(() => { 
-        async function getData() {
-          try {
-            let transformedData;
-            if (useCache && cache$2.get(fetchURL)) {
-              transformedData = cache$2.get(fetchURL);
-            } else {
-              let fetchedData;
-              if (fetchFunction) {
-                fetchedData = await fetchFunction(fetchURL, fetchOptions);
-              } else fetchedData = await fetchJSON(fetchURL, fetchOptions);
-              transformedData = await transformer(fetchedData);
-              if (useCache) cache$2.put(fetchURL, transformedData, cacheTimeout,timeoutFunction);
+    function DynamicComponent(props = {}) {
+        //@ts-ignore
+        const { useCache = true, cacheTimeout = 60 * 60 * 5, loadingJSONX = { component: 'div', children: '...Loading', }, 
+        //@ts-ignore
+        loadingErrorJSONX = { component: 'div', children: [{ component: 'span', children: 'Error: ' }, { component: 'span', resourceprops: { _children: ['error', 'message'] }, }], }, cacheTimeoutFunction = () => { }, jsonx, transformFunction = data => data, fetchURL, fetchOptions, fetchFunction, } = props;
+        const context = this || {};
+        const [state, setState] = react_9({ hasLoaded: false, hasError: false, resources: {}, error: undefined, });
+        const transformer = react_14(() => getFunctionFromEval(transformFunction), [transformFunction]);
+        const timeoutFunction = react_14(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
+        const renderJSONX = react_14(() => getReactElementFromJSONX.bind(context), [context]);
+        const loadingComponent = react_14(() => renderJSONX(loadingJSONX), [loadingJSONX]);
+        const loadingError = react_14(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
+        react_10(() => {
+            async function getData() {
+                try {
+                    //@ts-ignore
+                    let transformedData;
+                    if (useCache && cache$2.get(fetchURL)) {
+                        transformedData = cache$2.get(fetchURL);
+                    }
+                    else {
+                        let fetchedData;
+                        if (fetchFunction) {
+                            fetchedData = await fetchFunction(fetchURL, fetchOptions);
+                        }
+                        else
+                            fetchedData = await fetchJSON(fetchURL, fetchOptions);
+                        transformedData = await transformer(fetchedData);
+                        if (useCache)
+                            cache$2.put(fetchURL, transformedData, cacheTimeout, timeoutFunction);
+                    }
+                    //@ts-ignore
+                    setState(prevState => Object.assign({}, prevState, { hasLoaded: true, hasError: false, resources: { DynamicComponentData: transformedData, }, }));
+                }
+                catch (e) {
+                    if (context.debug)
+                        console.warn(e);
+                    //@ts-ignore
+                    setState({ hasError: true, error: e, });
+                }
             }
-            setState(prevState=>Object.assign({},prevState,{ hasLoaded: true, hasError: false, resources: { DynamicComponentData: transformedData, }, }));
-          } catch (e) {
-            if(context.debug) console.warn(e);
-            setState({ hasError: true, error:e, });
-          }
+            if (fetchURL)
+                getData();
+        }, [fetchURL, fetchOptions]);
+        if (!fetchURL)
+            return null;
+        else if (state.hasError) {
+            return loadingError;
         }
-        if(fetchURL) getData();
-      }, [ fetchURL, fetchOptions ]);
-      if (!fetchURL) return null;
-      else if (state.hasError) {
-        return loadingError;
-      } else if (state.hasLoaded === false) {
-        return loadingComponent;
-      } else return renderJSONX(jsonx, state.resources);
+        else if (state.hasLoaded === false) {
+            return loadingComponent;
+        }
+        else
+            return renderJSONX(jsonx, state.resources);
     }
-
     /**
      * Returns new React Function Component
-     * @memberOf components
+     
      * @todo set 'functionprops' to set arguments for function
      * @param {*} reactComponent - Valid JSONX to render
      * @param {String} functionBody - String of function component body
-     * @param {String} options.name - Function Component name 
+     * @param {String} options.name - Function Component name
      * @returns {Function}
      * @see {@link https://reactjs.org/docs/hooks-intro.html}
      * @example
       const jsonxRender = {
        component:'div',
        passprops:'true',
-       children:[ 
+       children:[
          {
           component:'input',
           thisprops:{
@@ -44566,69 +44376,69 @@ var VXA = (function (exports) {
       const MyCustomFunctionComponent = jsonx._jsonxComponents.getReactFunctionComponent({jsonxRender, functionBody, options});
        */
     function getReactFunctionComponent(reactComponent = {}, functionBody = '', options = {}) {
-      if (options.lazy) {
-        return react_7(() => options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
-          return {
-            default: getReactFunctionComponent(...lazyComponent),
-          };
-        }));
-      }
-      if (typeof options === 'undefined' || typeof options.bind === 'undefined') options.bind = true;
-      const { resources = {}, args=[], } = options;
-
-      const props = reactComponent.props;
-      const functionArgs = [ react, react_9, react_10, react_11, react_12, react_13, react_14, react_15, react_16, react_17, react_18, getReactElementFromJSONX, reactComponent, resources, props, ];
-      if (typeof functionBody === 'function') functionBody = functionBody.toString();
-      const functionComponent = Function('React', 'useState', 'useEffect', 'useContext', 'useReducer', 'useCallback', 'useMemo', 'useRef', 'useImperativeHandle', 'useLayoutEffect', 'useDebugValue', 'getReactElementFromJSONX', 'reactComponent', 'resources', 'props', `
+        if (options.lazy) {
+            //@ts-ignore
+            return react_7(() => options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
+                return {
+                    //@ts-ignore
+                    default: getReactFunctionComponent(...lazyComponent),
+                };
+            }));
+        }
+        if (typeof options === 'undefined' || typeof options.bind === 'undefined')
+            options.bind = true;
+        const { resources = {}, args = [], } = options;
+        //@ts-ignore
+        const props = Object.assign({}, reactComponent.props);
+        const functionArgs = [react, react_9, react_10, react_11, react_12, react_13, react_14, react_15, react_16, react_17, react_18, getReactElementFromJSONX, reactComponent, resources, props,];
+        //@ts-ignore
+        if (typeof functionBody === 'function')
+            functionBody = functionBody.toString();
+        const functionComponent = Function('React', 'useState', 'useEffect', 'useContext', 'useReducer', 'useCallback', 'useMemo', 'useRef', 'useImperativeHandle', 'useLayoutEffect', 'useDebugValue', 'getReactElementFromJSONX', 'reactComponent', 'resources', 'props', `
+    'use strict';
     const self = this;
+
     return function ${options.name || 'Anonymous'}(props){
       ${functionBody}
-      if(typeof exposeProps==='undefined' || exposeProps){
-        reactComponent.props = Object.assign({},props,typeof exposeProps==='undefined'?{}:exposeProps);
-        // reactComponent.__functionargs = Object.keys(exposeProps);
+      if(typeof exposeprops==='undefined' || exposeprops){
+        reactComponent.props = Object.assign({},props,typeof exposeprops==='undefined'?{}:exposeprops);
+        if(typeof exposeprops!=='undefined') reactComponent.__functionargs = Object.keys(exposeprops);
       } else{
         reactComponent.props =  props;
       }
-      if(!props.children) delete props.children;
-      const context = ${options.bind?'Object.assign(self,this)':'this'};
+      if(!props.children) {
+      //  delete props.children;
+      }
+      const context = ${options.bind ? 'Object.assign(self,this)' : 'this'};
       return getReactElementFromJSONX.call(context, reactComponent);
     }
   `);
-      if (options.name) {
-        Object.defineProperty(
-          functionComponent,
-          'name',
-          {
-            value: options.name,
-          }
-        );
-      }
-      return (options.bind) ? functionComponent.call(this, ...functionArgs) : functionComponent(...functionArgs);
+        if (options.name) {
+            Object.defineProperty(functionComponent, 'name', {
+                value: options.name,
+            });
+        }
+        return (options.bind) ? functionComponent.call(this, ...functionArgs) : functionComponent(...functionArgs);
     }
     /**
-     * @memberOf components
+     *
      */
     function getReactContext(options = {}) {
-      return react_4(options.value);
+        return react_4(options.value);
     }
 
     var jsonxComponents = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        advancedBinding: advancedBinding,
-        componentMap: componentMap,
-        getBoundedComponents: getBoundedComponents,
-        getComponentFromLibrary: getComponentFromLibrary,
-        getComponentFromMap: getComponentFromMap,
-        getFunctionFromEval: getFunctionFromEval,
-        getReactClassComponent: getReactClassComponent,
-        DynamicComponent: DynamicComponent,
-        getReactFunctionComponent: getReactFunctionComponent,
-        getReactContext: getReactContext
+      advancedBinding: advancedBinding,
+      componentMap: componentMap,
+      getBoundedComponents: getBoundedComponents,
+      getComponentFromLibrary: getComponentFromLibrary,
+      getComponentFromMap: getComponentFromMap,
+      getFunctionFromEval: getFunctionFromEval,
+      getReactClassComponent: getReactClassComponent,
+      DynamicComponent: DynamicComponent,
+      getReactFunctionComponent: getReactFunctionComponent,
+      getReactContext: getReactContext
     });
-
-    // if (typeof window === 'undefined') {
-    //   var window = window || {};
-    // }
 
     //https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
     const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
@@ -44640,24 +44450,23 @@ var VXA = (function (exports) {
      * function regularFunctionAdd(c,d){return c+d;}
      * getParamNames(arrowFunctionAdd) // => ['a','b']
      * getParamNames(regularFunctionAdd) // => ['c','d']
-     * @param {Function} func 
+     * @param {Function} func
      * @todo write tests
      */
     function getParamNames(func) {
-      var fnStr = func.toString().replace(STRIP_COMMENTS, '');
-      var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
-      if(result === null){
-        result = [];
-      }
-      return result;
+        var fnStr = func.toString().replace(STRIP_COMMENTS, '');
+        var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+        if (result === null) {
+            result = [];
+        }
+        return result;
     }
-
     /**
      * It uses traverse on a traverseObject to returns a resolved object on propName. So if you're making an ajax call and want to pass properties into a component, you can assign them using asyncprops and reference object properties by an array of property paths
      * @param {Object} [traverseObject={}] - the object that contains values of propName
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
-     * @param {Object} [options.propName='asyncprops'] - Property on JSONX to resolve values onto, i.e (asyncprops,thisprops,windowprops) 
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} [options.propName='asyncprops'] - Property on JSONX to resolve values onto, i.e (asyncprops,thisprops,windowprops)
      * @returns {Object} resolved object
      * @example
      const traverseObject = {
@@ -44724,59 +44533,62 @@ var VXA = (function (exports) {
     };
      */
     function getJSONXProps(options = {}) {
-      // eslint-disable-next-line
-      let { jsonx = {}, propName = 'asyncprops', traverseObject = {}, } = options;
-      // return (jsonx.asyncprops && typeof jsonx.asyncprops === 'object')
-      // ? utilities.traverse(jsonx.asyncprops, resources)
-      // : {};
-      return (jsonx[ propName ] && typeof jsonx[ propName ] === 'object')
-        ? traverse(jsonx[ propName ], traverseObject)
-        : {};
+        // eslint-disable-next-line
+        let { jsonx = {}, propName = 'asyncprops', traverseObject = {}, } = options;
+        // return (jsonx.asyncprops && typeof jsonx.asyncprops === 'object')
+        // ? utilities.traverse(jsonx.asyncprops, resources)
+        // : {};
+        return (jsonx[propName] && typeof jsonx[propName] === 'object')
+            ? traverse(jsonx[propName], traverseObject)
+            : {};
     }
-
     /**
      * returns children jsonx components defined on __spreadComponent spread over an array on props.__spread
-     * @param {*} options 
+     * @param {*} options
      */
     function getChildrenComponents(options = {}) {
-      const { allProps = {}, jsonx = {}, } = options;
-      // const asyncprops = getJSONXProps({ jsonx, propName: 'spreadprops', traverseObject: allProps, });
-      if (Array.isArray(allProps.__spread) === false) {
-        if ((this && this.debug) || jsonx.debug) {
-          return {
-            children: new Error('Using __spreadComponent requires an array prop \'__spread\'').toString(),
-          };
-        } else {
-          return { children:undefined, };
+        const { allProps = {}, jsonx = {}, } = options;
+        // const asyncprops = getJSONXProps({ jsonx, propName: 'spreadprops', traverseObject: allProps, });
+        if (Array.isArray(allProps.__spread) === false) {
+            if ((this && this.debug) || jsonx.debug) {
+                return {
+                    children: new Error('Using __spreadComponent requires an array prop \'__spread\'').toString(),
+                };
+            }
+            else {
+                return { children: undefined, };
+            }
         }
-      } else {
-        return {
-          _children: allProps.__spread.map(__item => {
-            const clonedChild = Object.assign({}, jsonx.__spreadComponent);
-            const clonedChildProps = Object.assign({}, clonedChild.props);
-            clonedChildProps.__item = __item;
-            clonedChild.props = clonedChildProps;
-            return clonedChild;
-          }),
-        };
-      }
+        else {
+            return {
+                _children: allProps.__spread.map((__item) => {
+                    const clonedChild = Object.assign({}, jsonx.__spreadComponent);
+                    const clonedChildProps = Object.assign({}, clonedChild.props);
+                    clonedChildProps.__item = __item;
+                    clonedChild.props = clonedChildProps;
+                    return clonedChild;
+                }),
+            };
+        }
     }
-
     function boundArgsReducer(jsonx = {}) {
-      return (args, arg) => {
-        let val;
-        if (this && this.state && typeof this.state[ arg ] !== 'undefined') val = (this.state[ arg ]);
-        else if (this && this.props && typeof this.props[ arg ] !== 'undefined') val = (this.props[ arg ]);
-        else if (jsonx.props && typeof jsonx.props[ arg ] !== 'undefined') val = (jsonx.props[ arg ]);
-        if (typeof val !== 'undefined') args.push(val);
-        return args.filter(a=>typeof a!=='undefined');
-      };
+        return (args, arg) => {
+            let val;
+            if (this && this.state && typeof this.state[arg] !== 'undefined')
+                val = (this.state[arg]);
+            else if (this && this.props && typeof this.props[arg] !== 'undefined')
+                val = (this.props[arg]);
+            else if (jsonx.props && typeof jsonx.props[arg] !== 'undefined')
+                val = (jsonx.props[arg]);
+            if (typeof val !== 'undefined')
+                args.push(val);
+            return args.filter((a) => typeof a !== 'undefined');
+        };
     }
-
     /**
      * Used to evalute javascript and set those variables as props. getEvalProps evaluates __dangerouslyEvalProps and __dangerouslyBindEvalProps properties with eval, this is used when component properties are functions, __dangerouslyBindEvalProps is used when those functions require that this is bound to the function. For __dangerouslyBindEvalProps it must resolve an expression, so functions should be wrapped in (). I.e. (function f(x){ return this.minimum+x;})
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
      * @returns {Object} returns resolved object with evaluated javascript
      * @example
      const testVals = {
@@ -44795,325 +44607,359 @@ var VXA = (function (exports) {
       // expect(evalutedComputedFunc).to.eql('bob');
       // expect(evalutedComputedBoundFunc).to.eql('bounded');
      */
-    function getEvalProps(options = {}) {
-      const { jsonx, } = options;
-      const scopedEval = eval; //https://github.com/rollup/rollup/wiki/Troubleshooting#avoiding-eval
-      let evAllProps = {};
-      if (jsonx.__dangerouslyEvalAllProps) {
-        let evVal;
-        try {
-          // eslint-disable-next-line
-          evVal = (typeof evVal === 'function')
-            ? jsonx.__dangerouslyEvalAllProps
-            : scopedEval(jsonx.__dangerouslyEvalAllProps);
-        } catch (e) { 
-          if (this.debug || jsonx.debug) evVal = e;
+    function getEvalProps(options = { jsonx: {} }) {
+        const { jsonx, } = options;
+        const scopedEval = eval; //https://github.com/rollup/rollup/wiki/Troubleshooting#avoiding-eval
+        let evAllProps = {};
+        if (jsonx.__dangerouslyEvalAllProps) {
+            let evVal;
+            try {
+                // eslint-disable-next-line
+                evVal = (typeof evVal === 'function')
+                    ? jsonx.__dangerouslyEvalAllProps
+                    : scopedEval(jsonx.__dangerouslyEvalAllProps);
+            }
+            catch (e) {
+                if (this.debug || jsonx.debug)
+                    evVal = e;
+            }
+            evAllProps = evVal.call(this, { jsonx, });
         }
-        evAllProps = evVal.call(this, { jsonx, });
-      }
-      const evProps = Object.keys(jsonx.__dangerouslyEvalProps || {}).reduce((eprops, epropName) => {
-        let evVal;
-        let evValString;
-        try {
-          // eslint-disable-next-line
-          evVal = scopedEval(jsonx.__dangerouslyEvalProps[ epropName ]);
-          evValString = evVal.toString();
-        } catch (e) { 
-          if (this.debug || jsonx.debug) evVal = e;
-        }
-        eprops[ epropName ] = (typeof evVal === 'function')
-          ? evVal.call(this, { jsonx, })
-          : evVal;
-        if (this.exposeEval) eprops[ `__eval_${epropName}` ] = evValString;
-        return eprops;
-      }, {});
-      const evBindProps = Object.keys(jsonx.__dangerouslyBindEvalProps || {}).reduce((eprops, epropName) => {
-        let evVal;
-        let evValString;
-
-        try {
-          let args;
-          const functionBody = jsonx.__dangerouslyBindEvalProps[ epropName ];
-          // InlineFunction = Function.prototype.constructor.apply({}, args);
-          let functionDefinition;
-          if (typeof functionBody === 'function') {
-            functionDefinition = functionBody;
-          } else {
-            functionDefinition = scopedEval(jsonx.__dangerouslyBindEvalProps[ epropName ]);
-            evValString = functionDefinition.toString();
-
-          } // eslint-disable-next-line
-          if (jsonx.__functionargs && jsonx.__functionargs[epropName]) {
-            args = [this, ].concat(jsonx.__functionargs[epropName].reduce(boundArgsReducer.call(this, jsonx), []));
-          } else if (jsonx.__functionparams===false) {
-            args = [this, ];
-          } else {
-            const functionDefArgs = getParamNames(functionDefinition);
-            args = [this, ].concat(functionDefArgs.reduce(boundArgsReducer.call(this, jsonx), []));
-          }
-          // eslint-disable-next-line
-          evVal = functionDefinition.bind(...args);
-        } catch (e) { 
-          if (this.debug || jsonx.debug) evVal = e;
-        }
-        // eslint-disable-next-line
-        eprops[ epropName ] = evVal;
-        if (this.exposeEval) eprops[ `__eval_${epropName}` ] = evValString;
-        return eprops;
-      }, {});
-
-      return Object.assign({}, evProps, evBindProps, evAllProps);
+        const evProps = Object.keys(jsonx.__dangerouslyEvalProps || {}).reduce((eprops, epropName) => {
+            let evVal;
+            let evValString;
+            try {
+                // eslint-disable-next-line
+                //@ts-ignore
+                evVal = scopedEval(jsonx.__dangerouslyEvalProps[epropName]);
+                evValString = evVal.toString();
+            }
+            catch (e) {
+                if (this.debug || jsonx.debug)
+                    evVal = e;
+            }
+            //@ts-ignore
+            eprops[epropName] = (typeof evVal === 'function')
+                ? evVal.call(this, { jsonx, })
+                : evVal;
+            //@ts-ignore
+            if (this.exposeEval)
+                eprops[`__eval_${epropName}`] = evValString;
+            return eprops;
+        }, {});
+        const evBindProps = Object.keys(jsonx.__dangerouslyBindEvalProps || {}).reduce((eprops, epropName) => {
+            let evVal;
+            let evValString;
+            try {
+                let args;
+                //@ts-ignore
+                const functionBody = jsonx.__dangerouslyBindEvalProps[epropName];
+                // InlineFunction = Function.prototype.constructor.apply({}, args);
+                let functionDefinition;
+                if (typeof functionBody === 'function') {
+                    functionDefinition = functionBody;
+                }
+                else {
+                    //@ts-ignore
+                    functionDefinition = scopedEval(jsonx.__dangerouslyBindEvalProps[epropName]);
+                    evValString = functionDefinition.toString();
+                } // eslint-disable-next-line
+                if (jsonx.__functionargs && jsonx.__functionargs[epropName]) {
+                    args = [this,].concat(jsonx.__functionargs[epropName].reduce(boundArgsReducer.call(this, jsonx), []));
+                }
+                else if (jsonx.__functionparams === false) {
+                    args = [this,];
+                }
+                else {
+                    const functionDefArgs = getParamNames(functionDefinition);
+                    args = [this,].concat(functionDefArgs.reduce(boundArgsReducer.call(this, jsonx), []));
+                }
+                // eslint-disable-next-line
+                evVal = functionDefinition.bind(...args);
+            }
+            catch (e) {
+                if (this.debug || jsonx.debug)
+                    evVal = e;
+            }
+            // eslint-disable-next-line 
+            //@ts-ignore
+            eprops[epropName] = evVal;
+            //@ts-ignore
+            if (this.exposeEval)
+                eprops[`__eval_${epropName}`] = evValString;
+            return eprops;
+        }, {});
+        return Object.assign({}, evProps, evBindProps, evAllProps);
     }
-
     /**
-     * Resolves jsonx.__dangerouslyInsertComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points. 
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
+     * Resolves jsonx.__dangerouslyInsertComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
      * @param {Object} [options.resources={}] - object to use for resourceprops(asyncprops), usually a result of an asynchronous call
      * @returns {Object} resolved object of React Components
      */
-    function getComponentProps(options = {}) {
-      const { jsonx, resources, } = options;
-      return Object.keys(jsonx.__dangerouslyInsertComponents).reduce((cprops, cpropName) => {
-        let componentVal;
-        try {
-          // eslint-disable-next-line
-          componentVal = getRenderedJSON.call(this, jsonx.__dangerouslyInsertComponents[ cpropName ], resources);
-        } catch (e) {
-          if (this.debug || jsonx.debug) componentVal = e;
-        }
-        cprops[ cpropName ] = componentVal;
-        return cprops;
-      }, {});
+    function getComponentProps(options = { jsonx: {} }) {
+        const { jsonx, resources, } = options;
+        //@ts-ignore
+        return Object.keys(jsonx.__dangerouslyInsertComponents).reduce((cprops, cpropName) => {
+            let componentVal;
+            try {
+                // eslint-disable-next-line
+                //@ts-ignore
+                componentVal = getRenderedJSON.call(this, jsonx.__dangerouslyInsertComponents[cpropName], resources);
+            }
+            catch (e) {
+                if (this.debug || jsonx.debug)
+                    componentVal = e;
+            }
+            cprops[cpropName] = componentVal;
+            return cprops;
+        }, {});
     }
-
     function getReactComponents(options) {
-      const { jsonx, resources, } = options;
-      const functionComponents = (!jsonx.__dangerouslyInsertFunctionComponents)
-        ? {}
-        : Object.keys(jsonx.__dangerouslyInsertFunctionComponents).reduce((cprops, cpropName) => {
-          let componentVal;
-          try {
-            const args = jsonx.__dangerouslyInsertFunctionComponents[ cpropName ];
-            args.options = Object.assign({}, args.options, { resources });
-            // eslint-disable-next-line
-            componentVal = getReactFunctionComponent.call(this, args.reactComponent, args.functionBody, args.options);
-          } catch (e) {
-            if (this.debug || jsonx.debug) componentVal = e;
-          }
-          cprops[ cpropName ] = cpropName === '_children' ? [ componentVal ] : componentVal;
-          return cprops;
-        }, {});
-      const classComponents = (!jsonx.__dangerouslyInsertClassComponents)
-        ? {}
-        : Object.keys(jsonx.__dangerouslyInsertClassComponents).reduce((cprops, cpropName) => {
-          let componentVal;
-          try {
-            const args = jsonx.__dangerouslyInsertClassComponents[ cpropName ];
-            args.options = Object.assign({}, args.options, { resources });
-            // eslint-disable-next-line
-            componentVal = getReactFunctionComponent.call(this, args.reactComponent, args.options);
-          } catch (e) {
-            if (this.debug || jsonx.debug) componentVal = e;
-          }
-          cprops[ cpropName ] = cpropName === '_children' ? [ componentVal ] : componentVal;
-          return cprops;
-        }, {});
-      return Object.assign({}, functionComponents, classComponents);
+        const { jsonx, resources, } = options;
+        const functionComponents = (!jsonx.__dangerouslyInsertFunctionComponents)
+            ? {}
+            : Object.keys(jsonx.__dangerouslyInsertFunctionComponents).reduce((cprops, cpropName) => {
+                let componentVal;
+                try {
+                    const args = jsonx.__dangerouslyInsertFunctionComponents[cpropName];
+                    args.options = Object.assign({}, args.options, { resources });
+                    // eslint-disable-next-line
+                    componentVal = getReactFunctionComponent.call(this, args.reactComponent, args.functionBody, args.options);
+                }
+                catch (e) {
+                    if (this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                cprops[cpropName] = cpropName === '_children' ? [componentVal]
+                    : componentVal;
+                return cprops;
+            }, {});
+        const classComponents = (!jsonx.__dangerouslyInsertClassComponents)
+            ? {}
+            : Object.keys(jsonx.__dangerouslyInsertClassComponents).reduce((cprops, cpropName) => {
+                let componentVal;
+                try {
+                    const args = jsonx.__dangerouslyInsertClassComponents[cpropName];
+                    args.options = Object.assign({}, args.options, { resources });
+                    // eslint-disable-next-line
+                    componentVal = getReactFunctionComponent.call(this, args.reactComponent, args.options);
+                }
+                catch (e) {
+                    if (this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                cprops[cpropName] = cpropName === '_children' ? [componentVal] : componentVal;
+                return cprops;
+            }, {});
+        return Object.assign({}, functionComponents, classComponents);
     }
-
     /**
-     * Resolves jsonx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points. 
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
+     * Resolves jsonx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
     //  * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
      * @returns {Object} resolved object of React Components
      */
-    function getReactComponentProps(options = {}) {
-      const { jsonx, } = options;
-      if (jsonx.__dangerouslyInsertJSONXComponents && Object.keys(jsonx.__dangerouslyInsertJSONXComponents).length) { 
-        return Object.keys(jsonx.__dangerouslyInsertJSONXComponents).reduce((cprops, cpropName) => {
-          let componentVal;
-          try {
-            componentVal = getComponentFromMap({
-              jsonx: jsonx.__dangerouslyInsertJSONXComponents[ cpropName ],
-              reactComponents: this.reactComponents,
-              componentLibraries: this.componentLibraries,
-            });
-          } catch (e) {
-            if (this.debug || jsonx.debug) componentVal = e;
-          }
-          // eslint-disable-next-line
-          cprops[ cpropName ] = componentVal;
-          return cprops;
-        }, {});
-      } else {
-        return Object.keys(jsonx.__dangerouslyInsertReactComponents).reduce((cprops, cpropName) => {
-          let componentVal;
-          try {
-            componentVal = getComponentFromMap({
-              jsonx: {
-                component: jsonx.__dangerouslyInsertReactComponents[ cpropName ],
-                props: jsonx.__dangerouslyInsertComponentProps
-                  ? jsonx.__dangerouslyInsertComponentProps[ cpropName ]
-                  : {},
-              },
-              reactComponents: this.reactComponents,
-              componentLibraries: this.componentLibraries,
-            });
-          } catch (e) {
-            if (this.debug || jsonx.debug) componentVal = e;
-          }
-          // eslint-disable-next-line
-          cprops[ cpropName ] = componentVal;
-          return cprops;
-        }, {});
-      }
+    function getReactComponentProps(options = { jsonx: {} }) {
+        const { jsonx, } = options;
+        const customComponents = this && this.reactComponents ? this.reactComponents : {};
+        const customLibraries = this && this.componentLibraries ? this.componentLibraries : {};
+        if (jsonx.__dangerouslyInsertJSONXComponents && Object.keys(jsonx.__dangerouslyInsertJSONXComponents).length) {
+            return Object.keys(jsonx.__dangerouslyInsertJSONXComponents).reduce((cprops, cpropName) => {
+                let componentVal;
+                try {
+                    componentVal = getComponentFromMap({
+                        jsonx: jsonx.__dangerouslyInsertJSONXComponents[cpropName],
+                        reactComponents: customComponents,
+                        componentLibraries: customLibraries,
+                    });
+                }
+                catch (e) {
+                    if (this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                // eslint-disable-next-line
+                cprops[cpropName] = componentVal;
+                return cprops;
+            }, {});
+        }
+        else {
+            return Object.keys(jsonx.__dangerouslyInsertReactComponents).reduce((cprops, cpropName) => {
+                let componentVal;
+                try {
+                    componentVal = getComponentFromMap({
+                        jsonx: {
+                            component: jsonx.__dangerouslyInsertReactComponents[cpropName],
+                            props: jsonx.__dangerouslyInsertComponentProps
+                                ? jsonx.__dangerouslyInsertComponentProps[cpropName]
+                                : {},
+                        },
+                        reactComponents: customComponents,
+                        componentLibraries: customLibraries,
+                    });
+                }
+                catch (e) {
+                    if (this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                // eslint-disable-next-line
+                cprops[cpropName] = componentVal;
+                return cprops;
+            }, {});
+        }
     }
-
     /**
      * Takes a function string and returns a function on either this.props or window. The function can only be 2 levels deep
-     * @param {Object} options 
+     * @param {Object} options
      * @param {String} [options.propFunc='func:'] - function string, like func:window.LocalStorage.getItem or func:this.props.onClick  or func:inline.myInlineFunction
      * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, resourceprops, asyncprops, windowprops, evalProps, insertedComponents);
      * @returns {Function} returns a function from this.props or window functions
      * @example
      * getFunctionFromProps({ propFunc='func:this.props.onClick', }) // => this.props.onClick
      */
-    function getFunctionFromProps(options) {
-      const { propFunc='func:', propBody, jsonx, functionProperty='', } = options;
-      // eslint-disable-next-line
-      const { logError = console.error,  debug, } = this;
-      const windowObject = this.window || (typeof global$2!=="undefined" ? global$2 : window).window || {};
-      try {
-        const functionNameString = propFunc.split(':')[ 1 ] || '';
-        const functionNameArray = functionNameString.split('.');
-        const functionName = (functionNameArray.length) ? functionNameArray[ functionNameArray.length - 1 ] : '';
-
-        if (propFunc.includes('func:inline')) {
-          // eslint-disable-next-line
-          let InlineFunction;
-          if (jsonx.__functionargs) {
-            const args = [].concat(jsonx.__functionargs[functionProperty]);
-            args.push(propBody);
-            InlineFunction = Function.prototype.constructor.apply({}, args);
-          } else {
-            InlineFunction = Function('param1', 'param2', '"use strict";' + propBody);
-          }
-          const [propFuncName, funcName, ] = propFunc.split('.');
-          
-          Object.defineProperty(
-            InlineFunction,
-            'name',
-            {
-              value: funcName,
+    function getFunctionFromProps(options = { jsonx: {}, propBody: '' }) {
+        const { propFunc = 'func:', propBody, jsonx, functionProperty = '', } = options;
+        // eslint-disable-next-line
+        const { logError = console.error, debug, } = this;
+        let windowObject = {};
+        if (this.window)
+            windowObject = this.window;
+        //@ts-ignore
+        else if (typeof global$2 !== 'undefined' && (typeof global$2!=="undefined" ? global$2 : window).window)
+            windowObject = (typeof global$2!=="undefined" ? global$2 : window).window;
+        try {
+            const functionNameString = propFunc.split(':')[1] || '';
+            const functionNameArray = functionNameString.split('.');
+            const functionName = (functionNameArray.length) ? functionNameArray[functionNameArray.length - 1] : '';
+            if (propFunc.includes('func:inline')) {
+                // eslint-disable-next-line
+                let InlineFunction;
+                if (jsonx.__functionargs) {
+                    const args = [].concat(jsonx.__functionargs[functionProperty]);
+                    args.push(propBody);
+                    InlineFunction = Function.prototype.constructor.apply({}, args);
+                }
+                else {
+                    InlineFunction = Function('param1', 'param2', '"use strict";' + propBody);
+                }
+                const [propFuncName, funcName,] = propFunc.split('.');
+                Object.defineProperty(InlineFunction, 'name', {
+                    value: funcName,
+                });
+                if (jsonx.__functionargs) {
+                    const boundArgs = [this,].concat(jsonx.__functionargs[functionProperty].map((arg) => jsonx.props[arg]));
+                    return InlineFunction.bind(...boundArgs);
+                }
+                else {
+                    return InlineFunction.bind(this);
+                }
             }
-          );
-          if (jsonx.__functionargs) {
-            const boundArgs = [this,].concat(jsonx.__functionargs[functionProperty].map(arg => jsonx.props[ arg ]));
-            return InlineFunction.bind(...boundArgs);
-          } else {
-            return InlineFunction.bind(this);
-          }
-        } else if (propFunc.indexOf('func:window') !== -1) {
-          if (functionNameArray.length === 3) {
-            try {
-              return windowObject[ functionNameArray[ 1 ] ][ functionName ].bind(this);
-            } catch (e) {
-              if (debug) {
-                logError(e);
-              }
-              return windowObject[ functionNameArray[ 1 ] ][ functionName ];
+            else if (propFunc.indexOf('func:window') !== -1) {
+                if (functionNameArray.length === 3) {
+                    try {
+                        return windowObject[functionNameArray[1]][functionName].bind(this);
+                    }
+                    catch (e) {
+                        if (debug) {
+                            logError(e);
+                        }
+                        return windowObject[functionNameArray[1]][functionName];
+                    }
+                }
+                else {
+                    try {
+                        return windowObject[functionName].bind(this);
+                    }
+                    catch (e) {
+                        if (debug) {
+                            logError(e);
+                        }
+                        return windowObject[functionName];
+                    }
+                }
             }
-          } else {
-            try {
-              return windowObject[ functionName ].bind(this);
-            } catch (e) {
-              if (debug) {
-                logError(e);
-              }
-              return windowObject[ functionName ];
+            else if (functionNameArray.length === 4) {
+                return (this.props)
+                    ? this.props[functionNameArray[2]][functionName]
+                    : jsonx.props[functionNameArray[2]][functionName];
             }
-          }
-        } else if (functionNameArray.length === 4) {
-          return (this.props)
-            ? this.props[ functionNameArray[ 2 ] ][ functionName ]
-            : jsonx.props[ functionNameArray[ 2 ] ][ functionName ];
-        } else if (functionNameArray.length === 3) {
-          return (this.props)
-            ? this.props[ functionName ].bind(this)
-            : jsonx.props[ functionName ].bind(this);
-        } else {
-          return function () {};
+            else if (functionNameArray.length === 3) {
+                return (this.props)
+                    ? this.props[functionName].bind(this)
+                    : jsonx.props[functionName].bind(this);
+            }
+            else {
+                return function () { };
+            }
         }
-      } catch (e) {
-        if (this.debug){
-          logError(e);
-          if (jsonx && jsonx.debug) return e;
+        catch (e) {
+            if (this.debug) {
+                logError(e);
+                if (jsonx && jsonx.debug)
+                    return e;
+            }
+            return function () { };
         }
-        return function () {};
-      }
     }
-
     /**
      * Returns a resolved object from function strings that has functions pulled from jsonx.__functionProps
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
      * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, asyncprops, windowprops, evalProps, insertedComponents);
      * @returns {Object} resolved object of functions from function strings
      */
-    function getFunctionProps(options = {}) {
-      const { allProps = {}, jsonx = {}, } = options;
-      const getFunction = getFunctionFromProps.bind(this);
-      const funcProps = jsonx.__functionProps;
-      //Allowing for window functions
-      Object.keys(funcProps).forEach(key => {
-        if (typeof funcProps[ key ] === 'string' && funcProps[ key ].indexOf('func:') !== -1) {
-          allProps[ key ] = getFunction({
-            propFunc: funcProps[ key ],
-            propBody: (jsonx.__inline)?jsonx.__inline[ key ]:'',
-            jsonx,
-            functionProperty:key,
-          });
-        } 
-      });
-      return allProps;
+    function getFunctionProps(options = { jsonx: {} }) {
+        const { allProps = {}, jsonx = {}, } = options;
+        const getFunction = getFunctionFromProps.bind(this);
+        const funcProps = jsonx.__functionProps;
+        //Allowing for window functions
+        if (funcProps) {
+            Object.keys(funcProps).forEach(key => {
+                if (typeof funcProps[key] === 'string' && funcProps[key].indexOf('func:') !== -1) {
+                    allProps[key] = getFunction({
+                        propFunc: funcProps[key],
+                        propBody: (jsonx.__inline) ? jsonx.__inline[key] : '',
+                        jsonx,
+                        functionProperty: key,
+                    });
+                }
+            });
+        }
+        return allProps;
     }
-
     /**
      * Returns a resolved object that has React Components pulled from window.__jsonx_custom_elements
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
      * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, asyncprops, windowprops, evalProps, insertedComponents);
      * @returns {Object} resolved object of with React Components from a window property window.__jsonx_custom_elements
      */
-    function getWindowComponents(options = {}) {
-      const { allProps, jsonx, } = options;
-      const windowComponents = jsonx.__windowComponents;
-      const window = this.window || (typeof global$2!=="undefined" ? global$2 : window).window || {};
-      const windowFuncPrefix = 'func:window.__jsonx_custom_elements';
-      // if (jsonx.hasWindowComponent && window.__jsonx_custom_elements) {
-      Object.keys(windowComponents).forEach(key => {
-        const windowKEY = (typeof windowComponents[ key ] === 'string')
-          ? windowComponents[ key ].replace(`${windowFuncPrefix}.`, '')
-          : '';
-        if (typeof windowComponents[ key ] === 'string' && windowComponents[ key ].indexOf(windowFuncPrefix) !== -1 && typeof window.__jsonx_custom_elements[ windowKEY ] === 'function') {
-          const windowComponentElement = window.__jsonx_custom_elements[ windowKEY ];
-          const windowComponentProps = (allProps[ '__windowComponentProps' ]) ? allProps[ '__windowComponentProps' ]
-            : this.props;
-          allProps[ key ] = react.createElement(
-            windowComponentElement,
-            windowComponentProps,
-            null);
-        }
-      });
-      return allProps;
+    function getWindowComponents(options = { jsonx: {} }) {
+        const { allProps, jsonx, } = options;
+        const windowComponents = jsonx.__windowComponents;
+        //@ts-ignore
+        const window = this.window || (typeof global$2!=="undefined" ? global$2 : window).window || {};
+        const windowFuncPrefix = 'func:window.__jsonx_custom_elements';
+        // if (jsonx.hasWindowComponent && window.__jsonx_custom_elements) {
+        Object.keys(windowComponents).forEach(key => {
+            const windowKEY = (typeof windowComponents[key] === 'string')
+                ? windowComponents[key].replace(`${windowFuncPrefix}.`, '')
+                : '';
+            if (typeof windowComponents[key] === 'string' && windowComponents[key].indexOf(windowFuncPrefix) !== -1 && typeof window.__jsonx_custom_elements[windowKEY] === 'function') {
+                const windowComponentElement = window.__jsonx_custom_elements[windowKEY];
+                const windowComponentProps = (allProps['__windowComponentProps']) ? allProps['__windowComponentProps']
+                    : this.props;
+                allProps[key] = react.createElement(windowComponentElement, windowComponentProps, null);
+            }
+        });
+        return allProps;
     }
-
     /**
      * Returns computed properties for React Components and any property that's prefixed with __ is a computedProperty
-     * @param {Object} options 
-     * @param {Object} options.jsonx - Valid JSONX JSON 
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
      * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
      * @param {Number} options.renderIndex - number used for React key prop
      * @param {function} [options.logError=console.error] - error logging function
@@ -45127,7 +44973,7 @@ var VXA = (function (exports) {
       children: [ [Object] ],
       asyncprops: { auth: [Array], username: [Array] },
       __dangerouslyEvalProps: { getUsername: '(user={})=>user.name' },
-      __dangerouslyInsertComponents: { myComponent: [Object] } 
+      __dangerouslyInsertComponents: { myComponent: [Object] }
     const resources = {
       user: {
         name: 'jsonx',
@@ -45162,85 +45008,80 @@ var VXA = (function (exports) {
      *
      */
     function getComputedProps(options = {}) {
-      // eslint-disable-next-line
-      const { jsonx = {}, resources = {}, renderIndex, logError = console.error, useReduxState=true, ignoreReduxPropsInComponentLibraries=true, disableRenderIndexKey=true, componentLibraries, debug, } = options;
-      try {
-        const componentThisProp = (jsonx.thisprops)
-          ? Object.assign({
-            __jsonx: {
-              _component: jsonx,
-              _resources: resources,
-            },
-          }, this.props,
-          jsonx.props,
-          (useReduxState && !jsonx.ignoreReduxProps && (ignoreReduxPropsInComponentLibraries && !componentLibraries[ jsonx.component ]))
-            ? (this.props && this.props.getState) ? this.props.getState() : {}
-            : {}
-          )
-          : undefined;
-        const windowTraverse = typeof window !== 'undefined' ? window : {};
-        const asyncprops = jsonx.asyncprops ? getJSONXProps({ jsonx, propName: 'asyncprops', traverseObject: resources, }) : {};
-        const resourceprops = jsonx.resourceprops ? getJSONXProps({ jsonx, propName: 'resourceprops', traverseObject: resources, }) : {};
-        const windowprops = jsonx.windowprops ? getJSONXProps({ jsonx, propName: 'windowprops', traverseObject: windowTraverse, }) : {};
-        const thisprops = jsonx.thisprops ? getJSONXProps({ jsonx, propName: 'thisprops', traverseObject: componentThisProp, }) : {};
-        const thisstate = jsonx.thisstate ? getJSONXProps({ jsonx, propName: 'thisstate', traverseObject: this.state, }) : {};
-
-        //allowing javascript injections
-        const evalProps = (jsonx.__dangerouslyEvalProps || jsonx.__dangerouslyBindEvalProps)
-          ? getEvalProps.call(this, { jsonx, })
-          : {};
-        const insertedComponents = (jsonx.__dangerouslyInsertComponents)
-          ? getComponentProps.call(this, { jsonx, resources, debug, })
-          : {};
-        const insertedReactComponents = (jsonx.__dangerouslyInsertReactComponents || jsonx.__dangerouslyInsertJSONXComponents)
-          ? getReactComponentProps.call(this, { jsonx, debug, })
-          : {};
-        const insertedComputedComponents = (jsonx.__dangerouslyInsertFunctionComponents  || jsonx.__dangerouslyInsertClassComponents)
-          ? getReactComponents.call(this, { jsonx, debug, })
-          : {};
-        
-        const evalAllProps = (jsonx.__dangerouslyEvalAllProps)
-          ? getEvalProps.call(this, { jsonx, })
-          : {};
-        const allProps = Object.assign({}, this.disableRenderIndexKey || disableRenderIndexKey ? {}: { key: renderIndex, }, jsonx.props, thisprops, thisstate, resourceprops, asyncprops, windowprops, evalProps, insertedComponents, insertedReactComponents, insertedComputedComponents);
-        const computedProps = Object.assign({}, allProps,
-          jsonx.__functionProps ? getFunctionProps.call(this, { allProps, jsonx, }) : {},
-          jsonx.__windowComponents ? getWindowComponents.call(this, { allProps, jsonx, }) : {},
-          jsonx.__spreadComponent ? getChildrenComponents.call(this, { allProps, jsonx, }) : {},
-          evalAllProps);
-        if (jsonx.debug) console.debug({ jsonx, computedProps, });
-        return computedProps;
-      } catch (e) {
-        debug && logError(e, (e.stack) ? e.stack : 'no stack');
-        return null;
-      }
+        // eslint-disable-next-line
+        const { jsonx = {}, resources = {}, renderIndex, logError = console.error, useReduxState = true, ignoreReduxPropsInComponentLibraries = true, disableRenderIndexKey = true, debug, componentLibraries = {} } = options;
+        try {
+            const componentThisProp = (jsonx.thisprops)
+                ? Object.assign({
+                    __jsonx: {
+                        _component: jsonx,
+                        _resources: resources,
+                    },
+                }, this.props, jsonx.props, 
+                //@ts-ignore
+                (useReduxState && !jsonx.ignoreReduxProps && (ignoreReduxPropsInComponentLibraries && !componentLibraries[jsonx.component]))
+                    ? (this.props && this.props.getState) ? this.props.getState() : {}
+                    : {})
+                : undefined;
+            const windowTraverse = typeof window !== 'undefined' ? window : {};
+            const asyncprops = jsonx.asyncprops ? getJSONXProps({ jsonx, propName: 'asyncprops', traverseObject: resources, }) : {};
+            const resourceprops = jsonx.resourceprops ? getJSONXProps({ jsonx, propName: 'resourceprops', traverseObject: resources, }) : {};
+            const windowprops = jsonx.windowprops ? getJSONXProps({ jsonx, propName: 'windowprops', traverseObject: windowTraverse, }) : {};
+            const thisprops = jsonx.thisprops ? getJSONXProps({ jsonx, propName: 'thisprops', traverseObject: componentThisProp, }) : {};
+            const thisstate = jsonx.thisstate ? getJSONXProps({ jsonx, propName: 'thisstate', traverseObject: this.state, }) : {};
+            const thiscontext = jsonx.thiscontext ? getJSONXProps({ jsonx, propName: 'thiscontext', traverseObject: this || {}, }) : {};
+            //allowing javascript injections
+            const evalProps = (jsonx.__dangerouslyEvalProps || jsonx.__dangerouslyBindEvalProps)
+                ? getEvalProps.call(this, { jsonx, })
+                : {};
+            const insertedComponents = (jsonx.__dangerouslyInsertComponents)
+                ? getComponentProps.call(this, { jsonx, resources, debug, })
+                : {};
+            const insertedReactComponents = (jsonx.__dangerouslyInsertReactComponents || jsonx.__dangerouslyInsertJSONXComponents)
+                ? getReactComponentProps.call(this, { jsonx, debug, })
+                : {};
+            const insertedComputedComponents = (jsonx.__dangerouslyInsertFunctionComponents || jsonx.__dangerouslyInsertClassComponents)
+                ? getReactComponents.call(this, { jsonx, debug, })
+                : {};
+            const evalAllProps = (jsonx.__dangerouslyEvalAllProps)
+                ? getEvalProps.call(this, { jsonx, })
+                : {};
+            const allProps = Object.assign({}, this.disableRenderIndexKey || disableRenderIndexKey ? {} : { key: renderIndex, }, jsonx.props, thisprops, thisstate, thiscontext, resourceprops, asyncprops, windowprops, evalProps, insertedComponents, insertedReactComponents, insertedComputedComponents);
+            const computedProps = Object.assign({}, allProps, jsonx.__functionProps ? getFunctionProps.call(this, { allProps, jsonx, }) : {}, jsonx.__windowComponents ? getWindowComponents.call(this, { allProps, jsonx, }) : {}, jsonx.__spreadComponent ? getChildrenComponents.call(this, { allProps, jsonx, }) : {}, evalAllProps);
+            if (jsonx.debug)
+                console.debug({ jsonx, computedProps, });
+            return computedProps;
+        }
+        catch (e) {
+            debug && logError(e, (e.stack) ? e.stack : 'no stack');
+            return null;
+        }
     }
 
     var jsonxProps = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        STRIP_COMMENTS: STRIP_COMMENTS,
-        ARGUMENT_NAMES: ARGUMENT_NAMES,
-        getParamNames: getParamNames,
-        getJSONXProps: getJSONXProps,
-        getChildrenComponents: getChildrenComponents,
-        boundArgsReducer: boundArgsReducer,
-        getEvalProps: getEvalProps,
-        getComponentProps: getComponentProps,
-        getReactComponents: getReactComponents,
-        getReactComponentProps: getReactComponentProps,
-        getFunctionFromProps: getFunctionFromProps,
-        getFunctionProps: getFunctionProps,
-        getWindowComponents: getWindowComponents,
-        getComputedProps: getComputedProps
+      STRIP_COMMENTS: STRIP_COMMENTS,
+      ARGUMENT_NAMES: ARGUMENT_NAMES,
+      getParamNames: getParamNames,
+      getJSONXProps: getJSONXProps,
+      getChildrenComponents: getChildrenComponents,
+      boundArgsReducer: boundArgsReducer,
+      getEvalProps: getEvalProps,
+      getComponentProps: getComponentProps,
+      getReactComponents: getReactComponents,
+      getReactComponentProps: getReactComponentProps,
+      getFunctionFromProps: getFunctionFromProps,
+      getFunctionProps: getFunctionProps,
+      getWindowComponents: getWindowComponents,
+      getComputedProps: getComputedProps
     });
 
     /**
      * returns a valid jsonx.children property
      * @param {Object} options
-     * @param {Object} [options.jsonx ={}]- Valid JSONX JSON 
-     * @param {Object} [options.props=options.jsonx.children] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops) 
-     * @returns {Object[]|String} returns a valid jsonx.children property that's either an array of JSONX objects or a string 
-     * @example 
+     * @param {Object} [options.jsonx ={}]- Valid JSONX JSON
+     * @param {Object} [options.props=options.jsonx.children] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
+     * @returns {Object[]|String} returns a valid jsonx.children property that's either an array of JSONX objects or a string
+     * @example
      * const sampleJSONX = {
       component: 'div',
       props: {
@@ -45277,59 +45118,59 @@ var VXA = (function (exports) {
     const JSONXChildrenPTag = getChildrenProperty({ jsonx: sampleJSONX.children[ 0 ], }); //=>hello world
      */
     function getChildrenProperty(options = {}) {
-      const { jsonx = {}, } = options;
-      const props = options.props || jsonx.props || {};
-      if (typeof props._children!=='undefined' /* && !jsonx.children */) {
-        if (Array.isArray(props._children) || typeof props._children === 'string' || typeof props._children === 'number'){
-          return props._children;
-        } else {
-          return jsonx.children;
+        const { jsonx = {}, } = options;
+        const props = options.props || jsonx.props || {};
+        if (typeof props._children !== 'undefined' /* && !jsonx.children */) {
+            if (Array.isArray(props._children) || typeof props._children === 'string' || typeof props._children === 'number') {
+                return props._children;
+            }
+            else {
+                return jsonx.children;
+            }
         }
-      } else if (typeof jsonx.children === 'undefined'){
-        if (props && props.children && (typeof props.children !== 'undefined' || Array.isArray(props.children))) {
-          return props.children;
-        } else {
-          return null;  
+        else if (typeof jsonx.children === 'undefined') {
+            if (props && props.children && (typeof props.children !== 'undefined' || Array.isArray(props.children))) {
+                return props.children;
+            }
+            else {
+                return null;
+            }
         }
-      } else {
-        return jsonx.children;
-      }
+        else {
+            return jsonx.children;
+        }
     }
-
     /**
      * Used to pass properties down to child components if passprops is set to true
      * @param {Object} options
-     * @param {Object} [options.jsonx ={}] - Valid JSONX JSON 
-     * @param {Object} [options.childjsonx ={}] - Valid JSONX JSON 
-     * @param {Number} options.renderIndex - React key property 
-     * @param {Object} [options.props=options.jsonx.props] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops) 
-     * @returns {Object|String} returns a valid  Valid JSONX Child object or a string 
+     * @param {Object} [options.jsonx ={}] - Valid JSONX JSON
+     * @param {Object} [options.childjsonx ={}] - Valid JSONX JSON
+     * @param {Number} options.renderIndex - React key property
+     * @param {Object} [options.props=options.jsonx.props] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
+     * @returns {Object|String} returns a valid  Valid JSONX Child object or a string
      */
     function getChildrenProps(options = {}) {
-      const { jsonx = {}, childjsonx, renderIndex, } = options;
-      const props = options.props || jsonx.props || {};
-
-      return (jsonx.passprops && typeof childjsonx==='object')
-        ? Object.assign({},
-          childjsonx, {
-            props: Object.assign({},
-              props,
-              ((childjsonx.thisprops && childjsonx.thisprops.style) // this is to make sure when you bind props, if you've defined props in a dynamic property, to not use bind props to  remove passing down styles
-                || (childjsonx.asyncprops && childjsonx.asyncprops.style)
-                || (childjsonx.windowprops && childjsonx.windowprops.style))
-                ? {}
-                : {
-                  style: {},
-                },
-              childjsonx.props,
-              { key: renderIndex + Math.random(), }),
-          })
-        : childjsonx;
+        const { jsonx = {}, childjsonx, renderIndex, } = options;
+        const props = options.props || jsonx.props || {};
+        return (jsonx.passprops && typeof childjsonx === 'object')
+            ? Object.assign({}, childjsonx, {
+                props: Object.assign({}, props, ((childjsonx.thisprops && childjsonx.thisprops.style) // this is to make sure when you bind props, if you've defined props in a dynamic property, to not use bind props to  remove passing down styles
+                    || (childjsonx.asyncprops && childjsonx.asyncprops.style)
+                    || (childjsonx.windowprops && childjsonx.windowprops.style))
+                    ? {}
+                    : {
+                        style: {},
+                    }, childjsonx.props, {
+                    key: (typeof renderIndex !== 'undefined')
+                        ? renderIndex + Math.random()
+                        : Math.random(),
+                }),
+            })
+            : childjsonx;
     }
-
     /**
      * returns React Child Elements via JSONX
-     * @param {*} options 
+     * @param {*} options
      * @property {object} this - options for getReactElementFromJSONX
      * @property {Object} [this.componentLibraries] - react components to render with JSONX
      * @property {boolean} [this.debug=false] - use debug messages
@@ -45337,39 +45178,37 @@ var VXA = (function (exports) {
      * @property {string[]} [this.boundedComponents=[]] - list of components that require a bound this context (usefult for redux router)
      */
     function getJSONXChildren(options = {}) {
-      // eslint-disable-next-line
-      const { jsonx, resources, renderIndex, logError = console.error, } = options;
-      try {
-        const props = options.props || jsonx.props || {};
-        jsonx.children = getChildrenProperty({ jsonx, props, });
-        props._children = undefined;
-        delete props._children;
-
-        return (jsonx.children && Array.isArray(jsonx.children) && typeof jsonx.children !== 'string')
-          ? jsonx.children.map(childjsonx => getReactElementFromJSONX.call(this, getChildrenProps({ jsonx, childjsonx, props, renderIndex, }), resources))
-          : jsonx.children;
-
-      } catch (e) {
-        logError(e);
-        return null;
-      }
+        // eslint-disable-next-line
+        const { jsonx, resources, renderIndex, logError = console.error, } = options;
+        try {
+            const props = options.props || jsonx.props || {};
+            jsonx.children = getChildrenProperty({ jsonx, props, });
+            props._children = undefined;
+            delete props._children;
+            return (jsonx.children && Array.isArray(jsonx.children) && typeof jsonx.children !== 'string')
+                //@ts-ignore
+                ? jsonx.children.map(childjsonx => getReactElementFromJSONX.call(this, getChildrenProps({ jsonx, childjsonx, props, renderIndex, }), resources))
+                : jsonx.children;
+        }
+        catch (e) {
+            this && this.debug && logError(e, (e.stack) ? e.stack : 'no stack');
+            return null;
+        }
     }
 
     var jsonxChildren = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        getChildrenProperty: getChildrenProperty,
-        getChildrenProps: getChildrenProps,
-        getJSONXChildren: getJSONXChildren
+      getChildrenProperty: getChildrenProperty,
+      getChildrenProps: getChildrenProps,
+      getJSONXChildren: getJSONXChildren
     });
 
     // import React, { createElement, } from 'react';
     const createElement = react.createElement;
     const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, DynamicComponent: DynamicComponent$1, } = jsonxComponents;
-    const { getComputedProps: getComputedProps$1, } = jsonxProps;
-    const { getJSONXChildren: getJSONXChildren$1, } = jsonxChildren;
-    const { displayComponent: displayComponent$1, } = jsonxUtils;
+    const { getComputedProps: getComputedProps$1 } = jsonxProps;
+    const { getJSONXChildren: getJSONXChildren$1 } = jsonxChildren;
+    const { displayComponent: displayComponent$1 } = jsonxUtils;
     let renderIndex = 0;
-
     /**
      * Use React.createElement and JSONX JSON to create React elements
      * @example
@@ -45386,42 +45225,75 @@ var VXA = (function (exports) {
      * @property {string[]} [this.boundedComponents=[]] - list of components that require a bound this context (usefult for redux router)
      * @returns {function} React element via React.createElement
      */
-    function getReactElementFromJSONX(jsonx = {}, resources = {}) {
-      // eslint-disable-next-line
-      const { componentLibraries = {}, debug = false, returnJSON=false, logError = console.error, boundedComponents = [], disableRenderIndexKey = true, } = this || {};
-      // const componentLibraries = this.componentLibraries;
-      if (!jsonx) return null;
-      if (jsonx.type) jsonx.component = jsonx.type;
-      if (validSimpleJSONXSyntax(jsonx)) jsonx = simpleJSONXSyntax(jsonx);
-      if (!jsonx.component) return createElement('span', {}, debug ? 'Error: Missing Component Object' : '');
-      try {
-        const components = Object.assign({ DynamicComponent: DynamicComponent$1.bind(this), }, componentMap$1, this.reactComponents);
-
-        const reactComponents = (boundedComponents.length)
-          ? getBoundedComponents$1.call(this, { boundedComponents, reactComponents: components, })
-          : components;
-        renderIndex++;
-        const element = getComponentFromMap$1({ jsonx, reactComponents, componentLibraries, debug, logError, });
-        const props = getComputedProps$1.call(this, { jsonx, resources, renderIndex, componentLibraries, debug, logError, disableRenderIndexKey, });
-        const displayElement = (jsonx.comparisonprops)
-          ? displayComponent$1.call(this, { jsonx, props, renderIndex, componentLibraries, debug, })
-          : true;
-        if (displayElement) {
-          const children = getJSONXChildren$1.call(this, { jsonx, props, resources, renderIndex, });
-          if (returnJSON) return { type:element, props, children, };
-          return createElement(element, props, children);
-        } else {
-          return null;
+    function getReactElementFromJSONX(jsonx, resources = {}) {
+        // eslint-disable-next-line
+        const { componentLibraries = {}, debug = false, returnJSON = false, logError = console.error, boundedComponents = [], disableRenderIndexKey = true, } = this || {};
+        // const componentLibraries = this.componentLibraries;
+        if (!jsonx)
+            return null;
+        if (jsonx.type)
+            jsonx.component = jsonx.type;
+        if (validSimpleJSONXSyntax(jsonx))
+            jsonx = simpleJSONXSyntax(jsonx);
+        if (!jsonx.component)
+            return createElement("span", {}, debug ? "Error: Missing Component Object" : "");
+        try {
+            const components = Object.assign({ DynamicComponent: DynamicComponent$1.bind(this) }, componentMap$1, this.reactComponents);
+            const reactComponents = boundedComponents.length
+                ? getBoundedComponents$1.call(this, {
+                    boundedComponents,
+                    reactComponents: components,
+                })
+                : components;
+            renderIndex++;
+            const element = getComponentFromMap$1({
+                jsonx,
+                reactComponents,
+                componentLibraries,
+                debug,
+                logError,
+            });
+            const props = getComputedProps$1.call(this, {
+                jsonx,
+                resources,
+                renderIndex,
+                componentLibraries,
+                debug,
+                logError,
+                disableRenderIndexKey,
+            });
+            const displayElement = jsonx.comparisonprops
+                ? displayComponent$1.call(this, {
+                    jsonx,
+                    props,
+                    renderIndex,
+                    componentLibraries,
+                    debug,
+                })
+                : true;
+            if (displayElement) {
+                const children = getJSONXChildren$1.call(this, {
+                    jsonx,
+                    props,
+                    resources,
+                    renderIndex,
+                });
+                if (returnJSON)
+                    return { type: element, props, children };
+                return createElement(element, props, children);
+            }
+            else {
+                return null;
+            }
         }
-      } catch (e) {
-        if (debug) {
-          logError({ jsonx, resources, }, 'this', this);
-          logError(e, (e.stack) ? e.stack : 'no stack');
+        catch (e) {
+            if (debug) {
+                logError({ jsonx, resources }, "this", this);
+                logError(e, e.stack ? e.stack : "no stack");
+            }
+            throw e;
         }
-        throw e;
-      }
     }
-
     const getRenderedJSON = getReactElementFromJSONX;
     const getReactElement = getReactElementFromJSONX;
     /**
@@ -45429,15 +45301,14 @@ var VXA = (function (exports) {
      * @returns {Object} React
      */
     function __getReact() {
-      return react;
+        return react;
     }
-
     /**
      * Exposes react dom module used in JSONX
      * @returns {Object} ReactDOM
      */
     function __getReactDOM() {
-      return reactDom;
+        return reactDom;
     }
     const _jsonxComponents = jsonxComponents;
 
@@ -45816,31 +45687,30 @@ var VXA = (function (exports) {
 
     // const ROUTE_MAP = new Map();
     const ROUTE_MAP = new Map();
-
     /**
      * Generates a express style regexp for a given route and stores in a Map
      * @param  {string} route The route that should be converted into a regexp
      * @return {Object}       Returns an object with param keys and a path regexp
      */
     function getParameterizedPath(route, options = { useMap: true, }) {
-      if (ROUTE_MAP.has(route) && options.useMap) {
-        return ROUTE_MAP.get(route);
-      } else {
-        var keys = [];
-        var result = new pathToRegexp_1$1(route, keys);
-        // console.log({ route, }, {
-        //   re: result,
-        //   keys,
-        // });
-        ROUTE_MAP.set(route, {
-          re: result,
-          keys: keys,
-        });
-        return { keys:keys, re: result, };
-      }
+        if (ROUTE_MAP.has(route) && options.useMap) {
+            return ROUTE_MAP.get(route);
+        }
+        else {
+            let keys = [];
+            //@ts-ignore
+            let result = new pathToRegexp_1$1(route, keys);
+            // console.log({ route, }, {
+            //   re: result,
+            //   keys,
+            // });
+            ROUTE_MAP.set(route, {
+                re: result,
+                keys,
+            });
+            return { keys, re: result, };
+        }
     }
-
-
     /**
      * Finds a matching dynamic route from manifest
      * @param  {Object|Array} routes   The manifest configuration object
@@ -45848,35 +45718,38 @@ var VXA = (function (exports) {
      * @return {string}          A matching dynamic route
      */
     function findMatchingRoutePath(routes, location, options = {}) {
-      const { return_matching_keys, } = options;
-      let matching;
-      let params;
-      let re;
-      location = (/\?[^\s]+$/.test(location)) ? location.replace(/^([^\s\?]+)\?[^\s]+$/, '$1') : location;
-      const routeArray = Array.isArray(routes) ? routes : Object.keys(routes);
-      routeArray.forEach(function(key){
-        var result = getParameterizedPath(key, options);
-        if (result.re.test(location) && !matching) {
-          matching = key;
-          re = result.re;
-          if (return_matching_keys) {
-            const matchingParams = result.re.exec(matching);
-            const matchingVals = location.match(result.re);
-            params = matchingVals.reduce((result, val, idx) => { 
-              if (idx !== 0 && typeof val === 'string') result[ matchingParams[ idx ].replace(':','') ] = val;
-              return result;          
-            }, {});
-          }
+        const { return_matching_keys, } = options;
+        let matching;
+        let params;
+        let re;
+        location = (/\?[^\s]+$/.test(location)) ? location.replace(/^([^\s\?]+)\?[^\s]+$/, '$1') : location;
+        const routeArray = Array.isArray(routes) ? routes : Object.keys(routes);
+        routeArray.forEach(function (key) {
+            var result = getParameterizedPath(key, options);
+            if (result.re.test(location) && !matching) {
+                matching = key;
+                re = result.re;
+                if (return_matching_keys) {
+                    const matchingParams = result.re.exec(matching);
+                    const matchingVals = location.match(result.re);
+                    if (matchingVals && matchingParams) {
+                        params = matchingVals.reduce((result, val, idx) => {
+                            if (idx !== 0 && typeof val === 'string')
+                                result[matchingParams[idx].replace(':', '')] = val;
+                            return result;
+                        }, {});
+                    }
+                }
+            }
+        });
+        // console.log({ routes, location, matching, });
+        return return_matching_keys && matching ? {
+            route: matching,
+            location,
+            params,
+            re,
         }
-      });
-      // console.log({ routes, location, matching, });
-      return return_matching_keys && matching ? {
-        route: matching,
-        location,
-        params,
-        re,
-      }
-        : matching;
+            : matching;
     }
 
     var store2 = createCommonjsModule(function (module) {
@@ -46287,228 +46160,6 @@ var VXA = (function (exports) {
       parse: parse$2
     };
 
-    /**
-     * Expose `pathToRegexp`.
-     */
-    var compile_1$2 = compile$2;
-
-    /**
-     * Default configs.
-     */
-    var DEFAULT_DELIMITER$1 = '/';
-
-    /**
-     * The main path matching regexp utility.
-     *
-     * @type {RegExp}
-     */
-    var PATH_REGEXP$2 = new RegExp([
-      // Match escaped characters that would otherwise appear in future matches.
-      // This allows the user to escape special characters that won't transform.
-      '(\\\\.)',
-      // Match Express-style parameters and un-named parameters with a prefix
-      // and optional suffixes. Matches appear as:
-      //
-      // ":test(\\d+)?" => ["test", "\d+", undefined, "?"]
-      // "(\\d+)"  => [undefined, undefined, "\d+", undefined]
-      '(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?'
-    ].join('|'), 'g');
-
-    /**
-     * Parse a string for the raw tokens.
-     *
-     * @param  {string}  str
-     * @param  {Object=} options
-     * @return {!Array}
-     */
-    function parse$3 (str, options) {
-      var tokens = [];
-      var key = 0;
-      var index = 0;
-      var path = '';
-      var defaultDelimiter = (options && options.delimiter) || DEFAULT_DELIMITER$1;
-      var whitelist = (options && options.whitelist) || undefined;
-      var pathEscaped = false;
-      var res;
-
-      while ((res = PATH_REGEXP$2.exec(str)) !== null) {
-        var m = res[0];
-        var escaped = res[1];
-        var offset = res.index;
-        path += str.slice(index, offset);
-        index = offset + m.length;
-
-        // Ignore already escaped sequences.
-        if (escaped) {
-          path += escaped[1];
-          pathEscaped = true;
-          continue
-        }
-
-        var prev = '';
-        var name = res[2];
-        var capture = res[3];
-        var group = res[4];
-        var modifier = res[5];
-
-        if (!pathEscaped && path.length) {
-          var k = path.length - 1;
-          var c = path[k];
-          var matches = whitelist ? whitelist.indexOf(c) > -1 : true;
-
-          if (matches) {
-            prev = c;
-            path = path.slice(0, k);
-          }
-        }
-
-        // Push the current path onto the tokens.
-        if (path) {
-          tokens.push(path);
-          path = '';
-          pathEscaped = false;
-        }
-
-        var repeat = modifier === '+' || modifier === '*';
-        var optional = modifier === '?' || modifier === '*';
-        var pattern = capture || group;
-        var delimiter = prev || defaultDelimiter;
-
-        tokens.push({
-          name: name || key++,
-          prefix: prev,
-          delimiter: delimiter,
-          optional: optional,
-          repeat: repeat,
-          pattern: pattern
-            ? escapeGroup$2(pattern)
-            : '[^' + escapeString$2(delimiter === defaultDelimiter ? delimiter : (delimiter + defaultDelimiter)) + ']+?'
-        });
-      }
-
-      // Push any remaining characters.
-      if (path || index < str.length) {
-        tokens.push(path + str.substr(index));
-      }
-
-      return tokens
-    }
-
-    /**
-     * Compile a string to a template function for the path.
-     *
-     * @param  {string}             str
-     * @param  {Object=}            options
-     * @return {!function(Object=, Object=)}
-     */
-    function compile$2 (str, options) {
-      return tokensToFunction$2(parse$3(str, options), options)
-    }
-
-    /**
-     * Expose a method for transforming tokens into the path function.
-     */
-    function tokensToFunction$2 (tokens, options) {
-      // Compile all the tokens into regexps.
-      var matches = new Array(tokens.length);
-
-      // Compile all the patterns before compilation.
-      for (var i = 0; i < tokens.length; i++) {
-        if (typeof tokens[i] === 'object') {
-          matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$', flags$2(options));
-        }
-      }
-
-      return function (data, options) {
-        var path = '';
-        var encode = (options && options.encode) || encodeURIComponent;
-        var validate = options ? options.validate !== false : true;
-
-        for (var i = 0; i < tokens.length; i++) {
-          var token = tokens[i];
-
-          if (typeof token === 'string') {
-            path += token;
-            continue
-          }
-
-          var value = data ? data[token.name] : undefined;
-          var segment;
-
-          if (Array.isArray(value)) {
-            if (!token.repeat) {
-              throw new TypeError('Expected "' + token.name + '" to not repeat, but got array')
-            }
-
-            if (value.length === 0) {
-              if (token.optional) continue
-
-              throw new TypeError('Expected "' + token.name + '" to not be empty')
-            }
-
-            for (var j = 0; j < value.length; j++) {
-              segment = encode(value[j], token);
-
-              if (validate && !matches[i].test(segment)) {
-                throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '"')
-              }
-
-              path += (j === 0 ? token.prefix : token.delimiter) + segment;
-            }
-
-            continue
-          }
-
-          if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-            segment = encode(String(value), token);
-
-            if (validate && !matches[i].test(segment)) {
-              throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but got "' + segment + '"')
-            }
-
-            path += token.prefix + segment;
-            continue
-          }
-
-          if (token.optional) continue
-
-          throw new TypeError('Expected "' + token.name + '" to be ' + (token.repeat ? 'an array' : 'a string'))
-        }
-
-        return path
-      }
-    }
-
-    /**
-     * Escape a regular expression string.
-     *
-     * @param  {string} str
-     * @return {string}
-     */
-    function escapeString$2 (str) {
-      return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1')
-    }
-
-    /**
-     * Escape the capturing group by escaping special characters and meaning.
-     *
-     * @param  {string} group
-     * @return {string}
-     */
-    function escapeGroup$2 (group) {
-      return group.replace(/([=!:$/()])/g, '\\$1')
-    }
-
-    /**
-     * Get the flags for a regexp from the options.
-     *
-     * @param  {Object} options
-     * @return {string}
-     */
-    function flags$2 (options) {
-      return options && options.sensitive ? '' : 'i'
-    }
-
     // import { insertScriptParams } from '../../internal_types/config';
     var cacheKeyPrefix = 'exp@';
     var cacheKeySuffix = ';';
@@ -46644,7 +46295,7 @@ var VXA = (function (exports) {
                                                 case 0:
                                                     resource = resources[prop];
                                                     fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
-                                                    toPath = compile_1$2(fetchPath);
+                                                    toPath = compile_1$1(fetchPath);
                                                     basePath = toPath(templateRoute.params);
                                                     fetchURL = "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                     fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
@@ -46691,7 +46342,7 @@ var VXA = (function (exports) {
      */
     function setBodyPathnameId(pathname) {
         if (document && document.body && document.body.setAttribute) {
-            document.body.setAttribute('id', encodeURIComponent(pathname).replace(new RegExp(/%2F|%2/, 'g'), '_'));
+            document.body.setAttribute("id", encodeURIComponent(pathname).replace(new RegExp(/%2F|%2/, "g"), "_"));
         }
     }
     function insertJavaScript(_a) {
@@ -46702,10 +46353,10 @@ var VXA = (function (exports) {
                 return;
             var s0 = d.getElementsByTagName(s)[0];
             var j = d.createElement(s);
-            j.setAttribute('async', async.toString());
+            j.setAttribute("async", async.toString());
             j.id = tagId;
-            j.setAttribute('type', "text/javascript");
-            j.setAttribute('src', src);
+            j.setAttribute("type", "text/javascript");
+            j.setAttribute("src", src);
             if (onload)
                 j.onload = onload;
             // @ts-ignore
@@ -46724,9 +46375,9 @@ var VXA = (function (exports) {
             var s0 = d.getElementsByTagName(l)[0];
             var ss = d.createElement(l);
             ss.id = tagId;
-            ss.setAttribute('rel', "stylesheet");
-            ss.setAttribute('type', "text/css");
-            ss.setAttribute('href', src);
+            ss.setAttribute("rel", "stylesheet");
+            ss.setAttribute("type", "text/css");
+            ss.setAttribute("href", src);
             if (onload)
                 ss.onload = onload;
             if (s0 && s0.parentNode)
@@ -46780,10 +46431,6 @@ var VXA = (function (exports) {
         });
     }
 
-    var routes = createCommonjsModule(function (module, exports) {
-    !function(e){module.exports=e();}(function(){return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof commonjsRequire=="function"&&commonjsRequire;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r);}return n[o].exports}var i=typeof commonjsRequire=="function"&&commonjsRequire;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-
-
     /**
      * Convert path to route object
      *
@@ -46794,7 +46441,7 @@ var VXA = (function (exports) {
      * @return {Object}
      */
 
-    var Route = function(path){
+    var Route$1 = function(path){
       //using 'new' is optional
 
       var src, re, keys = [];
@@ -46901,7 +46548,7 @@ var VXA = (function (exports) {
      * @return {Object}
      */
 
-    var Router = function(){
+    var Router$1 = function(){
       //using 'new' is optional
       return {
         routes: [],
@@ -46914,7 +46561,7 @@ var VXA = (function (exports) {
             throw new Error('path is already defined: ' + path);
           }
 
-          var route = Route(path);
+          var route = Route$1(path);
           route.fn = fn;
 
           this.routes.push(route);
@@ -46950,87 +46597,83 @@ var VXA = (function (exports) {
       }
     };
 
-    Router.Route = Route;
-    Router.pathToRegExp = pathToRegExp;
-    Router.match = match;
+    Router$1.Route = Route$1;
+    Router$1.pathToRegExp = pathToRegExp;
+    Router$1.match = match;
     // back compat
-    Router.Router = Router;
+    Router$1.Router = Router$1;
 
-    module.exports = Router;
+    var routes = Router$1;
 
-    },{}]},{},[1])
-    (1)
-    });
-    });
-
-    const Router$1 = routes;
-
+    // @ts-ignore
+    const Router$2 = routes;
     /**
      * Catches all events on event emitter passed to the function
      * @param {Event Emitter} emitter - websocket/socket.io(client/server)/event emitter to intercept all incoming events
-     * @param {Function} handler - socket.io like middleware (calls handler with packet and next) 
+     * @param {Function} handler - socket.io like middleware (calls handler with packet and next)
      */
     function patchEmitter(emitter, handler) {
-      emitter._onevent = emitter.onevent;
-      const next = () => { };
-      // Replace the onevent function with a handler that captures all messages
-      emitter.onevent = function (packet) {
-        handler(packet.data, next);
-        // DO NOT USE https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
-        // emitter._onevent.apply(emitter, Array.prototype.slice.call(arguments));
-        const args = new Array(arguments.length);
-        for(var i = 0; i < args.length; ++i) {
-          args[i] = arguments[i];
-        }
-        emitter._onevent.apply(emitter, args);
-      };
+        emitter._onevent = emitter.onevent;
+        const next = () => { };
+        // Replace the onevent function with a handler that captures all messages
+        emitter.onevent = function (packet) {
+            handler(packet.data, next);
+            // DO NOT USE https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+            // emitter._onevent.apply(emitter, Array.prototype.slice.call(arguments));
+            const args = new Array(arguments.length);
+            for (var i = 0; i < args.length; ++i) {
+                args[i] = arguments[i];
+            }
+            if (emitter._onevent)
+                emitter._onevent.apply(emitter, args);
+        };
     }
-
     /**
      * Returns socket.io like middleware function to handle incoming events based on their path
      * @param {Event emitter} options.socket - websocket/socket.io(client/server)/event emitter
-     * @param {object} options.router - routes object 
+     * @param {object} options.router - routes object
      * @see https://www.npmjs.com/package/routes
      * @return {function} router handler middleware function
      */
-    function routerMiddleware({ socket, router,  }) {
-      return function routeHandler(packet, next) {
-        // console.log({ packet, socket });
-        const [path, body,] = packet;
-        const match = router.match(path);
-        const req = { path, body, socket, };
-        let cb = (data) => data;
-        const res = {
-          send(data) {
-            try {
-              socket.emit(path, cb(data));
-              cb = null;
-            } catch (e) {
-              socket.emit('error', new Error('Response already sent'));
+    function routerMiddleware({ socket, router, }) {
+        return function routeHandler(packet, next) {
+            // console.log({ packet, socket });
+            const [path, body,] = packet;
+            const match = router.match(path);
+            const req = { path, body, socket, };
+            let cb = (data) => data;
+            const res = {
+                send(data) {
+                    try {
+                        socket.emit(path, cb(data));
+                        cb = null;
+                    }
+                    catch (e) {
+                        socket.emit('error', new Error('Response already sent'));
+                    }
+                },
+            };
+            if (match) {
+                req.params = match.params;
+                req.splats = match.splats;
+                match.fn(req, res, match);
             }
-          },
+            next();
         };
-        if (match) {
-          req.params = match.params;
-          req.splats = match.splats;
-          match.fn(req, res, match);
-        }
-        next();
-      };
     }
-
     /**
      * Responds to events based on their route and a router
      * @param {Event emitter} options.socket - websocket/socket.io(client/server)/event emitter
-     * @param {object} options.router - routes object 
+     * @param {object} options.router - routes object
      * @see https://www.npmjs.com/package/routes
      */
-    function EventRouter({ socket, router,  }) {
-      if (socket.use) {
-        socket.use(routerMiddleware({ socket, router,  }));
-      } else {
-        patchEmitter(socket, routerMiddleware({ socket, router,  }));
-      }
+    function EventRouter({ socket, router, }) {
+        if (socket.use) {
+            socket.use(routerMiddleware({ socket, router, }));
+        }
+        else {
+            patchEmitter(socket, routerMiddleware({ socket, router, }));
+        }
     }
 
     // import { insertScriptParams } from '../../internal_types/config';
@@ -47048,7 +46691,8 @@ var VXA = (function (exports) {
                 functionName: propFunc
             });
         };
-        var router = new Router$1();
+        // @ts-ignore
+        var router = Router$2();
         router.addRoute("*", function (req) {
             var propFunc = req.body.function || req.path;
             var props = req.body && req.body.props && Array.isArray(req.body.props)
@@ -47208,7 +46852,7 @@ var VXA = (function (exports) {
             var templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
                 return_matching_keys: true
             });
-            console.log({ templateRoute: templateRoute, name: name, type: type });
+            // console.log({ templateRoute, name, type });
             if (type === "overlay" && templateRoute)
                 hasOverlayLayer = true;
             if (!templateRoute &&
@@ -47296,6 +46940,7 @@ var VXA = (function (exports) {
                             viewdata: {},
                             ui: __assign(__assign({}, ui), { hasOverlayLayer: false })
                         });
+                        // console.log({ action });
                         dispatcher(action);
                         invokeWebhooks({
                             Functions: Functions,
@@ -47519,7 +47164,8 @@ var VXA = (function (exports) {
                 user: user,
                 setUI: setUI,
                 setTemplates: setTemplates,
-                updateState: function (applicationState) {
+                updateState: function (applicationState) { return setState(applicationState); },
+                setApplicationState: function (applicationState) {
                     return dispatch({ type: "setApplicationState", state: applicationState });
                 }
             }, appProps);
@@ -48415,7 +48061,7 @@ var VXA = (function (exports) {
                         async: true,
                         onload: function () {
                             returnedFile = true;
-                            // console.log('LOADED SCRIPT', umdFilePath);
+                            // console.log("LOADED SCRIPT", { umdFilePath, name });
                             resolve(umdFilePath_1);
                         }
                     });
@@ -48535,6 +48181,12 @@ var VXA = (function (exports) {
                         if (layerObject[applicationRootLayerName].order !== layerMaxOrder)
                             layerObject[applicationRootLayerName].order = layerMaxOrder + 1;
                         configuration.layers = Object.keys(layerObject).map(function (layerName) { return layerObject[layerName]; });
+                        return [4 /*yield*/, addCustomFiles({
+                                type: customFileType.script,
+                                files: options.initialScripts
+                            })];
+                    case 1:
+                        _a.sent();
                         return [4 /*yield*/, Promise.all([
                                 getReactLibrariesAndComponents({
                                     customComponents: options.customComponents
@@ -48548,7 +48200,7 @@ var VXA = (function (exports) {
                                     files: options.customStyles
                                 })
                             ])];
-                    case 1:
+                    case 2:
                         reactJSONXComponents = (_a.sent())[0];
                         configuration.componentLibraries = reactJSONXComponents.componentLibraries;
                         configuration.reactComponents = reactJSONXComponents.reactComponents;
@@ -48688,7 +48340,10 @@ var VXA = (function (exports) {
                   children: 'Login'
                 },
                 {
-                  component: 'Formik.Formik',
+                  // component: 'form',
+                  debug: true,
+
+                  component: 'formik.Formik',
                   props: {
                     initialValues: {
                       username: '',
@@ -48696,14 +48351,15 @@ var VXA = (function (exports) {
                     },
                   },
                   __dangerouslyInsertFunctionComponents: {
-                    render: {
+                    component: {
+                      functionBody: `let exposeProps={}`,
                       reactComponent: {
                         component: 'form',
                         thisprops: {
                           onSubmit: ['handleSubmit']
                         },
                         children: [{
-                            component: 'Formik.Field',
+                            component: 'formik.Field',
                             props: {
                               type: 'text',
                               name: 'username',
@@ -48711,13 +48367,13 @@ var VXA = (function (exports) {
                             }
                           },
                           {
-                            component: 'Formik.ErrorMessage',
+                            component: 'formik.ErrorMessage',
                             props: {
                               name: 'username'
                             }
                           },
                           {
-                            component: 'Formik.Field',
+                            component: 'formik.Field',
                             props: {
                               type: 'password',
                               name: 'password',
@@ -48790,7 +48446,10 @@ var VXA = (function (exports) {
               },
               children: [{
                   component: 'div',
-                  children: 'hello world!',
+                  thiscontext: {
+                    _children: ['state', 'name']
+                  }
+                  // children: 'hello world!',
                 },
                 {
                   component: 'sayHello',
@@ -48821,9 +48480,10 @@ var VXA = (function (exports) {
                       __dangerouslyBindEvalProps: {
                         onChange: `(function(e){
                       //console.log({e});
-                      //console.log('this',this)
+                      console.log('this',this)
                       //console.log('e.target.value',e.target.value)
-                      this.setState({name:e.target.value})
+                      this.props.updateState({name:e.target.value})
+                      // this.setState({name:e.target.value})
                     })`
                       },
                     },
@@ -48946,12 +48606,12 @@ var VXA = (function (exports) {
         });
     }
 
-    exports.JSONX = getReactElementFromJSONX;
+    exports.JSONX = main;
     exports.React = react;
     exports.ReactDOM = reactDom;
     exports.ViewXApp = ViewXApp;
 
     return exports;
 
-}({}));
+}({}, main));
 //# sourceMappingURL=viewx.vma.web.js.map
