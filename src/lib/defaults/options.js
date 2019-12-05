@@ -9,8 +9,12 @@ export const options = {
     // stylesheets:[url,],
     // }
   ],
-  customScripts: [ /*url,*/ ],
-  customStyles: [ /*url,*/ ],
+  customScripts: [
+    /*url,*/
+  ],
+  customStyles: [
+    /*url,*/
+  ],
   customFunctions: {
     /*Function, */
   },
@@ -33,147 +37,155 @@ export const options = {
     // root,
     {
       order: 100,
-      name: 'root',
-      type: 'applicationRoot',
-    },
+      name: "root",
+      type: "applicationRoot"
+    }
   ],
   settings: {},
   application: {
     state: {
-      name: 'My Application',
-      version: '0.0.1',
+      name: "My Application",
+      version: "0.0.1"
     }
   },
   vxaState: {
     views: {},
     viewdata: {},
     ui: {},
-    user: {},
+    user: {}
   },
   templates: {
     loading: {
-      '/:catchall*': {
+      "/:catchall*": {
         jsonx: {
-          component: 'div',
-          children: 'loading...',
+          component: "div",
+          children: "loading..."
         }
-      },
+      }
     },
     root: {
-      '__error_404': {
+      __error_404: {
         jsonx: {
-          component: 'div',
-          children: [{
-              component: 'h1',
-              children: 'Not Found',
+          component: "div",
+          children: [
+            {
+              component: "h1",
+              children: "Not Found"
             },
             {
-              component: 'div',
+              component: "div",
               thisprops: {
-                _children: ['location', 'pathname']
+                _children: ["location", "pathname"]
               }
             }
           ]
         },
-        pageData: [{
-          tagName: "title",
-          attributes: {},
-          innerHTML: "Not Found"
-        }]
+        pageData: [
+          {
+            tagName: "title",
+            attributes: {},
+            innerHTML: "Not Found"
+          }
+        ]
       },
-      '__error_500': {
+      __error_500: {
         jsonx: {
-          component: 'div',
-          children: [{
-              component: 'h1',
-              children: 'Error',
+          component: "div",
+          children: [
+            {
+              component: "h1",
+              children: "Error"
             },
             {
-              component: 'div',
+              component: "div",
               props: {
                 style: {
-                  padding: '1rem',
-                  margin: '1rem',
-                  border: '1px solid lightgrey'
+                  padding: "1rem",
+                  margin: "1rem",
+                  border: "1px solid lightgrey"
                 }
               },
-              children: [{
-                  component: 'pre',
+              children: [
+                {
+                  component: "pre",
                   resourceprops: {
-                    _children: ['error', 'message']
+                    _children: ["error", "message"]
                   }
                 },
                 {
-                  component: 'pre',
+                  component: "pre",
                   resourceprops: {
-                    _children: ['error', 'stack']
+                    _children: ["error", "stack"]
                   }
                 }
               ]
-            },
-
+            }
           ]
         },
-        pageData: [{
-          tagName: "title",
-          attributes: {},
-          innerHTML: "Error"
-        }]
+        pageData: [
+          {
+            tagName: "title",
+            attributes: {},
+            innerHTML: "Error"
+          }
+        ]
       },
-      '/login': {
+      "/login": {
         jsonx: {
-          component: 'div',
-          children: [{
-              component: 'h1',
-              children: 'Login'
+          component: "div",
+          children: [
+            {
+              component: "h1",
+              children: "Login"
             },
             {
               // component: 'form',
-              debug: true,
+              // debug: true,
 
-              component: 'formik.Formik',
+              component: "formik.Formik",
               props: {
                 initialValues: {
-                  username: '',
-                  password: ''
-                },
+                  username: "",
+                  password: ""
+                }
               },
               __dangerouslyInsertFunctionComponents: {
                 component: {
                   functionBody: `let exposeProps={}`,
                   reactComponent: {
-                    component: 'form',
+                    component: "form",
                     thisprops: {
-                      onSubmit: ['handleSubmit']
+                      onSubmit: ["handleSubmit"]
                     },
-                    children: [{
-                        component: 'formik.Field',
+                    children: [
+                      {
+                        component: "formik.Field",
                         props: {
-                          type: 'text',
-                          name: 'username',
-                          placeholder: 'username',
+                          type: "text",
+                          name: "username",
+                          placeholder: "username"
                         }
                       },
                       {
-                        component: 'formik.ErrorMessage',
+                        component: "formik.ErrorMessage",
                         props: {
-                          name: 'username'
+                          name: "username"
                         }
                       },
                       {
-                        component: 'formik.Field',
+                        component: "formik.Field",
                         props: {
-                          type: 'password',
-                          name: 'password',
+                          type: "password",
+                          name: "password"
                         }
                       },
                       {
-                        component: 'button',
+                        component: "button",
                         props: {
-                          type: 'submit'
+                          type: "submit"
                         },
-                        children: 'Submit'
-                      },
+                        children: "Submit"
+                      }
                     ]
                   }
                 }
@@ -206,13 +218,15 @@ export const options = {
             }
           ]
         },
-        pageData: [{
-          tagName: "title",
-          attributes: {},
-          innerHTML: "User Login"
-        }]
+        pageData: [
+          {
+            tagName: "title",
+            attributes: {},
+            innerHTML: "User Login"
+          }
+        ]
       },
-      '/': {
+      "/": {
         // '/:catchall*': {
         preRenderFunctions: [
           // 'func:viewx.Functions.passOne',
@@ -222,48 +236,52 @@ export const options = {
           // 'func:viewx.Functions.requireAuth',
           // 'func:viewx.Functions.passOne',
         ],
-        pageData: [{
-          tagName: "title",
-          attributes: {},
-          innerHTML: "Sample Simple App"
-        }],
+        pageData: [
+          {
+            tagName: "title",
+            attributes: {},
+            innerHTML: "Sample Simple App"
+          }
+        ],
         jsonx: {
-          component: 'Fragment',
+          component: "Fragment",
           props: {
-            key: 'catchall'
+            key: "catchall"
           },
-          children: [{
-              component: 'div',
+          children: [
+            {
+              component: "div",
               thiscontext: {
-                _children: ['state', 'name']
+                _children: ["state", "name"]
               }
               // children: 'hello world!',
             },
             {
-              component: 'sayHello',
+              component: "sayHello"
             },
             {
-              component: 'h2',
+              component: "h2",
               thisstate: {
-                _children: ['name']
+                _children: ["name"]
               }
             },
             {
-              component: 'div',
+              component: "div",
               props: {
                 style: {
-                  display: 'flex',
+                  display: "flex"
                 }
               },
-              children: [{
-                  component: 'input',
+              children: [
+                {
+                  component: "input",
                   props: {
                     style: {
-                      padding: '5px',
-                    },
+                      padding: "5px"
+                    }
                   },
                   thisstate: {
-                    value: ['name']
+                    value: ["name"]
                   },
                   __dangerouslyBindEvalProps: {
                     onChange: `(function(e){
@@ -273,46 +291,46 @@ export const options = {
                       this.props.updateState({name:e.target.value})
                       // this.setState({name:e.target.value})
                     })`
-                  },
+                  }
                 },
                 {
-                  component: 'Link',
+                  component: "Link",
                   props: {
-                    to: '/modal/hello',
+                    to: "/modal/hello",
                     style: {
-                      padding: '5px',
-                    },
-                  },
-                  children: 'Hello Modal'
-                },
-                {
-                  component: 'Link',
-                  props: {
-                    to: '/about',
-                    style: {
-                      padding: '5px',
+                      padding: "5px"
                     }
                   },
-                  children: 'About Page'
+                  children: "Hello Modal"
                 },
                 {
-                  component: 'Link',
+                  component: "Link",
                   props: {
-                    to: '/page/4',
+                    to: "/about",
                     style: {
-                      padding: '5px',
-                    },
-                  },
-                  children: 'Page 4'
-                },
-                {
-                  component: 'button',
-                  props: {
-                    style: {
-                      padding: '5px',
+                      padding: "5px"
                     }
                   },
-                  children: 'change header',
+                  children: "About Page"
+                },
+                {
+                  component: "Link",
+                  props: {
+                    to: "/page/4",
+                    style: {
+                      padding: "5px"
+                    }
+                  },
+                  children: "Page 4"
+                },
+                {
+                  component: "button",
+                  props: {
+                    style: {
+                      padding: "5px"
+                    }
+                  },
+                  children: "change header",
                   __dangerouslyBindEvalProps: {
                     onClick: `(function(){
                       // console.log('onClick this',this);
@@ -334,24 +352,23 @@ export const options = {
                         }
                       });
                     })`
-                  },
-
+                  }
                 }
               ]
-            },
+            }
           ]
         }
       }
     },
     modal: {
-      '/modal/hello': {
+      "/modal/hello": {
         jsonx: {
-          component: 'ReactModal',
+          component: "ReactModal",
           props: {
-            ariaHideApp: false,
+            ariaHideApp: false
           },
           thisprops: {
-            isOpen: ['ui', 'isRouteLayer_modal_Matched'],
+            isOpen: ["ui", "isRouteLayer_modal_Matched"]
           },
           __dangerouslyBindEvalProps: {
             onRequestClose: `(function(){
@@ -363,9 +380,9 @@ export const options = {
           // __functionProps: {
           //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
           // },
-          children: 'SAY HELLO MODAL',
+          children: "SAY HELLO MODAL"
         }
       }
     }
-  },
+  }
 };

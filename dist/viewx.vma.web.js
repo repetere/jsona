@@ -1,7 +1,5 @@
-var VXA = (function (exports, main) {
+var VXA = (function (exports) {
     'use strict';
-
-    main = main && main.hasOwnProperty('default') ? main['default'] : main;
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -48308,8 +48306,12 @@ var VXA = (function (exports, main) {
         // stylesheets:[url,],
         // }
       ],
-      customScripts: [ /*url,*/ ],
-      customStyles: [ /*url,*/ ],
+      customScripts: [
+        /*url,*/
+      ],
+      customStyles: [
+        /*url,*/
+      ],
       customFunctions: {
         /*Function, */
       },
@@ -48332,147 +48334,155 @@ var VXA = (function (exports, main) {
         // root,
         {
           order: 100,
-          name: 'root',
-          type: 'applicationRoot',
-        },
+          name: "root",
+          type: "applicationRoot"
+        }
       ],
       settings: {},
       application: {
         state: {
-          name: 'My Application',
-          version: '0.0.1',
+          name: "My Application",
+          version: "0.0.1"
         }
       },
       vxaState: {
         views: {},
         viewdata: {},
         ui: {},
-        user: {},
+        user: {}
       },
       templates: {
         loading: {
-          '/:catchall*': {
+          "/:catchall*": {
             jsonx: {
-              component: 'div',
-              children: 'loading...',
+              component: "div",
+              children: "loading..."
             }
-          },
+          }
         },
         root: {
-          '__error_404': {
+          __error_404: {
             jsonx: {
-              component: 'div',
-              children: [{
-                  component: 'h1',
-                  children: 'Not Found',
+              component: "div",
+              children: [
+                {
+                  component: "h1",
+                  children: "Not Found"
                 },
                 {
-                  component: 'div',
+                  component: "div",
                   thisprops: {
-                    _children: ['location', 'pathname']
+                    _children: ["location", "pathname"]
                   }
                 }
               ]
             },
-            pageData: [{
-              tagName: "title",
-              attributes: {},
-              innerHTML: "Not Found"
-            }]
+            pageData: [
+              {
+                tagName: "title",
+                attributes: {},
+                innerHTML: "Not Found"
+              }
+            ]
           },
-          '__error_500': {
+          __error_500: {
             jsonx: {
-              component: 'div',
-              children: [{
-                  component: 'h1',
-                  children: 'Error',
+              component: "div",
+              children: [
+                {
+                  component: "h1",
+                  children: "Error"
                 },
                 {
-                  component: 'div',
+                  component: "div",
                   props: {
                     style: {
-                      padding: '1rem',
-                      margin: '1rem',
-                      border: '1px solid lightgrey'
+                      padding: "1rem",
+                      margin: "1rem",
+                      border: "1px solid lightgrey"
                     }
                   },
-                  children: [{
-                      component: 'pre',
+                  children: [
+                    {
+                      component: "pre",
                       resourceprops: {
-                        _children: ['error', 'message']
+                        _children: ["error", "message"]
                       }
                     },
                     {
-                      component: 'pre',
+                      component: "pre",
                       resourceprops: {
-                        _children: ['error', 'stack']
+                        _children: ["error", "stack"]
                       }
                     }
                   ]
-                },
-
+                }
               ]
             },
-            pageData: [{
-              tagName: "title",
-              attributes: {},
-              innerHTML: "Error"
-            }]
+            pageData: [
+              {
+                tagName: "title",
+                attributes: {},
+                innerHTML: "Error"
+              }
+            ]
           },
-          '/login': {
+          "/login": {
             jsonx: {
-              component: 'div',
-              children: [{
-                  component: 'h1',
-                  children: 'Login'
+              component: "div",
+              children: [
+                {
+                  component: "h1",
+                  children: "Login"
                 },
                 {
                   // component: 'form',
-                  debug: true,
+                  // debug: true,
 
-                  component: 'formik.Formik',
+                  component: "formik.Formik",
                   props: {
                     initialValues: {
-                      username: '',
-                      password: ''
-                    },
+                      username: "",
+                      password: ""
+                    }
                   },
                   __dangerouslyInsertFunctionComponents: {
                     component: {
                       functionBody: `let exposeProps={}`,
                       reactComponent: {
-                        component: 'form',
+                        component: "form",
                         thisprops: {
-                          onSubmit: ['handleSubmit']
+                          onSubmit: ["handleSubmit"]
                         },
-                        children: [{
-                            component: 'formik.Field',
+                        children: [
+                          {
+                            component: "formik.Field",
                             props: {
-                              type: 'text',
-                              name: 'username',
-                              placeholder: 'username',
+                              type: "text",
+                              name: "username",
+                              placeholder: "username"
                             }
                           },
                           {
-                            component: 'formik.ErrorMessage',
+                            component: "formik.ErrorMessage",
                             props: {
-                              name: 'username'
+                              name: "username"
                             }
                           },
                           {
-                            component: 'formik.Field',
+                            component: "formik.Field",
                             props: {
-                              type: 'password',
-                              name: 'password',
+                              type: "password",
+                              name: "password"
                             }
                           },
                           {
-                            component: 'button',
+                            component: "button",
                             props: {
-                              type: 'submit'
+                              type: "submit"
                             },
-                            children: 'Submit'
-                          },
+                            children: "Submit"
+                          }
                         ]
                       }
                     }
@@ -48505,13 +48515,15 @@ var VXA = (function (exports, main) {
                 }
               ]
             },
-            pageData: [{
-              tagName: "title",
-              attributes: {},
-              innerHTML: "User Login"
-            }]
+            pageData: [
+              {
+                tagName: "title",
+                attributes: {},
+                innerHTML: "User Login"
+              }
+            ]
           },
-          '/': {
+          "/": {
             // '/:catchall*': {
             preRenderFunctions: [
               // 'func:viewx.Functions.passOne',
@@ -48521,48 +48533,52 @@ var VXA = (function (exports, main) {
               // 'func:viewx.Functions.requireAuth',
               // 'func:viewx.Functions.passOne',
             ],
-            pageData: [{
-              tagName: "title",
-              attributes: {},
-              innerHTML: "Sample Simple App"
-            }],
+            pageData: [
+              {
+                tagName: "title",
+                attributes: {},
+                innerHTML: "Sample Simple App"
+              }
+            ],
             jsonx: {
-              component: 'Fragment',
+              component: "Fragment",
               props: {
-                key: 'catchall'
+                key: "catchall"
               },
-              children: [{
-                  component: 'div',
+              children: [
+                {
+                  component: "div",
                   thiscontext: {
-                    _children: ['state', 'name']
+                    _children: ["state", "name"]
                   }
                   // children: 'hello world!',
                 },
                 {
-                  component: 'sayHello',
+                  component: "sayHello"
                 },
                 {
-                  component: 'h2',
+                  component: "h2",
                   thisstate: {
-                    _children: ['name']
+                    _children: ["name"]
                   }
                 },
                 {
-                  component: 'div',
+                  component: "div",
                   props: {
                     style: {
-                      display: 'flex',
+                      display: "flex"
                     }
                   },
-                  children: [{
-                      component: 'input',
+                  children: [
+                    {
+                      component: "input",
                       props: {
                         style: {
-                          padding: '5px',
-                        },
+                          padding: "5px"
+                        }
                       },
                       thisstate: {
-                        value: ['name']
+                        value: ["name"]
                       },
                       __dangerouslyBindEvalProps: {
                         onChange: `(function(e){
@@ -48572,46 +48588,46 @@ var VXA = (function (exports, main) {
                       this.props.updateState({name:e.target.value})
                       // this.setState({name:e.target.value})
                     })`
-                      },
+                      }
                     },
                     {
-                      component: 'Link',
+                      component: "Link",
                       props: {
-                        to: '/modal/hello',
+                        to: "/modal/hello",
                         style: {
-                          padding: '5px',
-                        },
-                      },
-                      children: 'Hello Modal'
-                    },
-                    {
-                      component: 'Link',
-                      props: {
-                        to: '/about',
-                        style: {
-                          padding: '5px',
+                          padding: "5px"
                         }
                       },
-                      children: 'About Page'
+                      children: "Hello Modal"
                     },
                     {
-                      component: 'Link',
+                      component: "Link",
                       props: {
-                        to: '/page/4',
+                        to: "/about",
                         style: {
-                          padding: '5px',
-                        },
-                      },
-                      children: 'Page 4'
-                    },
-                    {
-                      component: 'button',
-                      props: {
-                        style: {
-                          padding: '5px',
+                          padding: "5px"
                         }
                       },
-                      children: 'change header',
+                      children: "About Page"
+                    },
+                    {
+                      component: "Link",
+                      props: {
+                        to: "/page/4",
+                        style: {
+                          padding: "5px"
+                        }
+                      },
+                      children: "Page 4"
+                    },
+                    {
+                      component: "button",
+                      props: {
+                        style: {
+                          padding: "5px"
+                        }
+                      },
+                      children: "change header",
                       __dangerouslyBindEvalProps: {
                         onClick: `(function(){
                       // console.log('onClick this',this);
@@ -48633,24 +48649,23 @@ var VXA = (function (exports, main) {
                         }
                       });
                     })`
-                      },
-
+                      }
                     }
                   ]
-                },
+                }
               ]
             }
           }
         },
         modal: {
-          '/modal/hello': {
+          "/modal/hello": {
             jsonx: {
-              component: 'ReactModal',
+              component: "ReactModal",
               props: {
-                ariaHideApp: false,
+                ariaHideApp: false
               },
               thisprops: {
-                isOpen: ['ui', 'isRouteLayer_modal_Matched'],
+                isOpen: ["ui", "isRouteLayer_modal_Matched"]
               },
               __dangerouslyBindEvalProps: {
                 onRequestClose: `(function(){
@@ -48662,11 +48677,11 @@ var VXA = (function (exports, main) {
               // __functionProps: {
               //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
               // },
-              children: 'SAY HELLO MODAL',
+              children: "SAY HELLO MODAL"
             }
           }
         }
-      },
+      }
     };
 
     window.hoistNonReactStatics = hoistNonReactStatics_cjs;
@@ -48694,12 +48709,1435 @@ var VXA = (function (exports, main) {
         });
     }
 
-    exports.JSONX = main;
+    var global$3 = typeof global$3 !== 'undefined'
+        ? global$3
+        : typeof globalThis !== 'undefined'
+            ? globalThis
+            : {};
+    /**
+     * Used to evaluate whether or not to render a component
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} options.props - Props to test comparison values against, usually Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
+     * @returns {Boolean} returns true if all comparisons are true or if using or comparisons, at least one condition is true
+     * @example
+     const sampleJSONX = {
+      component: 'div',
+      props: {
+        id: 'generatedJSONX',
+        className: 'jsonx',
+        bigNum: 1430931039,
+        smallNum: 0.425,
+        falsey: false,
+        truthy: true,
+      },
+      children: 'some div',
+    };
+    const testJSONX = Object.assign({}, sampleJSONX, {
+      comparisonprops: [{
+        left: ['truthy',],
+        operation:'==',
+        right:['falsey',],
+      }],
+    });
+    displayComponent({ jsonx: testJSONX, props: testJSONX2.props, }) // => false
+     */
+    function displayComponent$2(options) {
+        if (options === void 0) { options = {}; }
+        var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, props = options.props;
+        var propsToCompare = jsonx.comparisonprops;
+        var comparisons = Array.isArray(propsToCompare) ? propsToCompare.map(function (comp) {
+            var compares = {};
+            if (Array.isArray(comp.left)) {
+                compares.left = comp.left;
+            }
+            if (Array.isArray(comp.right)) {
+                compares.right = comp.right;
+            }
+            var propcompares = traverse$1(compares, props || jsonx.props);
+            var opscompares = Object.assign({}, comp, propcompares);
+            // console.debug({ opscompares, compares, renderedCompProps });
+            switch (opscompares.operation) {
+                case 'eq':
+                case '==':
+                    // return opscompares.left == opscompares.right;
+                    // eslint-disable-next-line
+                    return opscompares.left == opscompares.right;
+                case 'dneq':
+                case '!=':
+                case '!':
+                    // return opscompares.left != opscompares.right;
+                    return opscompares.left !== opscompares.right;
+                case 'dnseq':
+                case '!==':
+                    return opscompares.left !== opscompares.right;
+                case 'seq':
+                case '===':
+                    return opscompares.left === opscompares.right;
+                case 'lt':
+                case '<':
+                    return opscompares.left < opscompares.right;
+                case 'lte':
+                case '<=':
+                    return opscompares.left <= opscompares.right;
+                case 'gt':
+                case '>':
+                    return opscompares.left > opscompares.right;
+                case 'gte':
+                case '>=':
+                    return opscompares.left >= opscompares.right;
+                case 'dne':
+                case 'undefined':
+                case 'null':
+                    return opscompares.left === undefined || opscompares.left === null;
+                case '!null':
+                case '!undefined':
+                case 'exists':
+                default: //'exists'
+                    return opscompares.left !== undefined && opscompares.left !== null;
+            }
+            // }
+            // if (opscompares.operation === 'eq') {
+            //   // return opscompares.left == opscompares.right;
+            //   // eslint-disable-next-line
+            //   return opscompares.left == opscompares.right;
+            // } else if (opscompares.operation === 'dneq') {
+            //   // return opscompares.left != opscompares.right;
+            //   return opscompares.left !== opscompares.right;
+            // } else if (opscompares.operation === 'dnseq') {
+            //   return opscompares.left !== opscompares.right;
+            // } else if (opscompares.operation === 'seq') {
+            //   return opscompares.left === opscompares.right;
+            // } else if (opscompares.operation === 'lt') {
+            //   return opscompares.left < opscompares.right;
+            // } else if (opscompares.operation === 'lte') {
+            //   return opscompares.left <= opscompares.right;
+            // } else if (opscompares.operation === 'gt') {
+            //   return opscompares.left > opscompares.right;
+            // } else if (opscompares.operation === 'gte') {
+            //   return opscompares.left >= opscompares.right;
+            // } else if (opscompares.operation === 'dne') {
+            //   return opscompares.left === undefined || opscompares.left === null;
+            // } else { //'exists'
+            //   return opscompares.left !== undefined && opscompares.left !== null;
+            // }
+        }) : [];
+        var validProps = comparisons.filter(function (comp) { return comp === true; });
+        if (!jsonx.comparisonprops) {
+            return true;
+        }
+        else if (jsonx.comparisonorprops && validProps.length < 1) {
+            return false;
+        }
+        else if (validProps.length !== comparisons.length && !jsonx.comparisonorprops) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    /**
+     * Use to test if can bind components this context for react-redux-router
+     * @returns {Boolean} true if browser is not IE or old android / chrome
+     */
+    function getAdvancedBinding$1() {
+        var window = window;
+        if (typeof window === 'undefined') {
+            if (this && this.window) {
+                window = this.window;
+            }
+            else if (typeof global$3 !== 'undefined' && (typeof global$3 !== "undefined" ? global$3 : window).window) {
+                window = (typeof global$3 !== "undefined" ? global$3 : window).window;
+            }
+            else if (typeof globalThis !== 'undefined' && globalThis.window) {
+                window = globalThis.window;
+            }
+            if (!window.navigator)
+                return false;
+        }
+        try {
+            if (window && window.navigator && window.navigator.userAgent && typeof window.navigator.userAgent === 'string') {
+                // console.log('window.navigator.userAgent',window.navigator.userAgent)
+                if (window.navigator.userAgent.indexOf('Trident') !== -1) {
+                    return false;
+                }
+                var uastring = window.navigator.userAgent;
+                //@ts-ignore
+                var parser = new uaParser();
+                parser.setUA(uastring);
+                var parseUserAgent = parser.getResult();
+                // console.log({ parseUserAgent, });
+                if ((parseUserAgent.browser.name === 'Chrome' || parseUserAgent.browser.name === 'Chrome WebView') && parseUserAgent.os.name === 'Android' && parseInt(parseUserAgent.browser.version, 10) < 50) {
+                    return false;
+                }
+                if (parseUserAgent.browser.name === 'Android Browser') {
+                    return false;
+                }
+            }
+        }
+        catch (e) {
+            console.error(e);
+            // console.warn('could not detect browser support', e);
+            return false;
+        }
+        return true;
+    }
+    /**
+     * take an object of array paths to traverse and resolve
+     * @example
+     * const testObj = {
+          user: {
+            name: 'jsonx',
+            description: 'react withouth javascript',
+          },
+          stats: {
+            logins: 102,
+            comments: 3,
+          },
+          authentication: 'OAuth2',
+        };
+    const testVals = { auth: ['authentication', ], username: ['user', 'name', ], };
+
+     traverse(testVals, testObj) // =>{ auth:'OAuth2', username:'jsonx',  }
+     * @param {Object} paths - an object to resolve array property paths
+     * @param {Object} data - object to traverse
+     * @returns {Object} resolved object with traversed properties
+     * @throws {TypeError}
+     */
+    function traverse$1(paths, data) {
+        if (paths === void 0) { paths = {}; }
+        if (data === void 0) { data = {}; }
+        var keys = Object.keys(paths);
+        if (!keys.length)
+            return paths;
+        return keys.reduce(function (result, key) {
+            //@ts-ignore
+            if (typeof paths[key] === 'string')
+                result[key] = data[paths[key]];
+            else if (Array.isArray(paths[key])) {
+                var _path = Object.assign([], paths[key]);
+                var value = data;
+                while (_path.length && value && typeof value === 'object') {
+                    var prop = _path.shift();
+                    //@ts-ignore
+                    value = value[prop];
+                }
+                result[key] = (_path.length) ? undefined : value;
+            }
+            else
+                throw new TypeError('dynamic property paths must be a string or an array of strings or numeric indexes');
+            return result;
+        }, {});
+    }
+    /**
+     * validates simple JSONX Syntax {[component]:{props,children}}
+     * @param {Object} simpleJSONX - Any valid simple JSONX Syntax
+     * @return {Boolean} returns true if simpleJSONX is valid
+     */
+    function validSimpleJSONXSyntax$1(simpleJSONX) {
+        if (simpleJSONX === void 0) { simpleJSONX = {}; }
+        if (Object.keys(simpleJSONX).length !== 1 && !simpleJSONX.component) {
+            return false;
+        }
+        else {
+            var componentName = Object.keys(simpleJSONX)[0];
+            return (Object.keys(simpleJSONX).length === 1 && !simpleJSONX[componentName].component && typeof simpleJSONX[componentName] === 'object')
+                ? true
+                : false;
+        }
+    }
+    /**
+     * Transforms SimpleJSONX to Valid JSONX JSON {[component]:{props,children}} => {component,props,children}
+     * @param {Object} simpleJSONX JSON Object
+     * @return {Object} - returns a valid JSONX JSON Object from a simple JSONX JSON Object
+     */
+    function simpleJSONXSyntax$1(simpleJSONX) {
+        if (simpleJSONX === void 0) { simpleJSONX = {}; }
+        var component = Object.keys(simpleJSONX)[0];
+        try {
+            return Object.assign({}, {
+                component: component,
+            }, simpleJSONX[component], {
+                children: (simpleJSONX[component] &&
+                    simpleJSONX[component].children &&
+                    Array.isArray(simpleJSONX[component].children))
+                    //@ts-ignore  
+                    ? simpleJSONX[component].children
+                        //@ts-ignore  
+                        .map(simpleJSONXSyntax$1)
+                    : simpleJSONX[component].children,
+            });
+        }
+        catch (e) {
+            throw SyntaxError('Invalid Simple JSONX Syntax');
+        }
+    }
+    /**
+     * Fetches JSON from remote path
+     * @param {String} path - fetch path url
+     * @param {Object} options - fetch options
+     * @return {Object} - returns fetched JSON data
+     */
+    function fetchJSON$2(path, options) {
+        if (path === void 0) { path = ''; }
+        if (options === void 0) { options = {}; }
+        return __awaiter(this, void 0, void 0, function () {
+            var response, e_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, fetch(path, options)];
+                    case 1:
+                        response = _a.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 2: return [2 /*return*/, _a.sent()];
+                    case 3:
+                        e_1 = _a.sent();
+                        throw e_1;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
+
+    var cache$3 = new Cache_1();
+    // if (typeof window === 'undefined') {
+    //   var window = window || (typeof global!=="undefined" ? global : window).window || {};
+    // }
+    /**
+     
+     */
+    //@ts-ignore
+    var advancedBinding$1 = getAdvancedBinding$1();
+    // require;
+    /**
+     * object of all react components available for JSONX
+     
+     */
+    //@ts-ignore
+    var componentMap$2 = Object.assign({ Fragment: react_5, Suspense: react_6, }, reactDomFactories, (typeof window === 'object') ? window.__jsonx_custom_elements : {});
+    /**
+     * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
+     
+     * @param {Object} options - options for getBoundedComponents
+     * @param {Object} options.reactComponents - all react components available for JSONX
+     * @param {string[]} boundedComponents - list of components to bind JSONX this context (usually helpful for navigation and redux-router)
+     * @returns {Object} reactComponents object of all react components available for JSONX
+     */
+    function getBoundedComponents$2(options) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        var reactComponents = options.reactComponents, _a = options.boundedComponents, boundedComponents = _a === void 0 ? [] : _a;
+        if (advancedBinding$1 || options.advancedBinding) {
+            return Object.assign({}, reactComponents, boundedComponents.reduce(function (result, componentName) {
+                result[componentName] = reactComponents[componentName].bind(_this);
+                return result;
+            }, {}));
+            // reactComponents.ResponsiveLink = ResponsiveLink.bind(this);
+        }
+        else
+            return reactComponents;
+    }
+    /**
+     * returns a react component from a component library
+     
+     * @param {Object} options - options for getComponentFromLibrary
+     * @param {Object} [options.componentLibraries={}] - react component library like bootstrap
+     * @param {Object} [options.jsonx={}] - any valid JSONX JSON
+     * @returns {function|undefined} react component from react library like bootstrap, material design or bulma
+     */
+    function getComponentFromLibrary$1(options) {
+        if (options === void 0) { options = { jsonx: {} }; }
+        var _a = options.componentLibraries, componentLibraries = _a === void 0 ? {} : _a, _b = options.jsonx, jsonx = _b === void 0 ? {} : _b;
+        var libComponent = Object.keys(componentLibraries)
+            .map(function (libraryName) {
+            //@ts-ignore
+            var cleanLibraryName = jsonx.component.replace(libraryName + ".", '');
+            var libraryNameArray = cleanLibraryName.split('.');
+            if (libraryNameArray.length === 2
+                && componentLibraries[libraryName]
+                && componentLibraries[libraryName][libraryNameArray[0]]
+                && typeof componentLibraries[libraryName][libraryNameArray[0]][libraryNameArray[1]] !== 'undefined') {
+                return componentLibraries[libraryName][libraryNameArray[0]][libraryNameArray[1]];
+            }
+            else if (typeof componentLibraries[libraryName][cleanLibraryName] !== 'undefined') {
+                return componentLibraries[libraryName][cleanLibraryName];
+            }
+        })
+            .filter(function (val) { return val; })[0];
+        return libComponent;
+    }
+    /**
+     * returns a react element from jsonx.component
+     
+     * @example
+     * // returns react elements
+     * getComponentFromMap({jsonx:{component:'div'}})=>div
+     * getComponentFromMap({jsonx:{component:'MyModal'},reactComponents:{MyModal:MyModal extends React.Component}})=>MyModal
+     * getComponentFromMap({jsonx:{component:'reactBootstap.nav'},componentLibraries:{reactBootstrap,}})=>reactBootstap.nav
+     * @param {Object} options - options for getComponentFromMap
+     * @param {object} [options.jsonx={}] - any valid JSONX JSON object
+     * @param {Object} [options.reactComponents={}] - react components to render
+     * @param {Object} [options.componentLibraries={}] - react components to render from another component library like bootstrap or bulma
+     * @param {function} [options.logError=console.error] - error logging function
+     * @param {boolean} [options.debug=false] - use debug messages
+     * @returns {string|function|class} valid react element
+     */
+    function getComponentFromMap$2(options) {
+        if (options === void 0) { options = {}; }
+        // eslint-disable-next-line
+        var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, _b = options.reactComponents, reactComponents = _b === void 0 ? {} : _b, _c = options.componentLibraries, componentLibraries = _c === void 0 ? {} : _c, _d = options.logError, logError = _d === void 0 ? console.error : _d, debug = options.debug;
+        try {
+            if (typeof jsonx.component !== 'string' && typeof jsonx.component === 'function') {
+                return jsonx.component;
+                //@ts-ignore
+            }
+            else if (reactDomFactories[jsonx.component]) {
+                return jsonx.component;
+                //@ts-ignore
+            }
+            else if (reactComponents[jsonx.component]) {
+                //@ts-ignore
+                return reactComponents[jsonx.component];
+            }
+            else if (typeof jsonx.component === 'string' && jsonx.component.indexOf('.') > 0 && getComponentFromLibrary$1({ jsonx: jsonx, componentLibraries: componentLibraries, })) {
+                return getComponentFromLibrary$1({ jsonx: jsonx, componentLibraries: componentLibraries, });
+            }
+            else {
+                throw new ReferenceError("Invalid React Component (" + jsonx.component + ")");
+            }
+        }
+        catch (e) {
+            if (debug)
+                logError(e, (e.stack) ? e.stack : 'no stack');
+            throw e;
+        }
+    }
+    /**
+     * Returns a new function from an options object
+     
+     * @param {Object} options
+     * @param {String} [options.body=''] - Function string body
+     * @param {String[]} [options.args=[]] - Function arguments
+     * @returns {Function}
+     */
+    function getFunctionFromEval$1(options) {
+        if (options === void 0) { options = {}; }
+        if (typeof options === 'function')
+            return options;
+        var _a = options.body, body = _a === void 0 ? '' : _a, _b = options.args, args = _b === void 0 ? [] : _b, name = options.name;
+        var argus = [].concat(args);
+        argus.push(body);
+        var evalFunction = Function.prototype.constructor.apply({ name: name, }, argus);
+        if (name) {
+            Object.defineProperty(evalFunction, 'name', { value: name, });
+        }
+        return evalFunction;
+    }
+    function DynamicComponent$2(props) {
+        if (props === void 0) { props = {}; }
+        //@ts-ignore
+        var _a = props.useCache, useCache = _a === void 0 ? true : _a, _b = props.cacheTimeout, cacheTimeout = _b === void 0 ? 60 * 60 * 5 : _b, _c = props.loadingJSONX, loadingJSONX = _c === void 0 ? { component: 'div', children: '...Loading', } : _c, 
+        //@ts-ignore
+        _d = props.loadingErrorJSONX, 
+        //@ts-ignore
+        loadingErrorJSONX = _d === void 0 ? { component: 'div', children: [{ component: 'span', children: 'Error: ' }, { component: 'span', resourceprops: { _children: ['error', 'message'] }, }], } : _d, _e = props.cacheTimeoutFunction, cacheTimeoutFunction = _e === void 0 ? function () { } : _e, jsonx = props.jsonx, _f = props.transformFunction, transformFunction = _f === void 0 ? function (data) { return data; } : _f, fetchURL = props.fetchURL, fetchOptions = props.fetchOptions, fetchFunction = props.fetchFunction;
+        var context = this || {};
+        var _g = react_9({ hasLoaded: false, hasError: false, resources: {}, error: undefined, }), state = _g[0], setState = _g[1];
+        var transformer = react_14(function () { return getFunctionFromEval$1(transformFunction); }, [transformFunction]);
+        var timeoutFunction = react_14(function () { return getFunctionFromEval$1(cacheTimeoutFunction); }, [cacheTimeoutFunction]);
+        var renderJSONX = react_14(function () { return getReactElementFromJSONX$1.bind(context); }, [context]);
+        var loadingComponent = react_14(function () { return renderJSONX(loadingJSONX); }, [loadingJSONX]);
+        var loadingError = react_14(function () { return renderJSONX(loadingErrorJSONX, { error: state.error }); }, [loadingErrorJSONX, state.error]);
+        react_10(function () {
+            function getData() {
+                return __awaiter(this, void 0, void 0, function () {
+                    var transformedData_1, fetchedData, e_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 8, , 9]);
+                                if (!(useCache && cache$3.get(fetchURL))) return [3 /*break*/, 1];
+                                transformedData_1 = cache$3.get(fetchURL);
+                                return [3 /*break*/, 7];
+                            case 1:
+                                fetchedData = void 0;
+                                if (!fetchFunction) return [3 /*break*/, 3];
+                                return [4 /*yield*/, fetchFunction(fetchURL, fetchOptions)];
+                            case 2:
+                                fetchedData = _a.sent();
+                                return [3 /*break*/, 5];
+                            case 3: return [4 /*yield*/, fetchJSON$2(fetchURL, fetchOptions)];
+                            case 4:
+                                fetchedData = _a.sent();
+                                _a.label = 5;
+                            case 5: return [4 /*yield*/, transformer(fetchedData)];
+                            case 6:
+                                transformedData_1 = _a.sent();
+                                if (useCache)
+                                    cache$3.put(fetchURL, transformedData_1, cacheTimeout, timeoutFunction);
+                                _a.label = 7;
+                            case 7:
+                                //@ts-ignore
+                                setState(function (prevState) { return Object.assign({}, prevState, { hasLoaded: true, hasError: false, resources: { DynamicComponentData: transformedData_1, }, }); });
+                                return [3 /*break*/, 9];
+                            case 8:
+                                e_1 = _a.sent();
+                                if (context.debug)
+                                    console.warn(e_1);
+                                //@ts-ignore
+                                setState({ hasError: true, error: e_1, });
+                                return [3 /*break*/, 9];
+                            case 9: return [2 /*return*/];
+                        }
+                    });
+                });
+            }
+            if (fetchURL)
+                getData();
+        }, [fetchURL, fetchOptions]);
+        if (!fetchURL)
+            return null;
+        else if (state.hasError) {
+            return loadingError;
+        }
+        else if (state.hasLoaded === false) {
+            return loadingComponent;
+        }
+        else
+            return renderJSONX(jsonx, state.resources);
+    }
+    /**
+     * Returns new React Function Component
+     
+     * @todo set 'functionprops' to set arguments for function
+     * @param {*} reactComponent - Valid JSONX to render
+     * @param {String} functionBody - String of function component body
+     * @param {String} options.name - Function Component name
+     * @returns {Function}
+     * @see {@link https://reactjs.org/docs/hooks-intro.html}
+     * @example
+      const jsonxRender = {
+       component:'div',
+       passprops:'true',
+       children:[
+         {
+          component:'input',
+          thisprops:{
+              value:['count'],
+            },
+         },
+          {
+            component:'button',
+           __dangerouslyBindEvalProps:{
+            onClick:function(count,setCount){
+              setCount(count+1);
+              console.log('this is inline',{count,setCount});
+            },
+            // onClick:`(function(count,setCount){
+            //   setCount(count+1)
+            //   console.log('this is inline',{count,setCount});
+            // })`,
+            children:'Click me'
+          }
+       ]
+      };
+      const functionBody = 'const [count, setCount] = useState(0); const functionprops = {count,setCount};'
+      const options = { name: IntroHook}
+      const MyCustomFunctionComponent = jsonx._jsonxComponents.getReactFunctionComponent({jsonxRender, functionBody, options});
+       */
+    function getReactFunctionComponent$1(reactComponent, functionBody, options) {
+        if (reactComponent === void 0) { reactComponent = {}; }
+        if (functionBody === void 0) { functionBody = ''; }
+        if (options === void 0) { options = {}; }
+        if (options.lazy) {
+            //@ts-ignore
+            return react_7(function () { return options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then(function (lazyComponent) {
+                return {
+                    //@ts-ignore
+                    default: getReactFunctionComponent$1.apply(void 0, lazyComponent),
+                };
+            }); });
+        }
+        if (typeof options === 'undefined' || typeof options.bind === 'undefined')
+            options.bind = true;
+        var _a = options.resources, resources = _a === void 0 ? {} : _a, _b = options.args;
+        //@ts-ignore
+        var props = Object.assign({}, reactComponent.props);
+        var functionArgs = [react, react_9, react_10, react_11, react_12, react_13, react_14, react_15, react_16, react_17, react_18, getReactElementFromJSONX$1, reactComponent, resources, props,];
+        //@ts-ignore
+        if (typeof functionBody === 'function')
+            functionBody = functionBody.toString();
+        var functionComponent = Function('React', 'useState', 'useEffect', 'useContext', 'useReducer', 'useCallback', 'useMemo', 'useRef', 'useImperativeHandle', 'useLayoutEffect', 'useDebugValue', 'getReactElementFromJSONX', 'reactComponent', 'resources', 'props', "\n    'use strict';\n    const self = this;\n\n    return function " + (options.name || 'Anonymous') + "(props){\n      " + functionBody + "\n      if(typeof exposeprops==='undefined' || exposeprops){\n        reactComponent.props = Object.assign({},props,typeof exposeprops==='undefined'?{}:exposeprops);\n        if(typeof exposeprops!=='undefined') reactComponent.__functionargs = Object.keys(exposeprops);\n      } else{\n        reactComponent.props =  props;\n      }\n      if(!props.children) {\n      //  delete props.children;\n      }\n      const context = " + (options.bind ? 'Object.assign(self,this)' : 'this') + ";\n      return getReactElementFromJSONX.call(context, reactComponent);\n    }\n  ");
+        if (options.name) {
+            Object.defineProperty(functionComponent, 'name', {
+                value: options.name,
+            });
+        }
+        return (options.bind) ? functionComponent.call.apply(functionComponent, __spreadArrays([this], functionArgs)) : functionComponent.apply(void 0, functionArgs);
+    }
+
+    //https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
+    var STRIP_COMMENTS$1 = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+    var ARGUMENT_NAMES$1 = /([^\s,]+)/g;
+    /**
+     * returns the names of parameters from a function declaration
+     * @example
+     * const arrowFunctionAdd = (a,b)=>a+b;
+     * function regularFunctionAdd(c,d){return c+d;}
+     * getParamNames(arrowFunctionAdd) // => ['a','b']
+     * getParamNames(regularFunctionAdd) // => ['c','d']
+     * @param {Function} func
+     * @todo write tests
+     */
+    function getParamNames$1(func) {
+        var fnStr = func.toString().replace(STRIP_COMMENTS$1, '');
+        var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES$1);
+        if (result === null) {
+            result = [];
+        }
+        return result;
+    }
+    /**
+     * It uses traverse on a traverseObject to returns a resolved object on propName. So if you're making an ajax call and want to pass properties into a component, you can assign them using asyncprops and reference object properties by an array of property paths
+     * @param {Object} [traverseObject={}] - the object that contains values of propName
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} [options.propName='asyncprops'] - Property on JSONX to resolve values onto, i.e (asyncprops,thisprops,windowprops)
+     * @returns {Object} resolved object
+     * @example
+     const traverseObject = {
+      user: {
+        name: 'jsonx',
+        description: 'react withouth javascript',
+      },
+      stats: {
+        logins: 102,
+        comments: 3,
+      },
+      authentication: 'OAuth2',
+    };
+    const testJSONX = {
+      component: 'div',
+      props: {
+        id: 'generatedJSONX',
+        className:'jsonx',
+      },
+      asyncprops:{
+        auth: [ 'authentication', ],
+        username: [ 'user', 'name', ],
+      },
+      children: [
+        {
+          component: 'p',
+          props: {
+            style: {
+              color: 'red',
+              fontWeight:'bold',
+            },
+          },
+          children:'hello world',
+        },
+      ],
+    };
+    const JSONXP = getJSONXProps({ jsonx: testJSONX, traverseObject, });
+    // => {
+    //   auth: 'OAuth2',
+    //   username: 'jsonx'
+    // }
+
+    //finally resolves:
+    const testJSONX = {
+      component: 'div',
+      props: {
+        id: 'generatedJSONX',
+        className:'jsonx',
+        auth: 'OAuth2',
+        username: 'jsonx',
+      },
+      children: [
+        {
+          component: 'p',
+          props: {
+            style: {
+              color: 'red',
+              fontWeight:'bold',
+            },
+          },
+          children:'hello world',
+        },
+      ],
+    };
+     */
+    function getJSONXProps$1(options) {
+        if (options === void 0) { options = {}; }
+        // eslint-disable-next-line
+        var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, _b = options.propName, propName = _b === void 0 ? 'asyncprops' : _b, _c = options.traverseObject, traverseObject = _c === void 0 ? {} : _c;
+        // return (jsonx.asyncprops && typeof jsonx.asyncprops === 'object')
+        // ? utilities.traverse(jsonx.asyncprops, resources)
+        // : {};
+        return (jsonx[propName] && typeof jsonx[propName] === 'object')
+            ? traverse$1(jsonx[propName], traverseObject)
+            : {};
+    }
+    /**
+     * returns children jsonx components defined on __spreadComponent spread over an array on props.__spread
+     * @param {*} options
+     */
+    function getChildrenComponents$1(options) {
+        if (options === void 0) { options = {}; }
+        var _a = options.allProps, allProps = _a === void 0 ? {} : _a, _b = options.jsonx, jsonx = _b === void 0 ? {} : _b;
+        // const asyncprops = getJSONXProps({ jsonx, propName: 'spreadprops', traverseObject: allProps, });
+        if (Array.isArray(allProps.__spread) === false) {
+            if ((this && this.debug) || jsonx.debug) {
+                return {
+                    children: new Error('Using __spreadComponent requires an array prop \'__spread\'').toString(),
+                };
+            }
+            else {
+                return { children: undefined, };
+            }
+        }
+        else {
+            return {
+                _children: allProps.__spread.map(function (__item) {
+                    var clonedChild = Object.assign({}, jsonx.__spreadComponent);
+                    var clonedChildProps = Object.assign({}, clonedChild.props);
+                    clonedChildProps.__item = __item;
+                    clonedChild.props = clonedChildProps;
+                    return clonedChild;
+                }),
+            };
+        }
+    }
+    function boundArgsReducer$1(jsonx) {
+        var _this = this;
+        if (jsonx === void 0) { jsonx = {}; }
+        return function (args, arg) {
+            var val;
+            if (_this && _this.state && typeof _this.state[arg] !== 'undefined')
+                val = (_this.state[arg]);
+            else if (_this && _this.props && typeof _this.props[arg] !== 'undefined')
+                val = (_this.props[arg]);
+            else if (jsonx.props && typeof jsonx.props[arg] !== 'undefined')
+                val = (jsonx.props[arg]);
+            if (typeof val !== 'undefined')
+                args.push(val);
+            return args.filter(function (a) { return typeof a !== 'undefined'; });
+        };
+    }
+    /**
+     * Used to evalute javascript and set those variables as props. getEvalProps evaluates __dangerouslyEvalProps and __dangerouslyBindEvalProps properties with eval, this is used when component properties are functions, __dangerouslyBindEvalProps is used when those functions require that this is bound to the function. For __dangerouslyBindEvalProps it must resolve an expression, so functions should be wrapped in (). I.e. (function f(x){ return this.minimum+x;})
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @returns {Object} returns resolved object with evaluated javascript
+     * @example
+     const testVals = {
+        auth: 'true',
+        username: '(user={})=>user.name',
+      };
+      const testJSONX = Object.assign({}, sampleJSONX, {
+        __dangerouslyEvalProps: testVals, __dangerouslyBindEvalProps: {
+          email: '(function getUser(user={}){ return this.testBound(); })',
+        },
+      });
+      const JSONXP = getEvalProps.call({ testBound: () => 'bounded', }, { jsonx: testJSONX, });
+      const evalutedComputedFunc = JSONXP.username({ name: 'bob', });
+      const evalutedComputedBoundFunc = JSONXP.email({ email:'test@email.domain', });
+      // expect(JSONXP.auth).to.be.true;
+      // expect(evalutedComputedFunc).to.eql('bob');
+      // expect(evalutedComputedBoundFunc).to.eql('bounded');
+     */
+    function getEvalProps$1(options) {
+        var _this = this;
+        if (options === void 0) { options = { jsonx: {} }; }
+        var jsonx = options.jsonx;
+        var scopedEval = eval; //https://github.com/rollup/rollup/wiki/Troubleshooting#avoiding-eval
+        var evAllProps = {};
+        if (jsonx.__dangerouslyEvalAllProps) {
+            var evVal = void 0;
+            try {
+                // eslint-disable-next-line
+                evVal = (typeof evVal === 'function')
+                    ? jsonx.__dangerouslyEvalAllProps
+                    : scopedEval(jsonx.__dangerouslyEvalAllProps);
+            }
+            catch (e) {
+                if (this.debug || jsonx.debug)
+                    evVal = e;
+            }
+            evAllProps = evVal.call(this, { jsonx: jsonx, });
+        }
+        var evProps = Object.keys(jsonx.__dangerouslyEvalProps || {}).reduce(function (eprops, epropName) {
+            var evVal;
+            var evValString;
+            try {
+                // eslint-disable-next-line
+                //@ts-ignore
+                evVal = scopedEval(jsonx.__dangerouslyEvalProps[epropName]);
+                evValString = evVal.toString();
+            }
+            catch (e) {
+                if (_this.debug || jsonx.debug)
+                    evVal = e;
+            }
+            //@ts-ignore
+            eprops[epropName] = (typeof evVal === 'function')
+                ? evVal.call(_this, { jsonx: jsonx, })
+                : evVal;
+            //@ts-ignore
+            if (_this.exposeEval)
+                eprops["__eval_" + epropName] = evValString;
+            return eprops;
+        }, {});
+        var evBindProps = Object.keys(jsonx.__dangerouslyBindEvalProps || {}).reduce(function (eprops, epropName) {
+            var evVal;
+            var evValString;
+            try {
+                var args = void 0;
+                //@ts-ignore
+                var functionBody = jsonx.__dangerouslyBindEvalProps[epropName];
+                // InlineFunction = Function.prototype.constructor.apply({}, args);
+                var functionDefinition = void 0;
+                if (typeof functionBody === 'function') {
+                    functionDefinition = functionBody;
+                }
+                else {
+                    //@ts-ignore
+                    functionDefinition = scopedEval(jsonx.__dangerouslyBindEvalProps[epropName]);
+                    evValString = functionDefinition.toString();
+                } // eslint-disable-next-line
+                if (jsonx.__functionargs && jsonx.__functionargs[epropName]) {
+                    args = [_this,].concat(jsonx.__functionargs[epropName].reduce(boundArgsReducer$1.call(_this, jsonx), []));
+                }
+                else if (jsonx.__functionparams === false) {
+                    args = [_this,];
+                }
+                else {
+                    var functionDefArgs = getParamNames$1(functionDefinition);
+                    args = [_this,].concat(functionDefArgs.reduce(boundArgsReducer$1.call(_this, jsonx), []));
+                }
+                // eslint-disable-next-line
+                evVal = functionDefinition.bind.apply(functionDefinition, args);
+            }
+            catch (e) {
+                if (_this.debug || jsonx.debug)
+                    evVal = e;
+            }
+            // eslint-disable-next-line 
+            //@ts-ignore
+            eprops[epropName] = evVal;
+            //@ts-ignore
+            if (_this.exposeEval)
+                eprops["__eval_" + epropName] = evValString;
+            return eprops;
+        }, {});
+        return Object.assign({}, evProps, evBindProps, evAllProps);
+    }
+    /**
+     * Resolves jsonx.__dangerouslyInsertComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} [options.resources={}] - object to use for resourceprops(asyncprops), usually a result of an asynchronous call
+     * @returns {Object} resolved object of React Components
+     */
+    function getComponentProps$1(options) {
+        var _this = this;
+        if (options === void 0) { options = { jsonx: {} }; }
+        var jsonx = options.jsonx, resources = options.resources;
+        //@ts-ignore
+        return Object.keys(jsonx.__dangerouslyInsertComponents).reduce(function (cprops, cpropName) {
+            var componentVal;
+            try {
+                // eslint-disable-next-line
+                //@ts-ignore
+                componentVal = getRenderedJSON$1.call(_this, jsonx.__dangerouslyInsertComponents[cpropName], resources);
+            }
+            catch (e) {
+                if (_this.debug || jsonx.debug)
+                    componentVal = e;
+            }
+            cprops[cpropName] = componentVal;
+            return cprops;
+        }, {});
+    }
+    function getReactComponents$1(options) {
+        var _this = this;
+        var jsonx = options.jsonx, resources = options.resources;
+        var functionComponents = (!jsonx.__dangerouslyInsertFunctionComponents)
+            ? {}
+            : Object.keys(jsonx.__dangerouslyInsertFunctionComponents).reduce(function (cprops, cpropName) {
+                var componentVal;
+                try {
+                    var args = jsonx.__dangerouslyInsertFunctionComponents[cpropName];
+                    args.options = Object.assign({}, args.options, { resources: resources });
+                    // eslint-disable-next-line
+                    componentVal = getReactFunctionComponent$1.call(_this, args.reactComponent, args.functionBody, args.options);
+                }
+                catch (e) {
+                    if (_this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                cprops[cpropName] = cpropName === '_children' ? [componentVal]
+                    : componentVal;
+                return cprops;
+            }, {});
+        var classComponents = (!jsonx.__dangerouslyInsertClassComponents)
+            ? {}
+            : Object.keys(jsonx.__dangerouslyInsertClassComponents).reduce(function (cprops, cpropName) {
+                var componentVal;
+                try {
+                    var args = jsonx.__dangerouslyInsertClassComponents[cpropName];
+                    args.options = Object.assign({}, args.options, { resources: resources });
+                    // eslint-disable-next-line
+                    componentVal = getReactFunctionComponent$1.call(_this, args.reactComponent, args.options);
+                }
+                catch (e) {
+                    if (_this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                cprops[cpropName] = cpropName === '_children' ? [componentVal] : componentVal;
+                return cprops;
+            }, {});
+        return Object.assign({}, functionComponents, classComponents);
+    }
+    /**
+     * Resolves jsonx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+    //  * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
+     * @returns {Object} resolved object of React Components
+     */
+    function getReactComponentProps$1(options) {
+        var _this = this;
+        if (options === void 0) { options = { jsonx: {} }; }
+        var jsonx = options.jsonx;
+        var customComponents = this && this.reactComponents ? this.reactComponents : {};
+        var customLibraries = this && this.componentLibraries ? this.componentLibraries : {};
+        if (jsonx.__dangerouslyInsertJSONXComponents && Object.keys(jsonx.__dangerouslyInsertJSONXComponents).length) {
+            return Object.keys(jsonx.__dangerouslyInsertJSONXComponents).reduce(function (cprops, cpropName) {
+                var componentVal;
+                try {
+                    componentVal = getComponentFromMap$2({
+                        jsonx: jsonx.__dangerouslyInsertJSONXComponents[cpropName],
+                        reactComponents: customComponents,
+                        componentLibraries: customLibraries,
+                    });
+                }
+                catch (e) {
+                    if (_this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                // eslint-disable-next-line
+                cprops[cpropName] = componentVal;
+                return cprops;
+            }, {});
+        }
+        else {
+            return Object.keys(jsonx.__dangerouslyInsertReactComponents).reduce(function (cprops, cpropName) {
+                var componentVal;
+                try {
+                    componentVal = getComponentFromMap$2({
+                        jsonx: {
+                            component: jsonx.__dangerouslyInsertReactComponents[cpropName],
+                            props: jsonx.__dangerouslyInsertComponentProps
+                                ? jsonx.__dangerouslyInsertComponentProps[cpropName]
+                                : {},
+                        },
+                        reactComponents: customComponents,
+                        componentLibraries: customLibraries,
+                    });
+                }
+                catch (e) {
+                    if (_this.debug || jsonx.debug)
+                        componentVal = e;
+                }
+                // eslint-disable-next-line
+                cprops[cpropName] = componentVal;
+                return cprops;
+            }, {});
+        }
+    }
+    /**
+     * Takes a function string and returns a function on either this.props or window. The function can only be 2 levels deep
+     * @param {Object} options
+     * @param {String} [options.propFunc='func:'] - function string, like func:window.LocalStorage.getItem or func:this.props.onClick  or func:inline.myInlineFunction
+     * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, resourceprops, asyncprops, windowprops, evalProps, insertedComponents);
+     * @returns {Function} returns a function from this.props or window functions
+     * @example
+     * getFunctionFromProps({ propFunc='func:this.props.onClick', }) // => this.props.onClick
+     */
+    function getFunctionFromProps$1(options) {
+        if (options === void 0) { options = { jsonx: {}, propBody: '' }; }
+        var _a = options.propFunc, propFunc = _a === void 0 ? 'func:' : _a, propBody = options.propBody, jsonx = options.jsonx, _b = options.functionProperty, functionProperty = _b === void 0 ? '' : _b;
+        // eslint-disable-next-line
+        var _c = this, _d = _c.logError, logError = _d === void 0 ? console.error : _d, debug = _c.debug;
+        var windowObject = {};
+        if (this.window)
+            windowObject = this.window;
+        //@ts-ignore
+        else if (typeof global !== 'undefined' && (typeof global !== "undefined" ? global : window).window)
+            windowObject = (typeof global !== "undefined" ? global : window).window;
+        try {
+            var functionNameString = propFunc.split(':')[1] || '';
+            var functionNameArray = functionNameString.split('.');
+            var functionName = (functionNameArray.length) ? functionNameArray[functionNameArray.length - 1] : '';
+            if (propFunc.includes('func:inline')) {
+                // eslint-disable-next-line
+                var InlineFunction = void 0;
+                if (jsonx.__functionargs) {
+                    var args = [].concat(jsonx.__functionargs[functionProperty]);
+                    args.push(propBody);
+                    InlineFunction = Function.prototype.constructor.apply({}, args);
+                }
+                else {
+                    InlineFunction = Function('param1', 'param2', '"use strict";' + propBody);
+                }
+                var _e = propFunc.split('.'), propFuncName = _e[0], funcName = _e[1];
+                Object.defineProperty(InlineFunction, 'name', {
+                    value: funcName,
+                });
+                if (jsonx.__functionargs) {
+                    var boundArgs = [this,].concat(jsonx.__functionargs[functionProperty].map(function (arg) { return jsonx.props[arg]; }));
+                    return InlineFunction.bind.apply(InlineFunction, boundArgs);
+                }
+                else {
+                    return InlineFunction.bind(this);
+                }
+            }
+            else if (propFunc.indexOf('func:window') !== -1) {
+                if (functionNameArray.length === 3) {
+                    try {
+                        return windowObject[functionNameArray[1]][functionName].bind(this);
+                    }
+                    catch (e) {
+                        if (debug) {
+                            logError(e);
+                        }
+                        return windowObject[functionNameArray[1]][functionName];
+                    }
+                }
+                else {
+                    try {
+                        return windowObject[functionName].bind(this);
+                    }
+                    catch (e) {
+                        if (debug) {
+                            logError(e);
+                        }
+                        return windowObject[functionName];
+                    }
+                }
+            }
+            else if (functionNameArray.length === 4) {
+                return (this.props)
+                    ? this.props[functionNameArray[2]][functionName]
+                    : jsonx.props[functionNameArray[2]][functionName];
+            }
+            else if (functionNameArray.length === 3) {
+                return (this.props)
+                    ? this.props[functionName].bind(this)
+                    : jsonx.props[functionName].bind(this);
+            }
+            else {
+                return function () { };
+            }
+        }
+        catch (e) {
+            if (this.debug) {
+                logError(e);
+                if (jsonx && jsonx.debug)
+                    return e;
+            }
+            return function () { };
+        }
+    }
+    /**
+     * Returns a resolved object from function strings that has functions pulled from jsonx.__functionProps
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, asyncprops, windowprops, evalProps, insertedComponents);
+     * @returns {Object} resolved object of functions from function strings
+     */
+    function getFunctionProps$1(options) {
+        if (options === void 0) { options = { jsonx: {} }; }
+        var _a = options.allProps, allProps = _a === void 0 ? {} : _a, _b = options.jsonx, jsonx = _b === void 0 ? {} : _b;
+        var getFunction = getFunctionFromProps$1.bind(this);
+        var funcProps = jsonx.__functionProps;
+        //Allowing for window functions
+        if (funcProps) {
+            Object.keys(funcProps).forEach(function (key) {
+                if (typeof funcProps[key] === 'string' && funcProps[key].indexOf('func:') !== -1) {
+                    allProps[key] = getFunction({
+                        propFunc: funcProps[key],
+                        propBody: (jsonx.__inline) ? jsonx.__inline[key] : '',
+                        jsonx: jsonx,
+                        functionProperty: key,
+                    });
+                }
+            });
+        }
+        return allProps;
+    }
+    /**
+     * Returns a resolved object that has React Components pulled from window.__jsonx_custom_elements
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, asyncprops, windowprops, evalProps, insertedComponents);
+     * @returns {Object} resolved object of with React Components from a window property window.__jsonx_custom_elements
+     */
+    function getWindowComponents$1(options) {
+        var _this = this;
+        if (options === void 0) { options = { jsonx: {} }; }
+        var allProps = options.allProps, jsonx = options.jsonx;
+        var windowComponents = jsonx.__windowComponents;
+        //@ts-ignore
+        var window = this.window || (typeof global !== "undefined" ? global : window).window || {};
+        var windowFuncPrefix = 'func:window.__jsonx_custom_elements';
+        // if (jsonx.hasWindowComponent && window.__jsonx_custom_elements) {
+        Object.keys(windowComponents).forEach(function (key) {
+            var windowKEY = (typeof windowComponents[key] === 'string')
+                ? windowComponents[key].replace(windowFuncPrefix + ".", '')
+                : '';
+            if (typeof windowComponents[key] === 'string' && windowComponents[key].indexOf(windowFuncPrefix) !== -1 && typeof window.__jsonx_custom_elements[windowKEY] === 'function') {
+                var windowComponentElement = window.__jsonx_custom_elements[windowKEY];
+                var windowComponentProps = (allProps['__windowComponentProps']) ? allProps['__windowComponentProps']
+                    : _this.props;
+                allProps[key] = react.createElement(windowComponentElement, windowComponentProps, null);
+            }
+        });
+        return allProps;
+    }
+    /**
+     * Returns computed properties for React Components and any property that's prefixed with __ is a computedProperty
+     * @param {Object} options
+     * @param {Object} options.jsonx - Valid JSONX JSON
+     * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
+     * @param {Number} options.renderIndex - number used for React key prop
+     * @param {function} [options.logError=console.error] - error logging function
+     * @param {Object} [options.componentLibraries] - react components to render with JSONX
+     * @param {Boolean} [options.useReduxState=true] - use redux props in this.props
+     * @param {Boolean} [options.ignoreReduxPropsInComponentLibraries=true] - ignore redux props in this.props for component libraries, this is helpful incase these properties collide with component library element properties
+     * @param {boolean} [options.debug=false] - use debug messages
+     * @example
+    const testJSONX = { component: 'div',
+      props: { id: 'generatedJSONX', className: 'jsonx' },
+      children: [ [Object] ],
+      asyncprops: { auth: [Array], username: [Array] },
+      __dangerouslyEvalProps: { getUsername: '(user={})=>user.name' },
+      __dangerouslyInsertComponents: { myComponent: [Object] }
+    const resources = {
+      user: {
+        name: 'jsonx',
+        description: 'react withouth javascript',
+      },
+      stats: {
+        logins: 102,
+        comments: 3,
+      },
+      authentication: 'OAuth2',
+    };
+    const renderIndex = 1;
+    getComputedProps.call({}, {
+            jsonx: testJSONX,
+            resources,
+            renderIndex,
+          });
+    computedProps = { key: 1,
+         id: 'generatedJSONX',
+         className: 'jsonx',
+         auth: 'OAuth2',
+         username: 'jsonx',
+         getUsername: [Function],
+         myComponent:
+          { '$$typeof': Symbol(react.element),
+            type: 'p',
+            key: '8',
+            ref: null,
+            props: [Object],
+            _owner: null,
+            _store: {} } } }
+     *
+     */
+    function getComputedProps$2(options) {
+        if (options === void 0) { options = {}; }
+        // eslint-disable-next-line
+        var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, _b = options.resources, resources = _b === void 0 ? {} : _b, renderIndex = options.renderIndex, _c = options.logError, logError = _c === void 0 ? console.error : _c, _d = options.useReduxState, useReduxState = _d === void 0 ? true : _d, _e = options.ignoreReduxPropsInComponentLibraries, ignoreReduxPropsInComponentLibraries = _e === void 0 ? true : _e, _f = options.disableRenderIndexKey, disableRenderIndexKey = _f === void 0 ? true : _f, debug = options.debug, _g = options.componentLibraries, componentLibraries = _g === void 0 ? {} : _g;
+        try {
+            var componentThisProp = (jsonx.thisprops)
+                ? Object.assign({
+                    __jsonx: {
+                        _component: jsonx,
+                        _resources: resources,
+                    },
+                }, this.props, jsonx.props, 
+                //@ts-ignore
+                (useReduxState && !jsonx.ignoreReduxProps && (ignoreReduxPropsInComponentLibraries && !componentLibraries[jsonx.component]))
+                    ? (this.props && this.props.getState) ? this.props.getState() : {}
+                    : {})
+                : undefined;
+            var windowTraverse = typeof window !== 'undefined' ? window : {};
+            var asyncprops = jsonx.asyncprops ? getJSONXProps$1({ jsonx: jsonx, propName: 'asyncprops', traverseObject: resources, }) : {};
+            var resourceprops = jsonx.resourceprops ? getJSONXProps$1({ jsonx: jsonx, propName: 'resourceprops', traverseObject: resources, }) : {};
+            var windowprops = jsonx.windowprops ? getJSONXProps$1({ jsonx: jsonx, propName: 'windowprops', traverseObject: windowTraverse, }) : {};
+            var thisprops = jsonx.thisprops ? getJSONXProps$1({ jsonx: jsonx, propName: 'thisprops', traverseObject: componentThisProp, }) : {};
+            var thisstate = jsonx.thisstate ? getJSONXProps$1({ jsonx: jsonx, propName: 'thisstate', traverseObject: this.state, }) : {};
+            var thiscontext = jsonx.thiscontext ? getJSONXProps$1({ jsonx: jsonx, propName: 'thiscontext', traverseObject: this || {}, }) : {};
+            //allowing javascript injections
+            var evalProps = (jsonx.__dangerouslyEvalProps || jsonx.__dangerouslyBindEvalProps)
+                ? getEvalProps$1.call(this, { jsonx: jsonx, })
+                : {};
+            var insertedComponents = (jsonx.__dangerouslyInsertComponents)
+                ? getComponentProps$1.call(this, { jsonx: jsonx, resources: resources, debug: debug, })
+                : {};
+            var insertedReactComponents = (jsonx.__dangerouslyInsertReactComponents || jsonx.__dangerouslyInsertJSONXComponents)
+                ? getReactComponentProps$1.call(this, { jsonx: jsonx, debug: debug, })
+                : {};
+            var insertedComputedComponents = (jsonx.__dangerouslyInsertFunctionComponents || jsonx.__dangerouslyInsertClassComponents)
+                ? getReactComponents$1.call(this, { jsonx: jsonx, debug: debug, })
+                : {};
+            var evalAllProps = (jsonx.__dangerouslyEvalAllProps)
+                ? getEvalProps$1.call(this, { jsonx: jsonx, })
+                : {};
+            var allProps = Object.assign({}, this.disableRenderIndexKey || disableRenderIndexKey ? {} : { key: renderIndex, }, jsonx.props, thisprops, thisstate, thiscontext, resourceprops, asyncprops, windowprops, evalProps, insertedComponents, insertedReactComponents, insertedComputedComponents);
+            var computedProps = Object.assign({}, allProps, jsonx.__functionProps ? getFunctionProps$1.call(this, { allProps: allProps, jsonx: jsonx, }) : {}, jsonx.__windowComponents ? getWindowComponents$1.call(this, { allProps: allProps, jsonx: jsonx, }) : {}, jsonx.__spreadComponent ? getChildrenComponents$1.call(this, { allProps: allProps, jsonx: jsonx, }) : {}, evalAllProps);
+            if (jsonx.debug)
+                console.debug({ jsonx: jsonx, computedProps: computedProps, });
+            return computedProps;
+        }
+        catch (e) {
+            debug && logError(e, (e.stack) ? e.stack : 'no stack');
+            return null;
+        }
+    }
+
+    /**
+     * returns a valid jsonx.children property
+     * @param {Object} options
+     * @param {Object} [options.jsonx ={}]- Valid JSONX JSON
+     * @param {Object} [options.props=options.jsonx.children] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
+     * @returns {Object[]|String} returns a valid jsonx.children property that's either an array of JSONX objects or a string
+     * @example
+     * const sampleJSONX = {
+      component: 'div',
+      props: {
+        id: 'generatedJSONX',
+        className:'jsonx',
+      },
+      children: [
+        {
+          component: 'p',
+          props: {
+            style: {
+              color: 'red',
+            },
+          },
+          children:'hello world',
+        },
+        {
+          component: 'div',
+          children: [
+            {
+              component: 'ul',
+              children: [
+                {
+                  component: 'li',
+                  children:'list',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const JSONXChildren = getChildrenProperty({ jsonx: sampleJSONX, }); //=> [ [jsonx Object],[jsonx Object]]
+    const JSONXChildrenPTag = getChildrenProperty({ jsonx: sampleJSONX.children[ 0 ], }); //=>hello world
+     */
+    function getChildrenProperty$1(options) {
+        if (options === void 0) { options = {}; }
+        var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a;
+        var props = options.props || jsonx.props || {};
+        if (typeof props._children !== 'undefined' /* && !jsonx.children */) {
+            if (Array.isArray(props._children) || typeof props._children === 'string' || typeof props._children === 'number') {
+                return props._children;
+            }
+            else {
+                return jsonx.children;
+            }
+        }
+        else if (typeof jsonx.children === 'undefined') {
+            if (props && props.children && (typeof props.children !== 'undefined' || Array.isArray(props.children))) {
+                return props.children;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return jsonx.children;
+        }
+    }
+    /**
+     * Used to pass properties down to child components if passprops is set to true
+     * @param {Object} options
+     * @param {Object} [options.jsonx ={}] - Valid JSONX JSON
+     * @param {Object} [options.childjsonx ={}] - Valid JSONX JSON
+     * @param {Number} options.renderIndex - React key property
+     * @param {Object} [options.props=options.jsonx.props] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
+     * @returns {Object|String} returns a valid  Valid JSONX Child object or a string
+     */
+    function getChildrenProps$1(options) {
+        if (options === void 0) { options = {}; }
+        var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, childjsonx = options.childjsonx, renderIndex = options.renderIndex;
+        var props = options.props || jsonx.props || {};
+        return (jsonx.passprops && typeof childjsonx === 'object')
+            ? Object.assign({}, childjsonx, {
+                props: Object.assign({}, props, ((childjsonx.thisprops && childjsonx.thisprops.style) // this is to make sure when you bind props, if you've defined props in a dynamic property, to not use bind props to  remove passing down styles
+                    || (childjsonx.asyncprops && childjsonx.asyncprops.style)
+                    || (childjsonx.windowprops && childjsonx.windowprops.style))
+                    ? {}
+                    : {
+                        style: {},
+                    }, childjsonx.props, {
+                    key: (typeof renderIndex !== 'undefined')
+                        ? renderIndex + Math.random()
+                        : Math.random(),
+                }),
+            })
+            : childjsonx;
+    }
+    /**
+     * returns React Child Elements via JSONX
+     * @param {*} options
+     * @property {object} this - options for getReactElementFromJSONX
+     * @property {Object} [this.componentLibraries] - react components to render with JSONX
+     * @property {boolean} [this.debug=false] - use debug messages
+     * @property {function} [this.logError=console.error] - error logging function
+     * @property {string[]} [this.boundedComponents=[]] - list of components that require a bound this context (usefult for redux router)
+     */
+    function getJSONXChildren$2(options) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        // eslint-disable-next-line
+        var jsonx = options.jsonx, resources = options.resources, renderIndex = options.renderIndex, _a = options.logError, logError = _a === void 0 ? console.error : _a;
+        try {
+            var props_1 = options.props || jsonx.props || {};
+            jsonx.children = getChildrenProperty$1({ jsonx: jsonx, props: props_1, });
+            props_1._children = undefined;
+            delete props_1._children;
+            return (jsonx.children && Array.isArray(jsonx.children) && typeof jsonx.children !== 'string')
+                //@ts-ignore
+                ? jsonx.children.map(function (childjsonx) { return getReactElementFromJSONX$1.call(_this, getChildrenProps$1({ jsonx: jsonx, childjsonx: childjsonx, props: props_1, renderIndex: renderIndex, }), resources); })
+                : jsonx.children;
+        }
+        catch (e) {
+            this && this.debug && logError(e, (e.stack) ? e.stack : 'no stack');
+            return null;
+        }
+    }
+
+    // import React, { createElement, } from 'react';
+    var createElement$1 = react.createElement;
+    var componentMap$3 = componentMap$2, getComponentFromMap$3 = getComponentFromMap$2, getBoundedComponents$3 = getBoundedComponents$2, DynamicComponent$3 = DynamicComponent$2;
+    var getComputedProps$3 = getComputedProps$2;
+    var getJSONXChildren$3 = getJSONXChildren$2;
+    var displayComponent$3 = displayComponent$2;
+    var renderIndex$1 = 0;
+    /**
+     * Use React.createElement and JSONX JSON to create React elements
+     * @example
+     * // Uses react to create the equivalent JSX <myComponent style={{color:blue}}>hello world</myComponent>
+     * jsonx.getReactElementFromJSONX({component:'myCompnent',props:{style:{color:'blue'}},children:'hello world'})
+     * @param {object} jsonx - any valid JSONX JSON object
+     * @param {object} resources - any additional resource used for asynchronous properties
+     * @property {object} this - options for getReactElementFromJSONX
+     * @property {Object} [this.componentLibraries] - react components to render with JSONX
+     * @property {boolean} [this.debug=false] - use debug messages
+     * @property {boolean} [this.returnJSON=false] - return json object of {type,props,children} instead of react element
+     * @property {boolean} [this.disableRenderIndexKey=false] - disables auto assign a key prop
+     * @property {function} [this.logError=console.error] - error logging function
+     * @property {string[]} [this.boundedComponents=[]] - list of components that require a bound this context (usefult for redux router)
+     * @returns {function} React element via React.createElement
+     */
+    function getReactElementFromJSONX$1(jsonx, resources) {
+        if (resources === void 0) { resources = {}; }
+        // eslint-disable-next-line
+        var _a = this || {}, _b = _a.componentLibraries, componentLibraries = _b === void 0 ? {} : _b, _c = _a.debug, debug = _c === void 0 ? false : _c, _d = _a.returnJSON, returnJSON = _d === void 0 ? false : _d, _e = _a.logError, logError = _e === void 0 ? console.error : _e, _f = _a.boundedComponents, boundedComponents = _f === void 0 ? [] : _f, _g = _a.disableRenderIndexKey, disableRenderIndexKey = _g === void 0 ? true : _g;
+        // const componentLibraries = this.componentLibraries;
+        if (!jsonx)
+            return null;
+        if (jsonx.type)
+            jsonx.component = jsonx.type;
+        if (validSimpleJSONXSyntax$1(jsonx))
+            jsonx = simpleJSONXSyntax$1(jsonx);
+        if (!jsonx.component)
+            return createElement$1("span", {}, debug ? "Error: Missing Component Object" : "");
+        try {
+            var components = Object.assign({ DynamicComponent: DynamicComponent$3.bind(this) }, componentMap$3, this.reactComponents);
+            var reactComponents = boundedComponents.length
+                ? getBoundedComponents$3.call(this, {
+                    boundedComponents: boundedComponents,
+                    reactComponents: components,
+                })
+                : components;
+            renderIndex$1++;
+            var element = getComponentFromMap$3({
+                jsonx: jsonx,
+                reactComponents: reactComponents,
+                componentLibraries: componentLibraries,
+                debug: debug,
+                logError: logError,
+            });
+            var props = getComputedProps$3.call(this, {
+                jsonx: jsonx,
+                resources: resources,
+                renderIndex: renderIndex$1,
+                componentLibraries: componentLibraries,
+                debug: debug,
+                logError: logError,
+                disableRenderIndexKey: disableRenderIndexKey,
+            });
+            var displayElement = jsonx.comparisonprops
+                ? displayComponent$3.call(this, {
+                    jsonx: jsonx,
+                    props: props,
+                    renderIndex: renderIndex$1,
+                    componentLibraries: componentLibraries,
+                    debug: debug,
+                })
+                : true;
+            if (displayElement) {
+                var children = getJSONXChildren$3.call(this, {
+                    jsonx: jsonx,
+                    props: props,
+                    resources: resources,
+                    renderIndex: renderIndex$1,
+                });
+                if (returnJSON)
+                    return { type: element, props: props, children: children };
+                return createElement$1(element, props, children);
+            }
+            else {
+                return null;
+            }
+        }
+        catch (e) {
+            if (debug) {
+                logError({ jsonx: jsonx, resources: resources }, "this", this);
+                logError(e, e.stack ? e.stack : "no stack");
+            }
+            throw e;
+        }
+    }
+    var getRenderedJSON$1 = getReactElementFromJSONX$1;
+
+    exports.JSONX = getReactElementFromJSONX$1;
     exports.React = react;
     exports.ReactDOM = reactDom;
     exports.ViewXApp = ViewXApp;
 
     return exports;
 
-}({}, main));
+}({}));
 //# sourceMappingURL=viewx.vma.web.js.map
