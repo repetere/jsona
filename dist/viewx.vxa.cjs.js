@@ -1,12 +1,17 @@
-import React, { Fragment, Suspense, lazy, useState, useMemo, useEffect, createContext, useContext, useReducer, useCallback, useRef, useImperativeHandle, useLayoutEffect, useDebugValue } from 'react';
-export { default as React } from 'react';
-import { Route as Route$1 } from 'react-router';
-import { Link, StaticRouter, HashRouter, MemoryRouter, BrowserRouter } from 'react-router-dom';
-import ReactDOM from 'react-dom';
-export { default as ReactDOM } from 'react-dom';
-import { findMatchingRoutePath } from 'test-matching-route';
-import { compile } from 'path-to-regexp';
-import { createStore } from 'react-hooks-global-state';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var React = require('react');
+var React__default = _interopDefault(React);
+var reactRouter = require('react-router');
+var reactRouterDom = require('react-router-dom');
+var ReactDOM = _interopDefault(require('react-dom'));
+var testMatchingRoute = require('test-matching-route');
+var pathToRegexp = require('path-to-regexp');
+var reactHooksGlobalState = require('react-hooks-global-state');
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -5277,7 +5282,7 @@ var reactDomServer_node_development = createCommonjsModule(function (module) {
   (function() {
 
 var _assign = objectAssign;
-var React$1 = React;
+var React = React__default;
 var checkPropTypes = checkPropTypes_1;
 var stream = require$$3;
 
@@ -5375,7 +5380,7 @@ var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead
 
 var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
 
-var ReactSharedInternals = React$1.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED; // Prevent newer renderers from RTE when used with older react package versions.
+var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED; // Prevent newer renderers from RTE when used with older react package versions.
 // Current owner and dispatcher used to share the same ref,
 // but PR #14548 split them out to better support the react-debug-tools package.
 
@@ -7967,7 +7972,7 @@ function validateProperties$2(type, props, canUseEventSystem) {
   warnUnknownProperties(type, props, canUseEventSystem);
 }
 
-var toArray = React$1.Children.toArray; // This is only used in DEV.
+var toArray = React.Children.toArray; // This is only used in DEV.
 // Each entry is `this.stack` from a currently executing renderer instance.
 // (There may be more than one because ReactDOMServer is reentrant).
 // Each stack is an array of frames which may contain nested stacks of elements.
@@ -8188,7 +8193,7 @@ function getNonChildrenInnerMarkup(props) {
 }
 
 function flattenTopLevelChildren(children) {
-  if (!React$1.isValidElement(children)) {
+  if (!React.isValidElement(children)) {
     return toArray(children);
   }
 
@@ -8200,7 +8205,7 @@ function flattenTopLevelChildren(children) {
 
   var fragmentChildren = element.props.children;
 
-  if (!React$1.isValidElement(fragmentChildren)) {
+  if (!React.isValidElement(fragmentChildren)) {
     return toArray(fragmentChildren);
   }
 
@@ -8216,7 +8221,7 @@ function flattenOptionChildren(children) {
   var content = ''; // Flatten children and warn if they aren't strings or numbers;
   // invalid types are ignored.
 
-  React$1.Children.forEach(children, function (child) {
+  React.Children.forEach(children, function (child) {
     if (child == null) {
       return;
     }
@@ -8299,7 +8304,7 @@ function validateRenderResult(child, type) {
 }
 
 function resolve(child, context, threadID) {
-  while (React$1.isValidElement(child)) {
+  while (React.isValidElement(child)) {
     // Safe because we just checked it's an element.
     var element = child;
     var Component = element.type;
@@ -8785,7 +8790,7 @@ function () {
 
       if (nextChild === null || nextChild === false) {
         return '';
-      } else if (!React$1.isValidElement(nextChild)) {
+      } else if (!React.isValidElement(nextChild)) {
         if (nextChild != null && nextChild.$$typeof != null) {
           // Catch unexpected special types early.
           var $$typeof = nextChild.$$typeof;
@@ -8905,7 +8910,7 @@ function () {
           case REACT_MEMO_TYPE:
             {
               var _element = nextChild;
-              var _nextChildren5 = [React$1.createElement(elementType.type, _assign({
+              var _nextChildren5 = [React.createElement(elementType.type, _assign({
                 ref: _element.ref
               }, _element.props))];
               var _frame5 = {
@@ -9024,7 +9029,7 @@ function () {
               switch (lazyComponent._status) {
                 case Resolved:
                   {
-                    var _nextChildren9 = [React$1.createElement(lazyComponent._result, _assign({
+                    var _nextChildren9 = [React.createElement(lazyComponent._result, _assign({
                       ref: _element2.ref
                     }, _element2.props))];
                     var _frame9 = {
@@ -9642,7 +9647,7 @@ var reactDomFactories = createCommonjsModule(function (module, exports) {
 
 (function(f) {
   {
-    module.exports = f(React);
+    module.exports = f(React__default);
     /* global define */
   }
 })(function(React) {
@@ -11759,7 +11764,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 
 var factory_1 = factory;
 
-if (typeof React === 'undefined') {
+if (typeof React__default === 'undefined') {
   throw Error(
     'create-react-class could not find the React object. If you are using script tags, ' +
       'make sure that React is being loaded before create-react-class.'
@@ -11767,11 +11772,11 @@ if (typeof React === 'undefined') {
 }
 
 // Hack to grab NoopUpdateQueue from isomorphic React
-var ReactNoopUpdateQueue = new React.Component().updater;
+var ReactNoopUpdateQueue = new React__default.Component().updater;
 
 var createReactClass = factory_1(
-  React.Component,
-  React.isValidElement,
+  React__default.Component,
+  React__default.isValidElement,
   ReactNoopUpdateQueue
 );
 
@@ -12262,7 +12267,7 @@ let advancedBinding = getAdvancedBinding();
  
  */
 //@ts-ignore
-let componentMap = Object.assign({ Fragment, Suspense, }, reactDomFactories, (typeof window === 'object') ? window.__jsonx_custom_elements : {});
+let componentMap = Object.assign({ Fragment: React.Fragment, Suspense: React.Suspense, }, reactDomFactories, (typeof window === 'object') ? window.__jsonx_custom_elements : {});
 /**
  * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
  
@@ -12399,7 +12404,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
     // console.log(util.inspect({ reactComponent },{depth:20}));
     if (options.lazy) {
         //@ts-ignore
-        return lazy(() => options.lazy(reactComponent, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
+        return React.lazy(() => options.lazy(reactComponent, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
             return {
                 //@ts-ignore
                 default: getReactClassComponent(...lazyComponent),
@@ -12468,7 +12473,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
         });
     }
     const reactClass = returnFactory
-        ? React.createFactory(reactComponentClass)
+        ? React__default.createFactory(reactComponentClass)
         : reactComponentClass;
     return reactClass;
 }
@@ -12478,13 +12483,13 @@ function DynamicComponent(props = {}) {
     //@ts-ignore
     loadingErrorJSONX = { component: 'div', children: [{ component: 'span', children: 'Error: ' }, { component: 'span', resourceprops: { _children: ['error', 'message'] }, }], }, cacheTimeoutFunction = () => { }, jsonx, transformFunction = data => data, fetchURL, fetchOptions, fetchFunction, } = props;
     const context = this || {};
-    const [state, setState] = useState({ hasLoaded: false, hasError: false, resources: {}, error: undefined, });
-    const transformer = useMemo(() => getFunctionFromEval(transformFunction), [transformFunction]);
-    const timeoutFunction = useMemo(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
-    const renderJSONX = useMemo(() => getReactElementFromJSONX.bind(context), [context]);
-    const loadingComponent = useMemo(() => renderJSONX(loadingJSONX), [loadingJSONX]);
-    const loadingError = useMemo(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
-    useEffect(() => {
+    const [state, setState] = React.useState({ hasLoaded: false, hasError: false, resources: {}, error: undefined, });
+    const transformer = React.useMemo(() => getFunctionFromEval(transformFunction), [transformFunction]);
+    const timeoutFunction = React.useMemo(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
+    const renderJSONX = React.useMemo(() => getReactElementFromJSONX.bind(context), [context]);
+    const loadingComponent = React.useMemo(() => renderJSONX(loadingJSONX), [loadingJSONX]);
+    const loadingError = React.useMemo(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
+    React.useEffect(() => {
         async function getData() {
             try {
                 //@ts-ignore
@@ -12569,7 +12574,7 @@ function DynamicComponent(props = {}) {
 function getReactFunctionComponent(reactComponent = {}, functionBody = '', options = {}) {
     if (options.lazy) {
         //@ts-ignore
-        return lazy(() => options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
+        return React.lazy(() => options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then((lazyComponent) => {
             return {
                 //@ts-ignore
                 default: getReactFunctionComponent(...lazyComponent),
@@ -12581,7 +12586,7 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = '', optio
     const { resources = {}, args = [], } = options;
     //@ts-ignore
     const props = Object.assign({}, reactComponent.props);
-    const functionArgs = [React, useState, useEffect, useContext, useReducer, useCallback, useMemo, useRef, useImperativeHandle, useLayoutEffect, useDebugValue, getReactElementFromJSONX, reactComponent, resources, props,];
+    const functionArgs = [React__default, React.useState, React.useEffect, React.useContext, React.useReducer, React.useCallback, React.useMemo, React.useRef, React.useImperativeHandle, React.useLayoutEffect, React.useDebugValue, getReactElementFromJSONX, reactComponent, resources, props,];
     //@ts-ignore
     if (typeof functionBody === 'function')
         functionBody = functionBody.toString();
@@ -12615,7 +12620,7 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = '', optio
  *
  */
 function getReactContext(options = {}) {
-    return createContext(options.value);
+    return React.createContext(options.value);
 }
 
 var jsonxComponents = /*#__PURE__*/Object.freeze({
@@ -13142,7 +13147,7 @@ function getWindowComponents(options = { jsonx: {} }) {
             const windowComponentElement = window.__jsonx_custom_elements[windowKEY];
             const windowComponentProps = (allProps['__windowComponentProps']) ? allProps['__windowComponentProps']
                 : this.props;
-            allProps[key] = React.createElement(windowComponentElement, windowComponentProps, null);
+            allProps[key] = React__default.createElement(windowComponentElement, windowComponentProps, null);
         }
     });
     return allProps;
@@ -13394,7 +13399,7 @@ var jsonxChildren = /*#__PURE__*/Object.freeze({
 });
 
 // import React, { createElement, } from 'react';
-const createElement = React.createElement;
+const createElement = React__default.createElement;
 const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, DynamicComponent: DynamicComponent$1, } = jsonxComponents;
 const { getComputedProps: getComputedProps$1 } = jsonxProps;
 const { getJSONXChildren: getJSONXChildren$1 } = jsonxChildren;
@@ -13492,7 +13497,7 @@ const getReactElement = getReactElementFromJSONX;
  * @returns {Object} React
  */
 function __getReact() {
-    return React;
+    return React__default;
 }
 /**
  * Exposes react dom module used in JSONX
@@ -14046,7 +14051,7 @@ function fetchResources(_a) {
                                             case 0:
                                                 resource = resources[prop];
                                                 fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
-                                                toPath = compile(fetchPath);
+                                                toPath = pathToRegexp.compile(fetchPath);
                                                 basePath = toPath(templateRoute.params);
                                                 fetchURL = "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                 fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
@@ -14600,7 +14605,7 @@ function getTemplateRouteLayer(_a) {
         var _a;
         var vxtObject;
         var name = layer.name, type = layer.type;
-        var templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
+        var templateRoute = testMatchingRoute.findMatchingRoutePath(viewxTemplates[name], pathname, {
             return_matching_keys: true
         });
         // console.log({ templateRoute, name, type });
@@ -14904,7 +14909,7 @@ function getMainComponent(options) {
         var user = useGlobalState("user")[0];
         var viewdata = useGlobalState("viewdata")[0];
         var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
-        var _c = useState(application ? application.state : {}), state = _c[0], setState = _c[1];
+        var _c = React.useState(application ? application.state : {}), state = _c[0], setState = _c[1];
         var pathname = appProps.location.pathname;
         var props = Object.assign({
             dispatch: dispatch,
@@ -14928,7 +14933,7 @@ function getMainComponent(options) {
             viewx: { Functions: Functions, settings: settings }
         };
         // eslint-disable-line
-        var loadView = useMemo(function () {
+        var loadView = React.useMemo(function () {
             return function _loadView(_a) {
                 var _b, _c;
                 var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
@@ -14959,15 +14964,15 @@ function getMainComponent(options) {
             // state:{counter, setCounter},
             debug: settings.debug,
             componentLibraries: Object.assign({}, config.componentLibraries),
-            reactComponents: Object.assign({ Link: Link }, config.reactComponents)
+            reactComponents: Object.assign({ Link: reactRouterDom.Link }, config.reactComponents)
         });
-        useEffect(function () {
+        React.useEffect(function () {
             Functions.onLaunch.call(functionContext);
             return function () { return Functions.onShutdown.call(functionContext); };
             /* eslint-disable */
         }, []);
         /* eslint-enable */
-        useEffect(function () {
+        React.useEffect(function () {
             var viewxTemplates = templates;
             var action;
             function initialize() {
@@ -15030,7 +15035,7 @@ function getMainComponent(options) {
             /* eslint-disable */
         }, [pathname /* templates*/]);
         /* eslint-enable */
-        return (React.createElement(Fragment, null, config.layers.map(function (layer) {
+        return (React__default.createElement(React.Fragment, null, config.layers.map(function (layer) {
             var name = layer.name, type = layer.type;
             var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
             // console.log(
@@ -15121,7 +15126,7 @@ function getGlobalStateHooks(options) {
                         : false, loggedInMFA: settings.cacheLoggedInUser
                         ? getFromCacheStore("user", "loggedInMFA") || false
                         : false }, options.vxaState.user) });
-            _a = createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+            _a = reactHooksGlobalState.createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
             return [2 /*return*/, {
                     GlobalStateProvider: GlobalStateProvider,
                     dispatch: dispatch,
@@ -15146,22 +15151,22 @@ function getViewXapp(options) {
                     MainApp = getMainComponent(options);
                     switch (settings.router) {
                         case "static":
-                            Router = StaticRouter;
+                            Router = reactRouterDom.StaticRouter;
                             break;
                         case "hash":
-                            Router = HashRouter;
+                            Router = reactRouterDom.HashRouter;
                             break;
                         case "memory":
-                            Router = MemoryRouter;
+                            Router = reactRouterDom.MemoryRouter;
                             break;
                         default:
-                            Router = BrowserRouter;
+                            Router = reactRouterDom.BrowserRouter;
                             break;
                     }
                     //  = settings.router === "hash" ? HashRouter : BrowserRouter;
-                    return [2 /*return*/, (React.createElement(GlobalStateProvider, null,
-                            React.createElement(Router, null,
-                                React.createElement(Route$1, { path: "*", component: MainApp }))))];
+                    return [2 /*return*/, (React__default.createElement(GlobalStateProvider, null,
+                            React__default.createElement(Router, null,
+                                React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))))];
             }
         });
     });
@@ -16899,7 +16904,7 @@ var advancedBinding$1 = getAdvancedBinding$1();
  
  */
 //@ts-ignore
-var componentMap$2 = Object.assign({ Fragment: Fragment, Suspense: Suspense, }, reactDomFactories, (typeof window === 'object') ? window.__jsonx_custom_elements : {});
+var componentMap$2 = Object.assign({ Fragment: React.Fragment, Suspense: React.Suspense, }, reactDomFactories, (typeof window === 'object') ? window.__jsonx_custom_elements : {});
 /**
  * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
  
@@ -17027,13 +17032,13 @@ function DynamicComponent$2(props) {
     //@ts-ignore
     loadingErrorJSONX = _d === void 0 ? { component: 'div', children: [{ component: 'span', children: 'Error: ' }, { component: 'span', resourceprops: { _children: ['error', 'message'] }, }], } : _d, _e = props.cacheTimeoutFunction, cacheTimeoutFunction = _e === void 0 ? function () { } : _e, jsonx = props.jsonx, _f = props.transformFunction, transformFunction = _f === void 0 ? function (data) { return data; } : _f, fetchURL = props.fetchURL, fetchOptions = props.fetchOptions, fetchFunction = props.fetchFunction;
     var context = this || {};
-    var _g = useState({ hasLoaded: false, hasError: false, resources: {}, error: undefined, }), state = _g[0], setState = _g[1];
-    var transformer = useMemo(function () { return getFunctionFromEval$1(transformFunction); }, [transformFunction]);
-    var timeoutFunction = useMemo(function () { return getFunctionFromEval$1(cacheTimeoutFunction); }, [cacheTimeoutFunction]);
-    var renderJSONX = useMemo(function () { return getReactElementFromJSONX$1.bind(context); }, [context]);
-    var loadingComponent = useMemo(function () { return renderJSONX(loadingJSONX); }, [loadingJSONX]);
-    var loadingError = useMemo(function () { return renderJSONX(loadingErrorJSONX, { error: state.error }); }, [loadingErrorJSONX, state.error]);
-    useEffect(function () {
+    var _g = React.useState({ hasLoaded: false, hasError: false, resources: {}, error: undefined, }), state = _g[0], setState = _g[1];
+    var transformer = React.useMemo(function () { return getFunctionFromEval$1(transformFunction); }, [transformFunction]);
+    var timeoutFunction = React.useMemo(function () { return getFunctionFromEval$1(cacheTimeoutFunction); }, [cacheTimeoutFunction]);
+    var renderJSONX = React.useMemo(function () { return getReactElementFromJSONX$1.bind(context); }, [context]);
+    var loadingComponent = React.useMemo(function () { return renderJSONX(loadingJSONX); }, [loadingJSONX]);
+    var loadingError = React.useMemo(function () { return renderJSONX(loadingErrorJSONX, { error: state.error }); }, [loadingErrorJSONX, state.error]);
+    React.useEffect(function () {
         function getData() {
             return __awaiter(this, void 0, void 0, function () {
                 var transformedData_1, fetchedData, e_1;
@@ -17136,7 +17141,7 @@ function getReactFunctionComponent$1(reactComponent, functionBody, options) {
     if (options === void 0) { options = {}; }
     if (options.lazy) {
         //@ts-ignore
-        return lazy(function () { return options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then(function (lazyComponent) {
+        return React.lazy(function () { return options.lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false, })).then(function (lazyComponent) {
             return {
                 //@ts-ignore
                 default: getReactFunctionComponent$1.apply(void 0, lazyComponent),
@@ -17148,7 +17153,7 @@ function getReactFunctionComponent$1(reactComponent, functionBody, options) {
     var _a = options.resources, resources = _a === void 0 ? {} : _a, _b = options.args;
     //@ts-ignore
     var props = Object.assign({}, reactComponent.props);
-    var functionArgs = [React, useState, useEffect, useContext, useReducer, useCallback, useMemo, useRef, useImperativeHandle, useLayoutEffect, useDebugValue, getReactElementFromJSONX$1, reactComponent, resources, props,];
+    var functionArgs = [React__default, React.useState, React.useEffect, React.useContext, React.useReducer, React.useCallback, React.useMemo, React.useRef, React.useImperativeHandle, React.useLayoutEffect, React.useDebugValue, getReactElementFromJSONX$1, reactComponent, resources, props,];
     //@ts-ignore
     if (typeof functionBody === 'function')
         functionBody = functionBody.toString();
@@ -17687,7 +17692,7 @@ function getWindowComponents$1(options) {
             var windowComponentElement = window.__jsonx_custom_elements[windowKEY];
             var windowComponentProps = (allProps['__windowComponentProps']) ? allProps['__windowComponentProps']
                 : _this.props;
-            allProps[key] = React.createElement(windowComponentElement, windowComponentProps, null);
+            allProps[key] = React__default.createElement(windowComponentElement, windowComponentProps, null);
         }
     });
     return allProps;
@@ -17921,7 +17926,7 @@ function getJSONXChildren$2(options) {
 }
 
 // import React, { createElement, } from 'react';
-var createElement$1 = React.createElement;
+var createElement$1 = React__default.createElement;
 var componentMap$3 = componentMap$2, getComponentFromMap$3 = getComponentFromMap$2, getBoundedComponents$3 = getBoundedComponents$2, DynamicComponent$3 = DynamicComponent$2;
 var getComputedProps$3 = getComputedProps$2;
 var getJSONXChildren$3 = getJSONXChildren$2;
@@ -18015,5 +18020,8 @@ function getReactElementFromJSONX$1(jsonx, resources) {
 }
 var getRenderedJSON$1 = getReactElementFromJSONX$1;
 
-export { getReactElementFromJSONX$1 as JSONX, ViewXApp };
-//# sourceMappingURL=viewx.vma.es.js.map
+exports.React = React__default;
+exports.ReactDOM = ReactDOM;
+exports.JSONX = getReactElementFromJSONX$1;
+exports.ViewXApp = ViewXApp;
+//# sourceMappingURL=viewx.vxa.cjs.js.map

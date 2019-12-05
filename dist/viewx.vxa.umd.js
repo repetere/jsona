@@ -50143,4 +50143,4 @@
     Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
-//# sourceMappingURL=viewx.vma.umd.js.map
+//# sourceMappingURL=viewx.vxa.umd.js.map
