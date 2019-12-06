@@ -17,7 +17,8 @@ import {
 } from "../../../types";
 
 // @ts-ignore
-import * as JSONX from "jsonx/src/main";
+import * as JSONX from "jsonx/dist/jsonx.esm";
+
 import { loadTemplates, loadRoute, setup } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
 import { fetchJSON } from "../util/data";
@@ -66,7 +67,8 @@ export default function getMainComponent(
         user,
         setUI,
         setTemplates,
-        updateState: (applicationState: any) =>
+        updateState: (applicationState: any) => setState(applicationState),
+        setApplicationState: (applicationState: any) =>
           dispatch({ type: "setApplicationState", state: applicationState })
       },
       appProps
@@ -130,7 +132,6 @@ export default function getMainComponent(
       /* eslint-disable */
     }, []);
     /* eslint-enable */
-
     useEffect(() => {
       let viewxTemplates = templates;
       let action: VXADispatchAction;

@@ -5,6 +5,8 @@ import { configureViewx } from "../util/config";
 import { createLayer } from "../util/html";
 import { options as defaultOptions } from "../defaults/options";
 import { VXAOptions, VXALayer } from "../../../types";
+import hoistNonReactStatics from "hoist-non-react-statics";
+window.hoistNonReactStatics = hoistNonReactStatics;
 
 export default async function ViewXApp(
   options: VXAOptions = {}

@@ -27,8 +27,8 @@ export function initSockets(
       functionContext: this,
       functionName: propFunc
     });
-  //@ts-ignore
-  const router = new Router();
+  // @ts-ignore
+  const router = Router();
   router.addRoute("*", (req: any) => {
     const propFunc = req.body.function || req.path;
     const props =

@@ -1,5 +1,6 @@
 // @ts-ignore
-import * as JSONX from "jsonx/src/main";
+import * as JSONX from "jsonx/dist/jsonx.esm";
+// import * as JSONX from "jsonx";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
 import {
@@ -107,7 +108,7 @@ export function getComponentPromise(
           async: true,
           onload: () => {
             returnedFile = true;
-            // console.log('LOADED SCRIPT', umdFilePath);
+            // console.log("LOADED SCRIPT", { umdFilePath, name });
             resolve(umdFilePath);
           }
         });
@@ -247,7 +248,10 @@ export async function configureViewx(
   configuration.layers = Object.keys(layerObject).map(
     (layerName: string) => layerObject[layerName]
   );
-
+  await addCustomFiles({
+    type: customFileType.script,
+    files: options.initialScripts
+  });
   const [reactJSONXComponents] = await Promise.all([
     getReactLibrariesAndComponents({
       customComponents: options.customComponents

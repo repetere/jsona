@@ -2,6 +2,7 @@ import ViewXApp from "./lib/core/index";
 import * as serviceWorker from "./serviceWorker";
 import { options } from "./lib/defaults/options";
 import { VXAOptions } from "../types";
+
 declare global {
   interface Window {
     __ViewXAppConfig: VXAOptions;
