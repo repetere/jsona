@@ -197,11 +197,13 @@ export default function getMainComponent(
           });
           if (settings.setBodyPathnameID) setBodyPathnameId(pathname);
         } catch (e) {
-          console.log('VIEW ERREOR');
-          loadView({
-            resourceprops: { error: e },
-            pathname: '__error_500',
-          });
+          try {
+            loadView({
+              resourceprops: { error: e },
+              pathname: (e.message.includes('Could not load:'))?'__error_400':'__error_500',
+            });
+          } catch (e) {
+          }
           Functions.log({ type: "error", error: e });
         }
         Functions.hideLoader.call(functionContext, { ui: typeof action!=='undefined' && action.ui? action.ui:ui, setUI });
