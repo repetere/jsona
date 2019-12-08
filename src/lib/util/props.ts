@@ -56,7 +56,7 @@ export async function loadTemplates({
   layers,
   Functions,
   functionContext
-}: appLoadTemplates): Promise<{ viewxTemplates: VXATemplates }> {
+}: appLoadTemplates): Promise<{ viewxTemplates: VXATemplates, updatedUI:any, }> {
   // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
   const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(
     functionContext
@@ -77,15 +77,84 @@ export async function loadTemplates({
     };
     return result;
   }, {});
+  const templatePaths = getTemplatePaths(viewxTemplates);
+  const updatedUI = {
+    ...ui,
+    templatePaths,
+    hasLoadedInitialProcess: true
+  };
 
   setTemplates(viewxTemplates);
-  setUI({
-    ...ui,
-    hasLoadedInitialProcess: true
-  });
+  setUI(updatedUI);
   return {
-    viewxTemplates
+    viewxTemplates,
+    updatedUI,
   };
+}
+
+export function getTemplatePaths(viewxTemplates: VXATemplates): string[] {
+  const allPathNames = Object.keys(viewxTemplates).reduce((result: string[], layerName: string) => { 
+    //@ts-ignore
+    const pathnames = Object.keys(viewxTemplates[layerName] || {}) as string[];
+    result = result.concat(pathnames);
+    return result;
+  }, []);
+  const pathnames:Set<string> = new Set(allPathNames);
+  return Array.from(pathnames); 
+}
+
+export async function loadDynamicTemplate({
+  config,
+  viewxTemplates,
+  templates,
+  setTemplates,
+  setUI,
+  ui,
+  layers,
+  Functions,
+  functionContext,
+  pathname,
+}: appLoadTemplates & { pathname: string; }): Promise<{ viewxTemplates: VXATemplates, updatedUI:any,  }> {
+  const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(
+    functionContext
+  );
+  const templateURL = (config.settings.dynamicTemplatePathRequestMethod === 'path')
+    ? config.settings.dynamicTemplatePath+pathname
+    : config.settings.dynamicTemplatePath+`?pathname=${pathname}`;
+  try {
+    const loadedTemplates = config.settings.hasPreloadedTemplates
+    ? {}
+    : await fetchFunction(
+        templateURL,
+        config.settings.templateFetchOptions
+      );
+      viewxTemplates = layers.reduce((result, layer) => {
+        const { name } = layer;
+        result[name] = {
+          ...loadedTemplates[name],
+          ...templates[name]
+        };
+        return result;
+      }, viewxTemplates);
+      const templatePaths = getTemplatePaths(viewxTemplates);
+      const updatedUI = {
+        ...ui,
+        templatePaths,
+        hasLoadedInitialProcess: true
+      };
+    
+      setTemplates(viewxTemplates);
+      setUI(updatedUI);
+    
+      return {
+        viewxTemplates,
+        updatedUI,
+      }; 
+  } catch (e) {
+    throw new Error(`Could not load: ${templateURL}`);
+  }
+
+
 }
 
 /**
@@ -95,30 +164,30 @@ export async function loadTemplates({
  */
 export function getTemplateRouteLayer({
   viewxTemplates,
-  pathname
+  pathname,
 }: appGetTemplateRouteLayer): (layer: VXALayer) => any {
   let hasOverlayLayer: boolean = false;
 
   return (layer: VXALayer) => {
     let vxtObject;
     const { name, type } = layer;
-    const templateRoute = findMatchingRoutePath(
-      viewxTemplates[name],
+    const viewxTemplateLayer = viewxTemplates[name];
+    const templateRoute = viewxTemplateLayer? findMatchingRoutePath(
+      viewxTemplateLayer,
       pathname,
       {
         return_matching_keys: true
       }
-    );
-    // console.log({ templateRoute, name, type });
+    ):undefined;
     if (type === "overlay" && templateRoute) hasOverlayLayer = true;
     if (
       !templateRoute &&
-      viewxTemplates[name].__error_404 &&
+      viewxTemplateLayer&&viewxTemplateLayer.__error_404 &&
       !hasOverlayLayer
     ) {
-      vxtObject = viewxTemplates[name].__error_404;
+      vxtObject = viewxTemplateLayer.__error_404;
     } else if (templateRoute) {
-      vxtObject = viewxTemplates[name][templateRoute.route];
+      vxtObject = viewxTemplateLayer[templateRoute.route];
     }
     if (vxtObject) {
       return {

@@ -24,8 +24,8 @@ export type VXAStateHookFunction = (newState: any) => void;
 export type VXADispatchFunction = (action:VXADispatchAction) => VXAState;
 
 export type appLoadViewParams = {
-  layerName: string;
-  view: vxt;
+  layerName?: string;
+  view?: vxt;
   resourceprops: jsonxResourceProps;
   pathname: string;
 };

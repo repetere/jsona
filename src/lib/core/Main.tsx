@@ -19,7 +19,7 @@ import {
 // @ts-ignore
 import * as JSONX from "jsonx/dist/jsonx.esm";
 
-import { loadTemplates, loadRoute, setup } from "../util/props";
+import { loadTemplates, loadDynamicTemplate, loadRoute, setup } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
 import { fetchJSON } from "../util/data";
 
@@ -50,11 +50,15 @@ export default function getMainComponent(
   const { Functions, settings } = config;
   const dispatcher = (action: VXADispatchAction): void => dispatch(action);
   function Main(appProps: any) {
-    const [templates, setTemplates] = useGlobalState("templates");
+    const [templates] = useGlobalState("templates");
+    // const [templates, setTemplates] = useGlobalState("templates");
+    const setTemplates = (templates:any):void => dispatch({ type: 'setTemplates', templates });
     const [views] = useGlobalState("views");
     const [user] = useGlobalState("user");
     const [viewdata] = useGlobalState("viewdata");
-    const [ui, setUI] = useGlobalState("ui");
+    const [ui] = useGlobalState("ui");
+    // const [ui, setUI] = useGlobalState("ui");
+    const setUI = (ui:any):void => dispatch({ type: 'setUI', ui });
     const [state, setState] = useState(application ? application.state : {});
     const { pathname } = appProps.location;
     const props = Object.assign(
@@ -80,6 +84,9 @@ export default function getMainComponent(
       settings,
       viewx: { Functions, settings }
     };
+    if (settings.debug) {
+      window.VXAcontext = functionContext;
+    }
     // eslint-disable-line
     const loadView = useMemo(() => {
       return function _loadView({
@@ -91,18 +98,23 @@ export default function getMainComponent(
         const loadViewPathname = pathname || `_loadView_${layerName}`;
         return loadRoute({
           ui,
-          viewxTemplates: {
-            ...templates,
-            [layerName]: {
-              ...templates[layerName],
-              [loadViewPathname]: view
-            }
-          },
+          viewxTemplates: Object.assign({}, templates,
+            typeof layerName === 'string'
+              ?{
+                [layerName]: {
+                ...templates[layerName],
+                [loadViewPathname]: view
+                }
+              }
+              : {}
+          ),
           pathname: loadViewPathname,
           dispatcher,
-          layers: config
-            ? config.layers.filter(layer => layer.name === layerName)
-            : [],
+          layers: layerName
+            ? config
+              ? config.layers.filter(layer => layer.name === layerName)
+              : []
+            : config.layers,
           Functions,
           resourceprops,
           functionContext
@@ -139,6 +151,7 @@ export default function getMainComponent(
         Functions.showLoader.call(functionContext, { ui, setUI });
         try {
           setup.call(functionContext, { settings });
+          let updatedUI = ui;
           if (ui.hasLoadedInitialProcess === false) {
             await Functions.loadUser.call(functionContext);
             const updatedTemplates = await loadTemplates({
@@ -153,9 +166,28 @@ export default function getMainComponent(
               functionContext
             });
             viewxTemplates = updatedTemplates.viewxTemplates;
+            updatedUI = updatedTemplates.updatedUI;
           }
+          if (config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false) {
+            const dynamicTemplates = await loadDynamicTemplate({
+              config,
+              viewxTemplates,
+              templates,
+              setTemplates,
+              setUI,
+              ui,
+              layers: config.layers,
+              Functions,
+              functionContext,
+              pathname,
+            });
+
+            viewxTemplates = dynamicTemplates.viewxTemplates;
+            updatedUI = dynamicTemplates.updatedUI;
+          }
+
           action = await loadRoute({
-            ui,
+            ui:updatedUI,
             viewxTemplates,
             pathname,
             dispatcher,
@@ -165,9 +197,14 @@ export default function getMainComponent(
           });
           if (settings.setBodyPathnameID) setBodyPathnameId(pathname);
         } catch (e) {
+          console.log('VIEW ERREOR');
+          loadView({
+            resourceprops: { error: e },
+            pathname: '__error_500',
+          });
           Functions.log({ type: "error", error: e });
         }
-        Functions.hideLoader.call(functionContext, { ui: action.ui, setUI });
+        Functions.hideLoader.call(functionContext, { ui: typeof action!=='undefined' && action.ui? action.ui:ui, setUI });
       }
       initialize();
       //   // return function cleanup(){}

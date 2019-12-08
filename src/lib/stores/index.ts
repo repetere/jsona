@@ -90,6 +90,24 @@ export async function getGlobalStateHooks(options: any = {}) {
           ...state,
           socker: action.socket
         };
+      case "setUI": {
+        return {
+          ...state,
+          ui: {
+            ...state.ui,
+            ...action.ui,
+          }
+        }
+      }
+      case "setTemplates": {
+        return {
+          ...state,
+          templates: {
+            ...state.templates,
+            ...action.templates,
+          }
+        }
+      }
       case "setApplicationState":
         return {
           ...state,
@@ -124,6 +142,7 @@ export async function getGlobalStateHooks(options: any = {}) {
     },
     socket: {},
     ui: {
+      templatePaths:[],
       isLoading: true,
       isModalOpen: false,
       hasOverlayLayer: false,

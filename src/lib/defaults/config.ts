@@ -19,6 +19,7 @@ export const config = {
     templateFetchOptions: {},
     fetchHeaders: {},
     dynamicTemplatePath: undefined,
+    dynamicTemplatePathRequestMethod: 'path',//path/query
     dynamicTemplateFetchOptions: {},
     useBodyLoadedClass: true,
     useHTMLLoadedClass: true,

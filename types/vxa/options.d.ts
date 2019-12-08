@@ -61,7 +61,7 @@ export type VXAApplicationState = {
 export type layerName = string;
 
 export type VXATemplates = {
-  [index: layerName]: vxtTemplate;
+  [index: layerName|string]: vxtTemplate;
 };
 
 export type VXAConfig = {

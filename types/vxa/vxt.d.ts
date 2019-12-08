@@ -27,12 +27,13 @@ export type vxt = {
   transformRenderFunctions: string[];
   postRenderFunctions: string[];
   resources: vxtResource;
+  expires?: Date;
 };
 
 export type vxtRoutePath = string;
 
 export type vxtTemplate = {
-  [index: vxtRoutePath]: vxt;
+  [index: vxtRoutePath|string]: vxt;
 };
 
 export type VXATemplateRouteLayer = {
