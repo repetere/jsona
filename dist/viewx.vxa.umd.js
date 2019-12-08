@@ -47443,11 +47443,14 @@
                                     return [3 /*break*/, 9];
                                 case 8:
                                     e_1 = _a.sent();
-                                    console.log('VIEW ERREOR');
-                                    loadView({
-                                        resourceprops: { error: e_1 },
-                                        pathname: '__error_500',
-                                    });
+                                    try {
+                                        loadView({
+                                            resourceprops: { error: e_1 },
+                                            pathname: (e_1.message.includes('Could not load:')) ? '__error_400' : '__error_500',
+                                        });
+                                    }
+                                    catch (e) {
+                                    }
                                     Functions.log({ type: "error", error: e_1 });
                                     return [3 /*break*/, 9];
                                 case 9:
