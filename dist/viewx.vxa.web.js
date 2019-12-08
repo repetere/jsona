@@ -46894,7 +46894,7 @@ var VXA = (function (exports) {
     function loadTemplates(_a) {
         var config = _a.config, viewxTemplates = _a.viewxTemplates, templates = _a.templates, setTemplates = _a.setTemplates, setUI = _a.setUI, ui = _a.ui, layers = _a.layers, Functions = _a.Functions, functionContext = _a.functionContext;
         return __awaiter(this, void 0, Promise, function () {
-            var fetchFunction, loadedTemplates, _b;
+            var fetchFunction, loadedTemplates, _b, templatePaths, updatedUI;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -46913,11 +46913,68 @@ var VXA = (function (exports) {
                             result[name] = __assign(__assign({}, loadedTemplates[name]), templates[name]);
                             return result;
                         }, {});
+                        templatePaths = getTemplatePaths(viewxTemplates);
+                        updatedUI = __assign(__assign({}, ui), { templatePaths: templatePaths, hasLoadedInitialProcess: true });
                         setTemplates(viewxTemplates);
-                        setUI(__assign(__assign({}, ui), { hasLoadedInitialProcess: true }));
+                        setUI(updatedUI);
                         return [2 /*return*/, {
-                                viewxTemplates: viewxTemplates
+                                viewxTemplates: viewxTemplates,
+                                updatedUI: updatedUI,
                             }];
+                }
+            });
+        });
+    }
+    function getTemplatePaths(viewxTemplates) {
+        var allPathNames = Object.keys(viewxTemplates).reduce(function (result, layerName) {
+            //@ts-ignore
+            var pathnames = Object.keys(viewxTemplates[layerName] || {});
+            result = result.concat(pathnames);
+            return result;
+        }, []);
+        var pathnames = new Set(allPathNames);
+        return Array.from(pathnames);
+    }
+    function loadDynamicTemplate(_a) {
+        var config = _a.config, viewxTemplates = _a.viewxTemplates, templates = _a.templates, setTemplates = _a.setTemplates, setUI = _a.setUI, ui = _a.ui, layers = _a.layers, Functions = _a.Functions, functionContext = _a.functionContext, pathname = _a.pathname;
+        return __awaiter(this, void 0, Promise, function () {
+            var fetchFunction, templateURL, loadedTemplates_1, _b, templatePaths, updatedUI, e_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        fetchFunction = (Functions.fetchJSON || fetchJSON$1).bind(functionContext);
+                        templateURL = (config.settings.dynamicTemplatePathRequestMethod === 'path')
+                            ? config.settings.dynamicTemplatePath + pathname
+                            : config.settings.dynamicTemplatePath + ("?pathname=" + pathname);
+                        _c.label = 1;
+                    case 1:
+                        _c.trys.push([1, 5, , 6]);
+                        if (!config.settings.hasPreloadedTemplates) return [3 /*break*/, 2];
+                        _b = {};
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, fetchFunction(templateURL, config.settings.templateFetchOptions)];
+                    case 3:
+                        _b = _c.sent();
+                        _c.label = 4;
+                    case 4:
+                        loadedTemplates_1 = _b;
+                        viewxTemplates = layers.reduce(function (result, layer) {
+                            var name = layer.name;
+                            result[name] = __assign(__assign({}, loadedTemplates_1[name]), templates[name]);
+                            return result;
+                        }, viewxTemplates);
+                        templatePaths = getTemplatePaths(viewxTemplates);
+                        updatedUI = __assign(__assign({}, ui), { templatePaths: templatePaths, hasLoadedInitialProcess: true });
+                        setTemplates(viewxTemplates);
+                        setUI(updatedUI);
+                        return [2 /*return*/, {
+                                viewxTemplates: viewxTemplates,
+                                updatedUI: updatedUI,
+                            }];
+                    case 5:
+                        e_1 = _c.sent();
+                        throw new Error("Could not load: " + templateURL);
+                    case 6: return [2 /*return*/];
                 }
             });
         });
@@ -46934,19 +46991,19 @@ var VXA = (function (exports) {
             var _a;
             var vxtObject;
             var name = layer.name, type = layer.type;
-            var templateRoute = findMatchingRoutePath(viewxTemplates[name], pathname, {
+            var viewxTemplateLayer = viewxTemplates[name];
+            var templateRoute = viewxTemplateLayer ? findMatchingRoutePath(viewxTemplateLayer, pathname, {
                 return_matching_keys: true
-            });
-            // console.log({ templateRoute, name, type });
+            }) : undefined;
             if (type === "overlay" && templateRoute)
                 hasOverlayLayer = true;
             if (!templateRoute &&
-                viewxTemplates[name].__error_404 &&
+                viewxTemplateLayer && viewxTemplateLayer.__error_404 &&
                 !hasOverlayLayer) {
-                vxtObject = viewxTemplates[name].__error_404;
+                vxtObject = viewxTemplateLayer.__error_404;
             }
             else if (templateRoute) {
-                vxtObject = viewxTemplates[name][templateRoute.route];
+                vxtObject = viewxTemplateLayer[templateRoute.route];
             }
             if (vxtObject) {
                 return {
@@ -46967,7 +47024,7 @@ var VXA = (function (exports) {
     function loadRoute(_a) {
         var ui = _a.ui, viewxTemplates = _a.viewxTemplates, pathname = _a.pathname, dispatcher = _a.dispatcher, layers = _a.layers, Functions = _a.Functions, functionContext = _a.functionContext, _b = _a.resourceprops, resourceprops = _b === void 0 ? {} : _b;
         return __awaiter(this, void 0, Promise, function () {
-            var applicationRootName, fetchResourcesFunction_1, templateRouteLayers_1, preFunctions, templateViewPromises, templateViewData, action, e_1;
+            var applicationRootName, fetchResourcesFunction_1, templateRouteLayers_1, preFunctions, templateViewPromises, templateViewData, action, e_2;
             var _c, _d;
             return __generator(this, function (_e) {
                 switch (_e.label) {
@@ -47036,8 +47093,8 @@ var VXA = (function (exports) {
                         });
                         return [2 /*return*/, action];
                     case 4:
-                        e_1 = _e.sent();
-                        Functions.log({ type: "error", error: e_1 });
+                        e_2 = _e.sent();
+                        Functions.log({ type: "error", error: e_2 });
                         dispatcher({
                             type: "setView",
                             view: (_c = {},
@@ -47045,7 +47102,7 @@ var VXA = (function (exports) {
                                 _c),
                             viewdata: (_d = {},
                                 _d[applicationRootName] = {
-                                    error: e_1
+                                    error: e_2
                                 },
                                 _d)
                         });
@@ -47233,12 +47290,16 @@ var VXA = (function (exports) {
         var Functions = config.Functions, settings = config.settings;
         var dispatcher = function (action) { return dispatch(action); };
         function Main(appProps) {
-            var _a = useGlobalState("templates"), templates = _a[0], setTemplates = _a[1];
+            var templates = useGlobalState("templates")[0];
+            // const [templates, setTemplates] = useGlobalState("templates");
+            var setTemplates = function (templates) { return dispatch({ type: 'setTemplates', templates: templates }); };
             var views = useGlobalState("views")[0];
             var user = useGlobalState("user")[0];
             var viewdata = useGlobalState("viewdata")[0];
-            var _b = useGlobalState("ui"), ui = _b[0], setUI = _b[1];
-            var _c = react_9(application ? application.state : {}), state = _c[0], setState = _c[1];
+            var ui = useGlobalState("ui")[0];
+            // const [ui, setUI] = useGlobalState("ui");
+            var setUI = function (ui) { return dispatch({ type: 'setUI', ui: ui }); };
+            var _a = react_9(application ? application.state : {}), state = _a[0], setState = _a[1];
             var pathname = appProps.location.pathname;
             var props = Object.assign({
                 dispatch: dispatch,
@@ -47261,6 +47322,9 @@ var VXA = (function (exports) {
                 settings: settings,
                 viewx: { Functions: Functions, settings: settings }
             };
+            if (settings.debug) {
+                window.VXAcontext = functionContext;
+            }
             // eslint-disable-line
             var loadView = react_14(function () {
                 return function _loadView(_a) {
@@ -47269,12 +47333,17 @@ var VXA = (function (exports) {
                     var loadViewPathname = pathname || "_loadView_" + layerName;
                     return loadRoute({
                         ui: ui,
-                        viewxTemplates: __assign(__assign({}, templates), (_b = {}, _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)), _b)),
+                        viewxTemplates: Object.assign({}, templates, typeof layerName === 'string'
+                            ? (_b = {},
+                                _b[layerName] = __assign(__assign({}, templates[layerName]), (_c = {}, _c[loadViewPathname] = view, _c)),
+                                _b) : {}),
                         pathname: loadViewPathname,
                         dispatcher: dispatcher,
-                        layers: config
-                            ? config.layers.filter(function (layer) { return layer.name === layerName; })
-                            : [],
+                        layers: layerName
+                            ? config
+                                ? config.layers.filter(function (layer) { return layer.name === layerName; })
+                                : []
+                            : config.layers,
                         Functions: Functions,
                         resourceprops: resourceprops,
                         functionContext: functionContext
@@ -47306,15 +47375,16 @@ var VXA = (function (exports) {
                 var action;
                 function initialize() {
                     return __awaiter(this, void 0, void 0, function () {
-                        var updatedTemplates, e_1;
+                        var updatedUI, updatedTemplates, dynamicTemplates, e_1;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     Functions.showLoader.call(functionContext, { ui: ui, setUI: setUI });
                                     _a.label = 1;
                                 case 1:
-                                    _a.trys.push([1, 6, , 7]);
+                                    _a.trys.push([1, 8, , 9]);
                                     setup.call(functionContext, { settings: settings });
+                                    updatedUI = ui;
                                     if (!(ui.hasLoadedInitialProcess === false)) return [3 /*break*/, 4];
                                     return [4 /*yield*/, Functions.loadUser.call(functionContext)];
                                 case 2:
@@ -47333,9 +47403,29 @@ var VXA = (function (exports) {
                                 case 3:
                                     updatedTemplates = _a.sent();
                                     viewxTemplates = updatedTemplates.viewxTemplates;
+                                    updatedUI = updatedTemplates.updatedUI;
                                     _a.label = 4;
-                                case 4: return [4 /*yield*/, loadRoute({
-                                        ui: ui,
+                                case 4:
+                                    if (!(config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false)) return [3 /*break*/, 6];
+                                    return [4 /*yield*/, loadDynamicTemplate({
+                                            config: config,
+                                            viewxTemplates: viewxTemplates,
+                                            templates: templates,
+                                            setTemplates: setTemplates,
+                                            setUI: setUI,
+                                            ui: ui,
+                                            layers: config.layers,
+                                            Functions: Functions,
+                                            functionContext: functionContext,
+                                            pathname: pathname,
+                                        })];
+                                case 5:
+                                    dynamicTemplates = _a.sent();
+                                    viewxTemplates = dynamicTemplates.viewxTemplates;
+                                    updatedUI = dynamicTemplates.updatedUI;
+                                    _a.label = 6;
+                                case 6: return [4 /*yield*/, loadRoute({
+                                        ui: updatedUI,
                                         viewxTemplates: viewxTemplates,
                                         pathname: pathname,
                                         dispatcher: dispatcher,
@@ -47343,17 +47433,22 @@ var VXA = (function (exports) {
                                         Functions: Functions,
                                         functionContext: functionContext
                                     })];
-                                case 5:
+                                case 7:
                                     action = _a.sent();
                                     if (settings.setBodyPathnameID)
                                         setBodyPathnameId(pathname);
-                                    return [3 /*break*/, 7];
-                                case 6:
+                                    return [3 /*break*/, 9];
+                                case 8:
                                     e_1 = _a.sent();
+                                    console.log('VIEW ERREOR');
+                                    loadView({
+                                        resourceprops: { error: e_1 },
+                                        pathname: '__error_500',
+                                    });
                                     Functions.log({ type: "error", error: e_1 });
-                                    return [3 /*break*/, 7];
-                                case 7:
-                                    Functions.hideLoader.call(functionContext, { ui: action.ui, setUI: setUI });
+                                    return [3 /*break*/, 9];
+                                case 9:
+                                    Functions.hideLoader.call(functionContext, { ui: typeof action !== 'undefined' && action.ui ? action.ui : ui, setUI: setUI });
                                     return [2 /*return*/];
                             }
                         });
@@ -47571,6 +47666,12 @@ var VXA = (function (exports) {
                             return __assign(__assign({}, state), { user: __assign(__assign({}, state.user), action.user) });
                         case "setSocket":
                             return __assign(__assign({}, state), { socker: action.socket });
+                        case "setUI": {
+                            return __assign(__assign({}, state), { ui: __assign(__assign({}, state.ui), action.ui) });
+                        }
+                        case "setTemplates": {
+                            return __assign(__assign({}, state), { templates: __assign(__assign({}, state.templates), action.templates) });
+                        }
                         case "setApplicationState":
                             return __assign(__assign({}, state), action.state);
                         default:
@@ -47582,7 +47683,7 @@ var VXA = (function (exports) {
                             return state;
                     }
                 };
-                initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
+                initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ templatePaths: [], isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
                             ? getFromCacheStore("user", "token")
                             : undefined, tokenData: settings.cacheLoggedInUser
                             ? getFromCacheStore("user", "tokenData")
@@ -47662,6 +47763,7 @@ var VXA = (function (exports) {
             templateFetchOptions: {},
             fetchHeaders: {},
             dynamicTemplatePath: undefined,
+            dynamicTemplatePathRequestMethod: 'path',
             dynamicTemplateFetchOptions: {},
             useBodyLoadedClass: true,
             useHTMLLoadedClass: true,
