@@ -10383,10 +10383,10 @@ react-error-overlay@^6.0.4:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.4.tgz#0d165d6d27488e660bc08e57bdabaad741366f7a"
   integrity sha512-ueZzLmHltszTshDMwyfELDq8zOA803wQ1ZuzCccXa1m57k1PxSHfflPD5W9YIiTXLs0JTLzoj6o1LuM5N6zzNA==
 
-react-hooks-global-state@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-global-state/-/react-hooks-global-state-0.16.0.tgz#560fd523c9612f999af07ac86a8e399255934d59"
-  integrity sha512-aLM+i/JTl4qXnBQRs1pLZLSOsWQvZZC+uVkfk/QcXv/m6bNYDqwvNtzV1hcC9TnzNc6cTzlIcUkK/MW2zHSCkw==
+react-hooks-global-state@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-global-state/-/react-hooks-global-state-0.17.0.tgz#fad448158cb0f3110ab4e2090ab82fcd328a1d1d"
+  integrity sha512-0tgMq2vZyHS2/aIGD1K8iFLCoYIx1lb4IxfjrAKyttPaX5Z0T++V99Gcm7sXpTgU7a3hziHUcTw6NRd1Af2A2w==
 
 react-is@^16.10.2, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.6, react-is@^16.9.0:
   version "16.12.0"
