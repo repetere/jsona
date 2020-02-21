@@ -76,7 +76,7 @@
     "rollup-plugin-replace": "2.2.0",
     "rollup-plugin-terser-js": "1.0.2",
     "rollup-plugin-typescript": "1.0.1",
-    "ts-jest": "24.2.0",
+    "ts-jest": "25.2.1",
     "typescript": "3.7.3",
     "typings": "2.1.1"
   },
