@@ -12,6 +12,8 @@ import { VXAFunctionContext, vxtResource, vxtTemplateRoute, jsonxResourceProps, 
 
 export const cacheKeyPrefix = 'exp@';
 export const cacheKeySuffix = ';';
+export const fetchProtocol_replace_str = '__|_/_/';
+export const fetchProtocol_str = '://';
 
 export function getNSKey(namespace: string, key: string):string {
   return `${namespace}${cacheKeySuffix}${key}`;
@@ -140,8 +142,8 @@ export async function fetchResources(this: VXAFunctionContext, { resources = {},
           const resource = resources[prop];
           const fetchPath =
             typeof resource === "string" ? resource : resource.fetchPath;
-          const toPath = pathToRegexp.compile(fetchPath);
-          const basePath = toPath(templateRoute.params);
+          const toPath = pathToRegexp.compile(fetchPath.replace(fetchProtocol_str,fetchProtocol_replace_str),templateRoute.params);
+          const basePath = toPath(templateRoute.params).replace(fetchProtocol_replace_str,fetchProtocol_str);
           const fetchURL =
             `${basePath}${
             basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search}`;

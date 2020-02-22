@@ -185,9 +185,8 @@ export default function getMainComponent(
             viewxTemplates = dynamicTemplates.viewxTemplates;
             updatedUI = dynamicTemplates.updatedUI;
           }
-
           action = await loadRoute({
-            ui:updatedUI,
+            ui: updatedUI,
             viewxTemplates,
             pathname,
             dispatcher,
