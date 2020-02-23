@@ -28,10 +28,11 @@ var VXA = (function (exports) {
     };
 
     function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
             function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
@@ -4882,11 +4883,14 @@ var VXA = (function (exports) {
     };
     var TYPE_STATICS = {};
     TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
+    TYPE_STATICS[reactIs.Memo] = MEMO_STATICS;
 
     function getStatics(component) {
+      // React v16.11 and below
       if (reactIs.isMemo(component)) {
         return MEMO_STATICS;
-      }
+      } // React v16.12 and above
+
 
       return TYPE_STATICS[component['$$typeof']] || REACT_STATICS;
     }
@@ -8165,8 +8169,6 @@ var VXA = (function (exports) {
     var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
     var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
     var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
-    var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
-    var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
     var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
     var FAUX_ITERATOR_SYMBOL = '@@iterator';
     function getIteratorFn(maybeIterable) {
@@ -8386,8 +8388,6 @@ var VXA = (function (exports) {
 
         return getStackByFiberInDevAndProd(current);
       }
-
-      return '';
     }
     function resetCurrentFiber() {
       {
@@ -9148,14 +9148,14 @@ var VXA = (function (exports) {
       };
       var propTypes = {
         value: function (props, propName, componentName) {
-          if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI && props.listeners) {
+          if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI ) {
             return null;
           }
 
           return new Error('You provided a `value` prop to a form field without an ' + '`onChange` handler. This will render a read-only field. If ' + 'the field should be mutable use `defaultValue`. Otherwise, ' + 'set either `onChange` or `readOnly`.');
         },
         checked: function (props, propName, componentName) {
-          if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI && props.listeners) {
+          if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI ) {
             return null;
           }
 
@@ -10644,7 +10644,7 @@ var VXA = (function (exports) {
       var node = currentParent;
 
       while (true) {
-        if (node.tag === HostComponent || node.tag === HostText || enableFundamentalAPI && node.tag === FundamentalComponent) {
+        if (node.tag === HostComponent || node.tag === HostText || enableFundamentalAPI ) {
           return node;
         } else if (node.child && node.tag !== HostPortal) {
           node.child.return = node;
@@ -12622,58 +12622,6 @@ var VXA = (function (exports) {
       return true;
     }
 
-    // List derived from Gecko source code:
-    // https://github.com/mozilla/gecko-dev/blob/4e638efc71/layout/style/test/property_database.js
-    var shorthandToLonghand = {
-      animation: ['animationDelay', 'animationDirection', 'animationDuration', 'animationFillMode', 'animationIterationCount', 'animationName', 'animationPlayState', 'animationTimingFunction'],
-      background: ['backgroundAttachment', 'backgroundClip', 'backgroundColor', 'backgroundImage', 'backgroundOrigin', 'backgroundPositionX', 'backgroundPositionY', 'backgroundRepeat', 'backgroundSize'],
-      backgroundPosition: ['backgroundPositionX', 'backgroundPositionY'],
-      border: ['borderBottomColor', 'borderBottomStyle', 'borderBottomWidth', 'borderImageOutset', 'borderImageRepeat', 'borderImageSlice', 'borderImageSource', 'borderImageWidth', 'borderLeftColor', 'borderLeftStyle', 'borderLeftWidth', 'borderRightColor', 'borderRightStyle', 'borderRightWidth', 'borderTopColor', 'borderTopStyle', 'borderTopWidth'],
-      borderBlockEnd: ['borderBlockEndColor', 'borderBlockEndStyle', 'borderBlockEndWidth'],
-      borderBlockStart: ['borderBlockStartColor', 'borderBlockStartStyle', 'borderBlockStartWidth'],
-      borderBottom: ['borderBottomColor', 'borderBottomStyle', 'borderBottomWidth'],
-      borderColor: ['borderBottomColor', 'borderLeftColor', 'borderRightColor', 'borderTopColor'],
-      borderImage: ['borderImageOutset', 'borderImageRepeat', 'borderImageSlice', 'borderImageSource', 'borderImageWidth'],
-      borderInlineEnd: ['borderInlineEndColor', 'borderInlineEndStyle', 'borderInlineEndWidth'],
-      borderInlineStart: ['borderInlineStartColor', 'borderInlineStartStyle', 'borderInlineStartWidth'],
-      borderLeft: ['borderLeftColor', 'borderLeftStyle', 'borderLeftWidth'],
-      borderRadius: ['borderBottomLeftRadius', 'borderBottomRightRadius', 'borderTopLeftRadius', 'borderTopRightRadius'],
-      borderRight: ['borderRightColor', 'borderRightStyle', 'borderRightWidth'],
-      borderStyle: ['borderBottomStyle', 'borderLeftStyle', 'borderRightStyle', 'borderTopStyle'],
-      borderTop: ['borderTopColor', 'borderTopStyle', 'borderTopWidth'],
-      borderWidth: ['borderBottomWidth', 'borderLeftWidth', 'borderRightWidth', 'borderTopWidth'],
-      columnRule: ['columnRuleColor', 'columnRuleStyle', 'columnRuleWidth'],
-      columns: ['columnCount', 'columnWidth'],
-      flex: ['flexBasis', 'flexGrow', 'flexShrink'],
-      flexFlow: ['flexDirection', 'flexWrap'],
-      font: ['fontFamily', 'fontFeatureSettings', 'fontKerning', 'fontLanguageOverride', 'fontSize', 'fontSizeAdjust', 'fontStretch', 'fontStyle', 'fontVariant', 'fontVariantAlternates', 'fontVariantCaps', 'fontVariantEastAsian', 'fontVariantLigatures', 'fontVariantNumeric', 'fontVariantPosition', 'fontWeight', 'lineHeight'],
-      fontVariant: ['fontVariantAlternates', 'fontVariantCaps', 'fontVariantEastAsian', 'fontVariantLigatures', 'fontVariantNumeric', 'fontVariantPosition'],
-      gap: ['columnGap', 'rowGap'],
-      grid: ['gridAutoColumns', 'gridAutoFlow', 'gridAutoRows', 'gridTemplateAreas', 'gridTemplateColumns', 'gridTemplateRows'],
-      gridArea: ['gridColumnEnd', 'gridColumnStart', 'gridRowEnd', 'gridRowStart'],
-      gridColumn: ['gridColumnEnd', 'gridColumnStart'],
-      gridColumnGap: ['columnGap'],
-      gridGap: ['columnGap', 'rowGap'],
-      gridRow: ['gridRowEnd', 'gridRowStart'],
-      gridRowGap: ['rowGap'],
-      gridTemplate: ['gridTemplateAreas', 'gridTemplateColumns', 'gridTemplateRows'],
-      listStyle: ['listStyleImage', 'listStylePosition', 'listStyleType'],
-      margin: ['marginBottom', 'marginLeft', 'marginRight', 'marginTop'],
-      marker: ['markerEnd', 'markerMid', 'markerStart'],
-      mask: ['maskClip', 'maskComposite', 'maskImage', 'maskMode', 'maskOrigin', 'maskPositionX', 'maskPositionY', 'maskRepeat', 'maskSize'],
-      maskPosition: ['maskPositionX', 'maskPositionY'],
-      outline: ['outlineColor', 'outlineStyle', 'outlineWidth'],
-      overflow: ['overflowX', 'overflowY'],
-      padding: ['paddingBottom', 'paddingLeft', 'paddingRight', 'paddingTop'],
-      placeContent: ['alignContent', 'justifyContent'],
-      placeItems: ['alignItems', 'justifyItems'],
-      placeSelf: ['alignSelf', 'justifySelf'],
-      textDecoration: ['textDecorationColor', 'textDecorationLine', 'textDecorationStyle'],
-      textEmphasis: ['textEmphasisColor', 'textEmphasisStyle'],
-      transition: ['transitionDelay', 'transitionDuration', 'transitionProperty', 'transitionTimingFunction'],
-      wordWrap: ['overflowWrap']
-    };
-
     /**
      * CSS properties which accept numbers but are not in units of "px".
      */
@@ -12960,33 +12908,6 @@ var VXA = (function (exports) {
         }
       }
     }
-
-    function isValueEmpty(value) {
-      return value == null || typeof value === 'boolean' || value === '';
-    }
-    /**
-     * Given {color: 'red', overflow: 'hidden'} returns {
-     *   color: 'color',
-     *   overflowX: 'overflow',
-     *   overflowY: 'overflow',
-     * }. This can be read as "the overflowY property was set by the overflow
-     * shorthand". That is, the values are the property that each was derived from.
-     */
-
-
-    function expandShorthandMap(styles) {
-      var expanded = {};
-
-      for (var key in styles) {
-        var longhands = shorthandToLonghand[key] || [key];
-
-        for (var i = 0; i < longhands.length; i++) {
-          expanded[longhands[i]] = key;
-        }
-      }
-
-      return expanded;
-    }
     /**
      * When mixing shorthand and longhand property names, we warn during updates if
      * we expect an incorrect result to occur. In particular, we warn for:
@@ -13006,30 +12927,6 @@ var VXA = (function (exports) {
     function validateShorthandPropertyCollisionInDev(styleUpdates, nextStyles) {
       {
         return;
-      }
-
-      if (!nextStyles) {
-        return;
-      }
-
-      var expandedUpdates = expandShorthandMap(styleUpdates);
-      var expandedStyles = expandShorthandMap(nextStyles);
-      var warnedAbout = {};
-
-      for (var key in expandedUpdates) {
-        var originalKey = expandedUpdates[key];
-        var correctOriginalKey = expandedStyles[key];
-
-        if (correctOriginalKey && originalKey !== correctOriginalKey) {
-          var warningKey = originalKey + ',' + correctOriginalKey;
-
-          if (warnedAbout[warningKey]) {
-            continue;
-          }
-
-          warnedAbout[warningKey] = true;
-          warning$1(false, '%s a style property during rerender (%s) when a ' + 'conflicting property is set (%s) can lead to styling bugs. To ' + "avoid this, don't mix shorthand and non-shorthand properties " + 'for the same value; instead, replace the shorthand with ' + 'separate values.', isValueEmpty(styleUpdates[originalKey]) ? 'Removing' : 'Updating', originalKey, correctOriginalKey);
-        }
       }
     }
 
@@ -14608,8 +14505,6 @@ var VXA = (function (exports) {
 
         return possibleStandardNames[lowerCasedName] || null;
       }
-
-      return null;
     }
 
     function diffHydratedProperties(domElement, tag, rawProps, parentNamespace, rootContainerElement) {
@@ -15768,8 +15663,6 @@ var VXA = (function (exports) {
           ancestorInfo: ancestorInfo
         };
       }
-
-      return namespace;
     }
     function getChildHostContext(parentHostContext, type, rootContainerInstance) {
       {
@@ -15781,9 +15674,6 @@ var VXA = (function (exports) {
           ancestorInfo: ancestorInfo
         };
       }
-
-      var parentNamespace = parentHostContext;
-      return getChildNamespace(parentNamespace, type);
     }
     function getPublicInstance(instance) {
       return instance;
@@ -18956,9 +18846,6 @@ var VXA = (function (exports) {
           case ForwardRef:
             candidateType = type.render;
             break;
-
-          default:
-            break;
         }
 
         if (resolveFamily === null) {
@@ -19036,9 +18923,6 @@ var VXA = (function (exports) {
 
           case ForwardRef:
             candidateType = type.render;
-            break;
-
-          default:
             break;
         }
 
@@ -21205,9 +21089,6 @@ var VXA = (function (exports) {
               }
 
               warning$1(false, 'Encountered two children with the same key, `%s`. ' + 'Keys should be unique so that components maintain their identity ' + 'across updates. Non-unique keys may cause children to be ' + 'duplicated and/or omitted — the behavior is unsupported and ' + 'could change in a future version.', key);
-              break;
-
-            default:
               break;
           }
         }
@@ -23648,10 +23529,6 @@ var VXA = (function (exports) {
                   var text = fiber.pendingProps;
                   didNotFindHydratableContainerTextInstance(parentContainer, text);
                   break;
-
-                case SuspenseComponent:
-                  
-                  break;
               }
 
               break;
@@ -25837,18 +25714,6 @@ var VXA = (function (exports) {
           {
             return updateSuspenseListComponent(current$$1, workInProgress, renderExpirationTime);
           }
-
-        case FundamentalComponent:
-          {
-
-            break;
-          }
-
-        case ScopeComponent:
-          {
-
-            break;
-          }
       }
 
       {
@@ -26635,9 +26500,6 @@ var VXA = (function (exports) {
         case ContextProvider:
           popProvider(interruptedWork);
           break;
-
-        default:
-          break;
       }
     }
 
@@ -26922,9 +26784,6 @@ var VXA = (function (exports) {
               commitHookEffectList(NoEffect$1, MountPassive, finishedWork);
               break;
             }
-
-          default:
-            break;
         }
       }
     }
@@ -27276,9 +27135,6 @@ var VXA = (function (exports) {
 
             return;
           }
-
-        case ScopeComponent:
-
       }
     }
 
@@ -27439,7 +27295,6 @@ var VXA = (function (exports) {
 
         case FundamentalComponent:
 
-
         // eslint-disable-next-line-no-fallthrough
 
         default:
@@ -27466,7 +27321,7 @@ var VXA = (function (exports) {
       while (true) {
         var isHost = node.tag === HostComponent || node.tag === HostText;
 
-        if (isHost || enableFundamentalAPI && node.tag === FundamentalComponent) {
+        if (isHost || enableFundamentalAPI ) {
           var stateNode = isHost ? node.stateNode : node.stateNode.instance;
 
           if (before) {
@@ -27544,9 +27399,6 @@ var VXA = (function (exports) {
                 currentParent = parentStateNode.containerInfo;
                 currentParentIsContainer = true;
                 break findParent;
-
-              case FundamentalComponent:
-
 
             }
 
@@ -28086,9 +27938,6 @@ var VXA = (function (exports) {
               return;
             }
 
-            break;
-
-          default:
             break;
         }
 
@@ -29161,8 +29010,6 @@ var VXA = (function (exports) {
         tracing$1.__interactionsRef.current = root.memoizedInteractions;
         return prevInteractions;
       }
-
-      return null;
     }
 
     function popInteractions(prevInteractions) {
@@ -30480,9 +30327,6 @@ var VXA = (function (exports) {
                   }
 
                   break;
-
-                default:
-                  break;
               }
             }
 
@@ -30950,9 +30794,6 @@ var VXA = (function (exports) {
           case ForwardRef:
             workInProgress.type = resolveForwardRefForHotReloading(current.type);
             break;
-
-          default:
-            break;
         }
       }
 
@@ -31113,13 +30954,6 @@ var VXA = (function (exports) {
                     fiberTag = LazyComponent;
                     resolvedType = null;
                     break getTag;
-
-                  case REACT_FUNDAMENTAL_TYPE:
-
-                    break;
-
-                  case REACT_SCOPE_TYPE:
-
 
                 }
               }
@@ -31444,34 +31278,6 @@ var VXA = (function (exports) {
       return parentContext;
     }
 
-    function findHostInstance(component) {
-      var fiber = get(component);
-
-      if (fiber === undefined) {
-        if (typeof component.render === 'function') {
-          {
-            {
-              throw Error("Unable to find node on an unmounted component.");
-            }
-          }
-        } else {
-          {
-            {
-              throw Error("Argument appears to not be a ReactComponent. Keys: " + Object.keys(component));
-            }
-          }
-        }
-      }
-
-      var hostFiber = findCurrentHostFiber(fiber);
-
-      if (hostFiber === null) {
-        return null;
-      }
-
-      return hostFiber.stateNode;
-    }
-
     function findHostInstanceWithWarning(component, methodName) {
       {
         var fiber = get(component);
@@ -31514,8 +31320,6 @@ var VXA = (function (exports) {
 
         return hostFiber.stateNode;
       }
-
-      return findHostInstance(component);
     }
 
     function createContainer(containerInfo, tag, hydrate, hydrationCallbacks) {
@@ -31977,8 +31781,6 @@ var VXA = (function (exports) {
       {
         return findHostInstanceWithWarning(componentOrElement, 'findDOMNode');
       }
-
-      return findHostInstance(componentOrElement);
     }
     function hydrate(element, container, callback) {
       if (!isValidContainer(container)) {
@@ -32228,7 +32030,7 @@ var VXA = (function (exports) {
       this.domain = null;
       if (EventEmitter.usingDomains) {
         // if there is an active domain, then attach to it.
-        if (domain.active && !(this instanceof domain.Domain)) ;
+        if (domain.active ) ;
       }
 
       if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
@@ -38653,14 +38455,14 @@ var VXA = (function (exports) {
       };
       var propTypes = {
         value: function (props, propName, componentName) {
-          if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI && props.listeners) {
+          if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI ) {
             return null;
           }
 
           return new Error('You provided a `value` prop to a form field without an ' + '`onChange` handler. This will render a read-only field. If ' + 'the field should be mutable use `defaultValue`. Otherwise, ' + 'set either `onChange` or `readOnly`.');
         },
         checked: function (props, propName, componentName) {
-          if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI && props.listeners) {
+          if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI ) {
             return null;
           }
 
@@ -40760,10 +40562,6 @@ var VXA = (function (exports) {
                   }
                 }
               }
-            // eslint-disable-next-line-no-fallthrough
-
-            default:
-              break;
           }
 
           if (typeof elementType === 'object' && elementType !== null) {
@@ -45401,6 +45199,8 @@ var VXA = (function (exports) {
      * Expose `pathToRegexp`.
      */
     var pathToRegexp_1$1 = pathToRegexp$1;
+    var match_1 = match;
+    var regexpToFunction_1 = regexpToFunction;
     var parse_1$1 = parse$1;
     var compile_1$1 = compile$1;
     var tokensToFunction_1$1 = tokensToFunction$1;
@@ -45517,6 +45317,46 @@ var VXA = (function (exports) {
      */
     function compile$1 (str, options) {
       return tokensToFunction$1(parse$1(str, options), options)
+    }
+
+    /**
+     * Create path match function from `path-to-regexp` spec.
+     */
+    function match (str, options) {
+      var keys = [];
+      var re = pathToRegexp$1(str, keys, options);
+      return regexpToFunction(re, keys)
+    }
+
+    /**
+     * Create a path match function from `path-to-regexp` output.
+     */
+    function regexpToFunction (re, keys) {
+      return function (pathname, options) {
+        var m = re.exec(pathname);
+        if (!m) return false
+
+        var path = m[0];
+        var index = m.index;
+        var params = {};
+        var decode = (options && options.decode) || decodeURIComponent;
+
+        for (var i = 1; i < m.length; i++) {
+          if (m[i] === undefined) continue
+
+          var key = keys[i - 1];
+
+          if (key.repeat) {
+            params[key.name] = m[i].split(key.delimiter).map(function (value) {
+              return decode(value, key)
+            });
+          } else {
+            params[key.name] = decode(m[i], key);
+          }
+        }
+
+        return { path: path, index: index, params: params }
+      }
     }
 
     /**
@@ -45765,6 +45605,8 @@ var VXA = (function (exports) {
 
       return stringToRegexp$1(/** @type {string} */ (path), keys, options)
     }
+    pathToRegexp_1$1.match = match_1;
+    pathToRegexp_1$1.regexpToFunction = regexpToFunction_1;
     pathToRegexp_1$1.parse = parse_1$1;
     pathToRegexp_1$1.compile = compile_1$1;
     pathToRegexp_1$1.tokensToFunction = tokensToFunction_1$1;
@@ -46245,9 +46087,261 @@ var VXA = (function (exports) {
       parse: parse$2
     };
 
+    /**
+     * Tokenize input string.
+     */
+    function lexer(str) {
+        var tokens = [];
+        var i = 0;
+        while (i < str.length) {
+            var char = str[i];
+            if (char === "*" || char === "+" || char === "?") {
+                tokens.push({ type: "MODIFIER", index: i, value: str[i++] });
+                continue;
+            }
+            if (char === "\\") {
+                tokens.push({ type: "ESCAPED_CHAR", index: i++, value: str[i++] });
+                continue;
+            }
+            if (char === "{") {
+                tokens.push({ type: "OPEN", index: i, value: str[i++] });
+                continue;
+            }
+            if (char === "}") {
+                tokens.push({ type: "CLOSE", index: i, value: str[i++] });
+                continue;
+            }
+            if (char === ":") {
+                var name = "";
+                var j = i + 1;
+                while (j < str.length) {
+                    var code = str.charCodeAt(j);
+                    if (
+                    // `0-9`
+                    (code >= 48 && code <= 57) ||
+                        // `A-Z`
+                        (code >= 65 && code <= 90) ||
+                        // `a-z`
+                        (code >= 97 && code <= 122) ||
+                        // `_`
+                        code === 95) {
+                        name += str[j++];
+                        continue;
+                    }
+                    break;
+                }
+                if (!name)
+                    throw new TypeError("Missing parameter name at " + i);
+                tokens.push({ type: "NAME", index: i, value: name });
+                i = j;
+                continue;
+            }
+            if (char === "(") {
+                var count = 1;
+                var pattern = "";
+                var j = i + 1;
+                if (str[j] === "?") {
+                    throw new TypeError("Pattern cannot start with \"?\" at " + j);
+                }
+                while (j < str.length) {
+                    if (str[j] === "\\") {
+                        pattern += str[j++] + str[j++];
+                        continue;
+                    }
+                    if (str[j] === ")") {
+                        count--;
+                        if (count === 0) {
+                            j++;
+                            break;
+                        }
+                    }
+                    else if (str[j] === "(") {
+                        count++;
+                        if (str[j + 1] !== "?") {
+                            throw new TypeError("Capturing groups are not allowed at " + j);
+                        }
+                    }
+                    pattern += str[j++];
+                }
+                if (count)
+                    throw new TypeError("Unbalanced pattern at " + i);
+                if (!pattern)
+                    throw new TypeError("Missing pattern at " + i);
+                tokens.push({ type: "PATTERN", index: i, value: pattern });
+                i = j;
+                continue;
+            }
+            tokens.push({ type: "CHAR", index: i, value: str[i++] });
+        }
+        tokens.push({ type: "END", index: i, value: "" });
+        return tokens;
+    }
+    /**
+     * Parse a string for the raw tokens.
+     */
+    function parse$3(str, options) {
+        if (options === void 0) { options = {}; }
+        var tokens = lexer(str);
+        var _a = options.prefixes, prefixes = _a === void 0 ? "./" : _a;
+        var defaultPattern = "[^" + escapeString$2(options.delimiter || "/#?") + "]+?";
+        var result = [];
+        var key = 0;
+        var i = 0;
+        var path = "";
+        var tryConsume = function (type) {
+            if (i < tokens.length && tokens[i].type === type)
+                return tokens[i++].value;
+        };
+        var mustConsume = function (type) {
+            var value = tryConsume(type);
+            if (value !== undefined)
+                return value;
+            var _a = tokens[i], nextType = _a.type, index = _a.index;
+            throw new TypeError("Unexpected " + nextType + " at " + index + ", expected " + type);
+        };
+        var consumeText = function () {
+            var result = "";
+            var value;
+            // tslint:disable-next-line
+            while ((value = tryConsume("CHAR") || tryConsume("ESCAPED_CHAR"))) {
+                result += value;
+            }
+            return result;
+        };
+        while (i < tokens.length) {
+            var char = tryConsume("CHAR");
+            var name = tryConsume("NAME");
+            var pattern = tryConsume("PATTERN");
+            if (name || pattern) {
+                var prefix = char || "";
+                if (prefixes.indexOf(prefix) === -1) {
+                    path += prefix;
+                    prefix = "";
+                }
+                if (path) {
+                    result.push(path);
+                    path = "";
+                }
+                result.push({
+                    name: name || key++,
+                    prefix: prefix,
+                    suffix: "",
+                    pattern: pattern || defaultPattern,
+                    modifier: tryConsume("MODIFIER") || ""
+                });
+                continue;
+            }
+            var value = char || tryConsume("ESCAPED_CHAR");
+            if (value) {
+                path += value;
+                continue;
+            }
+            if (path) {
+                result.push(path);
+                path = "";
+            }
+            var open = tryConsume("OPEN");
+            if (open) {
+                var prefix = consumeText();
+                var name_1 = tryConsume("NAME") || "";
+                var pattern_1 = tryConsume("PATTERN") || "";
+                var suffix = consumeText();
+                mustConsume("CLOSE");
+                result.push({
+                    name: name_1 || (pattern_1 ? key++ : ""),
+                    pattern: name_1 && !pattern_1 ? defaultPattern : pattern_1,
+                    prefix: prefix,
+                    suffix: suffix,
+                    modifier: tryConsume("MODIFIER") || ""
+                });
+                continue;
+            }
+            mustConsume("END");
+        }
+        return result;
+    }
+    /**
+     * Compile a string to a template function for the path.
+     */
+    function compile$2(str, options) {
+        return tokensToFunction$2(parse$3(str, options), options);
+    }
+    /**
+     * Expose a method for transforming tokens into the path function.
+     */
+    function tokensToFunction$2(tokens, options) {
+        if (options === void 0) { options = {}; }
+        var reFlags = flags$2(options);
+        var _a = options.encode, encode = _a === void 0 ? function (x) { return x; } : _a, _b = options.validate, validate = _b === void 0 ? true : _b;
+        // Compile all the tokens into regexps.
+        var matches = tokens.map(function (token) {
+            if (typeof token === "object") {
+                return new RegExp("^(?:" + token.pattern + ")$", reFlags);
+            }
+        });
+        return function (data) {
+            var path = "";
+            for (var i = 0; i < tokens.length; i++) {
+                var token = tokens[i];
+                if (typeof token === "string") {
+                    path += token;
+                    continue;
+                }
+                var value = data ? data[token.name] : undefined;
+                var optional = token.modifier === "?" || token.modifier === "*";
+                var repeat = token.modifier === "*" || token.modifier === "+";
+                if (Array.isArray(value)) {
+                    if (!repeat) {
+                        throw new TypeError("Expected \"" + token.name + "\" to not repeat, but got an array");
+                    }
+                    if (value.length === 0) {
+                        if (optional)
+                            continue;
+                        throw new TypeError("Expected \"" + token.name + "\" to not be empty");
+                    }
+                    for (var j = 0; j < value.length; j++) {
+                        var segment = encode(value[j], token);
+                        if (validate && !matches[i].test(segment)) {
+                            throw new TypeError("Expected all \"" + token.name + "\" to match \"" + token.pattern + "\", but got \"" + segment + "\"");
+                        }
+                        path += token.prefix + segment + token.suffix;
+                    }
+                    continue;
+                }
+                if (typeof value === "string" || typeof value === "number") {
+                    var segment = encode(String(value), token);
+                    if (validate && !matches[i].test(segment)) {
+                        throw new TypeError("Expected \"" + token.name + "\" to match \"" + token.pattern + "\", but got \"" + segment + "\"");
+                    }
+                    path += token.prefix + segment + token.suffix;
+                    continue;
+                }
+                if (optional)
+                    continue;
+                var typeOfMessage = repeat ? "an array" : "a string";
+                throw new TypeError("Expected \"" + token.name + "\" to be " + typeOfMessage);
+            }
+            return path;
+        };
+    }
+    /**
+     * Escape a regular expression string.
+     */
+    function escapeString$2(str) {
+        return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+    }
+    /**
+     * Get the flags for a regexp from the options.
+     */
+    function flags$2(options) {
+        return options && options.sensitive ? "" : "i";
+    }
+
     // import { insertScriptParams } from '../../internal_types/config';
     var cacheKeyPrefix = 'exp@';
     var cacheKeySuffix = ';';
+    var fetchProtocol_replace_str = '__|_/_/';
+    var fetchProtocol_str = '://';
     function getNSKey(namespace, key) {
         return "" + namespace + cacheKeySuffix + key;
     }
@@ -46380,8 +46474,8 @@ var VXA = (function (exports) {
                                                 case 0:
                                                     resource = resources[prop];
                                                     fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
-                                                    toPath = compile_1$1(fetchPath);
-                                                    basePath = toPath(templateRoute.params);
+                                                    toPath = compile$2(fetchPath.replace(fetchProtocol_str, fetchProtocol_replace_str), templateRoute.params);
+                                                    basePath = toPath(templateRoute.params).replace(fetchProtocol_replace_str, fetchProtocol_str);
                                                     fetchURL = "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                     fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
                                                     _a = results;
@@ -46592,7 +46686,7 @@ var VXA = (function (exports) {
      * @param  {String} uri
      * @return {Object}
      */
-    var match = function (routes, uri, startAt) {
+    var match$1 = function (routes, uri, startAt) {
     	var captures, i = startAt || 0;
 
     	for (var len = routes.length; i < len; ++i) {
@@ -46672,7 +46766,7 @@ var VXA = (function (exports) {
         },
 
         match: function(pathname, startAt){
-          var route = match(this.routes, pathname, startAt);
+          var route = match$1(this.routes, pathname, startAt);
           if(route){
             route.fn = this.routeMap[route.route];
             route.next = this.match.bind(this, pathname, route.next);
@@ -46684,7 +46778,7 @@ var VXA = (function (exports) {
 
     Router$1.Route = Route$1;
     Router$1.pathToRegExp = pathToRegExp;
-    Router$1.match = match;
+    Router$1.match = match$1;
     // back compat
     Router$1.Router = Router$1;
 
@@ -46979,6 +47073,18 @@ var VXA = (function (exports) {
             });
         });
     }
+    function hasMatchingDynamicTemplateRoutePathFallback(_a) {
+        var viewxTemplates = _a.viewxTemplates, layers = _a.layers, pathname = _a.pathname;
+        var hasLayers = layers.filter(function (layer) {
+            var name = layer.name;
+            var viewxTemplateLayer = viewxTemplates[name];
+            var templateRoute = findMatchingRoutePath(viewxTemplateLayer, pathname, {
+                return_matching_keys: true
+            });
+            return templateRoute && templateRoute.route.includes('*') === false;
+        });
+        return hasLayers.length > 0;
+    }
     /**
      * get template route layer map function
      * @param options.viewxTemplates - object of vxtTemplates
@@ -47061,11 +47167,13 @@ var VXA = (function (exports) {
                     case 3:
                         templateViewData = _e.sent();
                         action = templateViewData.reduce(function (result, templateViewDatum, i) {
-                            var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer;
+                            var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer, templateRoute = _a.templateRoute;
                             if (hasOverlayLayer)
                                 result.ui.hasOverlayLayer = true;
-                            if (type === "applicationRoot") {
-                                applicationRootName = name;
+                            if (["applicationRoot", "overlay", "view"].includes(type)) {
+                                if (type === "applicationRoot")
+                                    applicationRootName = name;
+                                result.ui.templateRoute = templateRoute;
                             }
                             setPageAttributes(vxtObject);
                             // @ts-ignore
@@ -47406,7 +47514,7 @@ var VXA = (function (exports) {
                                     updatedUI = updatedTemplates.updatedUI;
                                     _a.label = 4;
                                 case 4:
-                                    if (!(config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false)) return [3 /*break*/, 6];
+                                    if (!(config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false && hasMatchingDynamicTemplateRoutePathFallback({ viewxTemplates: viewxTemplates, layers: config.layers, pathname: pathname }) === false)) return [3 /*break*/, 6];
                                     return [4 /*yield*/, loadDynamicTemplate({
                                             config: config,
                                             viewxTemplates: viewxTemplates,
@@ -47462,7 +47570,7 @@ var VXA = (function (exports) {
                 /* eslint-disable */
             }, [pathname /* templates*/]);
             /* eslint-enable */
-            return (react.createElement(react_5, null, config.layers.map(function (layer) {
+            return (react.createElement(react_5, { key: "viewx" }, config.layers.map(function (layer) {
                 var name = layer.name, type = layer.type;
                 var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
                 // console.log(
@@ -47485,152 +47593,14 @@ var VXA = (function (exports) {
         return Main;
     }
 
-    // utility functions
-
-    const isFunction$1 = fn => (typeof fn === 'function');
-
-    const updateValue = (oldValue, newValue) => {
-      if (isFunction$1(newValue)) {
-        return newValue(oldValue);
-      }
-      return newValue;
-    };
-
-    // ref: https://github.com/dai-shi/react-hooks-global-state/issues/5
-    const useUnstableContextWithoutWarning = (Context, observedBits) => {
-      const { ReactCurrentDispatcher } = react_19;
-      const dispatcher = ReactCurrentDispatcher.current;
-      if (!dispatcher) {
-        throw new Error('Hooks can only be called inside the body of a function component. (https://fb.me/react-invalid-hook-call)');
-      }
-      return dispatcher.useContext(Context, observedBits);
-    };
-
-    // core functions
-
-    const EMPTY_OBJECT = {};
-
-    const createGlobalStateCommon = (initialState) => {
-      const keys = Object.keys(initialState);
-      let wholeGlobalState = initialState;
-      let listener = null;
-
-      const calculateChangedBits = (a, b) => {
-        let bits = 0;
-        keys.forEach((k, i) => {
-          if (a[k] !== b[k]) bits |= 1 << i;
-        });
-        return bits;
-      };
-
-      const Context = react_4(EMPTY_OBJECT, calculateChangedBits);
-
-      const GlobalStateProvider = ({ children }) => {
-        const [state, setState] = react_9(initialState);
-        react_10(() => {
-          if (listener) throw new Error('You cannot use <GlobalStateProvider> more than once.');
-          listener = setState;
-          if (state !== initialState) {
-            // probably state was saved by react-hot-loader, so restore it
-            wholeGlobalState = state;
-          } else if (state !== wholeGlobalState) {
-            // wholeGlobalState was updated during initialization
-            setState(wholeGlobalState);
-          }
-          const cleanup = () => {
-            listener = null;
-          };
-          return cleanup;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [initialState]); // trick for react-hot-loader
-        return react_8(Context.Provider, { value: state }, children);
-      };
-
-      const validateName = (name) => {
-        if (!keys.includes(name)) {
-          throw new Error(`'${name}' not found. It must be provided in initialState as a property key.`);
-        }
-      };
-
-      const setGlobalState = (name, update) => {
-        {
-          validateName(name);
-        }
-        wholeGlobalState = {
-          ...wholeGlobalState,
-          [name]: updateValue(wholeGlobalState[name], update),
-        };
-        if (listener) {
-          listener(wholeGlobalState);
-        }
-      };
-
-      const useGlobalState = (name) => {
-        {
-          validateName(name);
-        }
-        const index = keys.indexOf(name);
-        const observedBits = 1 << index;
-        const state = useUnstableContextWithoutWarning(Context, observedBits);
-        if (state === EMPTY_OBJECT) throw new Error('Please use <GlobalStateProvider>');
-        const updater = react_13(u => setGlobalState(name, u), [name]);
-        return [state[name], updater];
-      };
-
-      const getGlobalState = (name) => {
-        {
-          validateName(name);
-        }
-        return wholeGlobalState[name];
-      };
-
-      const getWholeGlobalState = () => wholeGlobalState;
-
-      const setWholeGlobalState = (state) => {
-        wholeGlobalState = state;
-        if (listener) {
-          listener(wholeGlobalState);
-        }
-      };
-
-      return {
-        GlobalStateProvider,
-        setGlobalState,
-        useGlobalState,
-        getGlobalState,
-        getWholeGlobalState,
-        setWholeGlobalState,
-      };
-    };
-
-    const createStore = (reducer, initialState, enhancer) => {
-      if (!initialState) initialState = reducer(undefined, { type: undefined });
-      if (enhancer) return enhancer(createStore)(reducer, initialState);
-      const {
-        GlobalStateProvider,
-        useGlobalState,
-        getWholeGlobalState,
-        setWholeGlobalState,
-      } = createGlobalStateCommon(initialState);
-      const dispatch = (action) => {
-        const oldState = getWholeGlobalState();
-        const newState = reducer(oldState, action);
-        setWholeGlobalState(newState);
-        return action;
-      };
-      return {
-        GlobalStateProvider,
-        useGlobalState,
-        getState: getWholeGlobalState,
-        setState: setWholeGlobalState, // for devtools.js
-        dispatch,
-      };
-    };
+    function u(){return (u=Object.assign||function(n){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var e in r)Object.prototype.hasOwnProperty.call(r,e)&&(n[e]=r[e]);}return n}).apply(this,arguments)}var i=function(n,t){if(!n.includes(t))throw new Error("'"+t+"' not found. It must be provided in initialState as a property key.")},c=Symbol("UPDATE_STATE"),a=function(a,f){var l=Object.keys(f),s=f,p=null,v={};l.forEach(function(n){v[n]=new Set;});var d=function(n,t){return t.type===c?t.r?t.r(n):t.e:a(n,t)},E=function(n,t){i(l,n);var r=function(r){var e,o;return u({},r,((e={})[n]="function"==typeof(o=t)?o(r[n]):o,e))};if(p){var e;p(((e={type:c}).r=r,e));}else{var o=(s=r(s))[n];v[n].forEach(function(n){return n(o)});}},S=function(n,t){l.forEach(function(r){var e=t[r];n[r]!==e&&v[r].forEach(function(n){return n(e)});});};return {useGlobalStateProvider:function(){var e=react_12(d,s),o=e[0],u=e[1];react_10(function(){var n;if(p)throw new Error("Only one global state provider is allowed");return p=u,u(((n={type:c}).e=s,n)),function(){p=null;}},[]);var i=react_15(o);S(i.current,o),i.current=o,react_10(function(){s=o;},[o]);},useGlobalState:function(n){i(l,n);var r=react_9(s[n]),u=r[0],c=r[1];return react_10(function(){return v[n].add(c),c(s[n]),function(){v[n].delete(c);}},[n]),[u,react_13(function(t){return E(n,t)},[n])]},getGlobalState:function(n){return i(l,n),s[n]},setGlobalState:E,getState:function(){return s},setState:function(n){var t;p?p(((t={type:c}).e=n,t)):S(s,s=n);},dispatch:function(n){if(p)p(n);else{var t=s;s=a(s,n),S(t,s);}return n}}},l=function n(t,r,e){return void 0===r&&(r=t(void 0,{type:void 0})),e?e(n)(t,r):a(t,r)};
 
     function getGlobalStateHooks(options) {
         if (options === void 0) { options = {}; }
         return __awaiter(this, void 0, void 0, function () {
-            var settings, layers, layerOpenState, reducer, initialState, _a, GlobalStateProvider, dispatch, useGlobalState;
+            var settings, layers, layerOpenState, reducer, initialState, _a, 
+            // GlobalStateProvider,
+            dispatch, useGlobalState;
             return __generator(this, function (_b) {
                 settings = options.config.settings;
                 layers = options.config.layers;
@@ -47686,7 +47656,12 @@ var VXA = (function (exports) {
                             return state;
                     }
                 };
-                initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ templatePaths: [], isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
+                initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ templateRoute: {
+                            route: '',
+                            location: '',
+                            params: {},
+                            re: undefined,
+                        }, templatePaths: [], isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
                             ? getFromCacheStore("user", "token")
                             : undefined, tokenData: settings.cacheLoggedInUser
                             ? getFromCacheStore("user", "tokenData")
@@ -47701,9 +47676,9 @@ var VXA = (function (exports) {
                             : false, loggedInMFA: settings.cacheLoggedInUser
                             ? getFromCacheStore("user", "loggedInMFA") || false
                             : false }, options.vxaState.user) });
-                _a = createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+                _a = l(reducer, initialState), dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
                 return [2 /*return*/, {
-                        GlobalStateProvider: GlobalStateProvider,
+                        // GlobalStateProvider,
                         dispatch: dispatch,
                         useGlobalState: useGlobalState
                     }];
@@ -47713,14 +47688,16 @@ var VXA = (function (exports) {
 
     function getViewXapp(options) {
         return __awaiter(this, void 0, Promise, function () {
-            var settings, _a, GlobalStateProvider, dispatch, useGlobalState, MainApp, Router;
+            var settings, _a, 
+            // GlobalStateProvider,
+            dispatch, useGlobalState, MainApp, Router;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         settings = options.config.settings;
                         return [4 /*yield*/, getGlobalStateHooks(options)];
                     case 1:
-                        _a = _b.sent(), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+                        _a = _b.sent(), dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
                         options.dispatch = dispatch;
                         options.useGlobalState = useGlobalState;
                         MainApp = getMainComponent(options);
@@ -47739,9 +47716,12 @@ var VXA = (function (exports) {
                                 break;
                         }
                         //  = settings.router === "hash" ? HashRouter : BrowserRouter;
-                        return [2 /*return*/, (react.createElement(GlobalStateProvider, null,
-                                react.createElement(Router, null,
-                                    react.createElement(Route, { path: "*", component: MainApp }))))];
+                        return [2 /*return*/, (
+                            // <GlobalStateProvider>
+                            react.createElement(Router, null,
+                                react.createElement(Route, { path: "*", component: MainApp }))
+                            // </GlobalStateProvider>
+                            )];
                 }
             });
         });
@@ -47873,7 +47853,6 @@ var VXA = (function (exports) {
                         }
                         else
                             return [2 /*return*/, true];
-                        return [2 /*return*/];
                     });
                 });
             },
@@ -48782,7 +48761,12 @@ var VXA = (function (exports) {
               // __functionProps: {
               //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
               // },
-              children: "SAY HELLO MODAL"
+              children: [
+                {
+                  component:'div',
+                  children: "SAY HELLO MODAL!!"
+                }
+              ]
             }
           }
         }

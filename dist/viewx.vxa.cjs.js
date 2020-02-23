@@ -40,10 +40,11 @@ var __assign = function() {
 };
 
 function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 }
@@ -326,7 +327,7 @@ EventEmitter.init = function() {
   this.domain = null;
   if (EventEmitter.usingDomains) {
     // if there is an active domain, then attach to it.
-    if (domain.active && !(this instanceof domain.Domain)) ;
+    if (domain.active ) ;
   }
 
   if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
@@ -6764,14 +6765,14 @@ var ReactControlledValuePropTypes = {
   };
   var propTypes = {
     value: function (props, propName, componentName) {
-      if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI && props.listeners) {
+      if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI ) {
         return null;
       }
 
       return new Error('You provided a `value` prop to a form field without an ' + '`onChange` handler. This will render a read-only field. If ' + 'the field should be mutable use `defaultValue`. Otherwise, ' + 'set either `onChange` or `readOnly`.');
     },
     checked: function (props, propName, componentName) {
-      if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI && props.listeners) {
+      if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableFlareAPI ) {
         return null;
       }
 
@@ -8871,10 +8872,6 @@ function () {
               }
             }
           }
-        // eslint-disable-next-line-no-fallthrough
-
-        default:
-          break;
       }
 
       if (typeof elementType === 'object' && elementType !== null) {
@@ -13919,6 +13916,8 @@ function parse(qs, sep, eq, options) {
 // import { insertScriptParams } from '../../internal_types/config';
 var cacheKeyPrefix = 'exp@';
 var cacheKeySuffix = ';';
+var fetchProtocol_replace_str = '__|_/_/';
+var fetchProtocol_str = '://';
 function getNSKey(namespace, key) {
     return "" + namespace + cacheKeySuffix + key;
 }
@@ -14051,8 +14050,8 @@ function fetchResources(_a) {
                                             case 0:
                                                 resource = resources[prop];
                                                 fetchPath = typeof resource === "string" ? resource : resource.fetchPath;
-                                                toPath = pathToRegexp.compile(fetchPath);
-                                                basePath = toPath(templateRoute.params);
+                                                toPath = pathToRegexp.compile(fetchPath.replace(fetchProtocol_str, fetchProtocol_replace_str), templateRoute.params);
+                                                basePath = toPath(templateRoute.params).replace(fetchProtocol_replace_str, fetchProtocol_str);
                                                 fetchURL = "" + basePath + (basePath.includes('?') ? window.location.search.replace('?', '') : window.location.search);
                                                 fetchOptions = typeof resource === "string" ? {} : resource.fetchOptions;
                                                 _a = results;
@@ -14650,6 +14649,18 @@ function loadDynamicTemplate(_a) {
         });
     });
 }
+function hasMatchingDynamicTemplateRoutePathFallback(_a) {
+    var viewxTemplates = _a.viewxTemplates, layers = _a.layers, pathname = _a.pathname;
+    var hasLayers = layers.filter(function (layer) {
+        var name = layer.name;
+        var viewxTemplateLayer = viewxTemplates[name];
+        var templateRoute = testMatchingRoute.findMatchingRoutePath(viewxTemplateLayer, pathname, {
+            return_matching_keys: true
+        });
+        return templateRoute && templateRoute.route.includes('*') === false;
+    });
+    return hasLayers.length > 0;
+}
 /**
  * get template route layer map function
  * @param options.viewxTemplates - object of vxtTemplates
@@ -14732,11 +14743,13 @@ function loadRoute(_a) {
                 case 3:
                     templateViewData = _e.sent();
                     action = templateViewData.reduce(function (result, templateViewDatum, i) {
-                        var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer;
+                        var _a = templateRouteLayers_1[i], name = _a.name, type = _a.type, vxtObject = _a.vxtObject, ui = _a.ui, hasOverlayLayer = _a.hasOverlayLayer, templateRoute = _a.templateRoute;
                         if (hasOverlayLayer)
                             result.ui.hasOverlayLayer = true;
-                        if (type === "applicationRoot") {
-                            applicationRootName = name;
+                        if (["applicationRoot", "overlay", "view"].includes(type)) {
+                            if (type === "applicationRoot")
+                                applicationRootName = name;
+                            result.ui.templateRoute = templateRoute;
                         }
                         setPageAttributes(vxtObject);
                         // @ts-ignore
@@ -15077,7 +15090,7 @@ function getMainComponent(options) {
                                 updatedUI = updatedTemplates.updatedUI;
                                 _a.label = 4;
                             case 4:
-                                if (!(config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false)) return [3 /*break*/, 6];
+                                if (!(config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false && hasMatchingDynamicTemplateRoutePathFallback({ viewxTemplates: viewxTemplates, layers: config.layers, pathname: pathname }) === false)) return [3 /*break*/, 6];
                                 return [4 /*yield*/, loadDynamicTemplate({
                                         config: config,
                                         viewxTemplates: viewxTemplates,
@@ -15133,7 +15146,7 @@ function getMainComponent(options) {
             /* eslint-disable */
         }, [pathname /* templates*/]);
         /* eslint-enable */
-        return (React__default.createElement(React.Fragment, null, config.layers.map(function (layer) {
+        return (React__default.createElement(React.Fragment, { key: "viewx" }, config.layers.map(function (layer) {
             var name = layer.name, type = layer.type;
             var jsonxChildren = getReactElement$1(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
             // console.log(
@@ -15159,7 +15172,9 @@ function getMainComponent(options) {
 function getGlobalStateHooks(options) {
     if (options === void 0) { options = {}; }
     return __awaiter(this, void 0, void 0, function () {
-        var settings, layers, layerOpenState, reducer, initialState, _a, GlobalStateProvider, dispatch, useGlobalState;
+        var settings, layers, layerOpenState, reducer, initialState, _a, 
+        // GlobalStateProvider,
+        dispatch, useGlobalState;
         return __generator(this, function (_b) {
             settings = options.config.settings;
             layers = options.config.layers;
@@ -15215,7 +15230,12 @@ function getGlobalStateHooks(options) {
                         return state;
                 }
             };
-            initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ templatePaths: [], isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
+            initialState = __assign(__assign({}, options.application.state), { views: __assign({}, options.vxaState.views), viewdata: __assign({}, options.vxaState.viewdata), templates: __assign({}, options.templates), socket: {}, ui: __assign(__assign({ templateRoute: {
+                        route: '',
+                        location: '',
+                        params: {},
+                        re: undefined,
+                    }, templatePaths: [], isLoading: true, isModalOpen: false, hasOverlayLayer: false, hasLoadedInitialProcess: false, hasPreloadedTemplates: settings.hasPreloadedTemplates || false, returnURL: undefined }, layerOpenState), options.vxaState.ui), user: __assign({ token: settings.cacheLoggedInUser
                         ? getFromCacheStore("user", "token")
                         : undefined, tokenData: settings.cacheLoggedInUser
                         ? getFromCacheStore("user", "tokenData")
@@ -15230,9 +15250,9 @@ function getGlobalStateHooks(options) {
                         : false, loggedInMFA: settings.cacheLoggedInUser
                         ? getFromCacheStore("user", "loggedInMFA") || false
                         : false }, options.vxaState.user) });
-            _a = reactHooksGlobalState.createStore(reducer, initialState), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+            _a = reactHooksGlobalState.createStore(reducer, initialState), dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
             return [2 /*return*/, {
-                    GlobalStateProvider: GlobalStateProvider,
+                    // GlobalStateProvider,
                     dispatch: dispatch,
                     useGlobalState: useGlobalState
                 }];
@@ -15242,14 +15262,16 @@ function getGlobalStateHooks(options) {
 
 function getViewXapp(options) {
     return __awaiter(this, void 0, Promise, function () {
-        var settings, _a, GlobalStateProvider, dispatch, useGlobalState, MainApp, Router;
+        var settings, _a, 
+        // GlobalStateProvider,
+        dispatch, useGlobalState, MainApp, Router;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     settings = options.config.settings;
                     return [4 /*yield*/, getGlobalStateHooks(options)];
                 case 1:
-                    _a = _b.sent(), GlobalStateProvider = _a.GlobalStateProvider, dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
+                    _a = _b.sent(), dispatch = _a.dispatch, useGlobalState = _a.useGlobalState;
                     options.dispatch = dispatch;
                     options.useGlobalState = useGlobalState;
                     MainApp = getMainComponent(options);
@@ -15268,9 +15290,12 @@ function getViewXapp(options) {
                             break;
                     }
                     //  = settings.router === "hash" ? HashRouter : BrowserRouter;
-                    return [2 /*return*/, (React__default.createElement(GlobalStateProvider, null,
-                            React__default.createElement(Router, null,
-                                React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))))];
+                    return [2 /*return*/, (
+                        // <GlobalStateProvider>
+                        React__default.createElement(Router, null,
+                            React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))
+                        // </GlobalStateProvider>
+                        )];
             }
         });
     });
@@ -15402,7 +15427,6 @@ var config = {
                     }
                     else
                         return [2 /*return*/, true];
-                    return [2 /*return*/];
                 });
             });
         },
@@ -16311,7 +16335,12 @@ const options = {
           // __functionProps: {
           //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
           // },
-          children: "SAY HELLO MODAL"
+          children: [
+            {
+              component:'div',
+              children: "SAY HELLO MODAL!!"
+            }
+          ]
         }
       }
     }
@@ -16623,11 +16652,14 @@ var MEMO_STATICS = {
 };
 var TYPE_STATICS = {};
 TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
+TYPE_STATICS[reactIs.Memo] = MEMO_STATICS;
 
 function getStatics(component) {
+  // React v16.11 and below
   if (reactIs.isMemo(component)) {
     return MEMO_STATICS;
-  }
+  } // React v16.12 and above
+
 
   return TYPE_STATICS[component['$$typeof']] || REACT_STATICS;
 }
