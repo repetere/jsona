@@ -1,6 +1,7 @@
 import { VXALayer, VXAConfig, VXATemplates, VXAState, VXALayer, VXAFunctions, VXAFunctionContext, VXAFunction, vxt, } from "./vxt";
 import { jsonxResourceProps, } from "./jsonx";
 import { ReactNode } from "react";
+import { VXALayer } from "./options";
 
 type layerName = string;
 type routePath = string;
@@ -37,7 +38,7 @@ export interface appMainProps {
   // staticContext: undefined;
   children?: ReactNode;
   [index: string]: any;
-};
+}
 
 export interface appLoadTemplates{
   config: any| VXAConfig;
@@ -60,4 +61,10 @@ export interface appLoadRoute{
   Functions: {[index:string]:VXAFunction} //any|VXAFunctions;
   functionContext:any| VXAFunctionContext;
   resourceprops?: any;
+}
+
+export interface layerPathRoutes{
+  viewxTemplates: any | VXAViewXTemplates;
+  pathname: string;
+  layers: VXALayer[];
 }

@@ -19,7 +19,7 @@ import {
 // @ts-ignore
 import * as JSONX from "jsonx/dist/jsonx.esm";
 
-import { loadTemplates, loadDynamicTemplate, loadRoute, setup } from "../util/props";
+import { loadTemplates, loadDynamicTemplate, loadRoute, setup, hasMatchingDynamicTemplateRoutePathFallback } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
 import { fetchJSON } from "../util/data";
 
@@ -168,7 +168,7 @@ export default function getMainComponent(
             viewxTemplates = updatedTemplates.viewxTemplates;
             updatedUI = updatedTemplates.updatedUI;
           }
-          if (config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false) {
+          if (config.settings.dynamicTemplatePath && updatedUI.templatePaths.includes(pathname) === false && hasMatchingDynamicTemplateRoutePathFallback({ viewxTemplates, layers:config.layers, pathname }) === false) {
             const dynamicTemplates = await loadDynamicTemplate({
               config,
               viewxTemplates,
@@ -213,7 +213,7 @@ export default function getMainComponent(
     }, [pathname /* templates*/]);
     /* eslint-enable */
     return (
-      <Fragment>
+      <Fragment key="viewx">
         {config.layers.map(layer => {
           const { name, type } = layer;
           const jsonxChildren = getReactElement(

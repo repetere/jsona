@@ -116,5 +116,5 @@ export interface VXAFunctionContext {
     Functions: VXAFunctions;
     settings: VXASettings;
   }
-};
+}
 

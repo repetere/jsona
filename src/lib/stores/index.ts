@@ -142,6 +142,12 @@ export async function getGlobalStateHooks(options: any = {}) {
     },
     socket: {},
     ui: {
+      templateRoute: {
+        route: '',
+        location: '',
+        params: {},
+        re: undefined,
+      },
       templatePaths:[],
       isLoading: true,
       isModalOpen: false,
@@ -178,13 +184,15 @@ export async function getGlobalStateHooks(options: any = {}) {
       ...options.vxaState.user
     }
   };
-  const { GlobalStateProvider, dispatch, useGlobalState } = createStore(
+  const {
+    // GlobalStateProvider,
+    dispatch, useGlobalState } = createStore(
     reducer,
     initialState
   );
 
   return {
-    GlobalStateProvider,
+    // GlobalStateProvider,
     dispatch,
     useGlobalState
   };

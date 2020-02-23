@@ -380,7 +380,12 @@ export const options = {
           // __functionProps: {
           //   onRequestClose:['func:this.props.toggleMatchedRouteLayer_modal']
           // },
-          children: "SAY HELLO MODAL"
+          children: [
+            {
+              component:'div',
+              children: "SAY HELLO MODAL!!"
+            }
+          ]
         }
       }
     }
