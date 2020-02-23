@@ -7,7 +7,7 @@
   "web": "dist/viewx.vxa.web.js",
   "dependencies": {
     "hoist-non-react-statics": "^3.3.2",
-    "jsonx": "^1.0.0",
+    "jsonx": "^1.0.1",
     "path-to-regexp": "^6.0.0",
     "promisie": "^2.0.0-alpha.0",
     "react": "^16.12.0",
