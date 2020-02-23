@@ -21,7 +21,7 @@ export async function getViewXapp(
   // console.log("getViewXapp options", options);
   const { settings } = options.config as VXAConfig;
   const {
-    GlobalStateProvider,
+    // GlobalStateProvider,
     dispatch,
     useGlobalState
   } = await getGlobalStateHooks(options);
@@ -46,10 +46,10 @@ export async function getViewXapp(
   }
   //  = settings.router === "hash" ? HashRouter : BrowserRouter;
   return (
-    <GlobalStateProvider>
+    // <GlobalStateProvider>
       <Router>
         <Route path="*" component={MainApp}></Route>
       </Router>
-    </GlobalStateProvider>
+    // </GlobalStateProvider>
   );
 }

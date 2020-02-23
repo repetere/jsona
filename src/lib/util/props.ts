@@ -13,7 +13,8 @@ import {
   VXADispatchAction,
   jsonxResourceProps,
   VXATemplateRouteLayer,
-  appLoadRoute
+  appLoadRoute,
+  layerPathRoutes,
 } from "../../../types";
 // import { insertScriptParams } from '../../internal_types/config';
 
@@ -157,6 +158,26 @@ export async function loadDynamicTemplate({
 
 }
 
+export function hasMatchingDynamicTemplateRoutePathFallback({
+  viewxTemplates,
+  layers,
+  pathname,
+}: layerPathRoutes): boolean {
+  const hasLayers = layers.filter((layer: VXALayer) => {
+    const { name } = layer;
+    const viewxTemplateLayer = viewxTemplates[name];
+    const templateRoute =findMatchingRoutePath(
+      viewxTemplateLayer,
+      pathname,
+      {
+        return_matching_keys: true
+      }
+    );
+    return templateRoute && templateRoute.route.includes('*')===false;
+  });
+  return hasLayers.length>0;
+}
+
 /**
  * get template route layer map function
  * @param options.viewxTemplates - object of vxtTemplates
@@ -254,11 +275,13 @@ export async function loadRoute({
           type,
           vxtObject,
           ui,
-          hasOverlayLayer
+          hasOverlayLayer,
+          templateRoute,
         } = templateRouteLayers[i];
         if (hasOverlayLayer) result.ui.hasOverlayLayer = true;
-        if (type === "applicationRoot") {
-          applicationRootName = name;
+        if ( ["applicationRoot" ,"overlay","view"].includes(type)) {
+          if (type === "applicationRoot") applicationRootName = name;
+          result.ui.templateRoute = templateRoute;
         }
         setPageAttributes(vxtObject);
         // @ts-ignore
