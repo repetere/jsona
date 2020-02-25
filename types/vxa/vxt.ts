@@ -33,7 +33,7 @@ export type vxt = {
 export type vxtRoutePath = string;
 
 export type vxtTemplate = {
-  [index: vxtRoutePath|string]: vxt;
+  [index: string]: vxt;
 };
 
 export type VXATemplateRouteLayer = {
@@ -93,8 +93,8 @@ export type VXASettings = {
 };
 
 export type VXAState = {
-  views: { [index: layerName]: VXAView };
-  viewdata: { [index: layerName]: any };
+  views: { [index: string]: VXAView };
+  viewdata: { [index: string]: any };
   socket?: any;
   ui: any;
   user: any;

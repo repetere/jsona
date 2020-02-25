@@ -1,7 +1,7 @@
-import { VXALayer, VXAConfig, VXATemplates, VXAState, VXALayer, VXAFunctions, VXAFunctionContext, VXAFunction, vxt, } from "./vxt";
+import { VXAState, VXAFunctionContext, VXAFunction, vxt, } from "./vxt";
 import { jsonxResourceProps, } from "./jsonx";
 import { ReactNode } from "react";
-import { VXALayer } from "./options";
+import { VXALayer, VXAConfig, VXATemplates,  } from "./options";
 
 type layerName = string;
 type routePath = string;

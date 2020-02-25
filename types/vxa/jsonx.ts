@@ -1,4 +1,8 @@
-export interface jsonx {
+import * as JSONX from 'jsonx/src/types/jsonx';
+
+export type functionParam = (...params: any[]) => any;
+
+export interface jsonx extends JSONX.jsonx {
   component: string;
   props?: any;
   children?: jsonx[] | string | null;
@@ -6,8 +10,9 @@ export interface jsonx {
     [index: string]: string[];
   };
   __dangerouslyBindEvalProps: {
-    [index: string]: string | function;
+    [index: string]: string | functionParam;
   };
+  [index: string]: any;
 }
 
 export interface jsonxResourceProps{
@@ -19,7 +24,7 @@ export type jsonxComponent = {
   | React.PureComponent
   | React.Component
   | React.ReactElement
-  | function;
+  | functionParam;
 }
 
 export interface jsonxLibrary{

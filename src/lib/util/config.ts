@@ -136,7 +136,7 @@ export async function getReactLibrariesAndComponents({
         if (jsonx) {
           componentLibraries[name] = Object.keys(jsonx).reduce(
             (result: jsonxLibrary, prop: string) => {
-              const libraryComponent = jsonx[prop];
+              const libraryComponent:VXAComponent = jsonx[prop];
               const {
                 type,
                 name,

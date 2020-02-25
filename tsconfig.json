@@ -22,5 +22,8 @@
   "include": [
     "src",
     "node_modules/jsonx/src/**/*",
+  ],
+  "exclude": [
+    "node_modules/jsonx/**/*.test.ts",
   ]
 }
