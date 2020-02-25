@@ -70,7 +70,7 @@ export async function loadTemplates({
         config.settings.templateFetchOptions
       );
 
-  viewxTemplates = layers.reduce((result, layer) => {
+  viewxTemplates = layers.reduce((result: VXATemplates, layer) => {
     const { name } = layer;
     result[name] = {
       ...loadedTemplates[name],

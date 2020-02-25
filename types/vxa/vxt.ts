@@ -22,18 +22,18 @@ export type vxtTemplateRoute = {
 
 export type vxt = {
   jsonx: jsonx;
-  pageData: pageAttribute[];
-  preRenderFunctions: string[];
-  transformRenderFunctions: string[];
-  postRenderFunctions: string[];
-  resources: vxtResource;
-  expires?: Date;
+  pageData?: pageAttribute[];
+  preRenderFunctions?: string[];
+  transformRenderFunctions?: string[];
+  postRenderFunctions?: string[];
+  resources?: vxtResource;
+  expires?: Date | string;
 };
 
 export type vxtRoutePath = string;
 
 export type vxtTemplate = {
-  [index: vxtRoutePath|string]: vxt;
+  [index: string]: vxt;
 };
 
 export type VXATemplateRouteLayer = {
@@ -48,7 +48,7 @@ export type VXATemplateRouteLayer = {
 export type VXAView = {
   jsonx: jsonx;
   resources: any;
-  pageData: pageAttribute[];
+  pageData?: pageAttribute[];
 };
 
 export type layerName = string;
@@ -93,8 +93,8 @@ export type VXASettings = {
 };
 
 export type VXAState = {
-  views: { [index: layerName]: VXAView };
-  viewdata: { [index: layerName]: any };
+  views: { [index: string]: VXAView };
+  viewdata: { [index: string]: any };
   socket?: any;
   ui: any;
   user: any;

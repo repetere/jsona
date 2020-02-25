@@ -1,4 +1,4 @@
-import { jsonx, jsonxComponent } from "./jsonx";
+import { jsonx, jsonxComponent, jsonxLibrary, } from "./jsonx";
 import {
   vxtTemplate,
   VXAState,
@@ -31,6 +31,7 @@ export type VXAComponent = {
   type: VXAComponentTypes;
   umdFilePath: string;
   jsonx?: jsonxLibrary | jsonx;
+  jsonxComponent?: jsonx;
   stylesheets: string[];
   options?: {};
   functionBody?: string;
@@ -58,10 +59,8 @@ export type VXAApplicationState = {
   state?: stateObject;
 };
 
-export type layerName = string;
-
 export type VXATemplates = {
-  [index: layerName|string]: vxtTemplate;
+  [index: string]: vxtTemplate;
 };
 
 export type VXAConfig = {
@@ -90,6 +89,6 @@ export interface VXAOptions {
   application?: VXAApplicationState;
   vxaState?: VXAState | {};
   templates?: VXATemplates;
-  dispatch?: createStore.dispatch;
-  useGlobalState?: createStore.useGlobalState;
+  dispatch?: any;
+  useGlobalState?: any;
 }
