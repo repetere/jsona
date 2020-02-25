@@ -2,15 +2,21 @@ import * as JSONX from 'jsonx/src/types/jsonx';
 
 export type functionParam = (...params: any[]) => any;
 
-export interface jsonx extends JSONX.jsonx {
-  component: string;
-  props?: any;
-  children?: jsonx[] | string | null;
-  thisprops: {
-    [index: string]: string[];
+export interface jsonx  {
+  // component: string;
+  // props?: any;
+  // children?: jsonx[] | string | null;
+  // thisprops: {
+  //   [index: string]: string[];
+  // };
+  // __dangerouslyBindEvalProps: {
+  //   [index: string]: string | functionParam;
+  // };
+  __dangerouslyBindEvalProps?: {
+    [index: string]: string | functionParam | any| undefined;
   };
-  __dangerouslyBindEvalProps: {
-    [index: string]: string | functionParam;
+  __dangerouslyEvalProps?: {
+    [index: string]: string | functionParam | any | undefined;
   };
   [index: string]: any;
 }

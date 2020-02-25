@@ -113,7 +113,7 @@ export function getElementSelector({
 export async function setPageAttributes({
   pageData = []
 }: {
-  pageData: pageAttribute[];
+  pageData?: pageAttribute[];
 }): Promise<void> {
   pageData.forEach((pageDatum: pageAttribute) => {
     const { attributes, tagName, innerHTML } = pageDatum;
