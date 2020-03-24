@@ -1,5 +1,5 @@
 // @ts-ignore
-import * as JSONX from "jsonx/dist/jsonx.esm";
+import * as JSONX from "jsonx/src/index";
 // import * as JSONX from "jsonx";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";

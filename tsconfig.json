@@ -20,8 +20,9 @@
     "jsx": "react"
   },
   "include": [
-    "src",
-    "node_modules/jsonx/src/**/*",
+    "node_modules/jsonx/src/**/*",    
+    "src/**/*.ts",
+    "src/**/*.tsx",
   ],
   "exclude": [
     "node_modules/jsonx/**/*.test.ts",

@@ -17,7 +17,9 @@ import {
 } from "../../../types";
 
 // @ts-ignore
-import * as JSONX from "jsonx/dist/jsonx.esm";
+// import * as JSONX from "jsonx/dist/index.esm";
+import * as JSONX from "jsonx/src/index";
+
 
 import { loadTemplates, loadDynamicTemplate, loadRoute, setup, hasMatchingDynamicTemplateRoutePathFallback } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
