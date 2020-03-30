@@ -3,8 +3,8 @@ import React,{Dispatch,SetStateAction} from 'react';
 
 export type pageAttribute = {
   tagName: string;
-  attributes: any;
-  innerHTML: string;
+  attributes?: any;
+  innerHTML?: string;
 };
 
 export type vxtResource = {
@@ -63,6 +63,7 @@ export type VXASettings = {
   cacheTemplatesOffline: boolean;
   cacheUserTimeout: number;
   debug: boolean;
+  exposeVXAToWindow: boolean;
   dynamicTemplateFetchOptions: {};
   dynamicTemplatePath?: string;
   fetchHeaders: any;

@@ -41,6 +41,7 @@ export const options = {
       type: "applicationRoot"
     }
   ],
+  querySelector:"#root",
   settings: {},
   application: {
     state: {
@@ -130,90 +131,268 @@ export const options = {
           }
         ]
       },
+      "/about-un-auth-basic": {
+				"jsonx": {
+					"component": "div",
+					"children": [{
+							"component": "p",
+							"children": "about page"
+						},
+						{
+							"component": "ul",
+							"children": [{
+									"component": "li",
+									"children": [{
+										"component": "Link",
+										"props": {
+											"to": "/"
+										},
+										"children": "index"
+									}]
+								},
+								{
+									"component": "li",
+									"children": [{
+										"component": "Link",
+										"props": {
+											"to": "/home"
+										},
+										"children": "home page"
+									}]
+								},
+								{
+									"component": "li",
+									"children": [{
+										"component": "Link",
+										"props": {
+											"to": "/about"
+										},
+										"children": "about page "
+									},
+                  {
+										"component": "Link",
+										"props": {
+											"to": "/about-un-auth"
+										},
+										"children": " about page (no auth)"
+									}]
+								},
+								{
+									"component": "li",
+									"children": [{
+										"component": "Link",
+										"props": {
+											"to": "/page/2"
+										},
+										"children": "Page two"
+									}]
+								}
+							]
+            },
+            {
+              component: 'ul',
+              resourceprops: {
+                __spread:['photos']
+              },
+              __spreadComponent:{
+                component:'li',
+                thisprops:{
+                  _children:['__item','title']
+                }
+              },
+            }
+					]
+				},
+				"resources": {
+					"album": "https://jsonplaceholder.typicode.com/albums/1",
+					"photos": "https://jsonplaceholder.typicode.com/albums/1/photos"
+				},
+        "pageData": [
+          {
+						"tagName": "title",
+						"attributes": {
+
+						},
+						"innerHTML": "My about Page"
+					},
+					{
+            "tagName": "meta",
+						"attributes": {
+              "name": "theme-color",
+							"content": "#9a1c5e"
+						},
+					}
+				]
+			},
       "/login": {
         jsonx: {
           component: "div",
+          props: {
+            key:902932
+          },
           children: [
             {
               component: "h1",
-              children: "Login"
+              children: "Login",
+              props: {
+                key:31222,
+              },
             },
             {
-              // component: 'form',
-              // debug: true,
-
-              component: "formik.Formik",
+              component:'FormComponent',
               props: {
-                initialValues: {
-                  username: "",
-                  password: ""
-                }
-              },
-              __dangerouslyInsertFunctionComponents: {
-                component: {
-                  functionBody: `let exposeProps={}`,
-                  reactComponent: {
-                    component: "form",
-                    thisprops: {
-                      onSubmit: ["handleSubmit"]
-                    },
-                    children: [
-                      {
-                        component: "formik.Field",
-                        props: {
-                          type: "text",
-                          name: "username",
-                          placeholder: "username"
-                        }
+                formComponent: {
+                  component: 'div',
+                  props: {
+                    key:3122,
+                  },
+                  children: [
+                    {
+                      component: 'div',
+                      props: {
+                        key:312,
                       },
-                      {
-                        component: "formik.ErrorMessage",
-                        props: {
-                          name: "username"
-                        }
-                      },
-                      {
-                        component: "formik.Field",
-                        props: {
-                          type: "password",
-                          name: "password"
-                        }
-                      },
-                      {
-                        component: "button",
-                        props: {
-                          type: "submit"
+                      children: [
+                        {
+                          component: 'label',
+                          props: {
+                            style: {
+                              
+                              display:'block'
+                            }
+                          },
+                          children:'Username'
                         },
-                        children: "Submit"
-                      }
-                    ]
-                  }
+                        {
+                          component: "input",
+                          props: {
+                            key:31,
+                            type: "text",
+                            name: "username",
+                            placeholder: "username"
+                          },
+                          // thiscontext:{
+                          //   ref:['reactHookForm','register']
+                          // },
+                          __dangerouslyEvalProps:{
+                            ref:`(function(){
+                              return this.reactHookForm.register({required:'required username'});
+                            })`,
+                          }
+                        },
+                        {
+                          component: "ReactHookForm.ErrorMessage",
+                          props: {
+                            key:32,
+                            name: "username"
+                          },
+                          thiscontext:{
+                            errors:['reactHookForm','errors']
+                          },
+                          __dangerouslyInsertFunctionComponents: {
+                            children:{
+                              functionBody: `let exposeProps={}`,
+                              reactComponent:{
+                                component:'p',
+                                thisprops:{
+                                  _children:['message']
+                                }
+                                // children:'test functional component',
+                              },
+                              options: {
+                                name:'testHookFormError'
+                              }
+                            }
+                          }
+                        },
+                      ]
+                    },
+                    {
+                      component: 'div',
+                      props: {
+                        key:412,
+                      },
+                      children: [
+                        {
+                          component: 'label',
+                          props: {
+                            style: {
+                              
+                              display:'block'
+                            }
+                          },
+                          children:'Password'
+                        },
+                        {
+                          component: "input",
+                          props: {
+                            key:41,
+                            type: "password",
+                            name: "password",
+                            placeholder: "password"
+                          },
+                          __dangerouslyEvalProps:{
+                            ref:`(function(){
+                              return this.reactHookForm.register({required:'required password'});
+                            })`,
+                          }
+                        },
+                        {
+                          component: "ReactHookForm.ErrorMessage",
+                          props: {
+                            key:42,
+                            name: "password"
+                          },
+                          thiscontext:{
+                            errors:['reactHookForm','errors']
+                          },
+                          __dangerouslyInsertFunctionComponents: {
+                            children:{
+                              functionBody: `let exposeProps={}`,
+                              reactComponent:{
+                                component: 'p',
+                                props:{key:4552},
+                                thisprops:{
+                                  _children:['message']
+                                }
+                              },
+                              options: {
+                                name:'testHookFormError'
+                              }
+                            }
+                          }
+                        },
+                      ]
+                    },
+                    {
+                      component: 'div',
+                      props: {
+                        key:512
+                      },
+                      children: [
+                        {
+                          component: "button",
+                          props: {
+                            key:5432,
+                            type: "submit"
+                          },
+                          children: "Submit"
+                        }
+                      ]
+                    }
+                  ],
                 }
               },
               __dangerouslyBindEvalProps: {
-                validate: `(function(values){
-                  let errors = {};
-                  if (!values.username) {
-                    errors.username = 'Required';
-                  } 
-                  /* eslint-disable */
-                  // else if (
-                    // eslint-disable-next-line
-                  // ) {
-                  //   errors.email = 'Invalid email address';
-                  // }
-                  /* eslint-enable */
-                  return errors;
-                })`,
-                onSubmit: `(function(values, { setSubmitting }){
-                  // console.log({values},this)
+                onSubmit: function(values){
+                  console.log({ values }, this);
                   this.viewx.Functions.loginUser(values);
 
                   // setTimeout(() => {
                   //   alert(JSON.stringify(values, null, 2));
                   //   setSubmitting(false);
                   // }, 400);
-                })`
+                }
               }
             }
           ]
@@ -226,6 +405,8 @@ export const options = {
           }
         ]
       },
+      
+
       "/": {
         // '/:catchall*': {
         preRenderFunctions: [

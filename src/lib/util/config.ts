@@ -1,5 +1,12 @@
 // @ts-ignore
-import * as JSONX from "jsonx/src/index";
+// import * as JSONX from "jsonx/src/index";
+// import * as JSONX from "jsonx/dist/index.esm";
+// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
+import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.esm";
+// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/src/index";
+
+// import * as JSONX from "jsonx";
+
 // import * as JSONX from "jsonx";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
@@ -98,8 +105,8 @@ export function getComponentPromise(
       }
       if (umdFilePath) {
         if (addedReact === false) {
-          if (!window.React) window.React = JSONX.__getReact();
-          if (!window.ReactDOM) window.ReactDOM = JSONX.__getReactDOM();
+          if (!window.React) window.React = __getReact();
+          if (!window.ReactDOM) window.ReactDOM = __getReactDOM();
           addedReact = true;
         }
         insertJavaScript({
@@ -108,7 +115,7 @@ export function getComponentPromise(
           async: true,
           onload: () => {
             returnedFile = true;
-            // console.log("LOADED SCRIPT", { umdFilePath, name });
+            // console.log("LOADED SCRIPT", { umdFilePath, name, });
             resolve(umdFilePath);
           }
         });
@@ -145,12 +152,12 @@ export async function getReactLibrariesAndComponents({
                 functionBody
               } = libraryComponent;
               if (type === "component") {
-                result[name] = JSONX._jsonxComponents.getReactClassComponent(
+                result[name] = _jsonxComponents.getReactClassComponent(
                   jsonxComponent,
                   options
                 );
               } else {
-                result[name] = JSONX._jsonxComponents.getReactFunctionComponent(
+                result[name] = _jsonxComponents.getReactFunctionComponent(
                   jsonxComponent,
                   functionBody,
                   options
@@ -163,7 +170,7 @@ export async function getReactLibrariesAndComponents({
         } else componentLibraries[name] = window[name];
       } else if (type === "component") {
         if (jsonx) {
-          reactComponents[name] = JSONX._jsonxComponents.getReactClassComponent(
+          reactComponents[name] = _jsonxComponents.getReactClassComponent(
             jsonx,
             options
           );
@@ -172,7 +179,7 @@ export async function getReactLibrariesAndComponents({
         if (jsonx) {
           reactComponents[
             name
-          ] = JSONX._jsonxComponents.getReactFunctionComponent(
+          ] = _jsonxComponents.getReactFunctionComponent(
             jsonx,
             functionBody,
             options

@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -20,11 +20,13 @@
     "jsx": "react"
   },
   "include": [
-    "node_modules/jsonx/src/**/*",    
+    "node_modules/jsonx/src/**/*.ts",
+    "node_modules/jsonx/src/**/*.tsx",
     "src/**/*.ts",
-    "src/**/*.tsx",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules/jsonx/**/*.test.ts",
+    "node_modules/jsonx/**/*.test.tsx"
   ]
 }

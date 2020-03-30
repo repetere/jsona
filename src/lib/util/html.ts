@@ -1,6 +1,6 @@
 // import React, { ReactElement } from "react";
 import ReactDOM from "react-dom";
-import { VXALayer, pageAttribute } from "../../../types";
+import { VXALayer, pageAttribute, } from "../../../types";
 import { insertScriptParams } from "../../internal_types/config";
 
 /**
@@ -53,6 +53,11 @@ export function insertJavaScript({
     j.id = tagId;
     j.setAttribute("type", "text/javascript");
     j.setAttribute("src", src);
+    if (src.includes('://')) {
+      const a = document.createElement('a');
+      a.setAttribute('ref', src);
+      if (a.origin !== window.location.origin) j.setAttribute('crossorigin', 'true');
+    }
     if (onload) j.onload = onload;
     // @ts-ignore
     if (s0) s0.parentNode.insertBefore(j, s0);
@@ -78,18 +83,24 @@ export function insertStyleSheet({ src, name, onload }: insertScriptParams) {
 
 export function createLayer({
   layer,
-  app
+  app,
+  querySelector,
 }: {
   layer: VXALayer;
   app?: JSX.Element;
+  querySelector?: string;
 }): void {
   const { name, type, order } = layer;
   const selector = `#${name}`;
+  const baseElement: HTMLElement = querySelector && querySelector !== 'root'
+    ? document.querySelector(querySelector) || document.body
+    : document.body;
+  // const baseElement= document.body;
   let layerDOM = document.querySelector(selector);
   if (!layerDOM) {
     const domEl = document.createElement("div");
     domEl.setAttribute("id", name);
-    document.body.appendChild(domEl);
+    baseElement.appendChild(domEl);
     domEl.style.zIndex = String(order);
     layerDOM = domEl;
   }
@@ -103,7 +114,7 @@ export function getElementSelector({
   attributes = {}
 }: {
   tagName: string;
-  attributes: { [index: string]: string };
+  attributes?: { [index: string]: string };
 }): string {
   return `${tagName}${Object.keys(attributes)
     .map(attr => `[${attr}="${attributes[attr]}"]`)
@@ -122,9 +133,11 @@ export async function setPageAttributes({
     const element = el || document.createElement(tagName);
     // if(!el) el.setAttribute()
     if (innerHTML) element.innerHTML = innerHTML;
-    Object.keys(attributes).forEach(attr => {
-      element.setAttribute(attr, attributes[attr]);
-    });
+    if (attributes && Object.keys(attributes).length) {
+      Object.keys(attributes).forEach(attr => {
+        element.setAttribute(attr, attributes[attr]);
+      });
+    }
     if (!el) document.head.appendChild(element);
   });
 }

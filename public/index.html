@@ -27,10 +27,8 @@
     <script type="text/javascript" src="temp/debounce.js"></script>
     <script type="text/javascript" src="temp/templates.js"></script> -->
   <!-- TODO: REMOVE end -->
-  <script>
-
-  </script>
   <script type="text/javascript">
+    var process={ env:{}}
     var __ViewXAppConfig = {
       // application: {//TODO: remove
       //           state: {
@@ -42,16 +40,21 @@
       // templates: window.placeholderTemplates.templates,//TODO: remove
 
       initialScripts: [
-        'https://unpkg.com/deepmerge@4.2.2/dist/umd.js',
+        // '/temp/formik_dependencies.js',
+        // 'https://unpkg.com/tiny-warning@1.0.3/dist/tiny-warning.js',
         // 'https://unpkg.com/scheduler@0.18.0/umd/scheduler.production.min.js',
-        'https://unpkg.com/tiny-warning@1.0.3/dist/tiny-warning.js',
-        '/temp/formik_dependencies.js',
+        // 'https://unpkg.com/deepmerge@4.2.2/dist/umd.js',
+        // 'https://unpkg.com/hoist-non-react-statics@3.3.2/dist/hoist-non-react-statics.min.js',
+        // 'https://unpkg.com/react-hook-form@5.2.0/dist/react-hook-form.umd.js',
       ],
+      querySelector:'#custom',
       settings: {
         templatePath: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/templates',
         // dynamicTemplatePath:'https://my-json-server.typicode.com/repetere/mock-json-db-dynamic',
         // hasPreloadedTemplates:true, //TODO:remove
+        hasPreloadedTemplates: false, 
         debug: true,
+        exposeVXAToWindow: true,
         routes: {
           user_login_METHOD: 'GET',
           user_login_mfa_METHOD: 'GET',
@@ -99,17 +102,6 @@
           stylesheets: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', ],
         },
         {
-          format: 'umd',
-          type: 'library',
-          // name: 'Formik',
-          // umdFilePath: 'https://unpkg.com/formik@2.0.0/dist/formik.umd.development.js',
-          name: 'formik',
-          // umdFilePath: 'https://unpkg.com/formik@2.0.6/dist/formik.umd.production.min.js',
-          umdFilePath: 'https://unpkg.com/formik@2.0.6/dist/formik.umd.development.js',
-          // jsonx,
-          // stylesheets: [ ],
-        },
-        {
           name: 'sayHello',
           format: 'jsonx',
           type: 'component',
@@ -125,8 +117,8 @@
       ],
       customScripts: [
         /*url,*/
-        'https://unpkg.com/scheduler@0.18.0/umd/scheduler.production.min.js',
-
+        // 'https://unpkg.com/scheduler@0.18.0/umd/scheduler.production.min.js',
+        // '/temp/formik_dependencies.js',
       ],
       customStyles: [
         /*url,*/
@@ -174,6 +166,7 @@
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
+  <main id="custom"></main>
   <!-- <div id="root"></div> -->
   <!--
       This HTML file is a template.
