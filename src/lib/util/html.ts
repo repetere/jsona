@@ -92,10 +92,10 @@ export function createLayer({
 }): void {
   const { name, type, order } = layer;
   const selector = `#${name}`;
-  // const baseElement: HTMLElement = querySelector && querySelector !== 'root'
-  //   ? document.querySelector(querySelector) || document.body
-  //   : document.body;
-  const baseElement= document.body;
+  const baseElement: HTMLElement = querySelector && querySelector !== 'root'
+    ? document.querySelector(querySelector) || document.body
+    : document.body;
+  // const baseElement= document.body;
   let layerDOM = document.querySelector(selector);
   if (!layerDOM) {
     const domEl = document.createElement("div");

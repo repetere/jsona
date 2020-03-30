@@ -18,8 +18,8 @@ import {
 
 // @ts-ignore
 // import * as JSONX from 
-import { getReactElementFromJSON, } from "jsonx/src/index";
-// import { getReactElementFromJSON, } from "jsonx/dist/index.esm";
+// import { getReactElementFromJSON, } from "jsonx/src/index";
+import { getReactElementFromJSONX, } from "jsonx/dist/index.esm";
 // import { getReactElementFromJSON, } from "jsonx";
 // import * as JSONX from "jsonx";
 
@@ -141,7 +141,7 @@ export default function getMainComponent(
       componentLibraries: Object.assign({}, config.componentLibraries),
       reactComponents: Object.assign({ Link }, config.reactComponents)};
     if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
-    const getReactElement = getReactElementFromJSON.bind(ctx);
+    const getReactElement = getReactElementFromJSONX.bind(ctx);
 
     useEffect(() => {
       Functions.onLaunch.call(functionContext);

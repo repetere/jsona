@@ -227,16 +227,161 @@ export const options = {
       "/login": {
         jsonx: {
           component: "div",
+          props: {
+            key:902932
+          },
           children: [
             {
               component: "h1",
-              children: "Login"
+              children: "Login",
+              props: {
+                key:31222,
+              },
             },
             {
               component:'FormComponent',
               props: {
-                component: 'div',
-                children:'what'
+                formComponent: {
+                  component: 'div',
+                  props: {
+                    key:3122,
+                  },
+                  children: [
+                    {
+                      component: 'div',
+                      props: {
+                        key:312,
+                      },
+                      children: [
+                        {
+                          component: 'label',
+                          props: {
+                            style: {
+                              
+                              display:'block'
+                            }
+                          },
+                          children:'Username'
+                        },
+                        {
+                          component: "input",
+                          props: {
+                            key:31,
+                            type: "text",
+                            name: "username",
+                            placeholder: "username"
+                          },
+                          // thiscontext:{
+                          //   ref:['reactHookForm','register']
+                          // },
+                          __dangerouslyEvalProps:{
+                            ref:`(function(){
+                              return this.reactHookForm.register({required:'required username'});
+                            })`,
+                          }
+                        },
+                        {
+                          component: "ReactHookForm.ErrorMessage",
+                          props: {
+                            key:32,
+                            name: "username"
+                          },
+                          thiscontext:{
+                            errors:['reactHookForm','errors']
+                          },
+                          __dangerouslyInsertFunctionComponents: {
+                            children:{
+                              functionBody: `let exposeProps={}`,
+                              reactComponent:{
+                                component:'p',
+                                thisprops:{
+                                  _children:['message']
+                                }
+                                // children:'test functional component',
+                              },
+                              options: {
+                                name:'testHookFormError'
+                              }
+                            }
+                          }
+                        },
+                      ]
+                    },
+                    {
+                      component: 'div',
+                      props: {
+                        key:412,
+                      },
+                      children: [
+                        {
+                          component: 'label',
+                          props: {
+                            style: {
+                              
+                              display:'block'
+                            }
+                          },
+                          children:'Password'
+                        },
+                        {
+                          component: "input",
+                          props: {
+                            key:41,
+                            type: "password",
+                            name: "password",
+                            placeholder: "password"
+                          },
+                          __dangerouslyEvalProps:{
+                            ref:`(function(){
+                              return this.reactHookForm.register({required:'required password'});
+                            })`,
+                          }
+                        },
+                        {
+                          component: "ReactHookForm.ErrorMessage",
+                          props: {
+                            key:42,
+                            name: "password"
+                          },
+                          thiscontext:{
+                            errors:['reactHookForm','errors']
+                          },
+                          __dangerouslyInsertFunctionComponents: {
+                            children:{
+                              functionBody: `let exposeProps={}`,
+                              reactComponent:{
+                                component: 'p',
+                                props:{key:4552},
+                                thisprops:{
+                                  _children:['message']
+                                }
+                              },
+                              options: {
+                                name:'testHookFormError'
+                              }
+                            }
+                          }
+                        },
+                      ]
+                    },
+                    {
+                      component: 'div',
+                      props: {
+                        key:512
+                      },
+                      children: [
+                        {
+                          component: "button",
+                          props: {
+                            key:5432,
+                            type: "submit"
+                          },
+                          children: "Submit"
+                        }
+                      ]
+                    }
+                  ],
+                }
               },
               __dangerouslyBindEvalProps: {
                 onSubmit: function(values){

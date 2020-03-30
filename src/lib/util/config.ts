@@ -2,8 +2,8 @@
 // import * as JSONX from "jsonx/src/index";
 // import * as JSONX from "jsonx/dist/index.esm";
 // import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
-// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.esm";
-import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/src/index";
+import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.esm";
+// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/src/index";
 
 // import * as JSONX from "jsonx";
 
