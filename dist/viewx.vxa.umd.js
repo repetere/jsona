@@ -56613,8 +56613,9 @@
     }
     function createLayer(_a) {
         var layer = _a.layer, app = _a.app, querySelector = _a.querySelector;
-        var name = layer.name, type = layer.type, order = layer.order;
-        var selector = "#" + name;
+        var name = layer.name, type = layer.type, order = layer.order, idSelector = layer.idSelector;
+        var selector = "#" + (idSelector || name);
+        var layerName = idSelector || name;
         var baseElement = querySelector && querySelector !== 'root'
             ? document.querySelector(querySelector) || document.body
             : document.body;
@@ -56622,7 +56623,8 @@
         var layerDOM = document.querySelector(selector);
         if (!layerDOM) {
             var domEl = document.createElement("div");
-            domEl.setAttribute("id", name);
+            domEl.setAttribute("id", layerName);
+            domEl.setAttribute('class', "vxa_layer vxa_layer_name_" + name + " vxa_layer_type_" + type);
             baseElement.appendChild(domEl);
             domEl.style.zIndex = String(order);
             layerDOM = domEl;
@@ -57626,7 +57628,7 @@
             }, [pathname /* templates*/]);
             /* eslint-enable */
             return (react.createElement(react_5, { key: "viewx" }, config.layers.map(function (layer) {
-                var name = layer.name, type = layer.type;
+                var name = layer.name, type = layer.type, idSelector = layer.idSelector;
                 var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
                 // console.log(
                 //   "LAYER",
@@ -57640,7 +57642,7 @@
                     return jsonxChildren;
                 }
                 else {
-                    var el = document.querySelector("#" + name);
+                    var el = document.querySelector("#" + (idSelector || name));
                     return el ? reactDom.createPortal(jsonxChildren, el) : null;
                 }
             })));

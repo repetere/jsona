@@ -90,8 +90,9 @@ export function createLayer({
   app?: JSX.Element;
   querySelector?: string;
 }): void {
-  const { name, type, order } = layer;
-  const selector = `#${name}`;
+  const { name, type, order, idSelector, } = layer;
+  const selector = `#${idSelector || name}`;
+  const layerName = idSelector || name;
   const baseElement: HTMLElement = querySelector && querySelector !== 'root'
     ? document.querySelector(querySelector) || document.body
     : document.body;
@@ -99,7 +100,8 @@ export function createLayer({
   let layerDOM = document.querySelector(selector);
   if (!layerDOM) {
     const domEl = document.createElement("div");
-    domEl.setAttribute("id", name);
+    domEl.setAttribute("id", layerName);
+    domEl.setAttribute('class',`vxa_layer vxa_layer_name_${name} vxa_layer_type_${type}`);
     baseElement.appendChild(domEl);
     domEl.style.zIndex = String(order);
     layerDOM = domEl;

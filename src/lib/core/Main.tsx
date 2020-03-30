@@ -220,7 +220,7 @@ export default function getMainComponent(
     return (
       <Fragment key="viewx">
         {config.layers.map(layer => {
-          const { name, type } = layer;
+          const { name, type, idSelector, } = layer;
           const jsonxChildren = getReactElement(
             views[name] ? views[name].jsonx : null,
             viewdata[name] ? viewdata[name] : {}
@@ -236,7 +236,7 @@ export default function getMainComponent(
           if (type === "applicationRoot") {
             return jsonxChildren;
           } else {
-            const el = document.querySelector(`#${name}`);
+            const el = document.querySelector(`#${idSelector||name}`);
             return el ? ReactDOM.createPortal(jsonxChildren, el) : null;
           }
         })}

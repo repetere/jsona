@@ -48,6 +48,7 @@ export type VXALayer = {
   name: string;
   system?: boolean;
   type: string;
+  idSelector?: string;
   // type: VXALayerTypes;
 };
 
