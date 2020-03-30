@@ -154,8 +154,6 @@ export async function loadDynamicTemplate({
   } catch (e) {
     throw new Error(`Could not load: ${templateURL}`);
   }
-
-
 }
 
 export function hasMatchingDynamicTemplateRoutePathFallback({

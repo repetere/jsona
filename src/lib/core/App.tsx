@@ -17,7 +17,7 @@ import { ReactElementLike } from "prop-types";
 
 export async function getViewXapp(
   options: VXAOptions
-): Promise<ReactElementLike> {
+): Promise<{ app: ReactElementLike; options: any; }> {
   // console.log("getViewXapp options", options);
   const { settings } = options.config as VXAConfig;
   const {
@@ -45,11 +45,12 @@ export async function getViewXapp(
       break;
   }
   //  = settings.router === "hash" ? HashRouter : BrowserRouter;
-  return (
+  const app = (
     // <GlobalStateProvider>
       <Router>
         <Route path="*" component={MainApp}></Route>
       </Router>
     // </GlobalStateProvider>
   );
+  return { app, options, };
 }

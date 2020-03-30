@@ -17,8 +17,11 @@ import {
 } from "../../../types";
 
 // @ts-ignore
-// import * as JSONX from "jsonx/dist/index.esm";
-import * as JSONX from "jsonx/src/index";
+// import * as JSONX from 
+import { getReactElementFromJSON, } from "jsonx/src/index";
+// import { getReactElementFromJSON, } from "jsonx/dist/index.esm";
+// import { getReactElementFromJSON, } from "jsonx";
+// import * as JSONX from "jsonx";
 
 
 import { loadTemplates, loadDynamicTemplate, loadRoute, setup, hasMatchingDynamicTemplateRoutePathFallback } from "../util/props";
@@ -128,8 +131,7 @@ export default function getMainComponent(
 
     Functions.loadView = loadView;
     bindFunctionContext({ Functions, functionContext });
-
-    const getReactElement = JSONX.getReactElement.bind({
+    const ctx = {
       props,
       state,
       setState,
@@ -137,8 +139,9 @@ export default function getMainComponent(
       // state:{counter, setCounter},
       debug: settings.debug,
       componentLibraries: Object.assign({}, config.componentLibraries),
-      reactComponents: Object.assign({ Link }, config.reactComponents)
-    });
+      reactComponents: Object.assign({ Link }, config.reactComponents)};
+    if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+    const getReactElement = getReactElementFromJSON.bind(ctx);
 
     useEffect(() => {
       Functions.onLaunch.call(functionContext);

@@ -97,6 +97,8 @@ function getPlugins({
                     'Suspense',
                     'lazy',
                     'createElement',
+                    'isValidElement',
+                    'cloneElement',
                     'useState',
                     'useEffect',
                     'useContext',

@@ -85,6 +85,7 @@ export interface VXAOptions {
   config?: VXAConfig | undefined;
   // layers?: any[];
   layers?: VXALayer[];
+  querySelector?: string;
   settings?: any;
   application?: VXAApplicationState;
   vxaState?: VXAState | {};
