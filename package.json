@@ -1,6 +1,6 @@
 {
   "name": "@viewx/vxa",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "main": "dist/viewx.vxa.cjs.js",
   "module": "dist/viewx.vxa.es.js",
   "browser": "dist/viewx.vxa.umd.js",
@@ -11,7 +11,7 @@
     "path-to-regexp": "^6.0.0",
     "promisie": "^3.0.0",
     "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "react-dom": "^16.13.1",
     "react-hooks-global-state": "^1.0.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",

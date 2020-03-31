@@ -4,16 +4,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var React = require('react');
-var React__default = _interopDefault(React);
+var React__default = require('react');
+var React__default__default = _interopDefault(React__default);
 var reactRouter = require('react-router');
 var reactRouterDom = require('react-router-dom');
 var ReactDOM = _interopDefault(require('react-dom'));
-require('react-dom/server');
 var testMatchingRoute = require('test-matching-route');
 var pathToRegexp = require('path-to-regexp');
 var reactHooksGlobalState = require('react-hooks-global-state');
-var luxon = require('luxon');
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -90,6 +88,9278 @@ function __spreadArrays() {
 var global$1 = (typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
             typeof window !== "undefined" ? window : {});
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+function getCjsExportFromNamespace (n) {
+	return n && n['default'] || n;
+}
+
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+
+var ReactPropTypesSecret_1 = ReactPropTypesSecret;
+
+var printWarning = function() {};
+
+{
+  var ReactPropTypesSecret$1 = ReactPropTypesSecret_1;
+  var loggedTypeFailures = {};
+  var has = Function.call.bind(Object.prototype.hasOwnProperty);
+
+  printWarning = function(text) {
+    var message = 'Warning: ' + text;
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+}
+
+/**
+ * Assert that the values match with the type specs.
+ * Error messages are memorized and will only be shown once.
+ *
+ * @param {object} typeSpecs Map of name to a ReactPropType
+ * @param {object} values Runtime values that need to be type-checked
+ * @param {string} location e.g. "prop", "context", "child context"
+ * @param {string} componentName Name of the component for error messages.
+ * @param {?Function} getStack Returns the component stack.
+ * @private
+ */
+function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+  {
+    for (var typeSpecName in typeSpecs) {
+      if (has(typeSpecs, typeSpecName)) {
+        var error;
+        // Prop type validation may throw. In case they do, we don't want to
+        // fail the render phase where it didn't fail before. So we log it.
+        // After these have been cleaned up, we'll let them throw.
+        try {
+          // This is intentionally an invariant that gets caught. It's the same
+          // behavior as without this statement except with a better message.
+          if (typeof typeSpecs[typeSpecName] !== 'function') {
+            var err = Error(
+              (componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' +
+              'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.'
+            );
+            err.name = 'Invariant Violation';
+            throw err;
+          }
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret$1);
+        } catch (ex) {
+          error = ex;
+        }
+        if (error && !(error instanceof Error)) {
+          printWarning(
+            (componentName || 'React class') + ': type specification of ' +
+            location + ' `' + typeSpecName + '` is invalid; the type checker ' +
+            'function must return `null` or an `Error` but returned a ' + typeof error + '. ' +
+            'You may have forgotten to pass an argument to the type checker ' +
+            'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
+            'shape all require an argument).'
+          );
+        }
+        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
+          // Only monitor this failure once because there tends to be a lot of the
+          // same error.
+          loggedTypeFailures[error.message] = true;
+
+          var stack = getStack ? getStack() : '';
+
+          printWarning(
+            'Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
+          );
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Resets warning cache when testing.
+ *
+ * @private
+ */
+checkPropTypes.resetWarningCache = function() {
+  {
+    loggedTypeFailures = {};
+  }
+};
+
+var checkPropTypes_1 = checkPropTypes;
+
+var domain;
+
+// This constructor is used to store event handlers. Instantiating this is
+// faster than explicitly calling `Object.create(null)` to get a "clean" empty
+// object (tested with v8 v4.9).
+function EventHandlers() {}
+EventHandlers.prototype = Object.create(null);
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
+}
+
+// nodejs oddity
+// require('events') === require('events').EventEmitter
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.usingDomains = false;
+
+EventEmitter.prototype.domain = undefined;
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+EventEmitter.init = function() {
+  this.domain = null;
+  if (EventEmitter.usingDomains) {
+    // if there is an active domain, then attach to it.
+    if (domain.active ) ;
+  }
+
+  if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
+    this._events = new EventHandlers();
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || isNaN(n))
+    throw new TypeError('"n" argument must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+function $getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return $getMaxListeners(this);
+};
+
+// These standalone emit* functions are used to optimize calling of event
+// handlers for fast cases because emit() itself often has a variable number of
+// arguments and can be deoptimized because of that. These functions always have
+// the same number of arguments and thus do not get deoptimized, so the code
+// inside them can execute faster.
+function emitNone(handler, isFn, self) {
+  if (isFn)
+    handler.call(self);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self);
+  }
+}
+function emitOne(handler, isFn, self, arg1) {
+  if (isFn)
+    handler.call(self, arg1);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self, arg1);
+  }
+}
+function emitTwo(handler, isFn, self, arg1, arg2) {
+  if (isFn)
+    handler.call(self, arg1, arg2);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self, arg1, arg2);
+  }
+}
+function emitThree(handler, isFn, self, arg1, arg2, arg3) {
+  if (isFn)
+    handler.call(self, arg1, arg2, arg3);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].call(self, arg1, arg2, arg3);
+  }
+}
+
+function emitMany(handler, isFn, self, args) {
+  if (isFn)
+    handler.apply(self, args);
+  else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      listeners[i].apply(self, args);
+  }
+}
+
+EventEmitter.prototype.emit = function emit(type) {
+  var er, handler, len, args, i, events, domain;
+  var doError = (type === 'error');
+
+  events = this._events;
+  if (events)
+    doError = (doError && events.error == null);
+  else if (!doError)
+    return false;
+
+  domain = this.domain;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    er = arguments[1];
+    if (domain) {
+      if (!er)
+        er = new Error('Uncaught, unspecified "error" event');
+      er.domainEmitter = this;
+      er.domain = domain;
+      er.domainThrown = false;
+      domain.emit('error', er);
+    } else if (er instanceof Error) {
+      throw er; // Unhandled 'error' event
+    } else {
+      // At least give some kind of context to the user
+      var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+      err.context = er;
+      throw err;
+    }
+    return false;
+  }
+
+  handler = events[type];
+
+  if (!handler)
+    return false;
+
+  var isFn = typeof handler === 'function';
+  len = arguments.length;
+  switch (len) {
+    // fast cases
+    case 1:
+      emitNone(handler, isFn, this);
+      break;
+    case 2:
+      emitOne(handler, isFn, this, arguments[1]);
+      break;
+    case 3:
+      emitTwo(handler, isFn, this, arguments[1], arguments[2]);
+      break;
+    case 4:
+      emitThree(handler, isFn, this, arguments[1], arguments[2], arguments[3]);
+      break;
+    // slower
+    default:
+      args = new Array(len - 1);
+      for (i = 1; i < len; i++)
+        args[i - 1] = arguments[i];
+      emitMany(handler, isFn, this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
+
+  events = target._events;
+  if (!events) {
+    events = target._events = new EventHandlers();
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (!existing) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] = prepend ? [listener, existing] :
+                                          [existing, listener];
+    } else {
+      // If we've already got an array, just append.
+      if (prepend) {
+        existing.unshift(listener);
+      } else {
+        existing.push(listener);
+      }
+    }
+
+    // Check for listener leak
+    if (!existing.warned) {
+      m = $getMaxListeners(target);
+      if (m && m > 0 && existing.length > m) {
+        existing.warned = true;
+        var w = new Error('Possible EventEmitter memory leak detected. ' +
+                            existing.length + ' ' + type + ' listeners added. ' +
+                            'Use emitter.setMaxListeners() to increase limit');
+        w.name = 'MaxListenersExceededWarning';
+        w.emitter = target;
+        w.type = type;
+        w.count = existing.length;
+        emitWarning(w);
+      }
+    }
+  }
+
+  return target;
+}
+function emitWarning(e) {
+  typeof console.warn === 'function' ? console.warn(e) : console.log(e);
+}
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function _onceWrap(target, type, listener) {
+  var fired = false;
+  function g() {
+    target.removeListener(type, g);
+    if (!fired) {
+      fired = true;
+      listener.apply(target, arguments);
+    }
+  }
+  g.listener = listener;
+  return g;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      if (typeof listener !== 'function')
+        throw new TypeError('"listener" argument must be a function');
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      if (typeof listener !== 'function')
+        throw new TypeError('"listener" argument must be a function');
+
+      events = this._events;
+      if (!events)
+        return this;
+
+      list = events[type];
+      if (!list)
+        return this;
+
+      if (list === listener || (list.listener && list.listener === listener)) {
+        if (--this._eventsCount === 0)
+          this._events = new EventHandlers();
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length; i-- > 0;) {
+          if (list[i] === listener ||
+              (list[i].listener && list[i].listener === listener)) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (list.length === 1) {
+          list[0] = undefined;
+          if (--this._eventsCount === 0) {
+            this._events = new EventHandlers();
+            return this;
+          } else {
+            delete events[type];
+          }
+        } else {
+          spliceOne(list, position);
+        }
+
+        if (events.removeListener)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events;
+
+      events = this._events;
+      if (!events)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (!events.removeListener) {
+        if (arguments.length === 0) {
+          this._events = new EventHandlers();
+          this._eventsCount = 0;
+        } else if (events[type]) {
+          if (--this._eventsCount === 0)
+            this._events = new EventHandlers();
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        for (var i = 0, key; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = new EventHandlers();
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners) {
+        // LIFO order
+        do {
+          this.removeListener(type, listeners[listeners.length - 1]);
+        } while (listeners[0]);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  var evlistener;
+  var ret;
+  var events = this._events;
+
+  if (!events)
+    ret = [];
+  else {
+    evlistener = events[type];
+    if (!evlistener)
+      ret = [];
+    else if (typeof evlistener === 'function')
+      ret = [evlistener.listener || evlistener];
+    else
+      ret = unwrapListeners(evlistener);
+  }
+
+  return ret;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? Reflect.ownKeys(this._events) : [];
+};
+
+// About 1.5x faster than the two-arg version of Array#splice().
+function spliceOne(list, index) {
+  for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1)
+    list[i] = list[k];
+  list.pop();
+}
+
+function arrayClone(arr, i) {
+  var copy = new Array(i);
+  while (i--)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
+
+var lookup = [];
+var revLookup = [];
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
+var inited = false;
+function init () {
+  inited = true;
+  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  for (var i = 0, len = code.length; i < len; ++i) {
+    lookup[i] = code[i];
+    revLookup[code.charCodeAt(i)] = i;
+  }
+
+  revLookup['-'.charCodeAt(0)] = 62;
+  revLookup['_'.charCodeAt(0)] = 63;
+}
+
+function toByteArray (b64) {
+  if (!inited) {
+    init();
+  }
+  var i, j, l, tmp, placeHolders, arr;
+  var len = b64.length;
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0;
+
+  // base64 is 4/3 + up to two characters of the original data
+  arr = new Arr(len * 3 / 4 - placeHolders);
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len;
+
+  var L = 0;
+
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)];
+    arr[L++] = (tmp >> 16) & 0xFF;
+    arr[L++] = (tmp >> 8) & 0xFF;
+    arr[L++] = tmp & 0xFF;
+  }
+
+  if (placeHolders === 2) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4);
+    arr[L++] = tmp & 0xFF;
+  } else if (placeHolders === 1) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2);
+    arr[L++] = (tmp >> 8) & 0xFF;
+    arr[L++] = tmp & 0xFF;
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp;
+  var output = [];
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2]);
+    output.push(tripletToBase64(tmp));
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  if (!inited) {
+    init();
+  }
+  var tmp;
+  var len = uint8.length;
+  var extraBytes = len % 3; // if we have 1 byte left, pad 2 bytes
+  var output = '';
+  var parts = [];
+  var maxChunkLength = 16383; // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)));
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1];
+    output += lookup[tmp >> 2];
+    output += lookup[(tmp << 4) & 0x3F];
+    output += '==';
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + (uint8[len - 1]);
+    output += lookup[tmp >> 10];
+    output += lookup[(tmp >> 4) & 0x3F];
+    output += lookup[(tmp << 2) & 0x3F];
+    output += '=';
+  }
+
+  parts.push(output);
+
+  return parts.join('')
+}
+
+function read (buffer, offset, isLE, mLen, nBytes) {
+  var e, m;
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var nBits = -7;
+  var i = isLE ? (nBytes - 1) : 0;
+  var d = isLE ? -1 : 1;
+  var s = buffer[offset + i];
+
+  i += d;
+
+  e = s & ((1 << (-nBits)) - 1);
+  s >>= (-nBits);
+  nBits += eLen;
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1);
+  e >>= (-nBits);
+  nBits += mLen;
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias;
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen);
+    e = e - eBias;
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+function write (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c;
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0);
+  var i = isLE ? 0 : (nBytes - 1);
+  var d = isLE ? 1 : -1;
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+
+  value = Math.abs(value);
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0;
+    e = eMax;
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2);
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--;
+      c *= 2;
+    }
+    if (e + eBias >= 1) {
+      value += rt / c;
+    } else {
+      value += rt * Math.pow(2, 1 - eBias);
+    }
+    if (value * c >= 2) {
+      e++;
+      c /= 2;
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0;
+      e = eMax;
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen);
+      e = e + eBias;
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+      e = 0;
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m;
+  eLen += mLen;
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128;
+}
+
+var toString = {}.toString;
+
+var isArray = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+var INSPECT_MAX_BYTES = 50;
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = (typeof global$1!=="undefined" ? global$1 : window).TYPED_ARRAY_SUPPORT !== undefined
+  ? (typeof global$1!=="undefined" ? global$1 : window).TYPED_ARRAY_SUPPORT
+  : true;
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length);
+    that.__proto__ = Buffer.prototype;
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length);
+    }
+    that.length = length;
+  }
+
+  return that
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192; // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype;
+  return arr
+};
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+};
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype;
+  Buffer.__proto__ = Uint8Array;
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size);
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+};
+
+function allocUnsafe (that, size) {
+  assertSize(size);
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0;
+    }
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+};
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+};
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8';
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0;
+  that = createBuffer(that, length);
+
+  var actual = that.write(string, encoding);
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual);
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0;
+  that = createBuffer(that, length);
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255;
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength; // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array);
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset);
+  } else {
+    array = new Uint8Array(array, byteOffset, length);
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array;
+    that.__proto__ = Buffer.prototype;
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array);
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (internalIsBuffer(obj)) {
+    var len = checked(obj.length) | 0;
+    that = createBuffer(that, len);
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len);
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
+      }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+Buffer.isBuffer = isBuffer;
+function internalIsBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!internalIsBuffer(a) || !internalIsBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length;
+  var y = b.length;
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i];
+      y = b[i];
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+};
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+};
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i;
+  if (length === undefined) {
+    length = 0;
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length;
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length);
+  var pos = 0;
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i];
+    if (!internalIsBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos);
+    pos += buf.length;
+  }
+  return buffer
+};
+
+function byteLength (string, encoding) {
+  if (internalIsBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string;
+  }
+
+  var len = string.length;
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false;
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
+    }
+  }
+}
+Buffer.byteLength = byteLength;
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false;
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0;
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length;
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0;
+  start >>>= 0;
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8';
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase();
+        loweredCase = true;
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true;
+
+function swap (b, n, m) {
+  var i = b[n];
+  b[n] = b[m];
+  b[m] = i;
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length;
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1);
+  }
+  return this
+};
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length;
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3);
+    swap(this, i + 1, i + 2);
+  }
+  return this
+};
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length;
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7);
+    swap(this, i + 1, i + 6);
+    swap(this, i + 2, i + 5);
+    swap(this, i + 3, i + 4);
+  }
+  return this
+};
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0;
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+};
+
+Buffer.prototype.equals = function equals (b) {
+  if (!internalIsBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+};
+
+Buffer.prototype.inspect = function inspect () {
+  var str = '';
+  var max = INSPECT_MAX_BYTES;
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ');
+    if (this.length > max) str += ' ... ';
+  }
+  return '<Buffer ' + str + '>'
+};
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!internalIsBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0;
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0;
+  }
+  if (thisStart === undefined) {
+    thisStart = 0;
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length;
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0;
+  end >>>= 0;
+  thisStart >>>= 0;
+  thisEnd >>>= 0;
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart;
+  var y = end - start;
+  var len = Math.min(x, y);
+
+  var thisCopy = this.slice(thisStart, thisEnd);
+  var targetCopy = target.slice(start, end);
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i];
+      y = targetCopy[i];
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+};
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset;
+    byteOffset = 0;
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff;
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000;
+  }
+  byteOffset = +byteOffset;  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1);
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1;
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0;
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding);
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (internalIsBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF; // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1;
+  var arrLength = arr.length;
+  var valLength = val.length;
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase();
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2;
+      arrLength /= 2;
+      valLength /= 2;
+      byteOffset /= 2;
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
+  }
+
+  var i;
+  if (dir) {
+    var foundIndex = -1;
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i;
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex;
+        foundIndex = -1;
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true;
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false;
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+};
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+};
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+};
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0;
+  var remaining = buf.length - offset;
+  if (!length) {
+    length = remaining;
+  } else {
+    length = Number(length);
+    if (length > remaining) {
+      length = remaining;
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length;
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2;
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16);
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed;
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8';
+    length = this.length;
+    offset = 0;
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset;
+    length = this.length;
+    offset = 0;
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0;
+    if (isFinite(length)) {
+      length = length | 0;
+      if (encoding === undefined) encoding = 'utf8';
+    } else {
+      encoding = length;
+      length = undefined;
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset;
+  if (length === undefined || length > remaining) length = remaining;
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8';
+
+  var loweredCase = false;
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
+    }
+  }
+};
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+};
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return fromByteArray(buf)
+  } else {
+    return fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end);
+  var res = [];
+
+  var i = start;
+  while (i < end) {
+    var firstByte = buf[i];
+    var codePoint = null;
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1;
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint;
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte;
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1];
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F);
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint;
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F);
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint;
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          fourthByte = buf[i + 3];
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F);
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint;
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD;
+      bytesPerSequence = 1;
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000;
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800);
+      codePoint = 0xDC00 | codePoint & 0x3FF;
+    }
+
+    res.push(codePoint);
+    i += bytesPerSequence;
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000;
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length;
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = '';
+  var i = 0;
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    );
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F);
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i]);
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length;
+
+  if (!start || start < 0) start = 0;
+  if (!end || end < 0 || end > len) end = len;
+
+  var out = '';
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i]);
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end);
+  var res = '';
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length;
+  start = ~~start;
+  end = end === undefined ? len : ~~end;
+
+  if (start < 0) {
+    start += len;
+    if (start < 0) start = 0;
+  } else if (start > len) {
+    start = len;
+  }
+
+  if (end < 0) {
+    end += len;
+    if (end < 0) end = 0;
+  } else if (end > len) {
+    end = len;
+  }
+
+  if (end < start) end = start;
+
+  var newBuf;
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end);
+    newBuf.__proto__ = Buffer.prototype;
+  } else {
+    var sliceLen = end - start;
+    newBuf = new Buffer(sliceLen, undefined);
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start];
+    }
+  }
+
+  return newBuf
+};
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul;
+  }
+
+  return val
+};
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length);
+  }
+
+  var val = this[offset + --byteLength];
+  var mul = 1;
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul;
+  }
+
+  return val
+};
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  return this[offset]
+};
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] | (this[offset + 1] << 8)
+};
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return (this[offset] << 8) | this[offset + 1]
+};
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+};
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+};
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul;
+  }
+  mul *= 0x80;
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+
+  return val
+};
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+  var i = byteLength;
+  var mul = 1;
+  var val = this[offset + --i];
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul;
+  }
+  mul *= 0x80;
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+
+  return val
+};
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+};
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset] | (this[offset + 1] << 8);
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+};
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset + 1] | (this[offset] << 8);
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+};
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+};
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+};
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return read(this, offset, true, 23, 4)
+};
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return read(this, offset, false, 23, 4)
+};
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return read(this, offset, true, 52, 8)
+};
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return read(this, offset, false, 52, 8)
+};
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!internalIsBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
+  }
+
+  var mul = 1;
+  var i = 0;
+  this[offset] = value & 0xFF;
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF;
+  }
+
+  return offset + byteLength
+};
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
+  }
+
+  var i = byteLength - 1;
+  var mul = 1;
+  this[offset + i] = value & 0xFF;
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF;
+  }
+
+  return offset + byteLength
+};
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+  this[offset] = (value & 0xff);
+  return offset + 1
+};
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1;
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8;
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff);
+    this[offset + 1] = (value >>> 8);
+  } else {
+    objectWriteUInt16(this, value, offset, true);
+  }
+  return offset + 2
+};
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8);
+    this[offset + 1] = (value & 0xff);
+  } else {
+    objectWriteUInt16(this, value, offset, false);
+  }
+  return offset + 2
+};
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1;
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff;
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24);
+    this[offset + 2] = (value >>> 16);
+    this[offset + 1] = (value >>> 8);
+    this[offset] = (value & 0xff);
+  } else {
+    objectWriteUInt32(this, value, offset, true);
+  }
+  return offset + 4
+};
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24);
+    this[offset + 1] = (value >>> 16);
+    this[offset + 2] = (value >>> 8);
+    this[offset + 3] = (value & 0xff);
+  } else {
+    objectWriteUInt32(this, value, offset, false);
+  }
+  return offset + 4
+};
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1);
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
+  }
+
+  var i = 0;
+  var mul = 1;
+  var sub = 0;
+  this[offset] = value & 0xFF;
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1;
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF;
+  }
+
+  return offset + byteLength
+};
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1);
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
+  }
+
+  var i = byteLength - 1;
+  var mul = 1;
+  var sub = 0;
+  this[offset + i] = value & 0xFF;
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1;
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF;
+  }
+
+  return offset + byteLength
+};
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+  if (value < 0) value = 0xff + value + 1;
+  this[offset] = (value & 0xff);
+  return offset + 1
+};
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff);
+    this[offset + 1] = (value >>> 8);
+  } else {
+    objectWriteUInt16(this, value, offset, true);
+  }
+  return offset + 2
+};
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8);
+    this[offset + 1] = (value & 0xff);
+  } else {
+    objectWriteUInt16(this, value, offset, false);
+  }
+  return offset + 2
+};
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff);
+    this[offset + 1] = (value >>> 8);
+    this[offset + 2] = (value >>> 16);
+    this[offset + 3] = (value >>> 24);
+  } else {
+    objectWriteUInt32(this, value, offset, true);
+  }
+  return offset + 4
+};
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  if (value < 0) value = 0xffffffff + value + 1;
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24);
+    this[offset + 1] = (value >>> 16);
+    this[offset + 2] = (value >>> 8);
+    this[offset + 3] = (value & 0xff);
+  } else {
+    objectWriteUInt32(this, value, offset, false);
+  }
+  return offset + 4
+};
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4);
+  }
+  write(buf, value, offset, littleEndian, 23, 4);
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+};
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+};
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8);
+  }
+  write(buf, value, offset, littleEndian, 52, 8);
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+};
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+};
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0;
+  if (!end && end !== 0) end = this.length;
+  if (targetStart >= target.length) targetStart = target.length;
+  if (!targetStart) targetStart = 0;
+  if (end > 0 && end < start) end = start;
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length;
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start;
+  }
+
+  var len = end - start;
+  var i;
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start];
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start];
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    );
+  }
+
+  return len
+};
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start;
+      start = 0;
+      end = this.length;
+    } else if (typeof end === 'string') {
+      encoding = end;
+      end = this.length;
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0);
+      if (code < 256) {
+        val = code;
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255;
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0;
+  end = end === undefined ? this.length : end >>> 0;
+
+  if (!val) val = 0;
+
+  var i;
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val;
+    }
+  } else {
+    var bytes = internalIsBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString());
+    var len = bytes.length;
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len];
+    }
+  }
+
+  return this
+};
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g;
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '');
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '=';
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity;
+  var codePoint;
+  var length = string.length;
+  var leadSurrogate = null;
+  var bytes = [];
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i);
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint;
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+        leadSurrogate = codePoint;
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+    }
+
+    leadSurrogate = null;
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint);
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      );
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      );
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      );
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = [];
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF);
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo;
+  var byteArray = [];
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i);
+    hi = c >> 8;
+    lo = c % 256;
+    byteArray.push(lo);
+    byteArray.push(hi);
+  }
+
+  return byteArray
+}
+
+
+function base64ToBytes (str) {
+  return toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i];
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+
+// the following is from is-buffer, also by Feross Aboukhadijeh and with same lisence
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+function isBuffer(obj) {
+  return obj != null && (!!obj._isBuffer || isFastBuffer(obj) || isSlowBuffer(obj))
+}
+
+function isFastBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isFastBuffer(obj.slice(0, 0))
+}
+
+// shim for using process in browser
+// based off https://github.com/defunctzombie/node-process/blob/master/browser.js
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+var cachedSetTimeout = defaultSetTimout;
+var cachedClearTimeout = defaultClearTimeout;
+if (typeof (typeof global$1!=="undefined" ? global$1 : window).setTimeout === 'function') {
+    cachedSetTimeout = setTimeout;
+}
+if (typeof (typeof global$1!=="undefined" ? global$1 : window).clearTimeout === 'function') {
+    cachedClearTimeout = clearTimeout;
+}
+
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+function nextTick(fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+}
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+
+// from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
+var performance = (typeof global$1!=="undefined" ? global$1 : window).performance || {};
+var performanceNow =
+  performance.now        ||
+  performance.mozNow     ||
+  performance.msNow      ||
+  performance.oNow       ||
+  performance.webkitNow  ||
+  function(){ return (new Date()).getTime() };
+
+var inherits;
+if (typeof Object.create === 'function'){
+  inherits = function inherits(ctor, superCtor) {
+    // implementation from standard node.js 'util' module
+    ctor.super_ = superCtor;
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  inherits = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function () {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
+  };
+}
+var inherits$1 = inherits;
+
+var formatRegExp = /%[sdj%]/g;
+function format(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+}
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+function deprecate(fn, msg) {
+  // Allow for deprecating things in the process of starting up.
+  if (isUndefined((typeof global$1!=="undefined" ? global$1 : window).process)) {
+    return function() {
+      return deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+}
+
+var debugs = {};
+var debugEnviron;
+function debuglog(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron =  '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = 0;
+      debugs[set] = function() {
+        var msg = format.apply(null, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+}
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    _extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray$1(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty$1(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty$1(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var length = output.reduce(function(prev, cur) {
+    if (cur.indexOf('\n') >= 0) ;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray$1(ar) {
+  return Array.isArray(ar);
+}
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+
+function isNull(arg) {
+  return arg === null;
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+function _extend(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+}
+function hasOwnProperty$1(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+function BufferList() {
+  this.head = null;
+  this.tail = null;
+  this.length = 0;
+}
+
+BufferList.prototype.push = function (v) {
+  var entry = { data: v, next: null };
+  if (this.length > 0) this.tail.next = entry;else this.head = entry;
+  this.tail = entry;
+  ++this.length;
+};
+
+BufferList.prototype.unshift = function (v) {
+  var entry = { data: v, next: this.head };
+  if (this.length === 0) this.tail = entry;
+  this.head = entry;
+  ++this.length;
+};
+
+BufferList.prototype.shift = function () {
+  if (this.length === 0) return;
+  var ret = this.head.data;
+  if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+  --this.length;
+  return ret;
+};
+
+BufferList.prototype.clear = function () {
+  this.head = this.tail = null;
+  this.length = 0;
+};
+
+BufferList.prototype.join = function (s) {
+  if (this.length === 0) return '';
+  var p = this.head;
+  var ret = '' + p.data;
+  while (p = p.next) {
+    ret += s + p.data;
+  }return ret;
+};
+
+BufferList.prototype.concat = function (n) {
+  if (this.length === 0) return Buffer.alloc(0);
+  if (this.length === 1) return this.head.data;
+  var ret = Buffer.allocUnsafe(n >>> 0);
+  var p = this.head;
+  var i = 0;
+  while (p) {
+    p.data.copy(ret, i);
+    i += p.data.length;
+    p = p.next;
+  }
+  return ret;
+};
+
+// Copyright Joyent, Inc. and other Node contributors.
+var isBufferEncoding = Buffer.isEncoding
+  || function(encoding) {
+       switch (encoding && encoding.toLowerCase()) {
+         case 'hex': case 'utf8': case 'utf-8': case 'ascii': case 'binary': case 'base64': case 'ucs2': case 'ucs-2': case 'utf16le': case 'utf-16le': case 'raw': return true;
+         default: return false;
+       }
+     };
+
+
+function assertEncoding(encoding) {
+  if (encoding && !isBufferEncoding(encoding)) {
+    throw new Error('Unknown encoding: ' + encoding);
+  }
+}
+
+// StringDecoder provides an interface for efficiently splitting a series of
+// buffers into a series of JS strings without breaking apart multi-byte
+// characters. CESU-8 is handled as part of the UTF-8 encoding.
+//
+// @TODO Handling all encodings inside a single object makes it very difficult
+// to reason about this code, so it should be split up in the future.
+// @TODO There should be a utf8-strict encoding that rejects invalid UTF-8 code
+// points as used by CESU-8.
+function StringDecoder(encoding) {
+  this.encoding = (encoding || 'utf8').toLowerCase().replace(/[-_]/, '');
+  assertEncoding(encoding);
+  switch (this.encoding) {
+    case 'utf8':
+      // CESU-8 represents each of Surrogate Pair by 3-bytes
+      this.surrogateSize = 3;
+      break;
+    case 'ucs2':
+    case 'utf16le':
+      // UTF-16 represents each of Surrogate Pair by 2-bytes
+      this.surrogateSize = 2;
+      this.detectIncompleteChar = utf16DetectIncompleteChar;
+      break;
+    case 'base64':
+      // Base-64 stores 3 bytes in 4 chars, and pads the remainder.
+      this.surrogateSize = 3;
+      this.detectIncompleteChar = base64DetectIncompleteChar;
+      break;
+    default:
+      this.write = passThroughWrite;
+      return;
+  }
+
+  // Enough space to store all bytes of a single character. UTF-8 needs 4
+  // bytes, but CESU-8 may require up to 6 (3 bytes per surrogate).
+  this.charBuffer = new Buffer(6);
+  // Number of bytes received for the current incomplete multi-byte character.
+  this.charReceived = 0;
+  // Number of bytes expected for the current incomplete multi-byte character.
+  this.charLength = 0;
+}
+
+// write decodes the given buffer and returns it as JS string that is
+// guaranteed to not contain any partial multi-byte characters. Any partial
+// character found at the end of the buffer is buffered up, and will be
+// returned when calling write again with the remaining bytes.
+//
+// Note: Converting a Buffer containing an orphan surrogate to a String
+// currently works, but converting a String to a Buffer (via `new Buffer`, or
+// Buffer#write) will replace incomplete surrogates with the unicode
+// replacement character. See https://codereview.chromium.org/121173009/ .
+StringDecoder.prototype.write = function(buffer) {
+  var charStr = '';
+  // if our last write ended with an incomplete multibyte character
+  while (this.charLength) {
+    // determine how many remaining bytes this buffer has to offer for this char
+    var available = (buffer.length >= this.charLength - this.charReceived) ?
+        this.charLength - this.charReceived :
+        buffer.length;
+
+    // add the new bytes to the char buffer
+    buffer.copy(this.charBuffer, this.charReceived, 0, available);
+    this.charReceived += available;
+
+    if (this.charReceived < this.charLength) {
+      // still not enough chars in this buffer? wait for more ...
+      return '';
+    }
+
+    // remove bytes belonging to the current character from the buffer
+    buffer = buffer.slice(available, buffer.length);
+
+    // get the character that was split
+    charStr = this.charBuffer.slice(0, this.charLength).toString(this.encoding);
+
+    // CESU-8: lead surrogate (D800-DBFF) is also the incomplete character
+    var charCode = charStr.charCodeAt(charStr.length - 1);
+    if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+      this.charLength += this.surrogateSize;
+      charStr = '';
+      continue;
+    }
+    this.charReceived = this.charLength = 0;
+
+    // if there are no more bytes in this buffer, just emit our char
+    if (buffer.length === 0) {
+      return charStr;
+    }
+    break;
+  }
+
+  // determine and set charLength / charReceived
+  this.detectIncompleteChar(buffer);
+
+  var end = buffer.length;
+  if (this.charLength) {
+    // buffer the incomplete character bytes we got
+    buffer.copy(this.charBuffer, 0, buffer.length - this.charReceived, end);
+    end -= this.charReceived;
+  }
+
+  charStr += buffer.toString(this.encoding, 0, end);
+
+  var end = charStr.length - 1;
+  var charCode = charStr.charCodeAt(end);
+  // CESU-8: lead surrogate (D800-DBFF) is also the incomplete character
+  if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+    var size = this.surrogateSize;
+    this.charLength += size;
+    this.charReceived += size;
+    this.charBuffer.copy(this.charBuffer, size, 0, size);
+    buffer.copy(this.charBuffer, 0, 0, size);
+    return charStr.substring(0, end);
+  }
+
+  // or just emit the charStr
+  return charStr;
+};
+
+// detectIncompleteChar determines if there is an incomplete UTF-8 character at
+// the end of the given buffer. If so, it sets this.charLength to the byte
+// length that character, and sets this.charReceived to the number of bytes
+// that are available for this character.
+StringDecoder.prototype.detectIncompleteChar = function(buffer) {
+  // determine how many bytes we have to check at the end of this buffer
+  var i = (buffer.length >= 3) ? 3 : buffer.length;
+
+  // Figure out if one of the last i bytes of our buffer announces an
+  // incomplete char.
+  for (; i > 0; i--) {
+    var c = buffer[buffer.length - i];
+
+    // See http://en.wikipedia.org/wiki/UTF-8#Description
+
+    // 110XXXXX
+    if (i == 1 && c >> 5 == 0x06) {
+      this.charLength = 2;
+      break;
+    }
+
+    // 1110XXXX
+    if (i <= 2 && c >> 4 == 0x0E) {
+      this.charLength = 3;
+      break;
+    }
+
+    // 11110XXX
+    if (i <= 3 && c >> 3 == 0x1E) {
+      this.charLength = 4;
+      break;
+    }
+  }
+  this.charReceived = i;
+};
+
+StringDecoder.prototype.end = function(buffer) {
+  var res = '';
+  if (buffer && buffer.length)
+    res = this.write(buffer);
+
+  if (this.charReceived) {
+    var cr = this.charReceived;
+    var buf = this.charBuffer;
+    var enc = this.encoding;
+    res += buf.slice(0, cr).toString(enc);
+  }
+
+  return res;
+};
+
+function passThroughWrite(buffer) {
+  return buffer.toString(this.encoding);
+}
+
+function utf16DetectIncompleteChar(buffer) {
+  this.charReceived = buffer.length % 2;
+  this.charLength = this.charReceived ? 2 : 0;
+}
+
+function base64DetectIncompleteChar(buffer) {
+  this.charReceived = buffer.length % 3;
+  this.charLength = this.charReceived ? 3 : 0;
+}
+
+Readable.ReadableState = ReadableState;
+
+var debug = debuglog('stream');
+inherits$1(Readable, EventEmitter);
+
+function prependListener(emitter, event, fn) {
+  // Sadly this is not cacheable as some libraries bundle their own
+  // event emitter implementation with them.
+  if (typeof emitter.prependListener === 'function') {
+    return emitter.prependListener(event, fn);
+  } else {
+    // This is a hack to make sure that our error handler is attached before any
+    // userland ones.  NEVER DO THIS. This is here only because this code needs
+    // to continue to work with older versions of Node.js that do not include
+    // the prependListener() method. The goal is to eventually remove this hack.
+    if (!emitter._events || !emitter._events[event])
+      emitter.on(event, fn);
+    else if (Array.isArray(emitter._events[event]))
+      emitter._events[event].unshift(fn);
+    else
+      emitter._events[event] = [fn, emitter._events[event]];
+  }
+}
+function listenerCount$1 (emitter, type) {
+  return emitter.listeners(type).length;
+}
+function ReadableState(options, stream) {
+
+  options = options || {};
+
+  // object stream flag. Used to make read(n) ignore n and to
+  // make all the buffer merging and length checks go away
+  this.objectMode = !!options.objectMode;
+
+  if (stream instanceof Duplex) this.objectMode = this.objectMode || !!options.readableObjectMode;
+
+  // the point at which it stops calling _read() to fill the buffer
+  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+  var hwm = options.highWaterMark;
+  var defaultHwm = this.objectMode ? 16 : 16 * 1024;
+  this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
+
+  // cast to ints.
+  this.highWaterMark = ~ ~this.highWaterMark;
+
+  // A linked list is used to store data chunks instead of an array because the
+  // linked list can remove elements from the beginning faster than
+  // array.shift()
+  this.buffer = new BufferList();
+  this.length = 0;
+  this.pipes = null;
+  this.pipesCount = 0;
+  this.flowing = null;
+  this.ended = false;
+  this.endEmitted = false;
+  this.reading = false;
+
+  // a flag to be able to tell if the onwrite cb is called immediately,
+  // or on a later tick.  We set this to true at first, because any
+  // actions that shouldn't happen until "later" should generally also
+  // not happen before the first write call.
+  this.sync = true;
+
+  // whenever we return null, then we set a flag to say
+  // that we're awaiting a 'readable' event emission.
+  this.needReadable = false;
+  this.emittedReadable = false;
+  this.readableListening = false;
+  this.resumeScheduled = false;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
+
+  // when piping, we only care about 'readable' events that happen
+  // after read()ing all the bytes and not getting any pushback.
+  this.ranOut = false;
+
+  // the number of writers that are awaiting a drain event in .pipe()s
+  this.awaitDrain = 0;
+
+  // if true, a maybeReadMore has been scheduled
+  this.readingMore = false;
+
+  this.decoder = null;
+  this.encoding = null;
+  if (options.encoding) {
+    this.decoder = new StringDecoder(options.encoding);
+    this.encoding = options.encoding;
+  }
+}
+function Readable(options) {
+
+  if (!(this instanceof Readable)) return new Readable(options);
+
+  this._readableState = new ReadableState(options, this);
+
+  // legacy
+  this.readable = true;
+
+  if (options && typeof options.read === 'function') this._read = options.read;
+
+  EventEmitter.call(this);
+}
+
+// Manually shove something into the read() buffer.
+// This returns true if the highWaterMark has not been hit yet,
+// similar to how Writable.write() returns true if you should
+// write() some more.
+Readable.prototype.push = function (chunk, encoding) {
+  var state = this._readableState;
+
+  if (!state.objectMode && typeof chunk === 'string') {
+    encoding = encoding || state.defaultEncoding;
+    if (encoding !== state.encoding) {
+      chunk = Buffer.from(chunk, encoding);
+      encoding = '';
+    }
+  }
+
+  return readableAddChunk(this, state, chunk, encoding, false);
+};
+
+// Unshift should *always* be something directly out of read()
+Readable.prototype.unshift = function (chunk) {
+  var state = this._readableState;
+  return readableAddChunk(this, state, chunk, '', true);
+};
+
+Readable.prototype.isPaused = function () {
+  return this._readableState.flowing === false;
+};
+
+function readableAddChunk(stream, state, chunk, encoding, addToFront) {
+  var er = chunkInvalid(state, chunk);
+  if (er) {
+    stream.emit('error', er);
+  } else if (chunk === null) {
+    state.reading = false;
+    onEofChunk(stream, state);
+  } else if (state.objectMode || chunk && chunk.length > 0) {
+    if (state.ended && !addToFront) {
+      var e = new Error('stream.push() after EOF');
+      stream.emit('error', e);
+    } else if (state.endEmitted && addToFront) {
+      var _e = new Error('stream.unshift() after end event');
+      stream.emit('error', _e);
+    } else {
+      var skipAdd;
+      if (state.decoder && !addToFront && !encoding) {
+        chunk = state.decoder.write(chunk);
+        skipAdd = !state.objectMode && chunk.length === 0;
+      }
+
+      if (!addToFront) state.reading = false;
+
+      // Don't add to the buffer if we've decoded to an empty string chunk and
+      // we're not in object mode
+      if (!skipAdd) {
+        // if we want the data now, just emit it.
+        if (state.flowing && state.length === 0 && !state.sync) {
+          stream.emit('data', chunk);
+          stream.read(0);
+        } else {
+          // update the buffer info.
+          state.length += state.objectMode ? 1 : chunk.length;
+          if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+
+          if (state.needReadable) emitReadable(stream);
+        }
+      }
+
+      maybeReadMore(stream, state);
+    }
+  } else if (!addToFront) {
+    state.reading = false;
+  }
+
+  return needMoreData(state);
+}
+
+// if it's past the high water mark, we can push in some more.
+// Also, if we have no data yet, we can stand some
+// more bytes.  This is to work around cases where hwm=0,
+// such as the repl.  Also, if the push() triggered a
+// readable event, and the user called read(largeNumber) such that
+// needReadable was set, then we ought to push more, so that another
+// 'readable' event will be triggered.
+function needMoreData(state) {
+  return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
+}
+
+// backwards compatibility.
+Readable.prototype.setEncoding = function (enc) {
+  this._readableState.decoder = new StringDecoder(enc);
+  this._readableState.encoding = enc;
+  return this;
+};
+
+// Don't raise the hwm > 8MB
+var MAX_HWM = 0x800000;
+function computeNewHighWaterMark(n) {
+  if (n >= MAX_HWM) {
+    n = MAX_HWM;
+  } else {
+    // Get the next highest power of 2 to prevent increasing hwm excessively in
+    // tiny amounts
+    n--;
+    n |= n >>> 1;
+    n |= n >>> 2;
+    n |= n >>> 4;
+    n |= n >>> 8;
+    n |= n >>> 16;
+    n++;
+  }
+  return n;
+}
+
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function howMuchToRead(n, state) {
+  if (n <= 0 || state.length === 0 && state.ended) return 0;
+  if (state.objectMode) return 1;
+  if (n !== n) {
+    // Only flow one buffer at a time
+    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
+  }
+  // If we're asking for more than the current hwm, then raise the hwm.
+  if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
+  if (n <= state.length) return n;
+  // Don't have enough
+  if (!state.ended) {
+    state.needReadable = true;
+    return 0;
+  }
+  return state.length;
+}
+
+// you can override either this method, or the async _read(n) below.
+Readable.prototype.read = function (n) {
+  debug('read', n);
+  n = parseInt(n, 10);
+  var state = this._readableState;
+  var nOrig = n;
+
+  if (n !== 0) state.emittedReadable = false;
+
+  // if we're doing read(0) to trigger a readable event, but we
+  // already have a bunch of data in the buffer, then just trigger
+  // the 'readable' event and move on.
+  if (n === 0 && state.needReadable && (state.length >= state.highWaterMark || state.ended)) {
+    debug('read: emitReadable', state.length, state.ended);
+    if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
+    return null;
+  }
+
+  n = howMuchToRead(n, state);
+
+  // if we've ended, and we're now clear, then finish it up.
+  if (n === 0 && state.ended) {
+    if (state.length === 0) endReadable(this);
+    return null;
+  }
+
+  // All the actual chunk generation logic needs to be
+  // *below* the call to _read.  The reason is that in certain
+  // synthetic stream cases, such as passthrough streams, _read
+  // may be a completely synchronous operation which may change
+  // the state of the read buffer, providing enough data when
+  // before there was *not* enough.
+  //
+  // So, the steps are:
+  // 1. Figure out what the state of things will be after we do
+  // a read from the buffer.
+  //
+  // 2. If that resulting state will trigger a _read, then call _read.
+  // Note that this may be asynchronous, or synchronous.  Yes, it is
+  // deeply ugly to write APIs this way, but that still doesn't mean
+  // that the Readable class should behave improperly, as streams are
+  // designed to be sync/async agnostic.
+  // Take note if the _read call is sync or async (ie, if the read call
+  // has returned yet), so that we know whether or not it's safe to emit
+  // 'readable' etc.
+  //
+  // 3. Actually pull the requested chunks out of the buffer and return.
+
+  // if we need a readable event, then we need to do some reading.
+  var doRead = state.needReadable;
+  debug('need readable', doRead);
+
+  // if we currently have less than the highWaterMark, then also read some
+  if (state.length === 0 || state.length - n < state.highWaterMark) {
+    doRead = true;
+    debug('length less than watermark', doRead);
+  }
+
+  // however, if we've ended, then there's no point, and if we're already
+  // reading, then it's unnecessary.
+  if (state.ended || state.reading) {
+    doRead = false;
+    debug('reading or ended', doRead);
+  } else if (doRead) {
+    debug('do read');
+    state.reading = true;
+    state.sync = true;
+    // if the length is currently zero, then we *need* a readable event.
+    if (state.length === 0) state.needReadable = true;
+    // call internal read method
+    this._read(state.highWaterMark);
+    state.sync = false;
+    // If _read pushed data synchronously, then `reading` will be false,
+    // and we need to re-evaluate how much data we can return to the user.
+    if (!state.reading) n = howMuchToRead(nOrig, state);
+  }
+
+  var ret;
+  if (n > 0) ret = fromList(n, state);else ret = null;
+
+  if (ret === null) {
+    state.needReadable = true;
+    n = 0;
+  } else {
+    state.length -= n;
+  }
+
+  if (state.length === 0) {
+    // If we have nothing in the buffer, then we want to know
+    // as soon as we *do* get something into the buffer.
+    if (!state.ended) state.needReadable = true;
+
+    // If we tried to read() past the EOF, then emit end on the next tick.
+    if (nOrig !== n && state.ended) endReadable(this);
+  }
+
+  if (ret !== null) this.emit('data', ret);
+
+  return ret;
+};
+
+function chunkInvalid(state, chunk) {
+  var er = null;
+  if (!isBuffer(chunk) && typeof chunk !== 'string' && chunk !== null && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  return er;
+}
+
+function onEofChunk(stream, state) {
+  if (state.ended) return;
+  if (state.decoder) {
+    var chunk = state.decoder.end();
+    if (chunk && chunk.length) {
+      state.buffer.push(chunk);
+      state.length += state.objectMode ? 1 : chunk.length;
+    }
+  }
+  state.ended = true;
+
+  // emit 'readable' now to make sure it gets picked up.
+  emitReadable(stream);
+}
+
+// Don't emit readable right away in sync mode, because this can trigger
+// another read() call => stack overflow.  This way, it might trigger
+// a nextTick recursion warning, but that's not so bad.
+function emitReadable(stream) {
+  var state = stream._readableState;
+  state.needReadable = false;
+  if (!state.emittedReadable) {
+    debug('emitReadable', state.flowing);
+    state.emittedReadable = true;
+    if (state.sync) nextTick(emitReadable_, stream);else emitReadable_(stream);
+  }
+}
+
+function emitReadable_(stream) {
+  debug('emit readable');
+  stream.emit('readable');
+  flow(stream);
+}
+
+// at this point, the user has presumably seen the 'readable' event,
+// and called read() to consume some data.  that may have triggered
+// in turn another _read(n) call, in which case reading = true if
+// it's in progress.
+// However, if we're not ended, or reading, and the length < hwm,
+// then go ahead and try to read some more preemptively.
+function maybeReadMore(stream, state) {
+  if (!state.readingMore) {
+    state.readingMore = true;
+    nextTick(maybeReadMore_, stream, state);
+  }
+}
+
+function maybeReadMore_(stream, state) {
+  var len = state.length;
+  while (!state.reading && !state.flowing && !state.ended && state.length < state.highWaterMark) {
+    debug('maybeReadMore read 0');
+    stream.read(0);
+    if (len === state.length)
+      // didn't get any data, stop spinning.
+      break;else len = state.length;
+  }
+  state.readingMore = false;
+}
+
+// abstract method.  to be overridden in specific implementation classes.
+// call cb(er, data) where data is <= n in length.
+// for virtual (non-string, non-buffer) streams, "length" is somewhat
+// arbitrary, and perhaps not very meaningful.
+Readable.prototype._read = function (n) {
+  this.emit('error', new Error('not implemented'));
+};
+
+Readable.prototype.pipe = function (dest, pipeOpts) {
+  var src = this;
+  var state = this._readableState;
+
+  switch (state.pipesCount) {
+    case 0:
+      state.pipes = dest;
+      break;
+    case 1:
+      state.pipes = [state.pipes, dest];
+      break;
+    default:
+      state.pipes.push(dest);
+      break;
+  }
+  state.pipesCount += 1;
+  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
+
+  var doEnd = (!pipeOpts || pipeOpts.end !== false);
+
+  var endFn = doEnd ? onend : cleanup;
+  if (state.endEmitted) nextTick(endFn);else src.once('end', endFn);
+
+  dest.on('unpipe', onunpipe);
+  function onunpipe(readable) {
+    debug('onunpipe');
+    if (readable === src) {
+      cleanup();
+    }
+  }
+
+  function onend() {
+    debug('onend');
+    dest.end();
+  }
+
+  // when the dest drains, it reduces the awaitDrain counter
+  // on the source.  This would be more elegant with a .once()
+  // handler in flow(), but adding and removing repeatedly is
+  // too slow.
+  var ondrain = pipeOnDrain(src);
+  dest.on('drain', ondrain);
+
+  var cleanedUp = false;
+  function cleanup() {
+    debug('cleanup');
+    // cleanup event handlers once the pipe is broken
+    dest.removeListener('close', onclose);
+    dest.removeListener('finish', onfinish);
+    dest.removeListener('drain', ondrain);
+    dest.removeListener('error', onerror);
+    dest.removeListener('unpipe', onunpipe);
+    src.removeListener('end', onend);
+    src.removeListener('end', cleanup);
+    src.removeListener('data', ondata);
+
+    cleanedUp = true;
+
+    // if the reader is waiting for a drain event from this
+    // specific writer, then it would cause it to never start
+    // flowing again.
+    // So, if this is awaiting a drain, then we just call it now.
+    // If we don't know, then assume that we are waiting for one.
+    if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
+  }
+
+  // If the user pushes more data while we're writing to dest then we'll end up
+  // in ondata again. However, we only want to increase awaitDrain once because
+  // dest will only emit one 'drain' event for the multiple writes.
+  // => Introduce a guard on increasing awaitDrain.
+  var increasedAwaitDrain = false;
+  src.on('data', ondata);
+  function ondata(chunk) {
+    debug('ondata');
+    increasedAwaitDrain = false;
+    var ret = dest.write(chunk);
+    if (false === ret && !increasedAwaitDrain) {
+      // If the user unpiped during `dest.write()`, it is possible
+      // to get stuck in a permanently paused state if that write
+      // also returned false.
+      // => Check whether `dest` is still a piping destination.
+      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
+        debug('false write response, pause', src._readableState.awaitDrain);
+        src._readableState.awaitDrain++;
+        increasedAwaitDrain = true;
+      }
+      src.pause();
+    }
+  }
+
+  // if the dest has an error, then stop piping into it.
+  // however, don't suppress the throwing behavior for this.
+  function onerror(er) {
+    debug('onerror', er);
+    unpipe();
+    dest.removeListener('error', onerror);
+    if (listenerCount$1(dest, 'error') === 0) dest.emit('error', er);
+  }
+
+  // Make sure our error handler is attached before userland ones.
+  prependListener(dest, 'error', onerror);
+
+  // Both close and finish should trigger unpipe, but only once.
+  function onclose() {
+    dest.removeListener('finish', onfinish);
+    unpipe();
+  }
+  dest.once('close', onclose);
+  function onfinish() {
+    debug('onfinish');
+    dest.removeListener('close', onclose);
+    unpipe();
+  }
+  dest.once('finish', onfinish);
+
+  function unpipe() {
+    debug('unpipe');
+    src.unpipe(dest);
+  }
+
+  // tell the dest that it's being piped to
+  dest.emit('pipe', src);
+
+  // start the flow if it hasn't been started already.
+  if (!state.flowing) {
+    debug('pipe resume');
+    src.resume();
+  }
+
+  return dest;
+};
+
+function pipeOnDrain(src) {
+  return function () {
+    var state = src._readableState;
+    debug('pipeOnDrain', state.awaitDrain);
+    if (state.awaitDrain) state.awaitDrain--;
+    if (state.awaitDrain === 0 && src.listeners('data').length) {
+      state.flowing = true;
+      flow(src);
+    }
+  };
+}
+
+Readable.prototype.unpipe = function (dest) {
+  var state = this._readableState;
+
+  // if we're not piping anywhere, then do nothing.
+  if (state.pipesCount === 0) return this;
+
+  // just one destination.  most common case.
+  if (state.pipesCount === 1) {
+    // passed in one, but it's not the right one.
+    if (dest && dest !== state.pipes) return this;
+
+    if (!dest) dest = state.pipes;
+
+    // got a match.
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+    if (dest) dest.emit('unpipe', this);
+    return this;
+  }
+
+  // slow case. multiple pipe destinations.
+
+  if (!dest) {
+    // remove all.
+    var dests = state.pipes;
+    var len = state.pipesCount;
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+
+    for (var _i = 0; _i < len; _i++) {
+      dests[_i].emit('unpipe', this);
+    }return this;
+  }
+
+  // try to find the right one.
+  var i = indexOf(state.pipes, dest);
+  if (i === -1) return this;
+
+  state.pipes.splice(i, 1);
+  state.pipesCount -= 1;
+  if (state.pipesCount === 1) state.pipes = state.pipes[0];
+
+  dest.emit('unpipe', this);
+
+  return this;
+};
+
+// set up data events if they are asked for
+// Ensure readable listeners eventually get something
+Readable.prototype.on = function (ev, fn) {
+  var res = EventEmitter.prototype.on.call(this, ev, fn);
+
+  if (ev === 'data') {
+    // Start flowing on next tick if stream isn't explicitly paused
+    if (this._readableState.flowing !== false) this.resume();
+  } else if (ev === 'readable') {
+    var state = this._readableState;
+    if (!state.endEmitted && !state.readableListening) {
+      state.readableListening = state.needReadable = true;
+      state.emittedReadable = false;
+      if (!state.reading) {
+        nextTick(nReadingNextTick, this);
+      } else if (state.length) {
+        emitReadable(this);
+      }
+    }
+  }
+
+  return res;
+};
+Readable.prototype.addListener = Readable.prototype.on;
+
+function nReadingNextTick(self) {
+  debug('readable nexttick read 0');
+  self.read(0);
+}
+
+// pause() and resume() are remnants of the legacy readable stream API
+// If the user uses them, then switch into old mode.
+Readable.prototype.resume = function () {
+  var state = this._readableState;
+  if (!state.flowing) {
+    debug('resume');
+    state.flowing = true;
+    resume(this, state);
+  }
+  return this;
+};
+
+function resume(stream, state) {
+  if (!state.resumeScheduled) {
+    state.resumeScheduled = true;
+    nextTick(resume_, stream, state);
+  }
+}
+
+function resume_(stream, state) {
+  if (!state.reading) {
+    debug('resume read 0');
+    stream.read(0);
+  }
+
+  state.resumeScheduled = false;
+  state.awaitDrain = 0;
+  stream.emit('resume');
+  flow(stream);
+  if (state.flowing && !state.reading) stream.read(0);
+}
+
+Readable.prototype.pause = function () {
+  debug('call pause flowing=%j', this._readableState.flowing);
+  if (false !== this._readableState.flowing) {
+    debug('pause');
+    this._readableState.flowing = false;
+    this.emit('pause');
+  }
+  return this;
+};
+
+function flow(stream) {
+  var state = stream._readableState;
+  debug('flow', state.flowing);
+  while (state.flowing && stream.read() !== null) {}
+}
+
+// wrap an old-style stream as the async data source.
+// This is *not* part of the readable stream interface.
+// It is an ugly unfortunate mess of history.
+Readable.prototype.wrap = function (stream) {
+  var state = this._readableState;
+  var paused = false;
+
+  var self = this;
+  stream.on('end', function () {
+    debug('wrapped end');
+    if (state.decoder && !state.ended) {
+      var chunk = state.decoder.end();
+      if (chunk && chunk.length) self.push(chunk);
+    }
+
+    self.push(null);
+  });
+
+  stream.on('data', function (chunk) {
+    debug('wrapped data');
+    if (state.decoder) chunk = state.decoder.write(chunk);
+
+    // don't skip over falsy values in objectMode
+    if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
+
+    var ret = self.push(chunk);
+    if (!ret) {
+      paused = true;
+      stream.pause();
+    }
+  });
+
+  // proxy all the other methods.
+  // important when wrapping filters and duplexes.
+  for (var i in stream) {
+    if (this[i] === undefined && typeof stream[i] === 'function') {
+      this[i] = function (method) {
+        return function () {
+          return stream[method].apply(stream, arguments);
+        };
+      }(i);
+    }
+  }
+
+  // proxy certain important events.
+  var events = ['error', 'close', 'destroy', 'pause', 'resume'];
+  forEach(events, function (ev) {
+    stream.on(ev, self.emit.bind(self, ev));
+  });
+
+  // when we try to consume some more bytes, simply unpause the
+  // underlying stream.
+  self._read = function (n) {
+    debug('wrapped _read', n);
+    if (paused) {
+      paused = false;
+      stream.resume();
+    }
+  };
+
+  return self;
+};
+
+// exposed for testing purposes only.
+Readable._fromList = fromList;
+
+// Pluck off n bytes from an array of buffers.
+// Length is the combined lengths of all the buffers in the list.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function fromList(n, state) {
+  // nothing buffered
+  if (state.length === 0) return null;
+
+  var ret;
+  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
+    // read it all, truncate the list
+    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.head.data;else ret = state.buffer.concat(state.length);
+    state.buffer.clear();
+  } else {
+    // read part of list
+    ret = fromListPartial(n, state.buffer, state.decoder);
+  }
+
+  return ret;
+}
+
+// Extracts only enough buffered data to satisfy the amount requested.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function fromListPartial(n, list, hasStrings) {
+  var ret;
+  if (n < list.head.data.length) {
+    // slice is the same for buffers and strings
+    ret = list.head.data.slice(0, n);
+    list.head.data = list.head.data.slice(n);
+  } else if (n === list.head.data.length) {
+    // first chunk is a perfect match
+    ret = list.shift();
+  } else {
+    // result spans more than one buffer
+    ret = hasStrings ? copyFromBufferString(n, list) : copyFromBuffer(n, list);
+  }
+  return ret;
+}
+
+// Copies a specified amount of characters from the list of buffered data
+// chunks.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function copyFromBufferString(n, list) {
+  var p = list.head;
+  var c = 1;
+  var ret = p.data;
+  n -= ret.length;
+  while (p = p.next) {
+    var str = p.data;
+    var nb = n > str.length ? str.length : n;
+    if (nb === str.length) ret += str;else ret += str.slice(0, n);
+    n -= nb;
+    if (n === 0) {
+      if (nb === str.length) {
+        ++c;
+        if (p.next) list.head = p.next;else list.head = list.tail = null;
+      } else {
+        list.head = p;
+        p.data = str.slice(nb);
+      }
+      break;
+    }
+    ++c;
+  }
+  list.length -= c;
+  return ret;
+}
+
+// Copies a specified amount of bytes from the list of buffered data chunks.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+function copyFromBuffer(n, list) {
+  var ret = Buffer.allocUnsafe(n);
+  var p = list.head;
+  var c = 1;
+  p.data.copy(ret);
+  n -= p.data.length;
+  while (p = p.next) {
+    var buf = p.data;
+    var nb = n > buf.length ? buf.length : n;
+    buf.copy(ret, ret.length - n, 0, nb);
+    n -= nb;
+    if (n === 0) {
+      if (nb === buf.length) {
+        ++c;
+        if (p.next) list.head = p.next;else list.head = list.tail = null;
+      } else {
+        list.head = p;
+        p.data = buf.slice(nb);
+      }
+      break;
+    }
+    ++c;
+  }
+  list.length -= c;
+  return ret;
+}
+
+function endReadable(stream) {
+  var state = stream._readableState;
+
+  // If we get here before consuming all the bytes, then that is a
+  // bug in node.  Should never happen.
+  if (state.length > 0) throw new Error('"endReadable()" called on non-empty stream');
+
+  if (!state.endEmitted) {
+    state.ended = true;
+    nextTick(endReadableNT, state, stream);
+  }
+}
+
+function endReadableNT(state, stream) {
+  // Check that we didn't get one last unshift.
+  if (!state.endEmitted && state.length === 0) {
+    state.endEmitted = true;
+    stream.readable = false;
+    stream.emit('end');
+  }
+}
+
+function forEach(xs, f) {
+  for (var i = 0, l = xs.length; i < l; i++) {
+    f(xs[i], i);
+  }
+}
+
+function indexOf(xs, x) {
+  for (var i = 0, l = xs.length; i < l; i++) {
+    if (xs[i] === x) return i;
+  }
+  return -1;
+}
+
+// A bit simpler than readable streams.
+Writable.WritableState = WritableState;
+inherits$1(Writable, EventEmitter);
+
+function nop() {}
+
+function WriteReq(chunk, encoding, cb) {
+  this.chunk = chunk;
+  this.encoding = encoding;
+  this.callback = cb;
+  this.next = null;
+}
+
+function WritableState(options, stream) {
+  Object.defineProperty(this, 'buffer', {
+    get: deprecate(function () {
+      return this.getBuffer();
+    }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.')
+  });
+  options = options || {};
+
+  // object stream flag to indicate whether or not this stream
+  // contains buffers or objects.
+  this.objectMode = !!options.objectMode;
+
+  if (stream instanceof Duplex) this.objectMode = this.objectMode || !!options.writableObjectMode;
+
+  // the point at which write() starts returning false
+  // Note: 0 is a valid value, means that we always return false if
+  // the entire buffer is not flushed immediately on write()
+  var hwm = options.highWaterMark;
+  var defaultHwm = this.objectMode ? 16 : 16 * 1024;
+  this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
+
+  // cast to ints.
+  this.highWaterMark = ~ ~this.highWaterMark;
+
+  this.needDrain = false;
+  // at the start of calling end()
+  this.ending = false;
+  // when end() has been called, and returned
+  this.ended = false;
+  // when 'finish' is emitted
+  this.finished = false;
+
+  // should we decode strings into buffers before passing to _write?
+  // this is here so that some node-core streams can optimize string
+  // handling at a lower level.
+  var noDecode = options.decodeStrings === false;
+  this.decodeStrings = !noDecode;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
+
+  // not an actual buffer we keep track of, but a measurement
+  // of how much we're waiting to get pushed to some underlying
+  // socket or file.
+  this.length = 0;
+
+  // a flag to see when we're in the middle of a write.
+  this.writing = false;
+
+  // when true all writes will be buffered until .uncork() call
+  this.corked = 0;
+
+  // a flag to be able to tell if the onwrite cb is called immediately,
+  // or on a later tick.  We set this to true at first, because any
+  // actions that shouldn't happen until "later" should generally also
+  // not happen before the first write call.
+  this.sync = true;
+
+  // a flag to know if we're processing previously buffered items, which
+  // may call the _write() callback in the same tick, so that we don't
+  // end up in an overlapped onwrite situation.
+  this.bufferProcessing = false;
+
+  // the callback that's passed to _write(chunk,cb)
+  this.onwrite = function (er) {
+    onwrite(stream, er);
+  };
+
+  // the callback that the user supplies to write(chunk,encoding,cb)
+  this.writecb = null;
+
+  // the amount that is being written when _write is called.
+  this.writelen = 0;
+
+  this.bufferedRequest = null;
+  this.lastBufferedRequest = null;
+
+  // number of pending user-supplied write callbacks
+  // this must be 0 before 'finish' can be emitted
+  this.pendingcb = 0;
+
+  // emit prefinish if the only thing we're waiting for is _write cbs
+  // This is relevant for synchronous Transform streams
+  this.prefinished = false;
+
+  // True if the error was already emitted and should not be thrown again
+  this.errorEmitted = false;
+
+  // count buffered requests
+  this.bufferedRequestCount = 0;
+
+  // allocate the first CorkedRequest, there is always
+  // one allocated and free to use, and we maintain at most two
+  this.corkedRequestsFree = new CorkedRequest(this);
+}
+
+WritableState.prototype.getBuffer = function writableStateGetBuffer() {
+  var current = this.bufferedRequest;
+  var out = [];
+  while (current) {
+    out.push(current);
+    current = current.next;
+  }
+  return out;
+};
+function Writable(options) {
+
+  // Writable ctor is applied to Duplexes, though they're not
+  // instanceof Writable, they're instanceof Readable.
+  if (!(this instanceof Writable) && !(this instanceof Duplex)) return new Writable(options);
+
+  this._writableState = new WritableState(options, this);
+
+  // legacy.
+  this.writable = true;
+
+  if (options) {
+    if (typeof options.write === 'function') this._write = options.write;
+
+    if (typeof options.writev === 'function') this._writev = options.writev;
+  }
+
+  EventEmitter.call(this);
+}
+
+// Otherwise people can pipe Writable streams, which is just wrong.
+Writable.prototype.pipe = function () {
+  this.emit('error', new Error('Cannot pipe, not readable'));
+};
+
+function writeAfterEnd(stream, cb) {
+  var er = new Error('write after end');
+  // TODO: defer error events consistently everywhere, not just the cb
+  stream.emit('error', er);
+  nextTick(cb, er);
+}
+
+// If we get something that is not a buffer, string, null, or undefined,
+// and we're not in objectMode, then that's an error.
+// Otherwise stream chunks are all considered to be of length=1, and the
+// watermarks determine how many objects to keep in the buffer, rather than
+// how many bytes or characters.
+function validChunk(stream, state, chunk, cb) {
+  var valid = true;
+  var er = false;
+  // Always throw error if a null is written
+  // if we are not in object mode then throw
+  // if it is not a buffer, string, or undefined.
+  if (chunk === null) {
+    er = new TypeError('May not write null values to stream');
+  } else if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  if (er) {
+    stream.emit('error', er);
+    nextTick(cb, er);
+    valid = false;
+  }
+  return valid;
+}
+
+Writable.prototype.write = function (chunk, encoding, cb) {
+  var state = this._writableState;
+  var ret = false;
+
+  if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (Buffer.isBuffer(chunk)) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
+
+  if (typeof cb !== 'function') cb = nop;
+
+  if (state.ended) writeAfterEnd(this, cb);else if (validChunk(this, state, chunk, cb)) {
+    state.pendingcb++;
+    ret = writeOrBuffer(this, state, chunk, encoding, cb);
+  }
+
+  return ret;
+};
+
+Writable.prototype.cork = function () {
+  var state = this._writableState;
+
+  state.corked++;
+};
+
+Writable.prototype.uncork = function () {
+  var state = this._writableState;
+
+  if (state.corked) {
+    state.corked--;
+
+    if (!state.writing && !state.corked && !state.finished && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
+  }
+};
+
+Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
+  // node::ParseEncoding() requires lower case.
+  if (typeof encoding === 'string') encoding = encoding.toLowerCase();
+  if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new TypeError('Unknown encoding: ' + encoding);
+  this._writableState.defaultEncoding = encoding;
+  return this;
+};
+
+function decodeChunk(state, chunk, encoding) {
+  if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
+    chunk = Buffer.from(chunk, encoding);
+  }
+  return chunk;
+}
+
+// if we're already writing something, then just put this
+// in the queue, and wait our turn.  Otherwise, call _write
+// If we return false, then we need a drain event, so set that flag.
+function writeOrBuffer(stream, state, chunk, encoding, cb) {
+  chunk = decodeChunk(state, chunk, encoding);
+
+  if (Buffer.isBuffer(chunk)) encoding = 'buffer';
+  var len = state.objectMode ? 1 : chunk.length;
+
+  state.length += len;
+
+  var ret = state.length < state.highWaterMark;
+  // we must ensure that previous needDrain will not be reset to false.
+  if (!ret) state.needDrain = true;
+
+  if (state.writing || state.corked) {
+    var last = state.lastBufferedRequest;
+    state.lastBufferedRequest = new WriteReq(chunk, encoding, cb);
+    if (last) {
+      last.next = state.lastBufferedRequest;
+    } else {
+      state.bufferedRequest = state.lastBufferedRequest;
+    }
+    state.bufferedRequestCount += 1;
+  } else {
+    doWrite(stream, state, false, len, chunk, encoding, cb);
+  }
+
+  return ret;
+}
+
+function doWrite(stream, state, writev, len, chunk, encoding, cb) {
+  state.writelen = len;
+  state.writecb = cb;
+  state.writing = true;
+  state.sync = true;
+  if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
+  state.sync = false;
+}
+
+function onwriteError(stream, state, sync, er, cb) {
+  --state.pendingcb;
+  if (sync) nextTick(cb, er);else cb(er);
+
+  stream._writableState.errorEmitted = true;
+  stream.emit('error', er);
+}
+
+function onwriteStateUpdate(state) {
+  state.writing = false;
+  state.writecb = null;
+  state.length -= state.writelen;
+  state.writelen = 0;
+}
+
+function onwrite(stream, er) {
+  var state = stream._writableState;
+  var sync = state.sync;
+  var cb = state.writecb;
+
+  onwriteStateUpdate(state);
+
+  if (er) onwriteError(stream, state, sync, er, cb);else {
+    // Check if we're actually ready to finish, but don't emit yet
+    var finished = needFinish(state);
+
+    if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
+      clearBuffer(stream, state);
+    }
+
+    if (sync) {
+      /*<replacement>*/
+        nextTick(afterWrite, stream, state, finished, cb);
+      /*</replacement>*/
+    } else {
+        afterWrite(stream, state, finished, cb);
+      }
+  }
+}
+
+function afterWrite(stream, state, finished, cb) {
+  if (!finished) onwriteDrain(stream, state);
+  state.pendingcb--;
+  cb();
+  finishMaybe(stream, state);
+}
+
+// Must force callback to be called on nextTick, so that we don't
+// emit 'drain' before the write() consumer gets the 'false' return
+// value, and has a chance to attach a 'drain' listener.
+function onwriteDrain(stream, state) {
+  if (state.length === 0 && state.needDrain) {
+    state.needDrain = false;
+    stream.emit('drain');
+  }
+}
+
+// if there's something in the buffer waiting, then process it
+function clearBuffer(stream, state) {
+  state.bufferProcessing = true;
+  var entry = state.bufferedRequest;
+
+  if (stream._writev && entry && entry.next) {
+    // Fast case, write everything using _writev()
+    var l = state.bufferedRequestCount;
+    var buffer = new Array(l);
+    var holder = state.corkedRequestsFree;
+    holder.entry = entry;
+
+    var count = 0;
+    while (entry) {
+      buffer[count] = entry;
+      entry = entry.next;
+      count += 1;
+    }
+
+    doWrite(stream, state, true, state.length, buffer, '', holder.finish);
+
+    // doWrite is almost always async, defer these to save a bit of time
+    // as the hot path ends with doWrite
+    state.pendingcb++;
+    state.lastBufferedRequest = null;
+    if (holder.next) {
+      state.corkedRequestsFree = holder.next;
+      holder.next = null;
+    } else {
+      state.corkedRequestsFree = new CorkedRequest(state);
+    }
+  } else {
+    // Slow case, write chunks one-by-one
+    while (entry) {
+      var chunk = entry.chunk;
+      var encoding = entry.encoding;
+      var cb = entry.callback;
+      var len = state.objectMode ? 1 : chunk.length;
+
+      doWrite(stream, state, false, len, chunk, encoding, cb);
+      entry = entry.next;
+      // if we didn't call the onwrite immediately, then
+      // it means that we need to wait until it does.
+      // also, that means that the chunk and cb are currently
+      // being processed, so move the buffer counter past them.
+      if (state.writing) {
+        break;
+      }
+    }
+
+    if (entry === null) state.lastBufferedRequest = null;
+  }
+
+  state.bufferedRequestCount = 0;
+  state.bufferedRequest = entry;
+  state.bufferProcessing = false;
+}
+
+Writable.prototype._write = function (chunk, encoding, cb) {
+  cb(new Error('not implemented'));
+};
+
+Writable.prototype._writev = null;
+
+Writable.prototype.end = function (chunk, encoding, cb) {
+  var state = this._writableState;
+
+  if (typeof chunk === 'function') {
+    cb = chunk;
+    chunk = null;
+    encoding = null;
+  } else if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding);
+
+  // .end() fully uncorks
+  if (state.corked) {
+    state.corked = 1;
+    this.uncork();
+  }
+
+  // ignore unnecessary end() calls.
+  if (!state.ending && !state.finished) endWritable(this, state, cb);
+};
+
+function needFinish(state) {
+  return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
+}
+
+function prefinish(stream, state) {
+  if (!state.prefinished) {
+    state.prefinished = true;
+    stream.emit('prefinish');
+  }
+}
+
+function finishMaybe(stream, state) {
+  var need = needFinish(state);
+  if (need) {
+    if (state.pendingcb === 0) {
+      prefinish(stream, state);
+      state.finished = true;
+      stream.emit('finish');
+    } else {
+      prefinish(stream, state);
+    }
+  }
+  return need;
+}
+
+function endWritable(stream, state, cb) {
+  state.ending = true;
+  finishMaybe(stream, state);
+  if (cb) {
+    if (state.finished) nextTick(cb);else stream.once('finish', cb);
+  }
+  state.ended = true;
+  stream.writable = false;
+}
+
+// It seems a linked list but it is not
+// there will be only 2 of these for each stream
+function CorkedRequest(state) {
+  var _this = this;
+
+  this.next = null;
+  this.entry = null;
+
+  this.finish = function (err) {
+    var entry = _this.entry;
+    _this.entry = null;
+    while (entry) {
+      var cb = entry.callback;
+      state.pendingcb--;
+      cb(err);
+      entry = entry.next;
+    }
+    if (state.corkedRequestsFree) {
+      state.corkedRequestsFree.next = _this;
+    } else {
+      state.corkedRequestsFree = _this;
+    }
+  };
+}
+
+inherits$1(Duplex, Readable);
+
+var keys = Object.keys(Writable.prototype);
+for (var v = 0; v < keys.length; v++) {
+  var method = keys[v];
+  if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
+}
+function Duplex(options) {
+  if (!(this instanceof Duplex)) return new Duplex(options);
+
+  Readable.call(this, options);
+  Writable.call(this, options);
+
+  if (options && options.readable === false) this.readable = false;
+
+  if (options && options.writable === false) this.writable = false;
+
+  this.allowHalfOpen = true;
+  if (options && options.allowHalfOpen === false) this.allowHalfOpen = false;
+
+  this.once('end', onend);
+}
+
+// the no-half-open enforcer
+function onend() {
+  // if we allow half-open state, or if the writable side ended,
+  // then we're ok.
+  if (this.allowHalfOpen || this._writableState.ended) return;
+
+  // no more data can be written.
+  // But allow more writes to happen in this tick.
+  nextTick(onEndNT, this);
+}
+
+function onEndNT(self) {
+  self.end();
+}
+
+// a transform stream is a readable/writable stream where you do
+inherits$1(Transform, Duplex);
+
+function TransformState(stream) {
+  this.afterTransform = function (er, data) {
+    return afterTransform(stream, er, data);
+  };
+
+  this.needTransform = false;
+  this.transforming = false;
+  this.writecb = null;
+  this.writechunk = null;
+  this.writeencoding = null;
+}
+
+function afterTransform(stream, er, data) {
+  var ts = stream._transformState;
+  ts.transforming = false;
+
+  var cb = ts.writecb;
+
+  if (!cb) return stream.emit('error', new Error('no writecb in Transform class'));
+
+  ts.writechunk = null;
+  ts.writecb = null;
+
+  if (data !== null && data !== undefined) stream.push(data);
+
+  cb(er);
+
+  var rs = stream._readableState;
+  rs.reading = false;
+  if (rs.needReadable || rs.length < rs.highWaterMark) {
+    stream._read(rs.highWaterMark);
+  }
+}
+function Transform(options) {
+  if (!(this instanceof Transform)) return new Transform(options);
+
+  Duplex.call(this, options);
+
+  this._transformState = new TransformState(this);
+
+  // when the writable side finishes, then flush out anything remaining.
+  var stream = this;
+
+  // start out asking for a readable event once data is transformed.
+  this._readableState.needReadable = true;
+
+  // we have implemented the _read method, and done the other things
+  // that Readable wants before the first _read call, so unset the
+  // sync guard flag.
+  this._readableState.sync = false;
+
+  if (options) {
+    if (typeof options.transform === 'function') this._transform = options.transform;
+
+    if (typeof options.flush === 'function') this._flush = options.flush;
+  }
+
+  this.once('prefinish', function () {
+    if (typeof this._flush === 'function') this._flush(function (er) {
+      done(stream, er);
+    });else done(stream);
+  });
+}
+
+Transform.prototype.push = function (chunk, encoding) {
+  this._transformState.needTransform = false;
+  return Duplex.prototype.push.call(this, chunk, encoding);
+};
+
+// This is the part where you do stuff!
+// override this function in implementation classes.
+// 'chunk' is an input chunk.
+//
+// Call `push(newChunk)` to pass along transformed output
+// to the readable side.  You may call 'push' zero or more times.
+//
+// Call `cb(err)` when you are done with this chunk.  If you pass
+// an error, then that'll put the hurt on the whole operation.  If you
+// never call cb(), then you'll never get another chunk.
+Transform.prototype._transform = function (chunk, encoding, cb) {
+  throw new Error('Not implemented');
+};
+
+Transform.prototype._write = function (chunk, encoding, cb) {
+  var ts = this._transformState;
+  ts.writecb = cb;
+  ts.writechunk = chunk;
+  ts.writeencoding = encoding;
+  if (!ts.transforming) {
+    var rs = this._readableState;
+    if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
+  }
+};
+
+// Doesn't matter what the args are here.
+// _transform does all the work.
+// That we got here means that the readable side wants more data.
+Transform.prototype._read = function (n) {
+  var ts = this._transformState;
+
+  if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
+    ts.transforming = true;
+    this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
+  } else {
+    // mark that we need a transform, so that any data that comes in
+    // will get processed, now that we've asked for it.
+    ts.needTransform = true;
+  }
+};
+
+function done(stream, er) {
+  if (er) return stream.emit('error', er);
+
+  // if there's nothing in the write buffer, then that means
+  // that nothing more will ever be provided
+  var ws = stream._writableState;
+  var ts = stream._transformState;
+
+  if (ws.length) throw new Error('Calling transform done when ws.length != 0');
+
+  if (ts.transforming) throw new Error('Calling transform done when still transforming');
+
+  return stream.push(null);
+}
+
+inherits$1(PassThrough, Transform);
+function PassThrough(options) {
+  if (!(this instanceof PassThrough)) return new PassThrough(options);
+
+  Transform.call(this, options);
+}
+
+PassThrough.prototype._transform = function (chunk, encoding, cb) {
+  cb(null, chunk);
+};
+
+inherits$1(Stream, EventEmitter);
+Stream.Readable = Readable;
+Stream.Writable = Writable;
+Stream.Duplex = Duplex;
+Stream.Transform = Transform;
+Stream.PassThrough = PassThrough;
+
+// Backwards-compat with node 0.4.x
+Stream.Stream = Stream;
+
+// old-style streams.  Note that the pipe method (the only relevant
+// part of this class) is overridden in the Readable class.
+
+function Stream() {
+  EventEmitter.call(this);
+}
+
+Stream.prototype.pipe = function(dest, options) {
+  var source = this;
+
+  function ondata(chunk) {
+    if (dest.writable) {
+      if (false === dest.write(chunk) && source.pause) {
+        source.pause();
+      }
+    }
+  }
+
+  source.on('data', ondata);
+
+  function ondrain() {
+    if (source.readable && source.resume) {
+      source.resume();
+    }
+  }
+
+  dest.on('drain', ondrain);
+
+  // If the 'end' option is not supplied, dest.end() will be called when
+  // source gets the 'end' or 'close' events.  Only dest.end() once.
+  if (!dest._isStdio && (!options || options.end !== false)) {
+    source.on('end', onend);
+    source.on('close', onclose);
+  }
+
+  var didOnEnd = false;
+  function onend() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    dest.end();
+  }
+
+
+  function onclose() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    if (typeof dest.destroy === 'function') dest.destroy();
+  }
+
+  // don't leave dangling pipes when there are errors.
+  function onerror(er) {
+    cleanup();
+    if (EventEmitter.listenerCount(this, 'error') === 0) {
+      throw er; // Unhandled stream error in pipe.
+    }
+  }
+
+  source.on('error', onerror);
+  dest.on('error', onerror);
+
+  // remove all the event listeners that were added.
+  function cleanup() {
+    source.removeListener('data', ondata);
+    dest.removeListener('drain', ondrain);
+
+    source.removeListener('end', onend);
+    source.removeListener('close', onclose);
+
+    source.removeListener('error', onerror);
+    dest.removeListener('error', onerror);
+
+    source.removeListener('end', cleanup);
+    source.removeListener('close', cleanup);
+
+    dest.removeListener('close', cleanup);
+  }
+
+  source.on('end', cleanup);
+  source.on('close', cleanup);
+
+  dest.on('close', cleanup);
+
+  dest.emit('pipe', source);
+
+  // Allow for unix-like usage: A.pipe(B).pipe(C)
+  return dest;
+};
+
+var stream = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': Stream,
+    Readable: Readable,
+    Writable: Writable,
+    Duplex: Duplex,
+    Transform: Transform,
+    PassThrough: PassThrough,
+    Stream: Stream
+});
+
+var require$$3 = getCjsExportFromNamespace(stream);
+
+var reactDomServer_node_development = createCommonjsModule(function (module) {
+
+
+
+{
+  (function() {
+
+var React = React__default__default;
+var _assign = objectAssign;
+var checkPropTypes = checkPropTypes_1;
+var stream = require$$3;
+
+var ReactVersion = '16.13.1';
+
+// Do not require this module directly! Use normal `invariant` calls with
+// template literal strings. The messages will be replaced with error codes
+// during build.
+function formatProdErrorMessage(code) {
+  var url = 'https://reactjs.org/docs/error-decoder.html?invariant=' + code;
+
+  for (var i = 1; i < arguments.length; i++) {
+    url += '&args[]=' + encodeURIComponent(arguments[i]);
+  }
+
+  return "Minified React error #" + code + "; visit " + url + " for the full message or " + 'use the non-minified dev environment for full errors and additional ' + 'helpful warnings.';
+}
+
+var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED; // Prevent newer renderers from RTE when used with older react package versions.
+// Current owner and dispatcher used to share the same ref,
+// but PR #14548 split them out to better support the react-debug-tools package.
+
+if (!ReactSharedInternals.hasOwnProperty('ReactCurrentDispatcher')) {
+  ReactSharedInternals.ReactCurrentDispatcher = {
+    current: null
+  };
+}
+
+if (!ReactSharedInternals.hasOwnProperty('ReactCurrentBatchConfig')) {
+  ReactSharedInternals.ReactCurrentBatchConfig = {
+    suspense: null
+  };
+}
+
+// by calls to these methods by a Babel plugin.
+//
+// In PROD (or in packages without access to React internals),
+// they are left as they are instead.
+
+function warn(format) {
+  {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    printWarning('warn', format, args);
+  }
+}
+function error(format) {
+  {
+    for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      args[_key2 - 1] = arguments[_key2];
+    }
+
+    printWarning('error', format, args);
+  }
+}
+
+function printWarning(level, format, args) {
+  // When changing this logic, you might want to also
+  // update consoleWithStackDev.www.js as well.
+  {
+    var hasExistingStack = args.length > 0 && typeof args[args.length - 1] === 'string' && args[args.length - 1].indexOf('\n    in') === 0;
+
+    if (!hasExistingStack) {
+      var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+      var stack = ReactDebugCurrentFrame.getStackAddendum();
+
+      if (stack !== '') {
+        format += '%s';
+        args = args.concat([stack]);
+      }
+    }
+
+    var argsWithFormat = args.map(function (item) {
+      return '' + item;
+    }); // Careful: RN currently depends on this prefix
+
+    argsWithFormat.unshift('Warning: ' + format); // We intentionally don't use spread (or .apply) directly because it
+    // breaks IE9: https://github.com/facebook/react/issues/13610
+    // eslint-disable-next-line react-internal/no-production-logging
+
+    Function.prototype.apply.call(console[level], console, argsWithFormat);
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      var argIndex = 0;
+      var message = 'Warning: ' + format.replace(/%s/g, function () {
+        return args[argIndex++];
+      });
+      throw new Error(message);
+    } catch (x) {}
+  }
+}
+
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
+var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
+var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
+var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
+
+var Uninitialized = -1;
+var Pending = 0;
+var Resolved = 1;
+var Rejected = 2;
+function refineResolvedLazyComponent(lazyComponent) {
+  return lazyComponent._status === Resolved ? lazyComponent._result : null;
+}
+function initializeLazyComponentType(lazyComponent) {
+  if (lazyComponent._status === Uninitialized) {
+    lazyComponent._status = Pending;
+    var ctor = lazyComponent._ctor;
+    var thenable = ctor();
+    lazyComponent._result = thenable;
+    thenable.then(function (moduleObject) {
+      if (lazyComponent._status === Pending) {
+        var defaultExport = moduleObject.default;
+
+        {
+          if (defaultExport === undefined) {
+            error('lazy: Expected the result of a dynamic import() call. ' + 'Instead received: %s\n\nYour code should look like: \n  ' + "const MyComponent = lazy(() => import('./MyComponent'))", moduleObject);
+          }
+        }
+
+        lazyComponent._status = Resolved;
+        lazyComponent._result = defaultExport;
+      }
+    }, function (error) {
+      if (lazyComponent._status === Pending) {
+        lazyComponent._status = Rejected;
+        lazyComponent._result = error;
+      }
+    });
+  }
+}
+
+function getWrappedName(outerType, innerType, wrapperName) {
+  var functionName = innerType.displayName || innerType.name || '';
+  return outerType.displayName || (functionName !== '' ? wrapperName + "(" + functionName + ")" : wrapperName);
+}
+
+function getComponentName(type) {
+  if (type == null) {
+    // Host root, text node or just invalid type.
+    return null;
+  }
+
+  {
+    if (typeof type.tag === 'number') {
+      error('Received an unexpected object in getComponentName(). ' + 'This is likely a bug in React. Please file an issue.');
+    }
+  }
+
+  if (typeof type === 'function') {
+    return type.displayName || type.name || null;
+  }
+
+  if (typeof type === 'string') {
+    return type;
+  }
+
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return 'Fragment';
+
+    case REACT_PORTAL_TYPE:
+      return 'Portal';
+
+    case REACT_PROFILER_TYPE:
+      return "Profiler";
+
+    case REACT_STRICT_MODE_TYPE:
+      return 'StrictMode';
+
+    case REACT_SUSPENSE_TYPE:
+      return 'Suspense';
+
+    case REACT_SUSPENSE_LIST_TYPE:
+      return 'SuspenseList';
+  }
+
+  if (typeof type === 'object') {
+    switch (type.$$typeof) {
+      case REACT_CONTEXT_TYPE:
+        return 'Context.Consumer';
+
+      case REACT_PROVIDER_TYPE:
+        return 'Context.Provider';
+
+      case REACT_FORWARD_REF_TYPE:
+        return getWrappedName(type, type.render, 'ForwardRef');
+
+      case REACT_MEMO_TYPE:
+        return getComponentName(type.type);
+
+      case REACT_BLOCK_TYPE:
+        return getComponentName(type.render);
+
+      case REACT_LAZY_TYPE:
+        {
+          var thenable = type;
+          var resolvedThenable = refineResolvedLazyComponent(thenable);
+
+          if (resolvedThenable) {
+            return getComponentName(resolvedThenable);
+          }
+
+          break;
+        }
+    }
+  }
+
+  return null;
+}
+
+var BEFORE_SLASH_RE = /^(.*)[\\\/]/;
+function describeComponentFrame (name, source, ownerName) {
+  var sourceInfo = '';
+
+  if (source) {
+    var path = source.fileName;
+    var fileName = path.replace(BEFORE_SLASH_RE, '');
+
+    {
+      // In DEV, include code for a common special case:
+      // prefer "folder/index.js" instead of just "index.js".
+      if (/^index\./.test(fileName)) {
+        var match = path.match(BEFORE_SLASH_RE);
+
+        if (match) {
+          var pathBeforeSlash = match[1];
+
+          if (pathBeforeSlash) {
+            var folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
+            fileName = folderName + '/' + fileName;
+          }
+        }
+      }
+    }
+
+    sourceInfo = ' (at ' + fileName + ':' + source.lineNumber + ')';
+  } else if (ownerName) {
+    sourceInfo = ' (created by ' + ownerName + ')';
+  }
+
+  return '\n    in ' + (name || 'Unknown') + sourceInfo;
+}
+
+var enableSuspenseServerRenderer = false;
+
+var enableDeprecatedFlareAPI = false; // Experimental Host Component support.
+
+var ReactDebugCurrentFrame;
+var didWarnAboutInvalidateContextType;
+
+{
+  ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+  didWarnAboutInvalidateContextType = new Set();
+}
+
+var emptyObject = {};
+
+{
+  Object.freeze(emptyObject);
+}
+
+function maskContext(type, context) {
+  var contextTypes = type.contextTypes;
+
+  if (!contextTypes) {
+    return emptyObject;
+  }
+
+  var maskedContext = {};
+
+  for (var contextName in contextTypes) {
+    maskedContext[contextName] = context[contextName];
+  }
+
+  return maskedContext;
+}
+
+function checkContextTypes(typeSpecs, values, location) {
+  {
+    checkPropTypes(typeSpecs, values, location, 'Component', ReactDebugCurrentFrame.getCurrentStack);
+  }
+}
+
+function validateContextBounds(context, threadID) {
+  // If we don't have enough slots in this context to store this threadID,
+  // fill it in without leaving any holes to ensure that the VM optimizes
+  // this as non-holey index properties.
+  // (Note: If `react` package is < 16.6, _threadCount is undefined.)
+  for (var i = context._threadCount | 0; i <= threadID; i++) {
+    // We assume that this is the same as the defaultValue which might not be
+    // true if we're rendering inside a secondary renderer but they are
+    // secondary because these use cases are very rare.
+    context[i] = context._currentValue2;
+    context._threadCount = i + 1;
+  }
+}
+function processContext(type, context, threadID, isClass) {
+  if (isClass) {
+    var contextType = type.contextType;
+
+    {
+      if ('contextType' in type) {
+        var isValid = // Allow null for conditional declaration
+        contextType === null || contextType !== undefined && contextType.$$typeof === REACT_CONTEXT_TYPE && contextType._context === undefined; // Not a <Context.Consumer>
+
+        if (!isValid && !didWarnAboutInvalidateContextType.has(type)) {
+          didWarnAboutInvalidateContextType.add(type);
+          var addendum = '';
+
+          if (contextType === undefined) {
+            addendum = ' However, it is set to undefined. ' + 'This can be caused by a typo or by mixing up named and default imports. ' + 'This can also happen due to a circular dependency, so ' + 'try moving the createContext() call to a separate file.';
+          } else if (typeof contextType !== 'object') {
+            addendum = ' However, it is set to a ' + typeof contextType + '.';
+          } else if (contextType.$$typeof === REACT_PROVIDER_TYPE) {
+            addendum = ' Did you accidentally pass the Context.Provider instead?';
+          } else if (contextType._context !== undefined) {
+            // <Context.Consumer>
+            addendum = ' Did you accidentally pass the Context.Consumer instead?';
+          } else {
+            addendum = ' However, it is set to an object with keys {' + Object.keys(contextType).join(', ') + '}.';
+          }
+
+          error('%s defines an invalid contextType. ' + 'contextType should point to the Context object returned by React.createContext().%s', getComponentName(type) || 'Component', addendum);
+        }
+      }
+    }
+
+    if (typeof contextType === 'object' && contextType !== null) {
+      validateContextBounds(contextType, threadID);
+      return contextType[threadID];
+    }
+
+    {
+      var maskedContext = maskContext(type, context);
+
+      {
+        if (type.contextTypes) {
+          checkContextTypes(type.contextTypes, maskedContext, 'context');
+        }
+      }
+
+      return maskedContext;
+    }
+  } else {
+    {
+      var _maskedContext = maskContext(type, context);
+
+      {
+        if (type.contextTypes) {
+          checkContextTypes(type.contextTypes, _maskedContext, 'context');
+        }
+      }
+
+      return _maskedContext;
+    }
+  }
+}
+
+var nextAvailableThreadIDs = new Uint16Array(16);
+
+for (var i = 0; i < 15; i++) {
+  nextAvailableThreadIDs[i] = i + 1;
+}
+
+nextAvailableThreadIDs[15] = 0;
+
+function growThreadCountAndReturnNextAvailable() {
+  var oldArray = nextAvailableThreadIDs;
+  var oldSize = oldArray.length;
+  var newSize = oldSize * 2;
+
+  if (!(newSize <= 0x10000)) {
+    {
+      throw Error( "Maximum number of concurrent React renderers exceeded. This can happen if you are not properly destroying the Readable provided by React. Ensure that you call .destroy() on it if you no longer want to read from it, and did not read to the end. If you use .pipe() this should be automatic." );
+    }
+  }
+
+  var newArray = new Uint16Array(newSize);
+  newArray.set(oldArray);
+  nextAvailableThreadIDs = newArray;
+  nextAvailableThreadIDs[0] = oldSize + 1;
+
+  for (var _i = oldSize; _i < newSize - 1; _i++) {
+    nextAvailableThreadIDs[_i] = _i + 1;
+  }
+
+  nextAvailableThreadIDs[newSize - 1] = 0;
+  return oldSize;
+}
+
+function allocThreadID() {
+  var nextID = nextAvailableThreadIDs[0];
+
+  if (nextID === 0) {
+    return growThreadCountAndReturnNextAvailable();
+  }
+
+  nextAvailableThreadIDs[0] = nextAvailableThreadIDs[nextID];
+  return nextID;
+}
+function freeThreadID(id) {
+  nextAvailableThreadIDs[id] = nextAvailableThreadIDs[0];
+  nextAvailableThreadIDs[0] = id;
+}
+
+// A reserved attribute.
+// It is handled by React separately and shouldn't be written to the DOM.
+var RESERVED = 0; // A simple string attribute.
+// Attributes that aren't in the whitelist are presumed to have this type.
+
+var STRING = 1; // A string attribute that accepts booleans in React. In HTML, these are called
+// "enumerated" attributes with "true" and "false" as possible values.
+// When true, it should be set to a "true" string.
+// When false, it should be set to a "false" string.
+
+var BOOLEANISH_STRING = 2; // A real boolean attribute.
+// When true, it should be present (set either to an empty string or its name).
+// When false, it should be omitted.
+
+var BOOLEAN = 3; // An attribute that can be used as a flag as well as with a value.
+// When true, it should be present (set either to an empty string or its name).
+// When false, it should be omitted.
+// For any other value, should be present with that value.
+
+var OVERLOADED_BOOLEAN = 4; // An attribute that must be numeric or parse as a numeric.
+// When falsy, it should be removed.
+
+var NUMERIC = 5; // An attribute that must be positive numeric or parse as a positive numeric.
+// When falsy, it should be removed.
+
+var POSITIVE_NUMERIC = 6;
+
+/* eslint-disable max-len */
+var ATTRIBUTE_NAME_START_CHAR = ":A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
+/* eslint-enable max-len */
+
+var ATTRIBUTE_NAME_CHAR = ATTRIBUTE_NAME_START_CHAR + "\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040";
+var ROOT_ATTRIBUTE_NAME = 'data-reactroot';
+var VALID_ATTRIBUTE_NAME_REGEX = new RegExp('^[' + ATTRIBUTE_NAME_START_CHAR + '][' + ATTRIBUTE_NAME_CHAR + ']*$');
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var illegalAttributeNameCache = {};
+var validatedAttributeNameCache = {};
+function isAttributeNameSafe(attributeName) {
+  if (hasOwnProperty.call(validatedAttributeNameCache, attributeName)) {
+    return true;
+  }
+
+  if (hasOwnProperty.call(illegalAttributeNameCache, attributeName)) {
+    return false;
+  }
+
+  if (VALID_ATTRIBUTE_NAME_REGEX.test(attributeName)) {
+    validatedAttributeNameCache[attributeName] = true;
+    return true;
+  }
+
+  illegalAttributeNameCache[attributeName] = true;
+
+  {
+    error('Invalid attribute name: `%s`', attributeName);
+  }
+
+  return false;
+}
+function shouldIgnoreAttribute(name, propertyInfo, isCustomComponentTag) {
+  if (propertyInfo !== null) {
+    return propertyInfo.type === RESERVED;
+  }
+
+  if (isCustomComponentTag) {
+    return false;
+  }
+
+  if (name.length > 2 && (name[0] === 'o' || name[0] === 'O') && (name[1] === 'n' || name[1] === 'N')) {
+    return true;
+  }
+
+  return false;
+}
+function shouldRemoveAttributeWithWarning(name, value, propertyInfo, isCustomComponentTag) {
+  if (propertyInfo !== null && propertyInfo.type === RESERVED) {
+    return false;
+  }
+
+  switch (typeof value) {
+    case 'function': // $FlowIssue symbol is perfectly valid here
+
+    case 'symbol':
+      // eslint-disable-line
+      return true;
+
+    case 'boolean':
+      {
+        if (isCustomComponentTag) {
+          return false;
+        }
+
+        if (propertyInfo !== null) {
+          return !propertyInfo.acceptsBooleans;
+        } else {
+          var prefix = name.toLowerCase().slice(0, 5);
+          return prefix !== 'data-' && prefix !== 'aria-';
+        }
+      }
+
+    default:
+      return false;
+  }
+}
+function shouldRemoveAttribute(name, value, propertyInfo, isCustomComponentTag) {
+  if (value === null || typeof value === 'undefined') {
+    return true;
+  }
+
+  if (shouldRemoveAttributeWithWarning(name, value, propertyInfo, isCustomComponentTag)) {
+    return true;
+  }
+
+  if (isCustomComponentTag) {
+    return false;
+  }
+
+  if (propertyInfo !== null) {
+    switch (propertyInfo.type) {
+      case BOOLEAN:
+        return !value;
+
+      case OVERLOADED_BOOLEAN:
+        return value === false;
+
+      case NUMERIC:
+        return isNaN(value);
+
+      case POSITIVE_NUMERIC:
+        return isNaN(value) || value < 1;
+    }
+  }
+
+  return false;
+}
+function getPropertyInfo(name) {
+  return properties.hasOwnProperty(name) ? properties[name] : null;
+}
+
+function PropertyInfoRecord(name, type, mustUseProperty, attributeName, attributeNamespace, sanitizeURL) {
+  this.acceptsBooleans = type === BOOLEANISH_STRING || type === BOOLEAN || type === OVERLOADED_BOOLEAN;
+  this.attributeName = attributeName;
+  this.attributeNamespace = attributeNamespace;
+  this.mustUseProperty = mustUseProperty;
+  this.propertyName = name;
+  this.type = type;
+  this.sanitizeURL = sanitizeURL;
+} // When adding attributes to this list, be sure to also add them to
+// the `possibleStandardNames` module to ensure casing and incorrect
+// name warnings.
+
+
+var properties = {}; // These props are reserved by React. They shouldn't be written to the DOM.
+
+var reservedProps = ['children', 'dangerouslySetInnerHTML', // TODO: This prevents the assignment of defaultValue to regular
+// elements (not just inputs). Now that ReactDOMInput assigns to the
+// defaultValue property -- do we need this?
+'defaultValue', 'defaultChecked', 'innerHTML', 'suppressContentEditableWarning', 'suppressHydrationWarning', 'style'];
+
+reservedProps.forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, RESERVED, false, // mustUseProperty
+  name, // attributeName
+  null, // attributeNamespace
+  false);
+}); // A few React string attributes have a different name.
+// This is a mapping from React prop names to the attribute names.
+
+[['acceptCharset', 'accept-charset'], ['className', 'class'], ['htmlFor', 'for'], ['httpEquiv', 'http-equiv']].forEach(function (_ref) {
+  var name = _ref[0],
+      attributeName = _ref[1];
+  properties[name] = new PropertyInfoRecord(name, STRING, false, // mustUseProperty
+  attributeName, // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are "enumerated" HTML attributes that accept "true" and "false".
+// In React, we let users pass `true` and `false` even though technically
+// these aren't boolean attributes (they are coerced to strings).
+
+['contentEditable', 'draggable', 'spellCheck', 'value'].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, BOOLEANISH_STRING, false, // mustUseProperty
+  name.toLowerCase(), // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are "enumerated" SVG attributes that accept "true" and "false".
+// In React, we let users pass `true` and `false` even though technically
+// these aren't boolean attributes (they are coerced to strings).
+// Since these are SVG attributes, their attribute names are case-sensitive.
+
+['autoReverse', 'externalResourcesRequired', 'focusable', 'preserveAlpha'].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, BOOLEANISH_STRING, false, // mustUseProperty
+  name, // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are HTML boolean attributes.
+
+['allowFullScreen', 'async', // Note: there is a special case that prevents it from being written to the DOM
+// on the client side because the browsers are inconsistent. Instead we call focus().
+'autoFocus', 'autoPlay', 'controls', 'default', 'defer', 'disabled', 'disablePictureInPicture', 'formNoValidate', 'hidden', 'loop', 'noModule', 'noValidate', 'open', 'playsInline', 'readOnly', 'required', 'reversed', 'scoped', 'seamless', // Microdata
+'itemScope'].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, BOOLEAN, false, // mustUseProperty
+  name.toLowerCase(), // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are the few React props that we set as DOM properties
+// rather than attributes. These are all booleans.
+
+['checked', // Note: `option.selected` is not updated if `select.multiple` is
+// disabled with `removeAttribute`. We have special logic for handling this.
+'multiple', 'muted', 'selected' // NOTE: if you add a camelCased prop to this list,
+// you'll need to set attributeName to name.toLowerCase()
+// instead in the assignment below.
+].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, BOOLEAN, true, // mustUseProperty
+  name, // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are HTML attributes that are "overloaded booleans": they behave like
+// booleans, but can also accept a string value.
+
+['capture', 'download' // NOTE: if you add a camelCased prop to this list,
+// you'll need to set attributeName to name.toLowerCase()
+// instead in the assignment below.
+].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, OVERLOADED_BOOLEAN, false, // mustUseProperty
+  name, // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are HTML attributes that must be positive numbers.
+
+['cols', 'rows', 'size', 'span' // NOTE: if you add a camelCased prop to this list,
+// you'll need to set attributeName to name.toLowerCase()
+// instead in the assignment below.
+].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, POSITIVE_NUMERIC, false, // mustUseProperty
+  name, // attributeName
+  null, // attributeNamespace
+  false);
+}); // These are HTML attributes that must be numbers.
+
+['rowSpan', 'start'].forEach(function (name) {
+  properties[name] = new PropertyInfoRecord(name, NUMERIC, false, // mustUseProperty
+  name.toLowerCase(), // attributeName
+  null, // attributeNamespace
+  false);
+});
+var CAMELIZE = /[\-\:]([a-z])/g;
+
+var capitalize = function (token) {
+  return token[1].toUpperCase();
+}; // This is a list of all SVG attributes that need special casing, namespacing,
+// or boolean value assignment. Regular attributes that just accept strings
+// and have the same names are omitted, just like in the HTML whitelist.
+// Some of these attributes can be hard to find. This list was created by
+// scraping the MDN documentation.
+
+
+['accent-height', 'alignment-baseline', 'arabic-form', 'baseline-shift', 'cap-height', 'clip-path', 'clip-rule', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'dominant-baseline', 'enable-background', 'fill-opacity', 'fill-rule', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'glyph-name', 'glyph-orientation-horizontal', 'glyph-orientation-vertical', 'horiz-adv-x', 'horiz-origin-x', 'image-rendering', 'letter-spacing', 'lighting-color', 'marker-end', 'marker-mid', 'marker-start', 'overline-position', 'overline-thickness', 'paint-order', 'panose-1', 'pointer-events', 'rendering-intent', 'shape-rendering', 'stop-color', 'stop-opacity', 'strikethrough-position', 'strikethrough-thickness', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'text-anchor', 'text-decoration', 'text-rendering', 'underline-position', 'underline-thickness', 'unicode-bidi', 'unicode-range', 'units-per-em', 'v-alphabetic', 'v-hanging', 'v-ideographic', 'v-mathematical', 'vector-effect', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'word-spacing', 'writing-mode', 'xmlns:xlink', 'x-height' // NOTE: if you add a camelCased prop to this list,
+// you'll need to set attributeName to name.toLowerCase()
+// instead in the assignment below.
+].forEach(function (attributeName) {
+  var name = attributeName.replace(CAMELIZE, capitalize);
+  properties[name] = new PropertyInfoRecord(name, STRING, false, // mustUseProperty
+  attributeName, null, // attributeNamespace
+  false);
+}); // String SVG attributes with the xlink namespace.
+
+['xlink:actuate', 'xlink:arcrole', 'xlink:role', 'xlink:show', 'xlink:title', 'xlink:type' // NOTE: if you add a camelCased prop to this list,
+// you'll need to set attributeName to name.toLowerCase()
+// instead in the assignment below.
+].forEach(function (attributeName) {
+  var name = attributeName.replace(CAMELIZE, capitalize);
+  properties[name] = new PropertyInfoRecord(name, STRING, false, // mustUseProperty
+  attributeName, 'http://www.w3.org/1999/xlink', false);
+}); // String SVG attributes with the xml namespace.
+
+['xml:base', 'xml:lang', 'xml:space' // NOTE: if you add a camelCased prop to this list,
+// you'll need to set attributeName to name.toLowerCase()
+// instead in the assignment below.
+].forEach(function (attributeName) {
+  var name = attributeName.replace(CAMELIZE, capitalize);
+  properties[name] = new PropertyInfoRecord(name, STRING, false, // mustUseProperty
+  attributeName, 'http://www.w3.org/XML/1998/namespace', false);
+}); // These attribute exists both in HTML and SVG.
+// The attribute name is case-sensitive in SVG so we can't just use
+// the React name like we do for attributes that exist only in HTML.
+
+['tabIndex', 'crossOrigin'].forEach(function (attributeName) {
+  properties[attributeName] = new PropertyInfoRecord(attributeName, STRING, false, // mustUseProperty
+  attributeName.toLowerCase(), // attributeName
+  null, // attributeNamespace
+  false);
+}); // These attributes accept URLs. These must not allow javascript: URLS.
+// These will also need to accept Trusted Types object in the future.
+
+var xlinkHref = 'xlinkHref';
+properties[xlinkHref] = new PropertyInfoRecord('xlinkHref', STRING, false, // mustUseProperty
+'xlink:href', 'http://www.w3.org/1999/xlink', true);
+['src', 'href', 'action', 'formAction'].forEach(function (attributeName) {
+  properties[attributeName] = new PropertyInfoRecord(attributeName, STRING, false, // mustUseProperty
+  attributeName.toLowerCase(), // attributeName
+  null, // attributeNamespace
+  true);
+});
+
+var ReactDebugCurrentFrame$1 = null;
+
+{
+  ReactDebugCurrentFrame$1 = ReactSharedInternals.ReactDebugCurrentFrame;
+} // A javascript: URL can contain leading C0 control or \u0020 SPACE,
+// and any newline or tab are filtered out as if they're not part of the URL.
+// https://url.spec.whatwg.org/#url-parsing
+// Tab or newline are defined as \r\n\t:
+// https://infra.spec.whatwg.org/#ascii-tab-or-newline
+// A C0 control is a code point in the range \u0000 NULL to \u001F
+// INFORMATION SEPARATOR ONE, inclusive:
+// https://infra.spec.whatwg.org/#c0-control-or-space
+
+/* eslint-disable max-len */
+
+
+var isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
+var didWarn = false;
+
+function sanitizeURL(url) {
+  {
+    if (!didWarn && isJavaScriptProtocol.test(url)) {
+      didWarn = true;
+
+      error('A future version of React will block javascript: URLs as a security precaution. ' + 'Use event handlers instead if you can. If you need to generate unsafe HTML try ' + 'using dangerouslySetInnerHTML instead. React was passed %s.', JSON.stringify(url));
+    }
+  }
+}
+
+// code copied and modified from escape-html
+
+/**
+ * Module variables.
+ * @private
+ */
+var matchHtmlRegExp = /["'&<>]/;
+/**
+ * Escapes special characters and HTML entities in a given html string.
+ *
+ * @param  {string} string HTML string to escape for later insertion
+ * @return {string}
+ * @public
+ */
+
+function escapeHtml(string) {
+  var str = '' + string;
+  var match = matchHtmlRegExp.exec(str);
+
+  if (!match) {
+    return str;
+  }
+
+  var escape;
+  var html = '';
+  var index;
+  var lastIndex = 0;
+
+  for (index = match.index; index < str.length; index++) {
+    switch (str.charCodeAt(index)) {
+      case 34:
+        // "
+        escape = '&quot;';
+        break;
+
+      case 38:
+        // &
+        escape = '&amp;';
+        break;
+
+      case 39:
+        // '
+        escape = '&#x27;'; // modified from escape-html; used to be '&#39'
+
+        break;
+
+      case 60:
+        // <
+        escape = '&lt;';
+        break;
+
+      case 62:
+        // >
+        escape = '&gt;';
+        break;
+
+      default:
+        continue;
+    }
+
+    if (lastIndex !== index) {
+      html += str.substring(lastIndex, index);
+    }
+
+    lastIndex = index + 1;
+    html += escape;
+  }
+
+  return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
+} // end code copied and modified from escape-html
+
+/**
+ * Escapes text to prevent scripting attacks.
+ *
+ * @param {*} text Text value to escape.
+ * @return {string} An escaped string.
+ */
+
+
+function escapeTextForBrowser(text) {
+  if (typeof text === 'boolean' || typeof text === 'number') {
+    // this shortcircuit helps perf for types that we know will never have
+    // special characters, especially given that this function is used often
+    // for numeric dom ids.
+    return '' + text;
+  }
+
+  return escapeHtml(text);
+}
+
+/**
+ * Escapes attribute value to prevent scripting attacks.
+ *
+ * @param {*} value Value to escape.
+ * @return {string} An escaped string.
+ */
+
+function quoteAttributeValueForBrowser(value) {
+  return '"' + escapeTextForBrowser(value) + '"';
+}
+
+function createMarkupForRoot() {
+  return ROOT_ATTRIBUTE_NAME + '=""';
+}
+/**
+ * Creates markup for a property.
+ *
+ * @param {string} name
+ * @param {*} value
+ * @return {?string} Markup string, or null if the property was invalid.
+ */
+
+function createMarkupForProperty(name, value) {
+  var propertyInfo = getPropertyInfo(name);
+
+  if (name !== 'style' && shouldIgnoreAttribute(name, propertyInfo, false)) {
+    return '';
+  }
+
+  if (shouldRemoveAttribute(name, value, propertyInfo, false)) {
+    return '';
+  }
+
+  if (propertyInfo !== null) {
+    var attributeName = propertyInfo.attributeName;
+    var type = propertyInfo.type;
+
+    if (type === BOOLEAN || type === OVERLOADED_BOOLEAN && value === true) {
+      return attributeName + '=""';
+    } else {
+      if (propertyInfo.sanitizeURL) {
+        value = '' + value;
+        sanitizeURL(value);
+      }
+
+      return attributeName + '=' + quoteAttributeValueForBrowser(value);
+    }
+  } else if (isAttributeNameSafe(name)) {
+    return name + '=' + quoteAttributeValueForBrowser(value);
+  }
+
+  return '';
+}
+/**
+ * Creates markup for a custom property.
+ *
+ * @param {string} name
+ * @param {*} value
+ * @return {string} Markup string, or empty string if the property was invalid.
+ */
+
+function createMarkupForCustomAttribute(name, value) {
+  if (!isAttributeNameSafe(name) || value == null) {
+    return '';
+  }
+
+  return name + '=' + quoteAttributeValueForBrowser(value);
+}
+
+/**
+ * inlined Object.is polyfill to avoid requiring consumers ship their own
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+ */
+function is(x, y) {
+  return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y // eslint-disable-line no-self-compare
+  ;
+}
+
+var objectIs = typeof Object.is === 'function' ? Object.is : is;
+
+var currentlyRenderingComponent = null;
+var firstWorkInProgressHook = null;
+var workInProgressHook = null; // Whether the work-in-progress hook is a re-rendered hook
+
+var isReRender = false; // Whether an update was scheduled during the currently executing render pass.
+
+var didScheduleRenderPhaseUpdate = false; // Lazily created map of render-phase updates
+
+var renderPhaseUpdates = null; // Counter to prevent infinite loops.
+
+var numberOfReRenders = 0;
+var RE_RENDER_LIMIT = 25;
+var isInHookUserCodeInDev = false; // In DEV, this is the name of the currently executing primitive hook
+
+var currentHookNameInDev;
+
+function resolveCurrentlyRenderingComponent() {
+  if (!(currentlyRenderingComponent !== null)) {
+    {
+      throw Error( "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem." );
+    }
+  }
+
+  {
+    if (isInHookUserCodeInDev) {
+      error('Do not call Hooks inside useEffect(...), useMemo(...), or other built-in Hooks. ' + 'You can only call Hooks at the top level of your React function. ' + 'For more information, see ' + 'https://fb.me/rules-of-hooks');
+    }
+  }
+
+  return currentlyRenderingComponent;
+}
+
+function areHookInputsEqual(nextDeps, prevDeps) {
+  if (prevDeps === null) {
+    {
+      error('%s received a final argument during this render, but not during ' + 'the previous render. Even though the final argument is optional, ' + 'its type cannot change between renders.', currentHookNameInDev);
+    }
+
+    return false;
+  }
+
+  {
+    // Don't bother comparing lengths in prod because these arrays should be
+    // passed inline.
+    if (nextDeps.length !== prevDeps.length) {
+      error('The final argument passed to %s changed size between renders. The ' + 'order and size of this array must remain constant.\n\n' + 'Previous: %s\n' + 'Incoming: %s', currentHookNameInDev, "[" + nextDeps.join(', ') + "]", "[" + prevDeps.join(', ') + "]");
+    }
+  }
+
+  for (var i = 0; i < prevDeps.length && i < nextDeps.length; i++) {
+    if (objectIs(nextDeps[i], prevDeps[i])) {
+      continue;
+    }
+
+    return false;
+  }
+
+  return true;
+}
+
+function createHook() {
+  if (numberOfReRenders > 0) {
+    {
+      {
+        throw Error( "Rendered more hooks than during the previous render" );
+      }
+    }
+  }
+
+  return {
+    memoizedState: null,
+    queue: null,
+    next: null
+  };
+}
+
+function createWorkInProgressHook() {
+  if (workInProgressHook === null) {
+    // This is the first hook in the list
+    if (firstWorkInProgressHook === null) {
+      isReRender = false;
+      firstWorkInProgressHook = workInProgressHook = createHook();
+    } else {
+      // There's already a work-in-progress. Reuse it.
+      isReRender = true;
+      workInProgressHook = firstWorkInProgressHook;
+    }
+  } else {
+    if (workInProgressHook.next === null) {
+      isReRender = false; // Append to the end of the list
+
+      workInProgressHook = workInProgressHook.next = createHook();
+    } else {
+      // There's already a work-in-progress. Reuse it.
+      isReRender = true;
+      workInProgressHook = workInProgressHook.next;
+    }
+  }
+
+  return workInProgressHook;
+}
+
+function prepareToUseHooks(componentIdentity) {
+  currentlyRenderingComponent = componentIdentity;
+
+  {
+    isInHookUserCodeInDev = false;
+  } // The following should have already been reset
+  // didScheduleRenderPhaseUpdate = false;
+  // firstWorkInProgressHook = null;
+  // numberOfReRenders = 0;
+  // renderPhaseUpdates = null;
+  // workInProgressHook = null;
+
+}
+function finishHooks(Component, props, children, refOrContext) {
+  // This must be called after every function component to prevent hooks from
+  // being used in classes.
+  while (didScheduleRenderPhaseUpdate) {
+    // Updates were scheduled during the render phase. They are stored in
+    // the `renderPhaseUpdates` map. Call the component again, reusing the
+    // work-in-progress hooks and applying the additional updates on top. Keep
+    // restarting until no more updates are scheduled.
+    didScheduleRenderPhaseUpdate = false;
+    numberOfReRenders += 1; // Start over from the beginning of the list
+
+    workInProgressHook = null;
+    children = Component(props, refOrContext);
+  }
+
+  currentlyRenderingComponent = null;
+  firstWorkInProgressHook = null;
+  numberOfReRenders = 0;
+  renderPhaseUpdates = null;
+  workInProgressHook = null;
+
+  {
+    isInHookUserCodeInDev = false;
+  } // These were reset above
+  // currentlyRenderingComponent = null;
+  // didScheduleRenderPhaseUpdate = false;
+  // firstWorkInProgressHook = null;
+  // numberOfReRenders = 0;
+  // renderPhaseUpdates = null;
+  // workInProgressHook = null;
+
+
+  return children;
+}
+
+function readContext(context, observedBits) {
+  var threadID = currentThreadID;
+  validateContextBounds(context, threadID);
+
+  {
+    if (isInHookUserCodeInDev) {
+      error('Context can only be read while React is rendering. ' + 'In classes, you can read it in the render method or getDerivedStateFromProps. ' + 'In function components, you can read it directly in the function body, but not ' + 'inside Hooks like useReducer() or useMemo().');
+    }
+  }
+
+  return context[threadID];
+}
+
+function useContext(context, observedBits) {
+  {
+    currentHookNameInDev = 'useContext';
+  }
+
+  resolveCurrentlyRenderingComponent();
+  var threadID = currentThreadID;
+  validateContextBounds(context, threadID);
+  return context[threadID];
+}
+
+function basicStateReducer(state, action) {
+  // $FlowFixMe: Flow doesn't like mixed types
+  return typeof action === 'function' ? action(state) : action;
+}
+
+function useState(initialState) {
+  {
+    currentHookNameInDev = 'useState';
+  }
+
+  return useReducer(basicStateReducer, // useReducer has a special case to support lazy useState initializers
+  initialState);
+}
+function useReducer(reducer, initialArg, init) {
+  {
+    if (reducer !== basicStateReducer) {
+      currentHookNameInDev = 'useReducer';
+    }
+  }
+
+  currentlyRenderingComponent = resolveCurrentlyRenderingComponent();
+  workInProgressHook = createWorkInProgressHook();
+
+  if (isReRender) {
+    // This is a re-render. Apply the new render phase updates to the previous
+    // current hook.
+    var queue = workInProgressHook.queue;
+    var dispatch = queue.dispatch;
+
+    if (renderPhaseUpdates !== null) {
+      // Render phase updates are stored in a map of queue -> linked list
+      var firstRenderPhaseUpdate = renderPhaseUpdates.get(queue);
+
+      if (firstRenderPhaseUpdate !== undefined) {
+        renderPhaseUpdates.delete(queue);
+        var newState = workInProgressHook.memoizedState;
+        var update = firstRenderPhaseUpdate;
+
+        do {
+          // Process this render phase update. We don't have to check the
+          // priority because it will always be the same as the current
+          // render's.
+          var action = update.action;
+
+          {
+            isInHookUserCodeInDev = true;
+          }
+
+          newState = reducer(newState, action);
+
+          {
+            isInHookUserCodeInDev = false;
+          }
+
+          update = update.next;
+        } while (update !== null);
+
+        workInProgressHook.memoizedState = newState;
+        return [newState, dispatch];
+      }
+    }
+
+    return [workInProgressHook.memoizedState, dispatch];
+  } else {
+    {
+      isInHookUserCodeInDev = true;
+    }
+
+    var initialState;
+
+    if (reducer === basicStateReducer) {
+      // Special case for `useState`.
+      initialState = typeof initialArg === 'function' ? initialArg() : initialArg;
+    } else {
+      initialState = init !== undefined ? init(initialArg) : initialArg;
+    }
+
+    {
+      isInHookUserCodeInDev = false;
+    }
+
+    workInProgressHook.memoizedState = initialState;
+
+    var _queue = workInProgressHook.queue = {
+      last: null,
+      dispatch: null
+    };
+
+    var _dispatch = _queue.dispatch = dispatchAction.bind(null, currentlyRenderingComponent, _queue);
+
+    return [workInProgressHook.memoizedState, _dispatch];
+  }
+}
+
+function useMemo(nextCreate, deps) {
+  currentlyRenderingComponent = resolveCurrentlyRenderingComponent();
+  workInProgressHook = createWorkInProgressHook();
+  var nextDeps = deps === undefined ? null : deps;
+
+  if (workInProgressHook !== null) {
+    var prevState = workInProgressHook.memoizedState;
+
+    if (prevState !== null) {
+      if (nextDeps !== null) {
+        var prevDeps = prevState[1];
+
+        if (areHookInputsEqual(nextDeps, prevDeps)) {
+          return prevState[0];
+        }
+      }
+    }
+  }
+
+  {
+    isInHookUserCodeInDev = true;
+  }
+
+  var nextValue = nextCreate();
+
+  {
+    isInHookUserCodeInDev = false;
+  }
+
+  workInProgressHook.memoizedState = [nextValue, nextDeps];
+  return nextValue;
+}
+
+function useRef(initialValue) {
+  currentlyRenderingComponent = resolveCurrentlyRenderingComponent();
+  workInProgressHook = createWorkInProgressHook();
+  var previousRef = workInProgressHook.memoizedState;
+
+  if (previousRef === null) {
+    var ref = {
+      current: initialValue
+    };
+
+    {
+      Object.seal(ref);
+    }
+
+    workInProgressHook.memoizedState = ref;
+    return ref;
+  } else {
+    return previousRef;
+  }
+}
+
+function useLayoutEffect(create, inputs) {
+  {
+    currentHookNameInDev = 'useLayoutEffect';
+
+    error('useLayoutEffect does nothing on the server, because its effect cannot ' + "be encoded into the server renderer's output format. This will lead " + 'to a mismatch between the initial, non-hydrated UI and the intended ' + 'UI. To avoid this, useLayoutEffect should only be used in ' + 'components that render exclusively on the client. ' + 'See https://fb.me/react-uselayouteffect-ssr for common fixes.');
+  }
+}
+
+function dispatchAction(componentIdentity, queue, action) {
+  if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
+    {
+      throw Error( "Too many re-renders. React limits the number of renders to prevent an infinite loop." );
+    }
+  }
+
+  if (componentIdentity === currentlyRenderingComponent) {
+    // This is a render phase update. Stash it in a lazily-created map of
+    // queue -> linked list of updates. After this render pass, we'll restart
+    // and apply the stashed updates on top of the work-in-progress hook.
+    didScheduleRenderPhaseUpdate = true;
+    var update = {
+      action: action,
+      next: null
+    };
+
+    if (renderPhaseUpdates === null) {
+      renderPhaseUpdates = new Map();
+    }
+
+    var firstRenderPhaseUpdate = renderPhaseUpdates.get(queue);
+
+    if (firstRenderPhaseUpdate === undefined) {
+      renderPhaseUpdates.set(queue, update);
+    } else {
+      // Append the update to the end of the list.
+      var lastRenderPhaseUpdate = firstRenderPhaseUpdate;
+
+      while (lastRenderPhaseUpdate.next !== null) {
+        lastRenderPhaseUpdate = lastRenderPhaseUpdate.next;
+      }
+
+      lastRenderPhaseUpdate.next = update;
+    }
+  }
+}
+
+function useCallback(callback, deps) {
+  // Callbacks are passed as they are in the server environment.
+  return callback;
+}
+
+function useResponder(responder, props) {
+  return {
+    props: props,
+    responder: responder
+  };
+}
+
+function useDeferredValue(value, config) {
+  resolveCurrentlyRenderingComponent();
+  return value;
+}
+
+function useTransition(config) {
+  resolveCurrentlyRenderingComponent();
+
+  var startTransition = function (callback) {
+    callback();
+  };
+
+  return [startTransition, false];
+}
+
+function noop() {}
+
+var currentThreadID = 0;
+function setCurrentThreadID(threadID) {
+  currentThreadID = threadID;
+}
+var Dispatcher = {
+  readContext: readContext,
+  useContext: useContext,
+  useMemo: useMemo,
+  useReducer: useReducer,
+  useRef: useRef,
+  useState: useState,
+  useLayoutEffect: useLayoutEffect,
+  useCallback: useCallback,
+  // useImperativeHandle is not run in the server environment
+  useImperativeHandle: noop,
+  // Effects are not run in the server environment.
+  useEffect: noop,
+  // Debugging effect
+  useDebugValue: noop,
+  useResponder: useResponder,
+  useDeferredValue: useDeferredValue,
+  useTransition: useTransition
+};
+
+var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+var MATH_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
+var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+var Namespaces = {
+  html: HTML_NAMESPACE,
+  mathml: MATH_NAMESPACE,
+  svg: SVG_NAMESPACE
+}; // Assumes there is no parent namespace.
+
+function getIntrinsicNamespace(type) {
+  switch (type) {
+    case 'svg':
+      return SVG_NAMESPACE;
+
+    case 'math':
+      return MATH_NAMESPACE;
+
+    default:
+      return HTML_NAMESPACE;
+  }
+}
+function getChildNamespace(parentNamespace, type) {
+  if (parentNamespace == null || parentNamespace === HTML_NAMESPACE) {
+    // No (or default) parent namespace: potential entry point.
+    return getIntrinsicNamespace(type);
+  }
+
+  if (parentNamespace === SVG_NAMESPACE && type === 'foreignObject') {
+    // We're leaving SVG.
+    return HTML_NAMESPACE;
+  } // By default, pass namespace below.
+
+
+  return parentNamespace;
+}
+
+var ReactDebugCurrentFrame$2 = null;
+var ReactControlledValuePropTypes = {
+  checkPropTypes: null
+};
+
+{
+  ReactDebugCurrentFrame$2 = ReactSharedInternals.ReactDebugCurrentFrame;
+  var hasReadOnlyValue = {
+    button: true,
+    checkbox: true,
+    image: true,
+    hidden: true,
+    radio: true,
+    reset: true,
+    submit: true
+  };
+  var propTypes = {
+    value: function (props, propName, componentName) {
+      if (hasReadOnlyValue[props.type] || props.onChange || props.readOnly || props.disabled || props[propName] == null || enableDeprecatedFlareAPI ) {
+        return null;
+      }
+
+      return new Error('You provided a `value` prop to a form field without an ' + '`onChange` handler. This will render a read-only field. If ' + 'the field should be mutable use `defaultValue`. Otherwise, ' + 'set either `onChange` or `readOnly`.');
+    },
+    checked: function (props, propName, componentName) {
+      if (props.onChange || props.readOnly || props.disabled || props[propName] == null || enableDeprecatedFlareAPI ) {
+        return null;
+      }
+
+      return new Error('You provided a `checked` prop to a form field without an ' + '`onChange` handler. This will render a read-only field. If ' + 'the field should be mutable use `defaultChecked`. Otherwise, ' + 'set either `onChange` or `readOnly`.');
+    }
+  };
+  /**
+   * Provide a linked `value` attribute for controlled forms. You should not use
+   * this outside of the ReactDOM controlled form components.
+   */
+
+  ReactControlledValuePropTypes.checkPropTypes = function (tagName, props) {
+    checkPropTypes(propTypes, props, 'prop', tagName, ReactDebugCurrentFrame$2.getStackAddendum);
+  };
+}
+
+// For HTML, certain tags should omit their close tag. We keep a whitelist for
+// those special-case tags.
+var omittedCloseTags = {
+  area: true,
+  base: true,
+  br: true,
+  col: true,
+  embed: true,
+  hr: true,
+  img: true,
+  input: true,
+  keygen: true,
+  link: true,
+  meta: true,
+  param: true,
+  source: true,
+  track: true,
+  wbr: true // NOTE: menuitem's close tag should be omitted, but that causes problems.
+
+};
+
+// `omittedCloseTags` except that `menuitem` should still have its closing tag.
+
+var voidElementTags = _assign({
+  menuitem: true
+}, omittedCloseTags);
+
+var HTML = '__html';
+var ReactDebugCurrentFrame$3 = null;
+
+{
+  ReactDebugCurrentFrame$3 = ReactSharedInternals.ReactDebugCurrentFrame;
+}
+
+function assertValidProps(tag, props) {
+  if (!props) {
+    return;
+  } // Note the use of `==` which checks for null or undefined.
+
+
+  if (voidElementTags[tag]) {
+    if (!(props.children == null && props.dangerouslySetInnerHTML == null)) {
+      {
+        throw Error( tag + " is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`." + ( ReactDebugCurrentFrame$3.getStackAddendum() ) );
+      }
+    }
+  }
+
+  if (props.dangerouslySetInnerHTML != null) {
+    if (!(props.children == null)) {
+      {
+        throw Error( "Can only set one of `children` or `props.dangerouslySetInnerHTML`." );
+      }
+    }
+
+    if (!(typeof props.dangerouslySetInnerHTML === 'object' && HTML in props.dangerouslySetInnerHTML)) {
+      {
+        throw Error( "`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://fb.me/react-invariant-dangerously-set-inner-html for more information." );
+      }
+    }
+  }
+
+  {
+    if (!props.suppressContentEditableWarning && props.contentEditable && props.children != null) {
+      error('A component is `contentEditable` and contains `children` managed by ' + 'React. It is now your responsibility to guarantee that none of ' + 'those nodes are unexpectedly modified or duplicated. This is ' + 'probably not intentional.');
+    }
+  }
+
+  if (!(props.style == null || typeof props.style === 'object')) {
+    {
+      throw Error( "The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX." + ( ReactDebugCurrentFrame$3.getStackAddendum() ) );
+    }
+  }
+}
+
+/**
+ * CSS properties which accept numbers but are not in units of "px".
+ */
+var isUnitlessNumber = {
+  animationIterationCount: true,
+  borderImageOutset: true,
+  borderImageSlice: true,
+  borderImageWidth: true,
+  boxFlex: true,
+  boxFlexGroup: true,
+  boxOrdinalGroup: true,
+  columnCount: true,
+  columns: true,
+  flex: true,
+  flexGrow: true,
+  flexPositive: true,
+  flexShrink: true,
+  flexNegative: true,
+  flexOrder: true,
+  gridArea: true,
+  gridRow: true,
+  gridRowEnd: true,
+  gridRowSpan: true,
+  gridRowStart: true,
+  gridColumn: true,
+  gridColumnEnd: true,
+  gridColumnSpan: true,
+  gridColumnStart: true,
+  fontWeight: true,
+  lineClamp: true,
+  lineHeight: true,
+  opacity: true,
+  order: true,
+  orphans: true,
+  tabSize: true,
+  widows: true,
+  zIndex: true,
+  zoom: true,
+  // SVG-related properties
+  fillOpacity: true,
+  floodOpacity: true,
+  stopOpacity: true,
+  strokeDasharray: true,
+  strokeDashoffset: true,
+  strokeMiterlimit: true,
+  strokeOpacity: true,
+  strokeWidth: true
+};
+/**
+ * @param {string} prefix vendor-specific prefix, eg: Webkit
+ * @param {string} key style name, eg: transitionDuration
+ * @return {string} style name prefixed with `prefix`, properly camelCased, eg:
+ * WebkitTransitionDuration
+ */
+
+function prefixKey(prefix, key) {
+  return prefix + key.charAt(0).toUpperCase() + key.substring(1);
+}
+/**
+ * Support style names that may come passed in prefixed by adding permutations
+ * of vendor prefixes.
+ */
+
+
+var prefixes = ['Webkit', 'ms', 'Moz', 'O']; // Using Object.keys here, or else the vanilla for-in loop makes IE8 go into an
+// infinite loop, because it iterates over the newly added props too.
+
+Object.keys(isUnitlessNumber).forEach(function (prop) {
+  prefixes.forEach(function (prefix) {
+    isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
+  });
+});
+
+/**
+ * Convert a value into the proper css writable value. The style name `name`
+ * should be logical (no hyphens), as specified
+ * in `CSSProperty.isUnitlessNumber`.
+ *
+ * @param {string} name CSS property name such as `topMargin`.
+ * @param {*} value CSS property value such as `10px`.
+ * @return {string} Normalized style value with dimensions applied.
+ */
+
+function dangerousStyleValue(name, value, isCustomProperty) {
+  // Note that we've removed escapeTextForBrowser() calls here since the
+  // whole string will be escaped when the attribute is injected into
+  // the markup. If you provide unsafe user data here they can inject
+  // arbitrary CSS which may be problematic (I couldn't repro this):
+  // https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet
+  // http://www.thespanner.co.uk/2007/11/26/ultimate-xss-css-injection/
+  // This is not an XSS hole but instead a potential CSS injection issue
+  // which has lead to a greater discussion about how we're going to
+  // trust URLs moving forward. See #2115901
+  var isEmpty = value == null || typeof value === 'boolean' || value === '';
+
+  if (isEmpty) {
+    return '';
+  }
+
+  if (!isCustomProperty && typeof value === 'number' && value !== 0 && !(isUnitlessNumber.hasOwnProperty(name) && isUnitlessNumber[name])) {
+    return value + 'px'; // Presumes implicit 'px' suffix for unitless numbers
+  }
+
+  return ('' + value).trim();
+}
+
+var uppercasePattern = /([A-Z])/g;
+var msPattern = /^ms-/;
+/**
+ * Hyphenates a camelcased CSS property name, for example:
+ *
+ *   > hyphenateStyleName('backgroundColor')
+ *   < "background-color"
+ *   > hyphenateStyleName('MozTransition')
+ *   < "-moz-transition"
+ *   > hyphenateStyleName('msTransition')
+ *   < "-ms-transition"
+ *
+ * As Modernizr suggests (http://modernizr.com/docs/#prefixed), an `ms` prefix
+ * is converted to `-ms-`.
+ */
+
+function hyphenateStyleName(name) {
+  return name.replace(uppercasePattern, '-$1').toLowerCase().replace(msPattern, '-ms-');
+}
+
+function isCustomComponent(tagName, props) {
+  if (tagName.indexOf('-') === -1) {
+    return typeof props.is === 'string';
+  }
+
+  switch (tagName) {
+    // These are reserved SVG and MathML elements.
+    // We don't mind this whitelist too much because we expect it to never grow.
+    // The alternative is to track the namespace in a few places which is convoluted.
+    // https://w3c.github.io/webcomponents/spec/custom/#custom-elements-core-concepts
+    case 'annotation-xml':
+    case 'color-profile':
+    case 'font-face':
+    case 'font-face-src':
+    case 'font-face-uri':
+    case 'font-face-format':
+    case 'font-face-name':
+    case 'missing-glyph':
+      return false;
+
+    default:
+      return true;
+  }
+}
+
+var warnValidStyle = function () {};
+
+{
+  // 'msTransform' is correct, but the other prefixes should be capitalized
+  var badVendoredStyleNamePattern = /^(?:webkit|moz|o)[A-Z]/;
+  var msPattern$1 = /^-ms-/;
+  var hyphenPattern = /-(.)/g; // style values shouldn't contain a semicolon
+
+  var badStyleValueWithSemicolonPattern = /;\s*$/;
+  var warnedStyleNames = {};
+  var warnedStyleValues = {};
+  var warnedForNaNValue = false;
+  var warnedForInfinityValue = false;
+
+  var camelize = function (string) {
+    return string.replace(hyphenPattern, function (_, character) {
+      return character.toUpperCase();
+    });
+  };
+
+  var warnHyphenatedStyleName = function (name) {
+    if (warnedStyleNames.hasOwnProperty(name) && warnedStyleNames[name]) {
+      return;
+    }
+
+    warnedStyleNames[name] = true;
+
+    error('Unsupported style property %s. Did you mean %s?', name, // As Andi Smith suggests
+    // (http://www.andismith.com/blog/2012/02/modernizr-prefixed/), an `-ms` prefix
+    // is converted to lowercase `ms`.
+    camelize(name.replace(msPattern$1, 'ms-')));
+  };
+
+  var warnBadVendoredStyleName = function (name) {
+    if (warnedStyleNames.hasOwnProperty(name) && warnedStyleNames[name]) {
+      return;
+    }
+
+    warnedStyleNames[name] = true;
+
+    error('Unsupported vendor-prefixed style property %s. Did you mean %s?', name, name.charAt(0).toUpperCase() + name.slice(1));
+  };
+
+  var warnStyleValueWithSemicolon = function (name, value) {
+    if (warnedStyleValues.hasOwnProperty(value) && warnedStyleValues[value]) {
+      return;
+    }
+
+    warnedStyleValues[value] = true;
+
+    error("Style property values shouldn't contain a semicolon. " + 'Try "%s: %s" instead.', name, value.replace(badStyleValueWithSemicolonPattern, ''));
+  };
+
+  var warnStyleValueIsNaN = function (name, value) {
+    if (warnedForNaNValue) {
+      return;
+    }
+
+    warnedForNaNValue = true;
+
+    error('`NaN` is an invalid value for the `%s` css style property.', name);
+  };
+
+  var warnStyleValueIsInfinity = function (name, value) {
+    if (warnedForInfinityValue) {
+      return;
+    }
+
+    warnedForInfinityValue = true;
+
+    error('`Infinity` is an invalid value for the `%s` css style property.', name);
+  };
+
+  warnValidStyle = function (name, value) {
+    if (name.indexOf('-') > -1) {
+      warnHyphenatedStyleName(name);
+    } else if (badVendoredStyleNamePattern.test(name)) {
+      warnBadVendoredStyleName(name);
+    } else if (badStyleValueWithSemicolonPattern.test(value)) {
+      warnStyleValueWithSemicolon(name, value);
+    }
+
+    if (typeof value === 'number') {
+      if (isNaN(value)) {
+        warnStyleValueIsNaN(name, value);
+      } else if (!isFinite(value)) {
+        warnStyleValueIsInfinity(name, value);
+      }
+    }
+  };
+}
+
+var warnValidStyle$1 = warnValidStyle;
+
+var ariaProperties = {
+  'aria-current': 0,
+  // state
+  'aria-details': 0,
+  'aria-disabled': 0,
+  // state
+  'aria-hidden': 0,
+  // state
+  'aria-invalid': 0,
+  // state
+  'aria-keyshortcuts': 0,
+  'aria-label': 0,
+  'aria-roledescription': 0,
+  // Widget Attributes
+  'aria-autocomplete': 0,
+  'aria-checked': 0,
+  'aria-expanded': 0,
+  'aria-haspopup': 0,
+  'aria-level': 0,
+  'aria-modal': 0,
+  'aria-multiline': 0,
+  'aria-multiselectable': 0,
+  'aria-orientation': 0,
+  'aria-placeholder': 0,
+  'aria-pressed': 0,
+  'aria-readonly': 0,
+  'aria-required': 0,
+  'aria-selected': 0,
+  'aria-sort': 0,
+  'aria-valuemax': 0,
+  'aria-valuemin': 0,
+  'aria-valuenow': 0,
+  'aria-valuetext': 0,
+  // Live Region Attributes
+  'aria-atomic': 0,
+  'aria-busy': 0,
+  'aria-live': 0,
+  'aria-relevant': 0,
+  // Drag-and-Drop Attributes
+  'aria-dropeffect': 0,
+  'aria-grabbed': 0,
+  // Relationship Attributes
+  'aria-activedescendant': 0,
+  'aria-colcount': 0,
+  'aria-colindex': 0,
+  'aria-colspan': 0,
+  'aria-controls': 0,
+  'aria-describedby': 0,
+  'aria-errormessage': 0,
+  'aria-flowto': 0,
+  'aria-labelledby': 0,
+  'aria-owns': 0,
+  'aria-posinset': 0,
+  'aria-rowcount': 0,
+  'aria-rowindex': 0,
+  'aria-rowspan': 0,
+  'aria-setsize': 0
+};
+
+var warnedProperties = {};
+var rARIA = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
+var rARIACamel = new RegExp('^(aria)[A-Z][' + ATTRIBUTE_NAME_CHAR + ']*$');
+var hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+
+function validateProperty(tagName, name) {
+  {
+    if (hasOwnProperty$1.call(warnedProperties, name) && warnedProperties[name]) {
+      return true;
+    }
+
+    if (rARIACamel.test(name)) {
+      var ariaName = 'aria-' + name.slice(4).toLowerCase();
+      var correctName = ariaProperties.hasOwnProperty(ariaName) ? ariaName : null; // If this is an aria-* attribute, but is not listed in the known DOM
+      // DOM properties, then it is an invalid aria-* attribute.
+
+      if (correctName == null) {
+        error('Invalid ARIA attribute `%s`. ARIA attributes follow the pattern aria-* and must be lowercase.', name);
+
+        warnedProperties[name] = true;
+        return true;
+      } // aria-* attributes should be lowercase; suggest the lowercase version.
+
+
+      if (name !== correctName) {
+        error('Invalid ARIA attribute `%s`. Did you mean `%s`?', name, correctName);
+
+        warnedProperties[name] = true;
+        return true;
+      }
+    }
+
+    if (rARIA.test(name)) {
+      var lowerCasedName = name.toLowerCase();
+      var standardName = ariaProperties.hasOwnProperty(lowerCasedName) ? lowerCasedName : null; // If this is an aria-* attribute, but is not listed in the known DOM
+      // DOM properties, then it is an invalid aria-* attribute.
+
+      if (standardName == null) {
+        warnedProperties[name] = true;
+        return false;
+      } // aria-* attributes should be lowercase; suggest the lowercase version.
+
+
+      if (name !== standardName) {
+        error('Unknown ARIA attribute `%s`. Did you mean `%s`?', name, standardName);
+
+        warnedProperties[name] = true;
+        return true;
+      }
+    }
+  }
+
+  return true;
+}
+
+function warnInvalidARIAProps(type, props) {
+  {
+    var invalidProps = [];
+
+    for (var key in props) {
+      var isValid = validateProperty(type, key);
+
+      if (!isValid) {
+        invalidProps.push(key);
+      }
+    }
+
+    var unknownPropString = invalidProps.map(function (prop) {
+      return '`' + prop + '`';
+    }).join(', ');
+
+    if (invalidProps.length === 1) {
+      error('Invalid aria prop %s on <%s> tag. ' + 'For details, see https://fb.me/invalid-aria-prop', unknownPropString, type);
+    } else if (invalidProps.length > 1) {
+      error('Invalid aria props %s on <%s> tag. ' + 'For details, see https://fb.me/invalid-aria-prop', unknownPropString, type);
+    }
+  }
+}
+
+function validateProperties(type, props) {
+  if (isCustomComponent(type, props)) {
+    return;
+  }
+
+  warnInvalidARIAProps(type, props);
+}
+
+var didWarnValueNull = false;
+function validateProperties$1(type, props) {
+  {
+    if (type !== 'input' && type !== 'textarea' && type !== 'select') {
+      return;
+    }
+
+    if (props != null && props.value === null && !didWarnValueNull) {
+      didWarnValueNull = true;
+
+      if (type === 'select' && props.multiple) {
+        error('`value` prop on `%s` should not be null. ' + 'Consider using an empty array when `multiple` is set to `true` ' + 'to clear the component or `undefined` for uncontrolled components.', type);
+      } else {
+        error('`value` prop on `%s` should not be null. ' + 'Consider using an empty string to clear the component or `undefined` ' + 'for uncontrolled components.', type);
+      }
+    }
+  }
+}
+
+/**
+ * Mapping from registration name to plugin module
+ */
+
+var registrationNameModules = {};
+/**
+ * Mapping from lowercase registration names to the properly cased version,
+ * used to warn in the case of missing event handlers. Available
+ * only in true.
+ * @type {Object}
+ */
+
+var possibleRegistrationNames =  {} ; // Trust the developer to only use possibleRegistrationNames in true
+
+// When adding attributes to the HTML or SVG whitelist, be sure to
+// also add them to this module to ensure casing and incorrect name
+// warnings.
+var possibleStandardNames = {
+  // HTML
+  accept: 'accept',
+  acceptcharset: 'acceptCharset',
+  'accept-charset': 'acceptCharset',
+  accesskey: 'accessKey',
+  action: 'action',
+  allowfullscreen: 'allowFullScreen',
+  alt: 'alt',
+  as: 'as',
+  async: 'async',
+  autocapitalize: 'autoCapitalize',
+  autocomplete: 'autoComplete',
+  autocorrect: 'autoCorrect',
+  autofocus: 'autoFocus',
+  autoplay: 'autoPlay',
+  autosave: 'autoSave',
+  capture: 'capture',
+  cellpadding: 'cellPadding',
+  cellspacing: 'cellSpacing',
+  challenge: 'challenge',
+  charset: 'charSet',
+  checked: 'checked',
+  children: 'children',
+  cite: 'cite',
+  class: 'className',
+  classid: 'classID',
+  classname: 'className',
+  cols: 'cols',
+  colspan: 'colSpan',
+  content: 'content',
+  contenteditable: 'contentEditable',
+  contextmenu: 'contextMenu',
+  controls: 'controls',
+  controlslist: 'controlsList',
+  coords: 'coords',
+  crossorigin: 'crossOrigin',
+  dangerouslysetinnerhtml: 'dangerouslySetInnerHTML',
+  data: 'data',
+  datetime: 'dateTime',
+  default: 'default',
+  defaultchecked: 'defaultChecked',
+  defaultvalue: 'defaultValue',
+  defer: 'defer',
+  dir: 'dir',
+  disabled: 'disabled',
+  disablepictureinpicture: 'disablePictureInPicture',
+  download: 'download',
+  draggable: 'draggable',
+  enctype: 'encType',
+  for: 'htmlFor',
+  form: 'form',
+  formmethod: 'formMethod',
+  formaction: 'formAction',
+  formenctype: 'formEncType',
+  formnovalidate: 'formNoValidate',
+  formtarget: 'formTarget',
+  frameborder: 'frameBorder',
+  headers: 'headers',
+  height: 'height',
+  hidden: 'hidden',
+  high: 'high',
+  href: 'href',
+  hreflang: 'hrefLang',
+  htmlfor: 'htmlFor',
+  httpequiv: 'httpEquiv',
+  'http-equiv': 'httpEquiv',
+  icon: 'icon',
+  id: 'id',
+  innerhtml: 'innerHTML',
+  inputmode: 'inputMode',
+  integrity: 'integrity',
+  is: 'is',
+  itemid: 'itemID',
+  itemprop: 'itemProp',
+  itemref: 'itemRef',
+  itemscope: 'itemScope',
+  itemtype: 'itemType',
+  keyparams: 'keyParams',
+  keytype: 'keyType',
+  kind: 'kind',
+  label: 'label',
+  lang: 'lang',
+  list: 'list',
+  loop: 'loop',
+  low: 'low',
+  manifest: 'manifest',
+  marginwidth: 'marginWidth',
+  marginheight: 'marginHeight',
+  max: 'max',
+  maxlength: 'maxLength',
+  media: 'media',
+  mediagroup: 'mediaGroup',
+  method: 'method',
+  min: 'min',
+  minlength: 'minLength',
+  multiple: 'multiple',
+  muted: 'muted',
+  name: 'name',
+  nomodule: 'noModule',
+  nonce: 'nonce',
+  novalidate: 'noValidate',
+  open: 'open',
+  optimum: 'optimum',
+  pattern: 'pattern',
+  placeholder: 'placeholder',
+  playsinline: 'playsInline',
+  poster: 'poster',
+  preload: 'preload',
+  profile: 'profile',
+  radiogroup: 'radioGroup',
+  readonly: 'readOnly',
+  referrerpolicy: 'referrerPolicy',
+  rel: 'rel',
+  required: 'required',
+  reversed: 'reversed',
+  role: 'role',
+  rows: 'rows',
+  rowspan: 'rowSpan',
+  sandbox: 'sandbox',
+  scope: 'scope',
+  scoped: 'scoped',
+  scrolling: 'scrolling',
+  seamless: 'seamless',
+  selected: 'selected',
+  shape: 'shape',
+  size: 'size',
+  sizes: 'sizes',
+  span: 'span',
+  spellcheck: 'spellCheck',
+  src: 'src',
+  srcdoc: 'srcDoc',
+  srclang: 'srcLang',
+  srcset: 'srcSet',
+  start: 'start',
+  step: 'step',
+  style: 'style',
+  summary: 'summary',
+  tabindex: 'tabIndex',
+  target: 'target',
+  title: 'title',
+  type: 'type',
+  usemap: 'useMap',
+  value: 'value',
+  width: 'width',
+  wmode: 'wmode',
+  wrap: 'wrap',
+  // SVG
+  about: 'about',
+  accentheight: 'accentHeight',
+  'accent-height': 'accentHeight',
+  accumulate: 'accumulate',
+  additive: 'additive',
+  alignmentbaseline: 'alignmentBaseline',
+  'alignment-baseline': 'alignmentBaseline',
+  allowreorder: 'allowReorder',
+  alphabetic: 'alphabetic',
+  amplitude: 'amplitude',
+  arabicform: 'arabicForm',
+  'arabic-form': 'arabicForm',
+  ascent: 'ascent',
+  attributename: 'attributeName',
+  attributetype: 'attributeType',
+  autoreverse: 'autoReverse',
+  azimuth: 'azimuth',
+  basefrequency: 'baseFrequency',
+  baselineshift: 'baselineShift',
+  'baseline-shift': 'baselineShift',
+  baseprofile: 'baseProfile',
+  bbox: 'bbox',
+  begin: 'begin',
+  bias: 'bias',
+  by: 'by',
+  calcmode: 'calcMode',
+  capheight: 'capHeight',
+  'cap-height': 'capHeight',
+  clip: 'clip',
+  clippath: 'clipPath',
+  'clip-path': 'clipPath',
+  clippathunits: 'clipPathUnits',
+  cliprule: 'clipRule',
+  'clip-rule': 'clipRule',
+  color: 'color',
+  colorinterpolation: 'colorInterpolation',
+  'color-interpolation': 'colorInterpolation',
+  colorinterpolationfilters: 'colorInterpolationFilters',
+  'color-interpolation-filters': 'colorInterpolationFilters',
+  colorprofile: 'colorProfile',
+  'color-profile': 'colorProfile',
+  colorrendering: 'colorRendering',
+  'color-rendering': 'colorRendering',
+  contentscripttype: 'contentScriptType',
+  contentstyletype: 'contentStyleType',
+  cursor: 'cursor',
+  cx: 'cx',
+  cy: 'cy',
+  d: 'd',
+  datatype: 'datatype',
+  decelerate: 'decelerate',
+  descent: 'descent',
+  diffuseconstant: 'diffuseConstant',
+  direction: 'direction',
+  display: 'display',
+  divisor: 'divisor',
+  dominantbaseline: 'dominantBaseline',
+  'dominant-baseline': 'dominantBaseline',
+  dur: 'dur',
+  dx: 'dx',
+  dy: 'dy',
+  edgemode: 'edgeMode',
+  elevation: 'elevation',
+  enablebackground: 'enableBackground',
+  'enable-background': 'enableBackground',
+  end: 'end',
+  exponent: 'exponent',
+  externalresourcesrequired: 'externalResourcesRequired',
+  fill: 'fill',
+  fillopacity: 'fillOpacity',
+  'fill-opacity': 'fillOpacity',
+  fillrule: 'fillRule',
+  'fill-rule': 'fillRule',
+  filter: 'filter',
+  filterres: 'filterRes',
+  filterunits: 'filterUnits',
+  floodopacity: 'floodOpacity',
+  'flood-opacity': 'floodOpacity',
+  floodcolor: 'floodColor',
+  'flood-color': 'floodColor',
+  focusable: 'focusable',
+  fontfamily: 'fontFamily',
+  'font-family': 'fontFamily',
+  fontsize: 'fontSize',
+  'font-size': 'fontSize',
+  fontsizeadjust: 'fontSizeAdjust',
+  'font-size-adjust': 'fontSizeAdjust',
+  fontstretch: 'fontStretch',
+  'font-stretch': 'fontStretch',
+  fontstyle: 'fontStyle',
+  'font-style': 'fontStyle',
+  fontvariant: 'fontVariant',
+  'font-variant': 'fontVariant',
+  fontweight: 'fontWeight',
+  'font-weight': 'fontWeight',
+  format: 'format',
+  from: 'from',
+  fx: 'fx',
+  fy: 'fy',
+  g1: 'g1',
+  g2: 'g2',
+  glyphname: 'glyphName',
+  'glyph-name': 'glyphName',
+  glyphorientationhorizontal: 'glyphOrientationHorizontal',
+  'glyph-orientation-horizontal': 'glyphOrientationHorizontal',
+  glyphorientationvertical: 'glyphOrientationVertical',
+  'glyph-orientation-vertical': 'glyphOrientationVertical',
+  glyphref: 'glyphRef',
+  gradienttransform: 'gradientTransform',
+  gradientunits: 'gradientUnits',
+  hanging: 'hanging',
+  horizadvx: 'horizAdvX',
+  'horiz-adv-x': 'horizAdvX',
+  horizoriginx: 'horizOriginX',
+  'horiz-origin-x': 'horizOriginX',
+  ideographic: 'ideographic',
+  imagerendering: 'imageRendering',
+  'image-rendering': 'imageRendering',
+  in2: 'in2',
+  in: 'in',
+  inlist: 'inlist',
+  intercept: 'intercept',
+  k1: 'k1',
+  k2: 'k2',
+  k3: 'k3',
+  k4: 'k4',
+  k: 'k',
+  kernelmatrix: 'kernelMatrix',
+  kernelunitlength: 'kernelUnitLength',
+  kerning: 'kerning',
+  keypoints: 'keyPoints',
+  keysplines: 'keySplines',
+  keytimes: 'keyTimes',
+  lengthadjust: 'lengthAdjust',
+  letterspacing: 'letterSpacing',
+  'letter-spacing': 'letterSpacing',
+  lightingcolor: 'lightingColor',
+  'lighting-color': 'lightingColor',
+  limitingconeangle: 'limitingConeAngle',
+  local: 'local',
+  markerend: 'markerEnd',
+  'marker-end': 'markerEnd',
+  markerheight: 'markerHeight',
+  markermid: 'markerMid',
+  'marker-mid': 'markerMid',
+  markerstart: 'markerStart',
+  'marker-start': 'markerStart',
+  markerunits: 'markerUnits',
+  markerwidth: 'markerWidth',
+  mask: 'mask',
+  maskcontentunits: 'maskContentUnits',
+  maskunits: 'maskUnits',
+  mathematical: 'mathematical',
+  mode: 'mode',
+  numoctaves: 'numOctaves',
+  offset: 'offset',
+  opacity: 'opacity',
+  operator: 'operator',
+  order: 'order',
+  orient: 'orient',
+  orientation: 'orientation',
+  origin: 'origin',
+  overflow: 'overflow',
+  overlineposition: 'overlinePosition',
+  'overline-position': 'overlinePosition',
+  overlinethickness: 'overlineThickness',
+  'overline-thickness': 'overlineThickness',
+  paintorder: 'paintOrder',
+  'paint-order': 'paintOrder',
+  panose1: 'panose1',
+  'panose-1': 'panose1',
+  pathlength: 'pathLength',
+  patterncontentunits: 'patternContentUnits',
+  patterntransform: 'patternTransform',
+  patternunits: 'patternUnits',
+  pointerevents: 'pointerEvents',
+  'pointer-events': 'pointerEvents',
+  points: 'points',
+  pointsatx: 'pointsAtX',
+  pointsaty: 'pointsAtY',
+  pointsatz: 'pointsAtZ',
+  prefix: 'prefix',
+  preservealpha: 'preserveAlpha',
+  preserveaspectratio: 'preserveAspectRatio',
+  primitiveunits: 'primitiveUnits',
+  property: 'property',
+  r: 'r',
+  radius: 'radius',
+  refx: 'refX',
+  refy: 'refY',
+  renderingintent: 'renderingIntent',
+  'rendering-intent': 'renderingIntent',
+  repeatcount: 'repeatCount',
+  repeatdur: 'repeatDur',
+  requiredextensions: 'requiredExtensions',
+  requiredfeatures: 'requiredFeatures',
+  resource: 'resource',
+  restart: 'restart',
+  result: 'result',
+  results: 'results',
+  rotate: 'rotate',
+  rx: 'rx',
+  ry: 'ry',
+  scale: 'scale',
+  security: 'security',
+  seed: 'seed',
+  shaperendering: 'shapeRendering',
+  'shape-rendering': 'shapeRendering',
+  slope: 'slope',
+  spacing: 'spacing',
+  specularconstant: 'specularConstant',
+  specularexponent: 'specularExponent',
+  speed: 'speed',
+  spreadmethod: 'spreadMethod',
+  startoffset: 'startOffset',
+  stddeviation: 'stdDeviation',
+  stemh: 'stemh',
+  stemv: 'stemv',
+  stitchtiles: 'stitchTiles',
+  stopcolor: 'stopColor',
+  'stop-color': 'stopColor',
+  stopopacity: 'stopOpacity',
+  'stop-opacity': 'stopOpacity',
+  strikethroughposition: 'strikethroughPosition',
+  'strikethrough-position': 'strikethroughPosition',
+  strikethroughthickness: 'strikethroughThickness',
+  'strikethrough-thickness': 'strikethroughThickness',
+  string: 'string',
+  stroke: 'stroke',
+  strokedasharray: 'strokeDasharray',
+  'stroke-dasharray': 'strokeDasharray',
+  strokedashoffset: 'strokeDashoffset',
+  'stroke-dashoffset': 'strokeDashoffset',
+  strokelinecap: 'strokeLinecap',
+  'stroke-linecap': 'strokeLinecap',
+  strokelinejoin: 'strokeLinejoin',
+  'stroke-linejoin': 'strokeLinejoin',
+  strokemiterlimit: 'strokeMiterlimit',
+  'stroke-miterlimit': 'strokeMiterlimit',
+  strokewidth: 'strokeWidth',
+  'stroke-width': 'strokeWidth',
+  strokeopacity: 'strokeOpacity',
+  'stroke-opacity': 'strokeOpacity',
+  suppresscontenteditablewarning: 'suppressContentEditableWarning',
+  suppresshydrationwarning: 'suppressHydrationWarning',
+  surfacescale: 'surfaceScale',
+  systemlanguage: 'systemLanguage',
+  tablevalues: 'tableValues',
+  targetx: 'targetX',
+  targety: 'targetY',
+  textanchor: 'textAnchor',
+  'text-anchor': 'textAnchor',
+  textdecoration: 'textDecoration',
+  'text-decoration': 'textDecoration',
+  textlength: 'textLength',
+  textrendering: 'textRendering',
+  'text-rendering': 'textRendering',
+  to: 'to',
+  transform: 'transform',
+  typeof: 'typeof',
+  u1: 'u1',
+  u2: 'u2',
+  underlineposition: 'underlinePosition',
+  'underline-position': 'underlinePosition',
+  underlinethickness: 'underlineThickness',
+  'underline-thickness': 'underlineThickness',
+  unicode: 'unicode',
+  unicodebidi: 'unicodeBidi',
+  'unicode-bidi': 'unicodeBidi',
+  unicoderange: 'unicodeRange',
+  'unicode-range': 'unicodeRange',
+  unitsperem: 'unitsPerEm',
+  'units-per-em': 'unitsPerEm',
+  unselectable: 'unselectable',
+  valphabetic: 'vAlphabetic',
+  'v-alphabetic': 'vAlphabetic',
+  values: 'values',
+  vectoreffect: 'vectorEffect',
+  'vector-effect': 'vectorEffect',
+  version: 'version',
+  vertadvy: 'vertAdvY',
+  'vert-adv-y': 'vertAdvY',
+  vertoriginx: 'vertOriginX',
+  'vert-origin-x': 'vertOriginX',
+  vertoriginy: 'vertOriginY',
+  'vert-origin-y': 'vertOriginY',
+  vhanging: 'vHanging',
+  'v-hanging': 'vHanging',
+  videographic: 'vIdeographic',
+  'v-ideographic': 'vIdeographic',
+  viewbox: 'viewBox',
+  viewtarget: 'viewTarget',
+  visibility: 'visibility',
+  vmathematical: 'vMathematical',
+  'v-mathematical': 'vMathematical',
+  vocab: 'vocab',
+  widths: 'widths',
+  wordspacing: 'wordSpacing',
+  'word-spacing': 'wordSpacing',
+  writingmode: 'writingMode',
+  'writing-mode': 'writingMode',
+  x1: 'x1',
+  x2: 'x2',
+  x: 'x',
+  xchannelselector: 'xChannelSelector',
+  xheight: 'xHeight',
+  'x-height': 'xHeight',
+  xlinkactuate: 'xlinkActuate',
+  'xlink:actuate': 'xlinkActuate',
+  xlinkarcrole: 'xlinkArcrole',
+  'xlink:arcrole': 'xlinkArcrole',
+  xlinkhref: 'xlinkHref',
+  'xlink:href': 'xlinkHref',
+  xlinkrole: 'xlinkRole',
+  'xlink:role': 'xlinkRole',
+  xlinkshow: 'xlinkShow',
+  'xlink:show': 'xlinkShow',
+  xlinktitle: 'xlinkTitle',
+  'xlink:title': 'xlinkTitle',
+  xlinktype: 'xlinkType',
+  'xlink:type': 'xlinkType',
+  xmlbase: 'xmlBase',
+  'xml:base': 'xmlBase',
+  xmllang: 'xmlLang',
+  'xml:lang': 'xmlLang',
+  xmlns: 'xmlns',
+  'xml:space': 'xmlSpace',
+  xmlnsxlink: 'xmlnsXlink',
+  'xmlns:xlink': 'xmlnsXlink',
+  xmlspace: 'xmlSpace',
+  y1: 'y1',
+  y2: 'y2',
+  y: 'y',
+  ychannelselector: 'yChannelSelector',
+  z: 'z',
+  zoomandpan: 'zoomAndPan'
+};
+
+var validateProperty$1 = function () {};
+
+{
+  var warnedProperties$1 = {};
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+  var EVENT_NAME_REGEX = /^on./;
+  var INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
+  var rARIA$1 = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
+  var rARIACamel$1 = new RegExp('^(aria)[A-Z][' + ATTRIBUTE_NAME_CHAR + ']*$');
+
+  validateProperty$1 = function (tagName, name, value, canUseEventSystem) {
+    if (_hasOwnProperty.call(warnedProperties$1, name) && warnedProperties$1[name]) {
+      return true;
+    }
+
+    var lowerCasedName = name.toLowerCase();
+
+    if (lowerCasedName === 'onfocusin' || lowerCasedName === 'onfocusout') {
+      error('React uses onFocus and onBlur instead of onFocusIn and onFocusOut. ' + 'All React events are normalized to bubble, so onFocusIn and onFocusOut ' + 'are not needed/supported by React.');
+
+      warnedProperties$1[name] = true;
+      return true;
+    } // We can't rely on the event system being injected on the server.
+
+
+    if (canUseEventSystem) {
+      if (registrationNameModules.hasOwnProperty(name)) {
+        return true;
+      }
+
+      var registrationName = possibleRegistrationNames.hasOwnProperty(lowerCasedName) ? possibleRegistrationNames[lowerCasedName] : null;
+
+      if (registrationName != null) {
+        error('Invalid event handler property `%s`. Did you mean `%s`?', name, registrationName);
+
+        warnedProperties$1[name] = true;
+        return true;
+      }
+
+      if (EVENT_NAME_REGEX.test(name)) {
+        error('Unknown event handler property `%s`. It will be ignored.', name);
+
+        warnedProperties$1[name] = true;
+        return true;
+      }
+    } else if (EVENT_NAME_REGEX.test(name)) {
+      // If no event plugins have been injected, we are in a server environment.
+      // So we can't tell if the event name is correct for sure, but we can filter
+      // out known bad ones like `onclick`. We can't suggest a specific replacement though.
+      if (INVALID_EVENT_NAME_REGEX.test(name)) {
+        error('Invalid event handler property `%s`. ' + 'React events use the camelCase naming convention, for example `onClick`.', name);
+      }
+
+      warnedProperties$1[name] = true;
+      return true;
+    } // Let the ARIA attribute hook validate ARIA attributes
+
+
+    if (rARIA$1.test(name) || rARIACamel$1.test(name)) {
+      return true;
+    }
+
+    if (lowerCasedName === 'innerhtml') {
+      error('Directly setting property `innerHTML` is not permitted. ' + 'For more information, lookup documentation on `dangerouslySetInnerHTML`.');
+
+      warnedProperties$1[name] = true;
+      return true;
+    }
+
+    if (lowerCasedName === 'aria') {
+      error('The `aria` attribute is reserved for future use in React. ' + 'Pass individual `aria-` attributes instead.');
+
+      warnedProperties$1[name] = true;
+      return true;
+    }
+
+    if (lowerCasedName === 'is' && value !== null && value !== undefined && typeof value !== 'string') {
+      error('Received a `%s` for a string attribute `is`. If this is expected, cast ' + 'the value to a string.', typeof value);
+
+      warnedProperties$1[name] = true;
+      return true;
+    }
+
+    if (typeof value === 'number' && isNaN(value)) {
+      error('Received NaN for the `%s` attribute. If this is expected, cast ' + 'the value to a string.', name);
+
+      warnedProperties$1[name] = true;
+      return true;
+    }
+
+    var propertyInfo = getPropertyInfo(name);
+    var isReserved = propertyInfo !== null && propertyInfo.type === RESERVED; // Known attributes should match the casing specified in the property config.
+
+    if (possibleStandardNames.hasOwnProperty(lowerCasedName)) {
+      var standardName = possibleStandardNames[lowerCasedName];
+
+      if (standardName !== name) {
+        error('Invalid DOM property `%s`. Did you mean `%s`?', name, standardName);
+
+        warnedProperties$1[name] = true;
+        return true;
+      }
+    } else if (!isReserved && name !== lowerCasedName) {
+      // Unknown attributes should have lowercase casing since that's how they
+      // will be cased anyway with server rendering.
+      error('React does not recognize the `%s` prop on a DOM element. If you ' + 'intentionally want it to appear in the DOM as a custom ' + 'attribute, spell it as lowercase `%s` instead. ' + 'If you accidentally passed it from a parent component, remove ' + 'it from the DOM element.', name, lowerCasedName);
+
+      warnedProperties$1[name] = true;
+      return true;
+    }
+
+    if (typeof value === 'boolean' && shouldRemoveAttributeWithWarning(name, value, propertyInfo, false)) {
+      if (value) {
+        error('Received `%s` for a non-boolean attribute `%s`.\n\n' + 'If you want to write it to the DOM, pass a string instead: ' + '%s="%s" or %s={value.toString()}.', value, name, name, value, name);
+      } else {
+        error('Received `%s` for a non-boolean attribute `%s`.\n\n' + 'If you want to write it to the DOM, pass a string instead: ' + '%s="%s" or %s={value.toString()}.\n\n' + 'If you used to conditionally omit it with %s={condition && value}, ' + 'pass %s={condition ? value : undefined} instead.', value, name, name, value, name, name, name);
+      }
+
+      warnedProperties$1[name] = true;
+      return true;
+    } // Now that we've validated casing, do not validate
+    // data types for reserved props
+
+
+    if (isReserved) {
+      return true;
+    } // Warn when a known attribute is a bad type
+
+
+    if (shouldRemoveAttributeWithWarning(name, value, propertyInfo, false)) {
+      warnedProperties$1[name] = true;
+      return false;
+    } // Warn when passing the strings 'false' or 'true' into a boolean prop
+
+
+    if ((value === 'false' || value === 'true') && propertyInfo !== null && propertyInfo.type === BOOLEAN) {
+      error('Received the string `%s` for the boolean attribute `%s`. ' + '%s ' + 'Did you mean %s={%s}?', value, name, value === 'false' ? 'The browser will interpret it as a truthy value.' : 'Although this works, it will not work as expected if you pass the string "false".', name, value);
+
+      warnedProperties$1[name] = true;
+      return true;
+    }
+
+    return true;
+  };
+}
+
+var warnUnknownProperties = function (type, props, canUseEventSystem) {
+  {
+    var unknownProps = [];
+
+    for (var key in props) {
+      var isValid = validateProperty$1(type, key, props[key], canUseEventSystem);
+
+      if (!isValid) {
+        unknownProps.push(key);
+      }
+    }
+
+    var unknownPropString = unknownProps.map(function (prop) {
+      return '`' + prop + '`';
+    }).join(', ');
+
+    if (unknownProps.length === 1) {
+      error('Invalid value for prop %s on <%s> tag. Either remove it from the element, ' + 'or pass a string or number value to keep it in the DOM. ' + 'For details, see https://fb.me/react-attribute-behavior', unknownPropString, type);
+    } else if (unknownProps.length > 1) {
+      error('Invalid values for props %s on <%s> tag. Either remove them from the element, ' + 'or pass a string or number value to keep them in the DOM. ' + 'For details, see https://fb.me/react-attribute-behavior', unknownPropString, type);
+    }
+  }
+};
+
+function validateProperties$2(type, props, canUseEventSystem) {
+  if (isCustomComponent(type, props)) {
+    return;
+  }
+
+  warnUnknownProperties(type, props, canUseEventSystem);
+}
+
+var toArray = React.Children.toArray; // This is only used in DEV.
+// Each entry is `this.stack` from a currently executing renderer instance.
+// (There may be more than one because ReactDOMServer is reentrant).
+// Each stack is an array of frames which may contain nested stacks of elements.
+
+var currentDebugStacks = [];
+var ReactCurrentDispatcher = ReactSharedInternals.ReactCurrentDispatcher;
+var ReactDebugCurrentFrame$4;
+var prevGetCurrentStackImpl = null;
+
+var getCurrentServerStackImpl = function () {
+  return '';
+};
+
+var describeStackFrame = function (element) {
+  return '';
+};
+
+var validatePropertiesInDevelopment = function (type, props) {};
+
+var pushCurrentDebugStack = function (stack) {};
+
+var pushElementToDebugStack = function (element) {};
+
+var popCurrentDebugStack = function () {};
+
+var hasWarnedAboutUsingContextAsConsumer = false;
+
+{
+  ReactDebugCurrentFrame$4 = ReactSharedInternals.ReactDebugCurrentFrame;
+
+  validatePropertiesInDevelopment = function (type, props) {
+    validateProperties(type, props);
+    validateProperties$1(type, props);
+    validateProperties$2(type, props,
+    /* canUseEventSystem */
+    false);
+  };
+
+  describeStackFrame = function (element) {
+    var source = element._source;
+    var type = element.type;
+    var name = getComponentName(type);
+    var ownerName = null;
+    return describeComponentFrame(name, source, ownerName);
+  };
+
+  pushCurrentDebugStack = function (stack) {
+    currentDebugStacks.push(stack);
+
+    if (currentDebugStacks.length === 1) {
+      // We are entering a server renderer.
+      // Remember the previous (e.g. client) global stack implementation.
+      prevGetCurrentStackImpl = ReactDebugCurrentFrame$4.getCurrentStack;
+      ReactDebugCurrentFrame$4.getCurrentStack = getCurrentServerStackImpl;
+    }
+  };
+
+  pushElementToDebugStack = function (element) {
+    // For the innermost executing ReactDOMServer call,
+    var stack = currentDebugStacks[currentDebugStacks.length - 1]; // Take the innermost executing frame (e.g. <Foo>),
+
+    var frame = stack[stack.length - 1]; // and record that it has one more element associated with it.
+
+    frame.debugElementStack.push(element); // We only need this because we tail-optimize single-element
+    // children and directly handle them in an inner loop instead of
+    // creating separate frames for them.
+  };
+
+  popCurrentDebugStack = function () {
+    currentDebugStacks.pop();
+
+    if (currentDebugStacks.length === 0) {
+      // We are exiting the server renderer.
+      // Restore the previous (e.g. client) global stack implementation.
+      ReactDebugCurrentFrame$4.getCurrentStack = prevGetCurrentStackImpl;
+      prevGetCurrentStackImpl = null;
+    }
+  };
+
+  getCurrentServerStackImpl = function () {
+    if (currentDebugStacks.length === 0) {
+      // Nothing is currently rendering.
+      return '';
+    } // ReactDOMServer is reentrant so there may be multiple calls at the same time.
+    // Take the frames from the innermost call which is the last in the array.
+
+
+    var frames = currentDebugStacks[currentDebugStacks.length - 1];
+    var stack = ''; // Go through every frame in the stack from the innermost one.
+
+    for (var i = frames.length - 1; i >= 0; i--) {
+      var frame = frames[i]; // Every frame might have more than one debug element stack entry associated with it.
+      // This is because single-child nesting doesn't create materialized frames.
+      // Instead it would push them through `pushElementToDebugStack()`.
+
+      var debugElementStack = frame.debugElementStack;
+
+      for (var ii = debugElementStack.length - 1; ii >= 0; ii--) {
+        stack += describeStackFrame(debugElementStack[ii]);
+      }
+    }
+
+    return stack;
+  };
+}
+
+var didWarnDefaultInputValue = false;
+var didWarnDefaultChecked = false;
+var didWarnDefaultSelectValue = false;
+var didWarnDefaultTextareaValue = false;
+var didWarnInvalidOptionChildren = false;
+var didWarnAboutNoopUpdateForComponent = {};
+var didWarnAboutBadClass = {};
+var didWarnAboutModulePatternComponent = {};
+var didWarnAboutDeprecatedWillMount = {};
+var didWarnAboutUndefinedDerivedState = {};
+var didWarnAboutUninitializedState = {};
+var valuePropNames = ['value', 'defaultValue'];
+var newlineEatingTags = {
+  listing: true,
+  pre: true,
+  textarea: true
+}; // We accept any tag to be rendered but since this gets injected into arbitrary
+// HTML, we want to make sure that it's a safe tag.
+// http://www.w3.org/TR/REC-xml/#NT-Name
+
+var VALID_TAG_REGEX = /^[a-zA-Z][a-zA-Z:_\.\-\d]*$/; // Simplified subset
+
+var validatedTagCache = {};
+
+function validateDangerousTag(tag) {
+  if (!validatedTagCache.hasOwnProperty(tag)) {
+    if (!VALID_TAG_REGEX.test(tag)) {
+      {
+        throw Error( "Invalid tag: " + tag );
+      }
+    }
+
+    validatedTagCache[tag] = true;
+  }
+}
+
+var styleNameCache = {};
+
+var processStyleName = function (styleName) {
+  if (styleNameCache.hasOwnProperty(styleName)) {
+    return styleNameCache[styleName];
+  }
+
+  var result = hyphenateStyleName(styleName);
+  styleNameCache[styleName] = result;
+  return result;
+};
+
+function createMarkupForStyles(styles) {
+  var serialized = '';
+  var delimiter = '';
+
+  for (var styleName in styles) {
+    if (!styles.hasOwnProperty(styleName)) {
+      continue;
+    }
+
+    var isCustomProperty = styleName.indexOf('--') === 0;
+    var styleValue = styles[styleName];
+
+    {
+      if (!isCustomProperty) {
+        warnValidStyle$1(styleName, styleValue);
+      }
+    }
+
+    if (styleValue != null) {
+      serialized += delimiter + (isCustomProperty ? styleName : processStyleName(styleName)) + ':';
+      serialized += dangerousStyleValue(styleName, styleValue, isCustomProperty);
+      delimiter = ';';
+    }
+  }
+
+  return serialized || null;
+}
+
+function warnNoop(publicInstance, callerName) {
+  {
+    var _constructor = publicInstance.constructor;
+    var componentName = _constructor && getComponentName(_constructor) || 'ReactClass';
+    var warningKey = componentName + '.' + callerName;
+
+    if (didWarnAboutNoopUpdateForComponent[warningKey]) {
+      return;
+    }
+
+    error('%s(...): Can only update a mounting component. ' + 'This usually means you called %s() outside componentWillMount() on the server. ' + 'This is a no-op.\n\nPlease check the code for the %s component.', callerName, callerName, componentName);
+
+    didWarnAboutNoopUpdateForComponent[warningKey] = true;
+  }
+}
+
+function shouldConstruct(Component) {
+  return Component.prototype && Component.prototype.isReactComponent;
+}
+
+function getNonChildrenInnerMarkup(props) {
+  var innerHTML = props.dangerouslySetInnerHTML;
+
+  if (innerHTML != null) {
+    if (innerHTML.__html != null) {
+      return innerHTML.__html;
+    }
+  } else {
+    var content = props.children;
+
+    if (typeof content === 'string' || typeof content === 'number') {
+      return escapeTextForBrowser(content);
+    }
+  }
+
+  return null;
+}
+
+function flattenTopLevelChildren(children) {
+  if (!React.isValidElement(children)) {
+    return toArray(children);
+  }
+
+  var element = children;
+
+  if (element.type !== REACT_FRAGMENT_TYPE) {
+    return [element];
+  }
+
+  var fragmentChildren = element.props.children;
+
+  if (!React.isValidElement(fragmentChildren)) {
+    return toArray(fragmentChildren);
+  }
+
+  var fragmentChildElement = fragmentChildren;
+  return [fragmentChildElement];
+}
+
+function flattenOptionChildren(children) {
+  if (children === undefined || children === null) {
+    return children;
+  }
+
+  var content = ''; // Flatten children and warn if they aren't strings or numbers;
+  // invalid types are ignored.
+
+  React.Children.forEach(children, function (child) {
+    if (child == null) {
+      return;
+    }
+
+    content += child;
+
+    {
+      if (!didWarnInvalidOptionChildren && typeof child !== 'string' && typeof child !== 'number') {
+        didWarnInvalidOptionChildren = true;
+
+        error('Only strings and numbers are supported as <option> children.');
+      }
+    }
+  });
+  return content;
+}
+
+var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
+var STYLE = 'style';
+var RESERVED_PROPS = {
+  children: null,
+  dangerouslySetInnerHTML: null,
+  suppressContentEditableWarning: null,
+  suppressHydrationWarning: null
+};
+
+function createOpenTagMarkup(tagVerbatim, tagLowercase, props, namespace, makeStaticMarkup, isRootElement) {
+  var ret = '<' + tagVerbatim;
+
+  for (var propKey in props) {
+    if (!hasOwnProperty$2.call(props, propKey)) {
+      continue;
+    }
+
+    var propValue = props[propKey];
+
+    if (propValue == null) {
+      continue;
+    }
+
+    if (propKey === STYLE) {
+      propValue = createMarkupForStyles(propValue);
+    }
+
+    var markup = null;
+
+    if (isCustomComponent(tagLowercase, props)) {
+      if (!RESERVED_PROPS.hasOwnProperty(propKey)) {
+        markup = createMarkupForCustomAttribute(propKey, propValue);
+      }
+    } else {
+      markup = createMarkupForProperty(propKey, propValue);
+    }
+
+    if (markup) {
+      ret += ' ' + markup;
+    }
+  } // For static pages, no need to put React ID and checksum. Saves lots of
+  // bytes.
+
+
+  if (makeStaticMarkup) {
+    return ret;
+  }
+
+  if (isRootElement) {
+    ret += ' ' + createMarkupForRoot();
+  }
+
+  return ret;
+}
+
+function validateRenderResult(child, type) {
+  if (child === undefined) {
+    {
+      {
+        throw Error( (getComponentName(type) || 'Component') + "(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null." );
+      }
+    }
+  }
+}
+
+function resolve(child, context, threadID) {
+  while (React.isValidElement(child)) {
+    // Safe because we just checked it's an element.
+    var element = child;
+    var Component = element.type;
+
+    {
+      pushElementToDebugStack(element);
+    }
+
+    if (typeof Component !== 'function') {
+      break;
+    }
+
+    processChild(element, Component);
+  } // Extra closure so queue and replace can be captured properly
+
+
+  function processChild(element, Component) {
+    var isClass = shouldConstruct(Component);
+    var publicContext = processContext(Component, context, threadID, isClass);
+    var queue = [];
+    var replace = false;
+    var updater = {
+      isMounted: function (publicInstance) {
+        return false;
+      },
+      enqueueForceUpdate: function (publicInstance) {
+        if (queue === null) {
+          warnNoop(publicInstance, 'forceUpdate');
+          return null;
+        }
+      },
+      enqueueReplaceState: function (publicInstance, completeState) {
+        replace = true;
+        queue = [completeState];
+      },
+      enqueueSetState: function (publicInstance, currentPartialState) {
+        if (queue === null) {
+          warnNoop(publicInstance, 'setState');
+          return null;
+        }
+
+        queue.push(currentPartialState);
+      }
+    };
+    var inst;
+
+    if (isClass) {
+      inst = new Component(element.props, publicContext, updater);
+
+      if (typeof Component.getDerivedStateFromProps === 'function') {
+        {
+          if (inst.state === null || inst.state === undefined) {
+            var componentName = getComponentName(Component) || 'Unknown';
+
+            if (!didWarnAboutUninitializedState[componentName]) {
+              error('`%s` uses `getDerivedStateFromProps` but its initial state is ' + '%s. This is not recommended. Instead, define the initial state by ' + 'assigning an object to `this.state` in the constructor of `%s`. ' + 'This ensures that `getDerivedStateFromProps` arguments have a consistent shape.', componentName, inst.state === null ? 'null' : 'undefined', componentName);
+
+              didWarnAboutUninitializedState[componentName] = true;
+            }
+          }
+        }
+
+        var partialState = Component.getDerivedStateFromProps.call(null, element.props, inst.state);
+
+        {
+          if (partialState === undefined) {
+            var _componentName = getComponentName(Component) || 'Unknown';
+
+            if (!didWarnAboutUndefinedDerivedState[_componentName]) {
+              error('%s.getDerivedStateFromProps(): A valid state object (or null) must be returned. ' + 'You have returned undefined.', _componentName);
+
+              didWarnAboutUndefinedDerivedState[_componentName] = true;
+            }
+          }
+        }
+
+        if (partialState != null) {
+          inst.state = _assign({}, inst.state, partialState);
+        }
+      }
+    } else {
+      {
+        if (Component.prototype && typeof Component.prototype.render === 'function') {
+          var _componentName2 = getComponentName(Component) || 'Unknown';
+
+          if (!didWarnAboutBadClass[_componentName2]) {
+            error("The <%s /> component appears to have a render method, but doesn't extend React.Component. " + 'This is likely to cause errors. Change %s to extend React.Component instead.', _componentName2, _componentName2);
+
+            didWarnAboutBadClass[_componentName2] = true;
+          }
+        }
+      }
+
+      var componentIdentity = {};
+      prepareToUseHooks(componentIdentity);
+      inst = Component(element.props, publicContext, updater);
+      inst = finishHooks(Component, element.props, inst, publicContext);
+
+      if (inst == null || inst.render == null) {
+        child = inst;
+        validateRenderResult(child, Component);
+        return;
+      }
+
+      {
+        var _componentName3 = getComponentName(Component) || 'Unknown';
+
+        if (!didWarnAboutModulePatternComponent[_componentName3]) {
+          error('The <%s /> component appears to be a function component that returns a class instance. ' + 'Change %s to a class that extends React.Component instead. ' + "If you can't use a class try assigning the prototype on the function as a workaround. " + "`%s.prototype = React.Component.prototype`. Don't use an arrow function since it " + 'cannot be called with `new` by React.', _componentName3, _componentName3, _componentName3);
+
+          didWarnAboutModulePatternComponent[_componentName3] = true;
+        }
+      }
+    }
+
+    inst.props = element.props;
+    inst.context = publicContext;
+    inst.updater = updater;
+    var initialState = inst.state;
+
+    if (initialState === undefined) {
+      inst.state = initialState = null;
+    }
+
+    if (typeof inst.UNSAFE_componentWillMount === 'function' || typeof inst.componentWillMount === 'function') {
+      if (typeof inst.componentWillMount === 'function') {
+        {
+          if ( inst.componentWillMount.__suppressDeprecationWarning !== true) {
+            var _componentName4 = getComponentName(Component) || 'Unknown';
+
+            if (!didWarnAboutDeprecatedWillMount[_componentName4]) {
+              warn( // keep this warning in sync with ReactStrictModeWarning.js
+              'componentWillMount has been renamed, and is not recommended for use. ' + 'See https://fb.me/react-unsafe-component-lifecycles for details.\n\n' + '* Move code from componentWillMount to componentDidMount (preferred in most cases) ' + 'or the constructor.\n' + '\nPlease update the following components: %s', _componentName4);
+
+              didWarnAboutDeprecatedWillMount[_componentName4] = true;
+            }
+          }
+        } // In order to support react-lifecycles-compat polyfilled components,
+        // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+
+
+        if (typeof Component.getDerivedStateFromProps !== 'function') {
+          inst.componentWillMount();
+        }
+      }
+
+      if (typeof inst.UNSAFE_componentWillMount === 'function' && typeof Component.getDerivedStateFromProps !== 'function') {
+        // In order to support react-lifecycles-compat polyfilled components,
+        // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+        inst.UNSAFE_componentWillMount();
+      }
+
+      if (queue.length) {
+        var oldQueue = queue;
+        var oldReplace = replace;
+        queue = null;
+        replace = false;
+
+        if (oldReplace && oldQueue.length === 1) {
+          inst.state = oldQueue[0];
+        } else {
+          var nextState = oldReplace ? oldQueue[0] : inst.state;
+          var dontMutate = true;
+
+          for (var i = oldReplace ? 1 : 0; i < oldQueue.length; i++) {
+            var partial = oldQueue[i];
+
+            var _partialState = typeof partial === 'function' ? partial.call(inst, nextState, element.props, publicContext) : partial;
+
+            if (_partialState != null) {
+              if (dontMutate) {
+                dontMutate = false;
+                nextState = _assign({}, nextState, _partialState);
+              } else {
+                _assign(nextState, _partialState);
+              }
+            }
+          }
+
+          inst.state = nextState;
+        }
+      } else {
+        queue = null;
+      }
+    }
+
+    child = inst.render();
+
+    {
+      if (child === undefined && inst.render._isMockFunction) {
+        // This is probably bad practice. Consider warning here and
+        // deprecating this convenience.
+        child = null;
+      }
+    }
+
+    validateRenderResult(child, Component);
+    var childContext;
+
+    {
+      if (typeof inst.getChildContext === 'function') {
+        var _childContextTypes = Component.childContextTypes;
+
+        if (typeof _childContextTypes === 'object') {
+          childContext = inst.getChildContext();
+
+          for (var contextKey in childContext) {
+            if (!(contextKey in _childContextTypes)) {
+              {
+                throw Error( (getComponentName(Component) || 'Unknown') + ".getChildContext(): key \"" + contextKey + "\" is not defined in childContextTypes." );
+              }
+            }
+          }
+        } else {
+          {
+            error('%s.getChildContext(): childContextTypes must be defined in order to ' + 'use getChildContext().', getComponentName(Component) || 'Unknown');
+          }
+        }
+      }
+
+      if (childContext) {
+        context = _assign({}, context, childContext);
+      }
+    }
+  }
+
+  return {
+    child: child,
+    context: context
+  };
+}
+
+var ReactDOMServerRenderer =
+/*#__PURE__*/
+function () {
+  // TODO: type this more strictly:
+  // DEV-only
+  function ReactDOMServerRenderer(children, makeStaticMarkup) {
+    var flatChildren = flattenTopLevelChildren(children);
+    var topFrame = {
+      type: null,
+      // Assume all trees start in the HTML namespace (not totally true, but
+      // this is what we did historically)
+      domNamespace: Namespaces.html,
+      children: flatChildren,
+      childIndex: 0,
+      context: emptyObject,
+      footer: ''
+    };
+
+    {
+      topFrame.debugElementStack = [];
+    }
+
+    this.threadID = allocThreadID();
+    this.stack = [topFrame];
+    this.exhausted = false;
+    this.currentSelectValue = null;
+    this.previousWasTextNode = false;
+    this.makeStaticMarkup = makeStaticMarkup;
+    this.suspenseDepth = 0; // Context (new API)
+
+    this.contextIndex = -1;
+    this.contextStack = [];
+    this.contextValueStack = [];
+
+    {
+      this.contextProviderStack = [];
+    }
+  }
+
+  var _proto = ReactDOMServerRenderer.prototype;
+
+  _proto.destroy = function destroy() {
+    if (!this.exhausted) {
+      this.exhausted = true;
+      this.clearProviders();
+      freeThreadID(this.threadID);
+    }
+  }
+  /**
+   * Note: We use just two stacks regardless of how many context providers you have.
+   * Providers are always popped in the reverse order to how they were pushed
+   * so we always know on the way down which provider you'll encounter next on the way up.
+   * On the way down, we push the current provider, and its context value *before*
+   * we mutated it, onto the stacks. Therefore, on the way up, we always know which
+   * provider needs to be "restored" to which value.
+   * https://github.com/facebook/react/pull/12985#issuecomment-396301248
+   */
+  ;
+
+  _proto.pushProvider = function pushProvider(provider) {
+    var index = ++this.contextIndex;
+    var context = provider.type._context;
+    var threadID = this.threadID;
+    validateContextBounds(context, threadID);
+    var previousValue = context[threadID]; // Remember which value to restore this context to on our way up.
+
+    this.contextStack[index] = context;
+    this.contextValueStack[index] = previousValue;
+
+    {
+      // Only used for push/pop mismatch warnings.
+      this.contextProviderStack[index] = provider;
+    } // Mutate the current value.
+
+
+    context[threadID] = provider.props.value;
+  };
+
+  _proto.popProvider = function popProvider(provider) {
+    var index = this.contextIndex;
+
+    {
+      if (index < 0 || provider !== this.contextProviderStack[index]) {
+        error('Unexpected pop.');
+      }
+    }
+
+    var context = this.contextStack[index];
+    var previousValue = this.contextValueStack[index]; // "Hide" these null assignments from Flow by using `any`
+    // because conceptually they are deletions--as long as we
+    // promise to never access values beyond `this.contextIndex`.
+
+    this.contextStack[index] = null;
+    this.contextValueStack[index] = null;
+
+    {
+      this.contextProviderStack[index] = null;
+    }
+
+    this.contextIndex--; // Restore to the previous value we stored as we were walking down.
+    // We've already verified that this context has been expanded to accommodate
+    // this thread id, so we don't need to do it again.
+
+    context[this.threadID] = previousValue;
+  };
+
+  _proto.clearProviders = function clearProviders() {
+    // Restore any remaining providers on the stack to previous values
+    for (var index = this.contextIndex; index >= 0; index--) {
+      var context = this.contextStack[index];
+      var previousValue = this.contextValueStack[index];
+      context[this.threadID] = previousValue;
+    }
+  };
+
+  _proto.read = function read(bytes) {
+    if (this.exhausted) {
+      return null;
+    }
+
+    var prevThreadID = currentThreadID;
+    setCurrentThreadID(this.threadID);
+    var prevDispatcher = ReactCurrentDispatcher.current;
+    ReactCurrentDispatcher.current = Dispatcher;
+
+    try {
+      // Markup generated within <Suspense> ends up buffered until we know
+      // nothing in that boundary suspended
+      var out = [''];
+      var suspended = false;
+
+      while (out[0].length < bytes) {
+        if (this.stack.length === 0) {
+          this.exhausted = true;
+          freeThreadID(this.threadID);
+          break;
+        }
+
+        var frame = this.stack[this.stack.length - 1];
+
+        if (suspended || frame.childIndex >= frame.children.length) {
+          var footer = frame.footer;
+
+          if (footer !== '') {
+            this.previousWasTextNode = false;
+          }
+
+          this.stack.pop();
+
+          if (frame.type === 'select') {
+            this.currentSelectValue = null;
+          } else if (frame.type != null && frame.type.type != null && frame.type.type.$$typeof === REACT_PROVIDER_TYPE) {
+            var provider = frame.type;
+            this.popProvider(provider);
+          } else if (frame.type === REACT_SUSPENSE_TYPE) {
+            this.suspenseDepth--;
+            var buffered = out.pop();
+
+            if (suspended) {
+              suspended = false; // If rendering was suspended at this boundary, render the fallbackFrame
+
+              var fallbackFrame = frame.fallbackFrame;
+
+              if (!fallbackFrame) {
+                {
+                  throw Error(true ? "ReactDOMServer did not find an internal fallback frame for Suspense. This is a bug in React. Please file an issue." : formatProdErrorMessage(303));
+                }
+              }
+
+              this.stack.push(fallbackFrame);
+              out[this.suspenseDepth] += '<!--$!-->'; // Skip flushing output since we're switching to the fallback
+
+              continue;
+            } else {
+              out[this.suspenseDepth] += buffered;
+            }
+          } // Flush output
+
+
+          out[this.suspenseDepth] += footer;
+          continue;
+        }
+
+        var child = frame.children[frame.childIndex++];
+        var outBuffer = '';
+
+        if (true) {
+          pushCurrentDebugStack(this.stack); // We're starting work on this frame, so reset its inner stack.
+
+          frame.debugElementStack.length = 0;
+        }
+
+        try {
+          outBuffer += this.render(child, frame.context, frame.domNamespace);
+        } catch (err) {
+          if (err != null && typeof err.then === 'function') {
+            if (enableSuspenseServerRenderer) {
+              if (!(this.suspenseDepth > 0)) {
+                {
+                  throw Error(true ? "A React component suspended while rendering, but no fallback UI was specified.\n\nAdd a <Suspense fallback=...> component higher in the tree to provide a loading indicator or placeholder to display." : formatProdErrorMessage(342));
+                }
+              }
+
+              suspended = true;
+            } else {
+              if (!false) {
+                {
+                  throw Error(true ? "ReactDOMServer does not yet support Suspense." : formatProdErrorMessage(294));
+                }
+              }
+            }
+          } else {
+            throw err;
+          }
+        } finally {
+          if (true) {
+            popCurrentDebugStack();
+          }
+        }
+
+        if (out.length <= this.suspenseDepth) {
+          out.push('');
+        }
+
+        out[this.suspenseDepth] += outBuffer;
+      }
+
+      return out[0];
+    } finally {
+      ReactCurrentDispatcher.current = prevDispatcher;
+      setCurrentThreadID(prevThreadID);
+    }
+  };
+
+  _proto.render = function render(child, context, parentNamespace) {
+    if (typeof child === 'string' || typeof child === 'number') {
+      var text = '' + child;
+
+      if (text === '') {
+        return '';
+      }
+
+      if (this.makeStaticMarkup) {
+        return escapeTextForBrowser(text);
+      }
+
+      if (this.previousWasTextNode) {
+        return '<!-- -->' + escapeTextForBrowser(text);
+      }
+
+      this.previousWasTextNode = true;
+      return escapeTextForBrowser(text);
+    } else {
+      var nextChild;
+
+      var _resolve = resolve(child, context, this.threadID);
+
+      nextChild = _resolve.child;
+      context = _resolve.context;
+
+      if (nextChild === null || nextChild === false) {
+        return '';
+      } else if (!React.isValidElement(nextChild)) {
+        if (nextChild != null && nextChild.$$typeof != null) {
+          // Catch unexpected special types early.
+          var $$typeof = nextChild.$$typeof;
+
+          if (!($$typeof !== REACT_PORTAL_TYPE)) {
+            {
+              throw Error( "Portals are not currently supported by the server renderer. Render them conditionally so that they only appear on the client render." );
+            }
+          } // Catch-all to prevent an infinite loop if React.Children.toArray() supports some new type.
+
+
+          {
+            {
+              throw Error( "Unknown element-like object type: " + $$typeof.toString() + ". This is likely a bug in React. Please file an issue." );
+            }
+          }
+        }
+
+        var nextChildren = toArray(nextChild);
+        var frame = {
+          type: null,
+          domNamespace: parentNamespace,
+          children: nextChildren,
+          childIndex: 0,
+          context: context,
+          footer: ''
+        };
+
+        {
+          frame.debugElementStack = [];
+        }
+
+        this.stack.push(frame);
+        return '';
+      } // Safe because we just checked it's an element.
+
+
+      var nextElement = nextChild;
+      var elementType = nextElement.type;
+
+      if (typeof elementType === 'string') {
+        return this.renderDOM(nextElement, context, parentNamespace);
+      }
+
+      switch (elementType) {
+        case REACT_STRICT_MODE_TYPE:
+        case REACT_CONCURRENT_MODE_TYPE:
+        case REACT_PROFILER_TYPE:
+        case REACT_SUSPENSE_LIST_TYPE:
+        case REACT_FRAGMENT_TYPE:
+          {
+            var _nextChildren = toArray(nextChild.props.children);
+
+            var _frame = {
+              type: null,
+              domNamespace: parentNamespace,
+              children: _nextChildren,
+              childIndex: 0,
+              context: context,
+              footer: ''
+            };
+
+            {
+              _frame.debugElementStack = [];
+            }
+
+            this.stack.push(_frame);
+            return '';
+          }
+
+        case REACT_SUSPENSE_TYPE:
+          {
+            {
+              {
+                {
+                  throw Error( "ReactDOMServer does not yet support Suspense." );
+                }
+              }
+            }
+          }
+      }
+
+      if (typeof elementType === 'object' && elementType !== null) {
+        switch (elementType.$$typeof) {
+          case REACT_FORWARD_REF_TYPE:
+            {
+              var element = nextChild;
+
+              var _nextChildren4;
+
+              var componentIdentity = {};
+              prepareToUseHooks(componentIdentity);
+              _nextChildren4 = elementType.render(element.props, element.ref);
+              _nextChildren4 = finishHooks(elementType.render, element.props, _nextChildren4, element.ref);
+              _nextChildren4 = toArray(_nextChildren4);
+              var _frame4 = {
+                type: null,
+                domNamespace: parentNamespace,
+                children: _nextChildren4,
+                childIndex: 0,
+                context: context,
+                footer: ''
+              };
+
+              {
+                _frame4.debugElementStack = [];
+              }
+
+              this.stack.push(_frame4);
+              return '';
+            }
+
+          case REACT_MEMO_TYPE:
+            {
+              var _element = nextChild;
+              var _nextChildren5 = [React.createElement(elementType.type, _assign({
+                ref: _element.ref
+              }, _element.props))];
+              var _frame5 = {
+                type: null,
+                domNamespace: parentNamespace,
+                children: _nextChildren5,
+                childIndex: 0,
+                context: context,
+                footer: ''
+              };
+
+              {
+                _frame5.debugElementStack = [];
+              }
+
+              this.stack.push(_frame5);
+              return '';
+            }
+
+          case REACT_PROVIDER_TYPE:
+            {
+              var provider = nextChild;
+              var nextProps = provider.props;
+
+              var _nextChildren6 = toArray(nextProps.children);
+
+              var _frame6 = {
+                type: provider,
+                domNamespace: parentNamespace,
+                children: _nextChildren6,
+                childIndex: 0,
+                context: context,
+                footer: ''
+              };
+
+              {
+                _frame6.debugElementStack = [];
+              }
+
+              this.pushProvider(provider);
+              this.stack.push(_frame6);
+              return '';
+            }
+
+          case REACT_CONTEXT_TYPE:
+            {
+              var reactContext = nextChild.type; // The logic below for Context differs depending on PROD or DEV mode. In
+              // DEV mode, we create a separate object for Context.Consumer that acts
+              // like a proxy to Context. This proxy object adds unnecessary code in PROD
+              // so we use the old behaviour (Context.Consumer references Context) to
+              // reduce size and overhead. The separate object references context via
+              // a property called "_context", which also gives us the ability to check
+              // in DEV mode if this property exists or not and warn if it does not.
+
+              {
+                if (reactContext._context === undefined) {
+                  // This may be because it's a Context (rather than a Consumer).
+                  // Or it may be because it's older React where they're the same thing.
+                  // We only want to warn if we're sure it's a new React.
+                  if (reactContext !== reactContext.Consumer) {
+                    if (!hasWarnedAboutUsingContextAsConsumer) {
+                      hasWarnedAboutUsingContextAsConsumer = true;
+
+                      error('Rendering <Context> directly is not supported and will be removed in ' + 'a future major release. Did you mean to render <Context.Consumer> instead?');
+                    }
+                  }
+                } else {
+                  reactContext = reactContext._context;
+                }
+              }
+
+              var _nextProps = nextChild.props;
+              var threadID = this.threadID;
+              validateContextBounds(reactContext, threadID);
+              var nextValue = reactContext[threadID];
+
+              var _nextChildren7 = toArray(_nextProps.children(nextValue));
+
+              var _frame7 = {
+                type: nextChild,
+                domNamespace: parentNamespace,
+                children: _nextChildren7,
+                childIndex: 0,
+                context: context,
+                footer: ''
+              };
+
+              {
+                _frame7.debugElementStack = [];
+              }
+
+              this.stack.push(_frame7);
+              return '';
+            }
+          // eslint-disable-next-line-no-fallthrough
+
+          case REACT_FUNDAMENTAL_TYPE:
+            {
+
+              {
+                {
+                  throw Error( "ReactDOMServer does not yet support the fundamental API." );
+                }
+              }
+            }
+          // eslint-disable-next-line-no-fallthrough
+
+          case REACT_LAZY_TYPE:
+            {
+              var _element2 = nextChild;
+              var lazyComponent = nextChild.type; // Attempt to initialize lazy component regardless of whether the
+              // suspense server-side renderer is enabled so synchronously
+              // resolved constructors are supported.
+
+              initializeLazyComponentType(lazyComponent);
+
+              switch (lazyComponent._status) {
+                case Resolved:
+                  {
+                    var _nextChildren9 = [React.createElement(lazyComponent._result, _assign({
+                      ref: _element2.ref
+                    }, _element2.props))];
+                    var _frame9 = {
+                      type: null,
+                      domNamespace: parentNamespace,
+                      children: _nextChildren9,
+                      childIndex: 0,
+                      context: context,
+                      footer: ''
+                    };
+
+                    {
+                      _frame9.debugElementStack = [];
+                    }
+
+                    this.stack.push(_frame9);
+                    return '';
+                  }
+
+                case Rejected:
+                  throw lazyComponent._result;
+
+                case Pending:
+                default:
+                  {
+                    {
+                      throw Error( "ReactDOMServer does not yet support lazy-loaded components." );
+                    }
+                  }
+
+              }
+            }
+          // eslint-disable-next-line-no-fallthrough
+
+          case REACT_SCOPE_TYPE:
+            {
+
+              {
+                {
+                  throw Error( "ReactDOMServer does not yet support scope components." );
+                }
+              }
+            }
+        }
+      }
+
+      var info = '';
+
+      {
+        var owner = nextElement._owner;
+
+        if (elementType === undefined || typeof elementType === 'object' && elementType !== null && Object.keys(elementType).length === 0) {
+          info += ' You likely forgot to export your component from the file ' + "it's defined in, or you might have mixed up default and " + 'named imports.';
+        }
+
+        var ownerName = owner ? getComponentName(owner) : null;
+
+        if (ownerName) {
+          info += '\n\nCheck the render method of `' + ownerName + '`.';
+        }
+      }
+
+      {
+        {
+          throw Error( "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " + (elementType == null ? elementType : typeof elementType) + "." + info );
+        }
+      }
+    }
+  };
+
+  _proto.renderDOM = function renderDOM(element, context, parentNamespace) {
+    var tag = element.type.toLowerCase();
+    var namespace = parentNamespace;
+
+    if (parentNamespace === Namespaces.html) {
+      namespace = getIntrinsicNamespace(tag);
+    }
+
+    {
+      if (namespace === Namespaces.html) {
+        // Should this check be gated by parent namespace? Not sure we want to
+        // allow <SVG> or <mATH>.
+        if (tag !== element.type) {
+          error('<%s /> is using incorrect casing. ' + 'Use PascalCase for React components, ' + 'or lowercase for HTML elements.', element.type);
+        }
+      }
+    }
+
+    validateDangerousTag(tag);
+    var props = element.props;
+
+    if (tag === 'input') {
+      {
+        ReactControlledValuePropTypes.checkPropTypes('input', props);
+
+        if (props.checked !== undefined && props.defaultChecked !== undefined && !didWarnDefaultChecked) {
+          error('%s contains an input of type %s with both checked and defaultChecked props. ' + 'Input elements must be either controlled or uncontrolled ' + '(specify either the checked prop, or the defaultChecked prop, but not ' + 'both). Decide between using a controlled or uncontrolled input ' + 'element and remove one of these props. More info: ' + 'https://fb.me/react-controlled-components', 'A component', props.type);
+
+          didWarnDefaultChecked = true;
+        }
+
+        if (props.value !== undefined && props.defaultValue !== undefined && !didWarnDefaultInputValue) {
+          error('%s contains an input of type %s with both value and defaultValue props. ' + 'Input elements must be either controlled or uncontrolled ' + '(specify either the value prop, or the defaultValue prop, but not ' + 'both). Decide between using a controlled or uncontrolled input ' + 'element and remove one of these props. More info: ' + 'https://fb.me/react-controlled-components', 'A component', props.type);
+
+          didWarnDefaultInputValue = true;
+        }
+      }
+
+      props = _assign({
+        type: undefined
+      }, props, {
+        defaultChecked: undefined,
+        defaultValue: undefined,
+        value: props.value != null ? props.value : props.defaultValue,
+        checked: props.checked != null ? props.checked : props.defaultChecked
+      });
+    } else if (tag === 'textarea') {
+      {
+        ReactControlledValuePropTypes.checkPropTypes('textarea', props);
+
+        if (props.value !== undefined && props.defaultValue !== undefined && !didWarnDefaultTextareaValue) {
+          error('Textarea elements must be either controlled or uncontrolled ' + '(specify either the value prop, or the defaultValue prop, but not ' + 'both). Decide between using a controlled or uncontrolled textarea ' + 'and remove one of these props. More info: ' + 'https://fb.me/react-controlled-components');
+
+          didWarnDefaultTextareaValue = true;
+        }
+      }
+
+      var initialValue = props.value;
+
+      if (initialValue == null) {
+        var defaultValue = props.defaultValue; // TODO (yungsters): Remove support for children content in <textarea>.
+
+        var textareaChildren = props.children;
+
+        if (textareaChildren != null) {
+          {
+            error('Use the `defaultValue` or `value` props instead of setting ' + 'children on <textarea>.');
+          }
+
+          if (!(defaultValue == null)) {
+            {
+              throw Error( "If you supply `defaultValue` on a <textarea>, do not pass children." );
+            }
+          }
+
+          if (Array.isArray(textareaChildren)) {
+            if (!(textareaChildren.length <= 1)) {
+              {
+                throw Error( "<textarea> can only have at most one child." );
+              }
+            }
+
+            textareaChildren = textareaChildren[0];
+          }
+
+          defaultValue = '' + textareaChildren;
+        }
+
+        if (defaultValue == null) {
+          defaultValue = '';
+        }
+
+        initialValue = defaultValue;
+      }
+
+      props = _assign({}, props, {
+        value: undefined,
+        children: '' + initialValue
+      });
+    } else if (tag === 'select') {
+      {
+        ReactControlledValuePropTypes.checkPropTypes('select', props);
+
+        for (var i = 0; i < valuePropNames.length; i++) {
+          var propName = valuePropNames[i];
+
+          if (props[propName] == null) {
+            continue;
+          }
+
+          var isArray = Array.isArray(props[propName]);
+
+          if (props.multiple && !isArray) {
+            error('The `%s` prop supplied to <select> must be an array if ' + '`multiple` is true.', propName);
+          } else if (!props.multiple && isArray) {
+            error('The `%s` prop supplied to <select> must be a scalar ' + 'value if `multiple` is false.', propName);
+          }
+        }
+
+        if (props.value !== undefined && props.defaultValue !== undefined && !didWarnDefaultSelectValue) {
+          error('Select elements must be either controlled or uncontrolled ' + '(specify either the value prop, or the defaultValue prop, but not ' + 'both). Decide between using a controlled or uncontrolled select ' + 'element and remove one of these props. More info: ' + 'https://fb.me/react-controlled-components');
+
+          didWarnDefaultSelectValue = true;
+        }
+      }
+
+      this.currentSelectValue = props.value != null ? props.value : props.defaultValue;
+      props = _assign({}, props, {
+        value: undefined
+      });
+    } else if (tag === 'option') {
+      var selected = null;
+      var selectValue = this.currentSelectValue;
+      var optionChildren = flattenOptionChildren(props.children);
+
+      if (selectValue != null) {
+        var value;
+
+        if (props.value != null) {
+          value = props.value + '';
+        } else {
+          value = optionChildren;
+        }
+
+        selected = false;
+
+        if (Array.isArray(selectValue)) {
+          // multiple
+          for (var j = 0; j < selectValue.length; j++) {
+            if ('' + selectValue[j] === value) {
+              selected = true;
+              break;
+            }
+          }
+        } else {
+          selected = '' + selectValue === value;
+        }
+
+        props = _assign({
+          selected: undefined,
+          children: undefined
+        }, props, {
+          selected: selected,
+          children: optionChildren
+        });
+      }
+    }
+
+    {
+      validatePropertiesInDevelopment(tag, props);
+    }
+
+    assertValidProps(tag, props);
+    var out = createOpenTagMarkup(element.type, tag, props, namespace, this.makeStaticMarkup, this.stack.length === 1);
+    var footer = '';
+
+    if (omittedCloseTags.hasOwnProperty(tag)) {
+      out += '/>';
+    } else {
+      out += '>';
+      footer = '</' + element.type + '>';
+    }
+
+    var children;
+    var innerMarkup = getNonChildrenInnerMarkup(props);
+
+    if (innerMarkup != null) {
+      children = [];
+
+      if (newlineEatingTags.hasOwnProperty(tag) && innerMarkup.charAt(0) === '\n') {
+        // text/html ignores the first character in these tags if it's a newline
+        // Prefer to break application/xml over text/html (for now) by adding
+        // a newline specifically to get eaten by the parser. (Alternately for
+        // textareas, replacing "^\n" with "\r\n" doesn't get eaten, and the first
+        // \r is normalized out by HTMLTextAreaElement#value.)
+        // See: <http://www.w3.org/TR/html-polyglot/#newlines-in-textarea-and-pre>
+        // See: <http://www.w3.org/TR/html5/syntax.html#element-restrictions>
+        // See: <http://www.w3.org/TR/html5/syntax.html#newlines>
+        // See: Parsing of "textarea" "listing" and "pre" elements
+        //  from <http://www.w3.org/TR/html5/syntax.html#parsing-main-inbody>
+        out += '\n';
+      }
+
+      out += innerMarkup;
+    } else {
+      children = toArray(props.children);
+    }
+
+    var frame = {
+      domNamespace: getChildNamespace(parentNamespace, element.type),
+      type: tag,
+      children: children,
+      childIndex: 0,
+      context: context,
+      footer: footer
+    };
+
+    {
+      frame.debugElementStack = [];
+    }
+
+    this.stack.push(frame);
+    this.previousWasTextNode = false;
+    return out;
+  };
+
+  return ReactDOMServerRenderer;
+}();
+
+/**
+ * Render a ReactElement to its initial HTML. This should only be used on the
+ * server.
+ * See https://reactjs.org/docs/react-dom-server.html#rendertostring
+ */
+
+function renderToString(element) {
+  var renderer = new ReactDOMServerRenderer(element, false);
+
+  try {
+    var markup = renderer.read(Infinity);
+    return markup;
+  } finally {
+    renderer.destroy();
+  }
+}
+/**
+ * Similar to renderToString, except this doesn't create extra DOM attributes
+ * such as data-react-id that React uses internally.
+ * See https://reactjs.org/docs/react-dom-server.html#rendertostaticmarkup
+ */
+
+function renderToStaticMarkup(element) {
+  var renderer = new ReactDOMServerRenderer(element, true);
+
+  try {
+    var markup = renderer.read(Infinity);
+    return markup;
+  } finally {
+    renderer.destroy();
+  }
+}
+
+function _inheritsLoose(subClass, superClass) {
+  subClass.prototype = Object.create(superClass.prototype);
+  subClass.prototype.constructor = subClass;
+  subClass.__proto__ = superClass;
+}
+
+var ReactMarkupReadableStream =
+/*#__PURE__*/
+function (_Readable) {
+  _inheritsLoose(ReactMarkupReadableStream, _Readable);
+
+  function ReactMarkupReadableStream(element, makeStaticMarkup) {
+    var _this;
+
+    // Calls the stream.Readable(options) constructor. Consider exposing built-in
+    // features like highWaterMark in the future.
+    _this = _Readable.call(this, {}) || this;
+    _this.partialRenderer = new ReactDOMServerRenderer(element, makeStaticMarkup);
+    return _this;
+  }
+
+  var _proto = ReactMarkupReadableStream.prototype;
+
+  _proto._destroy = function _destroy(err, callback) {
+    this.partialRenderer.destroy();
+    callback(err);
+  };
+
+  _proto._read = function _read(size) {
+    try {
+      this.push(this.partialRenderer.read(size));
+    } catch (err) {
+      this.destroy(err);
+    }
+  };
+
+  return ReactMarkupReadableStream;
+}(stream.Readable);
+/**
+ * Render a ReactElement to its initial HTML. This should only be used on the
+ * server.
+ * See https://reactjs.org/docs/react-dom-server.html#rendertonodestream
+ */
+
+
+function renderToNodeStream(element) {
+  return new ReactMarkupReadableStream(element, false);
+}
+/**
+ * Similar to renderToNodeStream, except this doesn't create extra DOM attributes
+ * such as data-react-id that React uses internally.
+ * See https://reactjs.org/docs/react-dom-server.html#rendertostaticnodestream
+ */
+
+function renderToStaticNodeStream(element) {
+  return new ReactMarkupReadableStream(element, true);
+}
+
+var ReactDOMServer = {
+  renderToString: renderToString,
+  renderToStaticMarkup: renderToStaticMarkup,
+  renderToNodeStream: renderToNodeStream,
+  renderToStaticNodeStream: renderToStaticNodeStream,
+  version: ReactVersion
+};
+
+// TODO: decide on the top-level export form.
+// This is hacky but makes it work with both Rollup and Jest
+
+
+var server_node = ReactDOMServer.default || ReactDOMServer;
+
+module.exports = server_node;
+  })();
+}
+});
+
+var server_node = createCommonjsModule(function (module) {
+
+{
+  module.exports = reactDomServer_node_development;
+}
+});
+
+var server = server_node;
 
 function Cache () {
   var _cache = Object.create(null);
@@ -281,16 +9551,6 @@ var memoryCache = new Cache();
 var Cache_1 = Cache;
 memoryCache.Cache = Cache_1;
 
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
 var reactDomFactories = createCommonjsModule(function (module, exports) {
 
 /**
@@ -302,7 +9562,7 @@ var reactDomFactories = createCommonjsModule(function (module, exports) {
 
 (function(f) {
   {
-    module.exports = f(React__default);
+    module.exports = f(React__default__default);
     /* global define */
   }
 })(function(React) {
@@ -1366,95 +10626,6 @@ var uaParser = createCommonjsModule(function (module, exports) {
 });
 var uaParser_1 = uaParser.UAParser;
 
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-/* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
-
-		// Detect buggy property enumeration order in older V8 versions.
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
-
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -1568,7 +10739,7 @@ var emptyFunction_1 = emptyFunction;
 var warning = emptyFunction_1;
 
 {
-  var printWarning = function printWarning(format) {
+  var printWarning$1 = function printWarning(format) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
     }
@@ -1602,7 +10773,7 @@ var warning = emptyFunction_1;
         args[_key2 - 2] = arguments[_key2];
       }
 
-      printWarning.apply(undefined, [format].concat(args));
+      printWarning$1.apply(undefined, [format].concat(args));
     }
   };
 }
@@ -2519,7 +11690,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 
 var factory_1 = factory;
 
-if (typeof React__default === 'undefined') {
+if (typeof React__default__default === 'undefined') {
   throw Error(
     'create-react-class could not find the React object. If you are using script tags, ' +
       'make sure that React is being loaded before create-react-class.'
@@ -2527,11 +11698,11 @@ if (typeof React__default === 'undefined') {
 }
 
 // Hack to grab NoopUpdateQueue from isomorphic React
-var ReactNoopUpdateQueue = new React__default.Component().updater;
+var ReactNoopUpdateQueue = new React__default__default.Component().updater;
 
 var createReactClass = factory_1(
-  React__default.Component,
-  React__default.isValidElement,
+  React__default__default.Component,
+  React__default__default.isValidElement,
   ReactNoopUpdateQueue
 );
 
@@ -2768,16 +11939,16 @@ var substr = 'ab'.substr(-1) === 'b' ?
     }
 ;
 
-var isUndefined = (val) => val === undefined;
+var isUndefined$1 = (val) => val === undefined;
 
-var isNullOrUndefined = (value) => value === null || isUndefined(value);
+var isNullOrUndefined = (value) => value === null || isUndefined$1(value);
 
-var isArray = (value) => Array.isArray(value);
+var isArray$2 = (value) => Array.isArray(value);
 
 const isObjectType = (value) => typeof value === 'object';
-var isObject = (value) => !isNullOrUndefined(value) && !isArray(value) && isObjectType(value);
+var isObject$1 = (value) => !isNullOrUndefined(value) && !isArray$2(value) && isObjectType(value);
 
-var isHTMLElement = (value) => isObject(value) && value.nodeType === Node.ELEMENT_NODE;
+var isHTMLElement = (value) => isObject$1(value) && value.nodeType === Node.ELEMENT_NODE;
 
 const VALIDATION_MODE = {
     onBlur: 'onBlur',
@@ -2813,7 +11984,7 @@ function attachEventListeners({ field, handleChange, isRadioOrCheckbox, }) {
     }
 }
 
-var isKey = (value) => !isArray(value) &&
+var isKey = (value) => !isArray$2(value) &&
     (REGEX_IS_PLAIN_PROP.test(value) || !REGEX_IS_DEEP_PROP.test(value));
 
 var stringToPath = (string) => {
@@ -2835,7 +12006,7 @@ function set(object, path, value) {
         if (index !== lastIndex) {
             const objValue = object[key];
             newValue =
-                isObject(objValue) || isArray(objValue)
+                isObject$1(objValue) || isArray$2(objValue)
                     ? objValue
                     : !isNaN(tempPath[index + 1])
                         ? []
@@ -2860,7 +12031,7 @@ var get = (obj, path, defaultValue) => {
         .split(/[,[\].]+?/)
         .filter(Boolean)
         .reduce((result, key) => (isNullOrUndefined(result) ? result : result[key]), obj);
-    return isUndefined(result) || result === obj
+    return isUndefined$1(result) || result === obj
         ? obj[path] || defaultValue
         : result;
 };
@@ -2906,17 +12077,17 @@ function isDetached(element) {
     return isDetached(element.parentNode);
 }
 
-var isEmptyObject = (value) => isObject(value) && !Object.keys(value).length;
+var isEmptyObject = (value) => isObject$1(value) && !Object.keys(value).length;
 
 function castPath(value) {
-    return isArray(value) ? value : stringToPath(value);
+    return isArray$2(value) ? value : stringToPath(value);
 }
 function baseGet(object, path) {
     const updatePath = isKey(path) ? [path] : castPath(path);
     const length = path.length;
     let index = 0;
     while (index < length) {
-        object = isUndefined(object) ? index++ : object[updatePath[index++]];
+        object = isUndefined$1(object) ? index++ : object[updatePath[index++]];
     }
     return index == length ? object : undefined;
 }
@@ -2958,11 +12129,11 @@ function baseUnset(object, path) {
             const item = currentPaths[index];
             objectRef = objectRef ? objectRef[item] : object[item];
             if (currentPathsLength === index) {
-                if (isObject(objectRef) && isEmptyObject(objectRef)) {
+                if (isObject$1(objectRef) && isEmptyObject(objectRef)) {
                     previousObjRef ? delete previousObjRef[item] : delete object[item];
                 }
-                else if (isArray(objectRef) &&
-                    !objectRef.filter(data => isObject(data) && !isEmptyObject(data))
+                else if (isArray$2(objectRef) &&
+                    !objectRef.filter(data => isObject$1(data) && !isEmptyObject(data))
                         .length) {
                     if (previousObjRef) {
                         delete previousObjRef[item];
@@ -2993,7 +12164,7 @@ function findRemovedFieldAndRemoveListener(fields, handleChange, field, forceDel
     const fieldValue = fields[name];
     if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
         const { options } = fieldValue;
-        if (isArray(options) && options.length) {
+        if (isArray$2(options) && options.length) {
             options
                 .filter(Boolean)
                 .forEach(({ ref, mutationWatcher }, index) => {
@@ -3026,7 +12197,7 @@ const defaultReturn = {
     isValid: false,
     value: '',
 };
-var getRadioValue = (options) => isArray(options)
+var getRadioValue = (options) => isArray$2(options)
     ? options.filter(Boolean).reduce((previous, { ref: { checked, value } }) => checked
         ? {
             isValid: true,
@@ -3051,7 +12222,7 @@ const defaultResult = {
 };
 const validResult = { value: true, isValid: true };
 var getCheckboxValue = (options) => {
-    if (isArray(options)) {
+    if (isArray$2(options)) {
         if (options.length > 1) {
             const values = options
                 .filter(({ ref: { checked } }) => checked)
@@ -3060,8 +12231,8 @@ var getCheckboxValue = (options) => {
         }
         const { checked, value, attributes } = options[0].ref;
         return checked
-            ? attributes && !isUndefined(attributes.value)
-                ? isUndefined(value) || isEmptyString(value)
+            ? attributes && !isUndefined$1(attributes.value)
+                ? isUndefined$1(value) || isEmptyString(value)
                     ? validResult
                     : { value: value, isValid: true }
                 : validResult
@@ -3088,15 +12259,15 @@ function getFieldValue(fields, ref) {
     return value;
 }
 
-var isString = (value) => typeof value === 'string';
+var isString$1 = (value) => typeof value === 'string';
 
 var getFieldsValues = (fields, search) => {
     const output = {};
-    const isSearchString = isString(search);
-    const isSearchArray = isArray(search);
+    const isSearchString = isString$1(search);
+    const isSearchArray = isArray$2(search);
     const isNest = search && search.nest;
     for (const name in fields) {
-        if (isUndefined(search) ||
+        if (isUndefined$1(search) ||
             isNest ||
             (isSearchString && name.startsWith(search)) ||
             (isSearchArray &&
@@ -3110,7 +12281,7 @@ var getFieldsValues = (fields, search) => {
 var compareObject = (objectA = {}, objectB = {}) => Object.entries(objectA).reduce((previous, [key, value]) => previous ? objectB[key] && objectB[key] === value : false, true);
 
 var isSameError = (error, { type, types, message, }) => {
-    return (isObject(error) &&
+    return (isObject$1(error) &&
         error.type === type &&
         error.message === message &&
         compareObject(error.types, types));
@@ -3136,7 +12307,7 @@ function shouldUpdateWithError({ errors, name, error, validFields, fieldsWithVal
 var isRegex = (value) => value instanceof RegExp;
 
 var getValueAndMessage = (validationData) => {
-    const isValueMessage = (value) => isObject(value) && !isRegex(value);
+    const isValueMessage = (value) => isObject$1(value) && !isRegex(value);
     return isValueMessage(validationData)
         ? validationData
         : {
@@ -3145,14 +12316,14 @@ var getValueAndMessage = (validationData) => {
         };
 };
 
-var isFunction = (value) => typeof value === 'function';
+var isFunction$1 = (value) => typeof value === 'function';
 
-var isBoolean = (value) => typeof value === 'boolean';
+var isBoolean$1 = (value) => typeof value === 'boolean';
 
-var isMessage = (value) => isString(value) || (isObject(value) && React.isValidElement(value));
+var isMessage = (value) => isString$1(value) || (isObject$1(value) && React__default.isValidElement(value));
 
 function getValidateError(result, ref, type = 'validate') {
-    if (isMessage(result) || (isBoolean(result) && !result)) {
+    if (isMessage(result) || (isBoolean$1(result) && !result)) {
         const message = isMessage(result) ? result : '';
         return {
             type,
@@ -3190,7 +12361,7 @@ var validateField = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { ty
     };
     if (required &&
         ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
-            (isBoolean(value) && !value) ||
+            (isBoolean$1(value) && !value) ||
             (isCheckBox && !getCheckboxValue(options).isValid) ||
             (isRadio && !getRadioValue(options).isValid))) {
         const { value: requiredValue, message: requiredMessage } = isMessage(required)
@@ -3219,10 +12390,10 @@ var validateField = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { ty
         }
         else {
             const valueDate = ref.valueAsDate || new Date(value);
-            if (isString(maxValue)) {
+            if (isString$1(maxValue)) {
                 exceedMax = valueDate > new Date(maxValue);
             }
-            if (isString(minValue)) {
+            if (isString$1(minValue)) {
                 exceedMin = valueDate < new Date(minValue);
             }
         }
@@ -3233,7 +12404,7 @@ var validateField = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { ty
             }
         }
     }
-    if (isString(value) && !isEmpty && (maxLength || minLength)) {
+    if (isString$1(value) && !isEmpty && (maxLength || minLength)) {
         const { value: maxLengthValue, message: maxLengthMessage, } = getValueAndMessage(maxLength);
         const { value: minLengthValue, message: minLengthMessage, } = getValueAndMessage(minLength);
         const inputLength = value.toString().length;
@@ -3258,7 +12429,7 @@ var validateField = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { ty
     if (validate) {
         const fieldValue = getFieldValue(fields, ref);
         const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
-        if (isFunction(validate)) {
+        if (isFunction$1(validate)) {
             const result = await validate(fieldValue);
             const validateError = getValidateError(result, validateRef);
             if (validateError) {
@@ -3268,7 +12439,7 @@ var validateField = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { ty
                 }
             }
         }
-        else if (isObject(validate)) {
+        else if (isObject$1(validate)) {
             let validationResult = {};
             for (const [key, validateFunction] of Object.entries(validate)) {
                 if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
@@ -3294,7 +12465,7 @@ var validateField = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { ty
     return error;
 };
 
-const parseErrorSchema = (error, validateAllFieldCriteria) => isArray(error.inner)
+const parseErrorSchema = (error, validateAllFieldCriteria) => isArray$2(error.inner)
     ? error.inner.reduce((previous, { path, message, type }) => (Object.assign(Object.assign({}, previous), (previous[path] && validateAllFieldCriteria
         ? {
             [path]: appendErrors(path, validateAllFieldCriteria, previous, type, message),
@@ -3331,12 +12502,12 @@ async function validateWithSchema(validationSchema, validateAllFieldCriteria, da
     }
 }
 
-var getDefaultValue = (defaultValues, name, defaultValue) => isUndefined(defaultValues[name])
+var getDefaultValue = (defaultValues, name, defaultValue) => isUndefined$1(defaultValues[name])
     ? get(defaultValues, name, defaultValue)
     : defaultValues[name];
 
 function flatArray(list) {
-    return list.reduce((a, b) => a.concat(isArray(b) ? flatArray(b) : b), []);
+    return list.reduce((a, b) => a.concat(isArray$2(b) ? flatArray(b) : b), []);
 }
 
 var isPrimitive = (value) => isNullOrUndefined(value) || !isObjectType(value);
@@ -3346,7 +12517,7 @@ const getPath = (path, values) => {
         const pathWithIndex = isObject ? `${path}.${key}` : `${path}[${key}]`;
         return isPrimitive(value) ? pathWithIndex : getPath(pathWithIndex, value);
     };
-    return isArray(values)
+    return isArray$2(values)
         ? values.map((value, key) => getInnerPath(value, key))
         : Object.entries(values).map(([key, value]) => getInnerPath(value, key, true));
 };
@@ -3358,18 +12529,18 @@ var assignWatchFields = (fieldValues, fieldName, watchFields, combinedDefaultVal
     if (isEmptyObject(fieldValues)) {
         value = undefined;
     }
-    else if (!isUndefined(fieldValues[fieldName])) {
+    else if (!isUndefined$1(fieldValues[fieldName])) {
         value = fieldValues[fieldName];
         watchFields.add(fieldName);
     }
     else {
         value = get(transformToNestObject(fieldValues), fieldName);
-        if (!isUndefined(value)) {
+        if (!isUndefined$1(value)) {
             getPath$1(fieldName, value).forEach(name => watchFields.add(name));
         }
     }
-    return isUndefined(value)
-        ? isObject(combinedDefaultValues)
+    return isUndefined$1(value)
+        ? isObject$1(combinedDefaultValues)
             ? getDefaultValue(combinedDefaultValues, fieldName)
             : combinedDefaultValues
         : value;
@@ -3389,8 +12560,8 @@ var getFieldValueByName = (fields, name) => {
 
 function getIsFieldsDifferent(referenceArray, differenceArray) {
     let isMatch = false;
-    if (!isArray(referenceArray) ||
-        !isArray(differenceArray) ||
+    if (!isArray$2(referenceArray) ||
+        !isArray$2(differenceArray) ||
         referenceArray.length !== differenceArray.length) {
         return true;
     }
@@ -3400,7 +12571,7 @@ function getIsFieldsDifferent(referenceArray, differenceArray) {
         }
         const dataA = referenceArray[i];
         const dataB = differenceArray[i];
-        if (isUndefined(dataB) ||
+        if (isUndefined$1(dataB) ||
             Object.keys(dataA).length !== Object.keys(dataB).length) {
             isMatch = true;
             break;
@@ -3440,7 +12611,7 @@ var modeChecker = (mode) => ({
     isOnChange: mode === VALIDATION_MODE.onChange,
 });
 
-const { useRef, useState, useCallback, useEffect } = React;
+const { useRef, useState, useCallback, useEffect } = React__default;
 function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_MODE.onChange, validationSchema, validationResolver, validationContext, defaultValues = {}, submitFocusError = true, validateCriteriaMode, } = {}) {
     const fieldsRef = useRef({});
     const validateAllFieldCriteria = validateCriteriaMode === 'all';
@@ -3469,7 +12640,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
     const shouldValidateCallback = !!(validationSchema || validationResolver);
     const isWeb = typeof document !== UNDEFINED &&
         !isWindowUndefined &&
-        !isUndefined(window.HTMLElement);
+        !isUndefined$1(window.HTMLElement);
     const isProxyEnabled = isWeb && 'Proxy' in window;
     const readFormStateRef = useRef({
         dirty: !isProxyEnabled,
@@ -3579,10 +12750,10 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         }
     }, []);
     const setInternalValueBatch = useCallback((name, value, parentFieldName) => {
-        const isValueArray = isArray(value);
+        const isValueArray = isArray$2(value);
         for (const key in value) {
             const fieldName = `${parentFieldName || name}${isValueArray ? `[${key}]` : `.${key}`}`;
-            if (isObject(value[key])) {
+            if (isObject$1(value[key])) {
                 setInternalValueBatch(name, value[key], fieldName);
             }
             const field = fieldsRef.current[fieldName];
@@ -3597,7 +12768,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         if (field) {
             setFieldValue(field, value);
             const output = setDirtyAndTouchedFields(name);
-            if (isBoolean(output)) {
+            if (isBoolean$1(output)) {
                 return output;
             }
         }
@@ -3618,7 +12789,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         const { errors } = await validateWithSchema(validationSchema, validateAllFieldCriteria, getFieldValueByName(fieldsRef.current), validationResolver, validationContextRef.current);
         const previousFormIsValid = isValidRef.current;
         isValidRef.current = isEmptyObject(errors);
-        if (isArray(payload)) {
+        if (isArray$2(payload)) {
             payload.forEach(name => {
                 const error = get(errors, name);
                 if (error) {
@@ -3648,7 +12819,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         if (shouldValidateCallback) {
             return executeSchemaValidation(fields);
         }
-        if (isArray(fields)) {
+        if (isArray$2(fields)) {
             const result = await Promise.all(fields.map(async (data) => await executeValidation(data, true)));
             reRender();
             return result.every(Boolean);
@@ -3665,11 +12836,11 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
     function setValue(names, valueOrShouldValidate, shouldValidate) {
         let shouldRender = false;
-        const isMultiple = isArray(names);
+        const isMultiple = isArray$2(names);
         (isMultiple
             ? names
             : [names]).forEach((name) => {
-            const isStringFieldName = isString(name);
+            const isStringFieldName = isString$1(name);
             shouldRender =
                 setInternalValue(isStringFieldName ? name : Object.keys(name)[0], isStringFieldName
                     ? valueOrShouldValidate
@@ -3751,7 +12922,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [reRender, validateAllFieldCriteria, validationResolver]);
     const removeFieldEventListener = (field, forceDelete) => {
-        if (!isUndefined(handleChangeRef.current) && field) {
+        if (!isUndefined$1(handleChangeRef.current) && field) {
             findRemovedFieldAndRemoveListener(fieldsRef.current, handleChangeRef.current, field, forceDelete);
         }
     };
@@ -3784,11 +12955,11 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         }
     }, [reRender, shouldValidateCallback, validateSchemaIsValid]);
     function clearError(name) {
-        if (isUndefined(name)) {
+        if (isUndefined$1(name)) {
             errorsRef.current = {};
         }
         else {
-            unset(errorsRef.current, isArray(name) ? name : [name]);
+            unset(errorsRef.current, isArray$2(name) ? name : [name]);
         }
         reRender();
     }
@@ -3812,8 +12983,8 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         }
     };
     function setError(name, type = '', message) {
-        if (isString(name)) {
-            setInternalError(Object.assign({ name }, (isObject(type)
+        if (isString$1(name)) {
+            setInternalError(Object.assign({ name }, (isObject$1(type)
                 ? {
                     types: type,
                     type: '',
@@ -3823,23 +12994,23 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
                     message,
                 })));
         }
-        else if (isArray(name)) {
+        else if (isArray$2(name)) {
             name.forEach(error => setInternalError(Object.assign(Object.assign({}, error), { preventRender: true })));
             reRender();
         }
     }
     function watch(fieldNames, defaultValue) {
-        const combinedDefaultValues = isUndefined(defaultValue)
-            ? isUndefined(defaultValuesRef.current)
+        const combinedDefaultValues = isUndefined$1(defaultValue)
+            ? isUndefined$1(defaultValuesRef.current)
                 ? {}
                 : defaultValuesRef.current
             : defaultValue;
         const fieldValues = getFieldsValues(fieldsRef.current, fieldNames);
         const watchFields = watchFieldsRef.current;
-        if (isString(fieldNames)) {
+        if (isString$1(fieldNames)) {
             return assignWatchFields(fieldValues, fieldNames, watchFields, combinedDefaultValues);
         }
-        if (isArray(fieldNames)) {
+        if (isArray$2(fieldNames)) {
             return fieldNames.reduce((previous, name) => (Object.assign(Object.assign({}, previous), { [name]: assignWatchFields(fieldValues, name, watchFields, combinedDefaultValues) })), {});
         }
         isWatchAllRef.current = true;
@@ -3852,7 +13023,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
     }
     function unregister(names) {
         if (!isEmptyObject(fieldsRef.current)) {
-            (isArray(names) ? names : [names]).forEach(fieldName => removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true));
+            (isArray$2(names) ? names : [names]).forEach(fieldName => removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true));
         }
     }
     function registerFieldsRef(ref, validateOptions = {}) {
@@ -3870,7 +13041,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         let defaultValue;
         if (isRadioOrCheckbox
             ? currentField &&
-                isArray(currentField.options) &&
+                isArray$2(currentField.options) &&
                 currentField.options
                     .filter(Boolean)
                     .find(({ ref }) => value === ref.value)
@@ -3895,7 +13066,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         fields[name] = currentField;
         if (!isEmptyObject(defaultValuesRef.current)) {
             defaultValue = getDefaultValue(defaultValuesRef.current, name);
-            isEmptyDefaultValue = isUndefined(defaultValue);
+            isEmptyDefaultValue = isUndefined$1(defaultValue);
             isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
             if (!isEmptyDefaultValue && !isFieldArray) {
                 setFieldValue(currentField, defaultValue);
@@ -3945,11 +13116,11 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         if (isWindowUndefined) {
             return;
         }
-        if (isString(refOrValidationOptions)) {
+        if (isString$1(refOrValidationOptions)) {
             registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
             return;
         }
-        if (isObject(refOrValidationOptions) && 'name' in refOrValidationOptions) {
+        if (isObject$1(refOrValidationOptions) && 'name' in refOrValidationOptions) {
             registerFieldsRef(refOrValidationOptions, validationOptions);
             return;
         }
@@ -4061,7 +13232,7 @@ function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_
         if (values) {
             defaultValuesRef.current = values;
         }
-        Object.values(resetFieldArrayFunctionRef.current).forEach(resetFieldArray => isFunction(resetFieldArray) && resetFieldArray());
+        Object.values(resetFieldArrayFunctionRef.current).forEach(resetFieldArray => isFunction$1(resetFieldArray) && resetFieldArray());
         resetRefs(omitResetState);
         reRender();
     };
@@ -4182,16 +13353,16 @@ function __rest(s, e) {
     return t;
 }
 
-const FormGlobalContext = React.createContext(null);
+const FormGlobalContext = React__default.createContext(null);
 function useFormContext() {
-    return React.useContext(FormGlobalContext);
+    return React__default.useContext(FormGlobalContext);
 }
 
 var getInputValue = (event, isCheckboxInput) => isPrimitive(event) ||
-    !isObject(event.target) ||
-    (isObject(event.target) && !event.type)
+    !isObject$1(event.target) ||
+    (isObject$1(event.target) && !event.type)
     ? event
-    : isCheckboxInput || isUndefined(event.target.value)
+    : isCheckboxInput || isUndefined$1(event.target.value)
         ? event.target.checked
         : event.target.value;
 
@@ -4199,11 +13370,11 @@ const Controller = (_a) => {
     var { name, rules, as: InnerComponent, onBlur, onChange, onChangeName = VALIDATION_MODE.onChange, onBlurName = VALIDATION_MODE.onBlur, valueName, defaultValue, control } = _a, rest = __rest(_a, ["name", "rules", "as", "onBlur", "onChange", "onChangeName", "onBlurName", "valueName", "defaultValue", "control"]);
     const methods = useFormContext();
     const { defaultValuesRef, setValue, register, unregister, errorsRef, removeFieldEventListener, triggerValidation, mode: { isOnSubmit, isOnBlur, isOnChange }, reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit }, formState: { isSubmitted }, fieldsRef, fieldArrayNamesRef, } = control || methods.control;
-    const [value, setInputStateValue] = React.useState(isUndefined(defaultValue)
+    const [value, setInputStateValue] = React__default.useState(isUndefined$1(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue);
-    const valueRef = React.useRef(value);
-    const isCheckboxInput = isBoolean(value);
+    const valueRef = React__default.useRef(value);
+    const isCheckboxInput = isBoolean$1(value);
     const shouldValidate = () => !skipValidation({
         hasError: !!get(errorsRef.current, name),
         isOnBlur,
@@ -4239,15 +13410,15 @@ const Controller = (_a) => {
             },
         }), Object.assign({}, rules));
     };
-    React.useEffect(() => {
+    React__default.useEffect(() => {
         if (!fieldsRef.current[name]) {
             registerField();
-            setInputStateValue(isUndefined(defaultValue)
+            setInputStateValue(isUndefined$1(defaultValue)
                 ? get(defaultValuesRef.current, name)
                 : defaultValue);
         }
     });
-    React.useEffect(() => {
+    React__default.useEffect(() => {
         registerField();
         return () => {
             if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
@@ -4255,7 +13426,7 @@ const Controller = (_a) => {
             }
         };
     }, [name]);
-    React.useEffect(() => {
+    React__default.useEffect(() => {
         registerField();
     }, [rules]);
     const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
@@ -4273,9 +13444,9 @@ const Controller = (_a) => {
             },
         }
         : {})), { [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value });
-    return React.isValidElement(InnerComponent)
-        ? React.cloneElement(InnerComponent, props)
-        : React.createElement(InnerComponent, props);
+    return React__default.isValidElement(InnerComponent)
+        ? React__default.cloneElement(InnerComponent, props)
+        : React__default.createElement(InnerComponent, props);
 };
 
 const ErrorMessage = (_a) => {
@@ -4289,7 +13460,7 @@ const ErrorMessage = (_a) => {
     const props = Object.assign(Object.assign({}, (InnerComponent ? rest : {})), { children: children
             ? children({ message: messageFromRegister || message, messages: types })
             : messageFromRegister || message });
-    return InnerComponent ? (React.isValidElement(InnerComponent) ? (React.cloneElement(InnerComponent, props)) : (React.createElement(InnerComponent, props))) : (React.createElement(React.Fragment, Object.assign({}, props)));
+    return InnerComponent ? (React__default.isValidElement(InnerComponent) ? (React__default.cloneElement(InnerComponent, props)) : (React__default.createElement(InnerComponent, props))) : (React__default.createElement(React__default.Fragment, Object.assign({}, props)));
 };
 
 var global$1$1 = typeof global$1$1 !== "undefined"
@@ -4845,7 +14016,7 @@ let advancedBinding = getAdvancedBinding();
  
  */
 //@ts-ignore
-let componentMap = Object.assign({ Fragment: React.Fragment, Suspense: React.Suspense }, reactDomFactories, window && typeof window === "object" ? window.__jsonx_custom_elements : {});
+let componentMap = Object.assign({ Fragment: React__default.Fragment, Suspense: React__default.Suspense }, reactDomFactories, window && typeof window === "object" ? window.__jsonx_custom_elements : {});
 /**
  * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
  
@@ -4986,7 +14157,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
     // console.log(util.inspect({ reactComponent },{depth:20}));
     if (options.lazy) {
         //@ts-ignore
-        return React.lazy(() => options
+        return React__default.lazy(() => options
             .lazy(reactComponent, Object.assign({}, options, { lazy: false }))
             .then((lazyComponent) => {
             return {
@@ -5083,7 +14254,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
         });
     }
     const reactClass = returnFactory
-        ? React__default.createFactory(reactComponentClass)
+        ? React__default__default.createFactory(reactComponentClass)
         : reactComponentClass;
     return reactClass;
 }
@@ -5119,7 +14290,7 @@ function FormComponent(props = {}) {
         }
     };
     formWrapperJXM.children = Array.isArray(formComponent) ? formComponent : [formComponent];
-    const renderJSONX = React.useMemo(() => getReactElementFromJSONX.bind(context), [
+    const renderJSONX = React__default.useMemo(() => getReactElementFromJSONX.bind(context), [
         context
     ]);
     return renderJSONX(formWrapperJXM);
@@ -5144,24 +14315,24 @@ function DynamicComponent(props = {}) {
         ]
     }, cacheTimeoutFunction = () => { }, jsonx, transformFunction = (data) => data, fetchURL, fetchOptions, fetchFunction } = props;
     const context = this || {};
-    const [state, setState] = React.useState({
+    const [state, setState] = React__default.useState({
         hasLoaded: false,
         hasError: false,
         resources: {},
         error: undefined
     });
-    const transformer = React.useMemo(() => getFunctionFromEval(transformFunction), [
+    const transformer = React__default.useMemo(() => getFunctionFromEval(transformFunction), [
         transformFunction
     ]);
-    const timeoutFunction = React.useMemo(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
-    const renderJSONX = React.useMemo(() => getReactElementFromJSONX.bind(context), [
+    const timeoutFunction = React__default.useMemo(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
+    const renderJSONX = React__default.useMemo(() => getReactElementFromJSONX.bind(context), [
         context
     ]);
-    const loadingComponent = React.useMemo(() => renderJSONX(loadingJSONX), [
+    const loadingComponent = React__default.useMemo(() => renderJSONX(loadingJSONX), [
         loadingJSONX
     ]);
-    const loadingError = React.useMemo(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
-    React.useEffect(() => {
+    const loadingError = React__default.useMemo(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
+    React__default.useEffect(() => {
         async function getData() {
             try {
                 //@ts-ignore
@@ -5250,7 +14421,7 @@ function DynamicComponent(props = {}) {
 function getReactFunctionComponent(reactComponent = {}, functionBody = "", options = {}) {
     if (options.lazy) {
         //@ts-ignore
-        return React.lazy(() => options
+        return React__default.lazy(() => options
             .lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false }))
             .then((lazyComponent) => {
             return {
@@ -5265,17 +14436,17 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = "", optio
     //@ts-ignore
     const props = Object.assign({}, reactComponent.props);
     const functionArgs = [
-        React__default,
-        React.useState,
-        React.useEffect,
-        React.useContext,
-        React.useReducer,
-        React.useCallback,
-        React.useMemo,
-        React.useRef,
-        React.useImperativeHandle,
-        React.useLayoutEffect,
-        React.useDebugValue,
+        React__default__default,
+        React__default.useState,
+        React__default.useEffect,
+        React__default.useContext,
+        React__default.useReducer,
+        React__default.useCallback,
+        React__default.useMemo,
+        React__default.useRef,
+        React__default.useImperativeHandle,
+        React__default.useLayoutEffect,
+        React__default.useDebugValue,
         getReactElementFromJSONX,
         reactComponent,
         resources,
@@ -5316,7 +14487,7 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = "", optio
  *
  */
 function getReactContext(options = {}) {
-    return React.createContext(options.value);
+    return React__default.createContext(options.value);
 }
 
 var jsonxComponents = /*#__PURE__*/Object.freeze({
@@ -5864,7 +15035,7 @@ function getWindowComponents(options = { jsonx: {} }) {
             const windowComponentProps = allProps["__windowComponentProps"]
                 ? allProps["__windowComponentProps"]
                 : this.props;
-            allProps[key] = React__default.createElement(windowComponentElement, windowComponentProps, null);
+            allProps[key] = React__default__default.createElement(windowComponentElement, windowComponentProps, null);
         }
     });
     return allProps;
@@ -7316,11 +16487,11 @@ const DATETIME_HUGE_WITH_SECONDS = {
 
 // TYPES
 
-function isUndefined$1(o) {
+function isUndefined$1$1(o) {
   return typeof o === "undefined";
 }
 
-function isNumber(o) {
+function isNumber$1(o) {
   return typeof o === "number";
 }
 
@@ -7328,11 +16499,11 @@ function isInteger(o) {
   return typeof o === "number" && o % 1 === 0;
 }
 
-function isString$1(o) {
+function isString$1$1(o) {
   return typeof o === "string";
 }
 
-function isDate(o) {
+function isDate$1(o) {
   return Object.prototype.toString.call(o) === "[object Date]";
 }
 
@@ -7347,7 +16518,7 @@ function hasIntl() {
 }
 
 function hasFormatToParts() {
-  return !isUndefined$1(Intl.DateTimeFormat.prototype.formatToParts);
+  return !isUndefined$1$1(Intl.DateTimeFormat.prototype.formatToParts);
 }
 
 function hasRelative() {
@@ -7387,7 +16558,7 @@ function pick(obj, keys) {
   }, {});
 }
 
-function hasOwnProperty$1(obj, prop) {
+function hasOwnProperty$2(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
@@ -7411,7 +16582,7 @@ function padStart(input, n = 2) {
 }
 
 function parseInteger(string) {
-  if (isUndefined$1(string) || string === null || string === "") {
+  if (isUndefined$1$1(string) || string === null || string === "") {
     return undefined;
   } else {
     return parseInt(string, 10);
@@ -7420,7 +16591,7 @@ function parseInteger(string) {
 
 function parseMillis(fraction) {
   // Return undefined (instead of 0) in these cases, where fraction is not set
-  if (isUndefined$1(fraction) || fraction === null || fraction === "") {
+  if (isUndefined$1$1(fraction) || fraction === null || fraction === "") {
     return undefined;
   } else {
     const f = parseFloat("0." + fraction) * 1000;
@@ -7556,7 +16727,7 @@ function asNumber(value) {
 function normalizeObject(obj, normalizer, nonUnitKeys) {
   const normalized = {};
   for (const u in obj) {
-    if (hasOwnProperty$1(obj, u)) {
+    if (hasOwnProperty$2(obj, u)) {
       if (nonUnitKeys.indexOf(u) >= 0) continue;
       const v = obj[u];
       if (v === undefined || v === null) continue;
@@ -8407,7 +17578,7 @@ function partsOffset(dtf, date) {
     const { type, value } = formatted[i],
       pos = typeToPos[type];
 
-    if (!isUndefined$1(pos)) {
+    if (!isUndefined$1$1(pos)) {
       filled[pos] = parseInt(value, 10);
     }
   }
@@ -8701,11 +17872,11 @@ class InvalidZone extends Zone {
 
 function normalizeZone(input, defaultZone) {
   let offset;
-  if (isUndefined$1(input) || input === null) {
+  if (isUndefined$1$1(input) || input === null) {
     return defaultZone;
   } else if (input instanceof Zone) {
     return input;
-  } else if (isString$1(input)) {
+  } else if (isString$1$1(input)) {
     const lowered = input.toLowerCase();
     if (lowered === "local") return defaultZone;
     else if (lowered === "utc" || lowered === "gmt") return FixedOffsetZone.utcInstance;
@@ -8714,7 +17885,7 @@ function normalizeZone(input, defaultZone) {
       return FixedOffsetZone.instance(offset);
     } else if (IANAZone.isValidSpecifier(lowered)) return IANAZone.create(input);
     else return FixedOffsetZone.parseSpecifier(lowered) || new InvalidZone(input);
-  } else if (isNumber(input)) {
+  } else if (isNumber$1(input)) {
     return FixedOffsetZone.instance(input);
   } else if (typeof input === "object" && input.offset && typeof input.offset === "number") {
     // This is dumb, but the instanceof check above doesn't seem to really work
@@ -9393,7 +18564,7 @@ const offsetRegex = /(?:(Z)|([+-]\d\d)(?::?(\d\d))?)/,
 
 function int(match, pos, fallback) {
   const m = match[pos];
-  return isUndefined$1(m) ? fallback : parseInteger(m);
+  return isUndefined$1$1(m) ? fallback : parseInteger(m);
 }
 
 function extractISOYmd(match, cursor) {
@@ -9755,7 +18926,7 @@ function convert(matrix, fromMap, fromUnit, toMap, toUnit) {
 // NB: mutates parameters
 function normalizeValues(matrix, vals) {
   reverseUnits.reduce((previous, current) => {
-    if (!isUndefined$1(vals[current])) {
+    if (!isUndefined$1$1(vals[current])) {
       if (previous) {
         convert(matrix, vals, previous, vals, current);
       }
@@ -10078,7 +19249,7 @@ class Duration {
       result = {};
 
     for (const k of orderedUnits) {
-      if (hasOwnProperty$1(dur.values, k) || hasOwnProperty$1(this.values, k)) {
+      if (hasOwnProperty$2(dur.values, k) || hasOwnProperty$2(this.values, k)) {
         result[k] = dur.get(k) + this.get(k);
       }
     }
@@ -10215,7 +19386,7 @@ class Duration {
         }
 
         // plus anything that's already in this unit
-        if (isNumber(vals[k])) {
+        if (isNumber$1(vals[k])) {
           own += vals[k];
         }
 
@@ -10230,7 +19401,7 @@ class Duration {
           }
         }
         // otherwise, keep it in the wings to boil it later
-      } else if (isNumber(vals[k])) {
+      } else if (isNumber$1(vals[k])) {
         accumulated[k] = vals[k];
       }
     }
@@ -10386,7 +19557,7 @@ class Duration {
  * @private
  */
 function friendlyDuration(durationish) {
-  if (isNumber(durationish)) {
+  if (isNumber$1(durationish)) {
     return Duration.fromMillis(durationish);
   } else if (Duration.isDuration(durationish)) {
     return durationish;
@@ -11567,7 +20738,7 @@ function match(input, regex, handlers) {
     const all = {};
     let matchIndex = 1;
     for (const i in handlers) {
-      if (hasOwnProperty$1(handlers, i)) {
+      if (hasOwnProperty$2(handlers, i)) {
         const h = handlers[i],
           groups = h.groups ? h.groups + 1 : 1;
         if (!h.literal && h.token) {
@@ -11618,19 +20789,19 @@ function dateTimeFromMatches(matches) {
   };
 
   let zone;
-  if (!isUndefined$1(matches.Z)) {
+  if (!isUndefined$1$1(matches.Z)) {
     zone = new FixedOffsetZone(matches.Z);
-  } else if (!isUndefined$1(matches.z)) {
+  } else if (!isUndefined$1$1(matches.z)) {
     zone = IANAZone.create(matches.z);
   } else {
     zone = null;
   }
 
-  if (!isUndefined$1(matches.q)) {
+  if (!isUndefined$1$1(matches.q)) {
     matches.M = (matches.q - 1) * 3 + 1;
   }
 
-  if (!isUndefined$1(matches.h)) {
+  if (!isUndefined$1$1(matches.h)) {
     if (matches.h < 12 && matches.a === 1) {
       matches.h += 12;
     } else if (matches.h === 12 && matches.a === 0) {
@@ -11642,7 +20813,7 @@ function dateTimeFromMatches(matches) {
     matches.y = -matches.y;
   }
 
-  if (!isUndefined$1(matches.u)) {
+  if (!isUndefined$1$1(matches.u)) {
     matches.S = parseMillis(matches.u);
   }
 
@@ -11711,7 +20882,7 @@ function explainFromTokens(locale, input, format) {
       regex = RegExp(regexString, "i"),
       [rawMatches, matches] = match(input, regex, handlers),
       [result, zone] = matches ? dateTimeFromMatches(matches) : [null, null];
-    if (hasOwnProperty$1(matches, "a") && hasOwnProperty$1(matches, "H")) {
+    if (hasOwnProperty$2(matches, "a") && hasOwnProperty$2(matches, "H")) {
       throw new ConflictingSpecificationError(
         "Can't include meridiem when specifying 24-hour format"
       );
@@ -12131,7 +21302,7 @@ function normalizeUnit(unit) {
 function quickDT(obj, zone) {
   // assume we have the higher-order units
   for (const u of orderedUnits$1) {
-    if (isUndefined$1(obj[u])) {
+    if (isUndefined$1$1(obj[u])) {
       obj[u] = defaultUnitValues[u];
     }
   }
@@ -12153,7 +21324,7 @@ function quickDT(obj, zone) {
 }
 
 function diffRelative(start, end, opts) {
-  const round = isUndefined$1(opts.round) ? true : opts.round,
+  const round = isUndefined$1$1(opts.round) ? true : opts.round,
     format = (c, unit) => {
       c = roundTo(c, round || opts.calendary ? 0 : 2, true);
       const formatter = end.loc.clone(opts).relFormatter(opts);
@@ -12219,7 +21390,7 @@ class DateTime {
     /**
      * @access private
      */
-    this.ts = isUndefined$1(config.ts) ? Settings.now() : config.ts;
+    this.ts = isUndefined$1$1(config.ts) ? Settings.now() : config.ts;
 
     let c = null,
       o = null;
@@ -12289,7 +21460,7 @@ class DateTime {
    * @return {DateTime}
    */
   static local(year, month, day, hour, minute, second, millisecond) {
-    if (isUndefined$1(year)) {
+    if (isUndefined$1$1(year)) {
       return new DateTime({ ts: Settings.now() });
     } else {
       return quickDT(
@@ -12327,7 +21498,7 @@ class DateTime {
    * @return {DateTime}
    */
   static utc(year, month, day, hour, minute, second, millisecond) {
-    if (isUndefined$1(year)) {
+    if (isUndefined$1$1(year)) {
       return new DateTime({
         ts: Settings.now(),
         zone: FixedOffsetZone.utcInstance
@@ -12356,7 +21527,7 @@ class DateTime {
    * @return {DateTime}
    */
   static fromJSDate(date, options = {}) {
-    const ts = isDate(date) ? date.valueOf() : NaN;
+    const ts = isDate$1(date) ? date.valueOf() : NaN;
     if (Number.isNaN(ts)) {
       return DateTime.invalid("invalid input");
     }
@@ -12384,7 +21555,7 @@ class DateTime {
    * @return {DateTime}
    */
   static fromMillis(milliseconds, options = {}) {
-    if (!isNumber(milliseconds)) {
+    if (!isNumber$1(milliseconds)) {
       throw new InvalidArgumentError(
         `fromMillis requires a numerical input, but received a ${typeof milliseconds} with value ${milliseconds}`
       );
@@ -12411,7 +21582,7 @@ class DateTime {
    * @return {DateTime}
    */
   static fromSeconds(seconds, options = {}) {
-    if (!isNumber(seconds)) {
+    if (!isNumber$1(seconds)) {
       throw new InvalidArgumentError("fromSeconds requires a numerical input");
     } else {
       return new DateTime({
@@ -12463,9 +21634,9 @@ class DateTime {
         "outputCalendar",
         "numberingSystem"
       ]),
-      containsOrdinal = !isUndefined$1(normalized.ordinal),
-      containsGregorYear = !isUndefined$1(normalized.year),
-      containsGregorMD = !isUndefined$1(normalized.month) || !isUndefined$1(normalized.day),
+      containsOrdinal = !isUndefined$1$1(normalized.ordinal),
+      containsGregorYear = !isUndefined$1$1(normalized.year),
+      containsGregorMD = !isUndefined$1$1(normalized.month) || !isUndefined$1$1(normalized.day),
       containsGregor = containsGregorYear || containsGregorMD,
       definiteWeekDef = normalized.weekYear || normalized.weekNumber,
       loc = Locale.fromObject(obj);
@@ -12509,7 +21680,7 @@ class DateTime {
     let foundFirst = false;
     for (const u of units) {
       const v = normalized[u];
-      if (!isUndefined$1(v)) {
+      if (!isUndefined$1$1(v)) {
         foundFirst = true;
       } else if (foundFirst) {
         normalized[u] = defaultValues[u];
@@ -12630,7 +21801,7 @@ class DateTime {
    * @return {DateTime}
    */
   static fromFormat(text, fmt, opts = {}) {
-    if (isUndefined$1(text) || isUndefined$1(fmt)) {
+    if (isUndefined$1$1(text) || isUndefined$1$1(fmt)) {
       throw new InvalidArgumentError("fromFormat requires an input string and a format");
     }
 
@@ -13148,21 +22319,21 @@ class DateTime {
 
     const normalized = normalizeObject(values, normalizeUnit, []),
       settingWeekStuff =
-        !isUndefined$1(normalized.weekYear) ||
-        !isUndefined$1(normalized.weekNumber) ||
-        !isUndefined$1(normalized.weekday);
+        !isUndefined$1$1(normalized.weekYear) ||
+        !isUndefined$1$1(normalized.weekNumber) ||
+        !isUndefined$1$1(normalized.weekday);
 
     let mixed;
     if (settingWeekStuff) {
       mixed = weekToGregorian(Object.assign(gregorianToWeek(this.c), normalized));
-    } else if (!isUndefined$1(normalized.ordinal)) {
+    } else if (!isUndefined$1$1(normalized.ordinal)) {
       mixed = ordinalToGregorian(Object.assign(gregorianToOrdinal(this.c), normalized));
     } else {
       mixed = Object.assign(this.toObject(), normalized);
 
       // if we didn't set the day but we ended up on an overflow date,
       // use the last day of the right month
-      if (isUndefined$1(normalized.day)) {
+      if (isUndefined$1$1(normalized.day)) {
         mixed.day = Math.min(daysInMonth(mixed.year, mixed.month), mixed.day);
       }
     }
@@ -13930,7 +23101,7 @@ class DateTime {
 function friendlyDateTime(dateTimeish) {
   if (DateTime.isDateTime(dateTimeish)) {
     return dateTimeish;
-  } else if (dateTimeish && dateTimeish.valueOf && isNumber(dateTimeish.valueOf())) {
+  } else if (dateTimeish && dateTimeish.valueOf && isNumber$1(dateTimeish.valueOf())) {
     return DateTime.fromJSDate(dateTimeish);
   } else if (dateTimeish && typeof dateTimeish === "object") {
     return DateTime.fromObject(dateTimeish);
@@ -13940,6 +23111,20 @@ function friendlyDateTime(dateTimeish) {
     );
   }
 }
+
+var luxon = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    DateTime: DateTime,
+    Duration: Duration,
+    Interval: Interval,
+    Info: Info,
+    Zone: Zone,
+    FixedOffsetZone: FixedOffsetZone,
+    IANAZone: IANAZone,
+    InvalidZone: InvalidZone,
+    LocalZone: LocalZone,
+    Settings: Settings
+});
 
 var fs = {};
 
@@ -14163,13 +23348,94 @@ var jsonxChildren = /*#__PURE__*/Object.freeze({
     getJSONXChildren: getJSONXChildren
 });
 
+const scopedEval$1 = eval;
+/**
+ * Use JSONX for express view rendering
+ * @param {string} filePath - path to jsonx express view
+ * @param {object} options - property used for express view {locals}
+ * @param {object} options.__boundConfig - property used to bind this object for JSONX, can be used to add custom components
+ * @param {string} [options.__DOCTYPE="<!DOCTYPE html>"] - html doctype string
+ * @param {*} callback
+ */
+function __express(filePath, options, callback) {
+    try {
+        let jsonxModule = options.__jsonx;
+        if (filePath) {
+            const jsFile = fs.readFileSync(filePath).toString();
+            jsonxModule = scopedEval$1(jsFile.toString());
+        }
+        const resources = Object.assign({}, options);
+        delete resources.__boundConfig;
+        delete resources.__DOCTYPE;
+        delete resources.__jsonx;
+        const context = Object.assign({}, options.__boundConfig);
+        if (path.extname(".json"))
+            context.useJSON = true;
+        const jsonxRenderedString = outputHTML.call(context, {
+            jsonx: jsonxModule,
+            resources
+        });
+        const template = `${options.__DOCTYPE || "<!DOCTYPE html>"}
+${jsonxRenderedString}`;
+        if (typeof callback === "function")
+            callback(null, template);
+        else
+            return template;
+    }
+    catch (e) {
+        if (typeof callback === "function")
+            callback(e);
+        else
+            throw e;
+    }
+}
+
 // import React, { createElement, } from 'react';
-const createElement = React__default.createElement;
+const createElement = React__default__default.createElement;
 const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, DynamicComponent: DynamicComponent$1, FormComponent: FormComponent$1, } = jsonxComponents;
 const { getComputedProps: getComputedProps$1 } = jsonxProps;
 const { getJSONXChildren: getJSONXChildren$1 } = jsonxChildren;
 const { displayComponent: displayComponent$1 } = jsonxUtils;
 let renderIndex = 0;
+/**
+ * Use JSONX without any configuration to render JSONX JSON to HTML and insert JSONX into querySelector using ReactDOM.render
+ * @example
+ * // Uses react to create <!DOCTYPE html><body><div id="myApp"><div class="jsonx-generated"><p style="color:red;">hello world</p></div></div></body>
+ * jsonx.jsonxRender({ jsonx: { component: 'div', props:{className:'jsonx-generated',children:[{ component:'p',props:{style:{color:'red'}}, children:'hello world' }]}}, querySelector:'#myApp', });
+ * @param {object} config - options used to inject html via ReactDOM.render
+ * @param {object} config.jsonx - any valid JSONX JSON object
+ * @param {object} config.resources - any additional resource used for asynchronous properties
+ * @param {string} config.querySelector - selector for document.querySelector
+ * @property {object} this - options for getReactElementFromJSONX
+ */
+function jsonxRender(config = { jsonx: { component: "" }, querySelector: "" }) {
+    const { jsonx, resources, querySelector, DOM, portal } = config;
+    const Render = portal ? ReactDOM.createPortal : ReactDOM.render;
+    const RenderDOM = DOM || document.querySelector(querySelector);
+    const JSONXReactElement = getReactElementFromJSONX.call(this || {}, jsonx, resources);
+    if (!JSONXReactElement)
+        throw ReferenceError("Invalid React Element");
+    else if (!RenderDOM)
+        throw ReferenceError("Invalid Render DOM Element");
+    Render(JSONXReactElement, RenderDOM);
+}
+/**
+ * Use ReactDOMServer.renderToString to render html from JSONX
+ * @example
+ * // Uses react to create <div class="jsonx-generated"><p style="color:red;">hello world</p></div>
+ * jsonx.outputHTML({ jsonx: { component: 'div', props:{className:'jsonx-generated',children:[{ component:'p',props:{style:{color:'red'}}, children:'hello world' }]}}, });
+ * @param {object} config - options used to inject html via ReactDOM.render
+ * @param {object} config.jsonx - any valid JSONX JSON object
+ * @param {object} config.resources - any additional resource used for asynchronous properties
+ * @property {object} this - options for getReactElementFromJSONX
+ * @returns {string} React genereated html via JSONX JSON
+ */
+function outputHTML(config = { jsonx: { component: "" } }) {
+    const { jsonx, resources, type = "Fragment", props, children } = config;
+    return this && this.useJSON
+        ? server.renderToString(getReactElementFromJSON.call(this || {}, { type, props, children }))
+        : server.renderToString(getReactElementFromJSONX.call(this || {}, jsonx, resources));
+}
 /**
  * Use React.createElement and JSONX JSON to create React elements
  * @example
@@ -14261,12 +23527,96 @@ function getReactElementFromJSONX(jsonx, resources = {}) {
     }
 }
 const getRenderedJSON = getReactElementFromJSONX;
+const getReactElement = getReactElementFromJSONX;
+/** converts a json object {type,props,children} into a react element
+ * @example
+ * jsonx.getReactElementFromJSON({type:'div',props:{title:'some title attribute'},children:'inner html text'})
+ * @param {Object|String} options.type - 'div' or react component
+ * @param {Object} options.props - props for react element
+ * @param {String|[Object]} options.children - children elements
+ * @returns {function} React element via React.createElement
+ */
+function getReactElementFromJSON({ type, props, children }) {
+    return createElement(type, props, children && Array.isArray(children)
+        ? children.map(getReactElementFromJSON)
+        : children);
+}
+/** converts a jsonx json object into a react function component
+ * @example
+ * jsonx.compile({jsonx:{component:'div',props:{title:'some title attribute'},children:'inner html text'}}) //=>React Function Component
+ * @param {Object} jsonx - valid JSONX JSON
+ * @param {Object} resources - props for react element
+ * @returns {function} React element via React.createElement
+ */
+function compile(jsonx, resources = {}) {
+    const context = Object.assign({}, this, { returnJSON: true });
+    const json = getReactElementFromJSONX.call(context, jsonx, resources);
+    const func = function compiledJSONX(props) {
+        json.props = Object.assign({}, json.props, props);
+        return getReactElementFromJSON(json);
+    };
+    Object.defineProperty(func, "name", { value: this.name });
+    return func;
+}
+/**
+ * converts JSONX JSON IR to JSX
+ * @example
+ * jsonx.jsonToJSX({ type: 'div', props: { key: 5, title: 'test' }, children: 'hello' }) // => '<div key={5} title="test">hello</div>'
+ * @param {Object} json - {type,props,children}
+ * @returns {String} jsx string
+ */
+function outputJSX(jsonx, resources = {}) {
+    const context = Object.assign({}, this, { returnJSON: true });
+    const json = getReactElementFromJSONX.call(context, jsonx, resources);
+    return jsonToJSX(json);
+}
+/**
+ * Compiles JSONX into JSON IR format for react create element
+ * @example
+ * jsonx.outputJSON({ component: 'div', props: { title: 'test', }, children: 'hello', }); //=> { type: 'div',
+ props: { key: 5, title: 'test' },
+ children: 'hello' }
+ * @property {object} this - options for getReactElementFromJSONX
+ * @param {object} jsonx - any valid JSONX JSON object
+ * @param {object} resources - any additional resource used for asynchronous properties
+ * @returns {Object} json - {type,props,children}
+ */
+function outputJSON(jsonx, resources = {}) {
+    //@ts-ignore
+    const context = Object.assign({}, this, { returnJSON: true });
+    return getReactElementFromJSONX.call(context, jsonx, resources);
+}
+const jsonxHTMLString = outputHTML;
+/**
+ * converts JSONX JSON IR to JSX
+ * @example
+ * jsonx.jsonToJSX({ type: 'div', props: { key: 5, title: 'test' }, children: 'hello' }) // => '<div key={5} title="test">hello</div>'
+ * @param {Object} json - {type,props,children}
+ * @returns {String} jsx string
+ */
+function jsonToJSX(json) {
+    const propsString = json.props
+        ? Object.keys(json.props)
+            .filter(prop => prop.includes("__eval_") === false)
+            .reduce((propString, prop) => {
+            propString += ` ${prop.toString()}=${typeof json.props[prop] === "string"
+                ? `"${json.props[prop].toString()}"`
+                : `{${(json.props[`__eval_${prop}`] || json.props[prop]).toString()}}`}`;
+            return propString;
+        }, "")
+        : "";
+    return Array.isArray(json.children)
+        ? `<${json.type} ${propsString}>
+  ${json.children.map(jsonToJSX).join('\r\n')}
+</${json.type}>`
+        : `<${json.type}${propsString}>${json.children}</${json.type}>`;
+}
 /**
  * Exposes react module used in JSONX
  * @returns {Object} React
  */
 function __getReact() {
-    return React__default;
+    return React__default__default;
 }
 /**
  * Exposes react dom module used in JSONX
@@ -14275,7 +23625,37 @@ function __getReact() {
 function __getReactDOM() {
     return ReactDOM;
 }
+const _jsonxChildren = jsonxChildren;
 const _jsonxComponents = jsonxComponents;
+const _jsonxProps = jsonxProps;
+const _jsonxUtils = jsonxUtils;
+const _jsonxHelpers = { numeral, luxon };
+
+var index_esm = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': getReactElementFromJSONX,
+    __express: __express,
+    __getReact: __getReact,
+    __getReactDOM: __getReactDOM,
+    _jsonxChildren: _jsonxChildren,
+    _jsonxComponents: _jsonxComponents,
+    _jsonxHelpers: _jsonxHelpers,
+    _jsonxProps: _jsonxProps,
+    _jsonxUtils: _jsonxUtils,
+    compile: compile,
+    getReactElement: getReactElement,
+    getReactElementFromJSON: getReactElementFromJSON,
+    getReactElementFromJSONX: getReactElementFromJSONX,
+    getRenderedJSON: getRenderedJSON,
+    jsonToJSX: jsonToJSX,
+    jsonxHTMLString: jsonxHTMLString,
+    jsonxRender: jsonxRender,
+    outputHTML: outputHTML,
+    outputJSON: outputJSON,
+    outputJSX: outputJSX,
+    renderFile: __express,
+    get renderIndex () { return renderIndex; }
+});
 
 var store2 = createCommonjsModule(function (module) {
 (function(window, define) {
@@ -14565,10 +23945,10 @@ var store2 = createCommonjsModule(function (module) {
 // If obj.hasOwnProperty has been overridden, then calling
 // obj.hasOwnProperty(prop) will break.
 // See: https://github.com/joyent/node/issues/1707
-function hasOwnProperty$2(obj, prop) {
+function hasOwnProperty$3(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
-var isArray$1 = Array.isArray || function (xs) {
+var isArray$3 = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 function stringifyPrimitive(v) {
@@ -14597,7 +23977,7 @@ function stringify$1 (obj, sep, eq, name) {
   if (typeof obj === 'object') {
     return map(objectKeys(obj), function(k) {
       var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-      if (isArray$1(obj[k])) {
+      if (isArray$3(obj[k])) {
         return map(obj[k], function(v) {
           return ks + encodeURIComponent(stringifyPrimitive(v));
         }).join(sep);
@@ -14668,9 +24048,9 @@ function parse$1(qs, sep, eq, options) {
     k = decodeURIComponent(kstr);
     v = decodeURIComponent(vstr);
 
-    if (!hasOwnProperty$2(obj, k)) {
+    if (!hasOwnProperty$3(obj, k)) {
       obj[k] = v;
-    } else if (isArray$1(obj[k])) {
+    } else if (isArray$3(obj[k])) {
       obj[k].push(v);
     } else {
       obj[k] = [obj[k], v];
@@ -15769,7 +25149,7 @@ function getMainComponent(options) {
         var ui = useGlobalState("ui")[0];
         // const [ui, setUI] = useGlobalState("ui");
         var setUI = function (ui) { return dispatch({ type: 'setUI', ui: ui }); };
-        var _a = React.useState(application ? application.state : {}), state = _a[0], setState = _a[1];
+        var _a = React__default.useState(application ? application.state : {}), state = _a[0], setState = _a[1];
         var pathname = appProps.location.pathname;
         var props = Object.assign({
             dispatch: dispatch,
@@ -15796,7 +25176,7 @@ function getMainComponent(options) {
             window.VXAcontext = functionContext;
         }
         // eslint-disable-line
-        var loadView = React.useMemo(function () {
+        var loadView = React__default.useMemo(function () {
             return function _loadView(_a) {
                 var _b, _c;
                 var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
@@ -15837,13 +25217,13 @@ function getMainComponent(options) {
         if (settings.exposeVXAToWindow)
             window.__ViewXContext = ctx;
         var getReactElement = getReactElementFromJSONX.bind(ctx);
-        React.useEffect(function () {
+        React__default.useEffect(function () {
             Functions.onLaunch.call(functionContext);
             return function () { return Functions.onShutdown.call(functionContext); };
             /* eslint-disable */
         }, []);
         /* eslint-enable */
-        React.useEffect(function () {
+        React__default.useEffect(function () {
             var viewxTemplates = templates;
             var action;
             function initialize() {
@@ -15935,7 +25315,7 @@ function getMainComponent(options) {
             /* eslint-disable */
         }, [pathname /* templates*/]);
         /* eslint-enable */
-        return (React__default.createElement(React.Fragment, { key: "viewx" }, config.layers.map(function (layer) {
+        return (React__default__default.createElement(React__default.Fragment, { key: "viewx" }, config.layers.map(function (layer) {
             var name = layer.name, type = layer.type, idSelector = layer.idSelector;
             var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
             // console.log(
@@ -16080,8 +25460,8 @@ function getViewXapp(options) {
                     }
                     app = (
                     // <GlobalStateProvider>
-                    React__default.createElement(Router, null,
-                        React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))
+                    React__default__default.createElement(Router, null,
+                        React__default__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))
                     // </GlobalStateProvider>
                     );
                     return [2 /*return*/, { app: app, options: options, }];
@@ -17707,4336 +27087,8 @@ function ViewXApp(options$1) {
     });
 }
 
-var isUndefined$2 = (val) => val === undefined;
-
-var isNullOrUndefined$1 = (value) => value === null || isUndefined$2(value);
-
-var isArray$2 = (value) => Array.isArray(value);
-
-const isObjectType$1 = (value) => typeof value === 'object';
-var isObject$1 = (value) => !isNullOrUndefined$1(value) && !isArray$2(value) && isObjectType$1(value);
-
-var isHTMLElement$1 = (value) => isObject$1(value) && value.nodeType === Node.ELEMENT_NODE;
-
-const VALIDATION_MODE$1 = {
-    onBlur: 'onBlur',
-    onChange: 'onChange',
-    onSubmit: 'onSubmit',
-};
-const VALUE$1 = 'value';
-const UNDEFINED$1 = 'undefined';
-const EVENTS$1 = {
-    BLUR: 'blur',
-    CHANGE: 'change',
-    INPUT: 'input',
-};
-const INPUT_VALIDATION_RULES$1 = {
-    max: 'max',
-    min: 'min',
-    maxLength: 'maxLength',
-    minLength: 'minLength',
-    pattern: 'pattern',
-    required: 'required',
-    validate: 'validate',
-};
-const REGEX_IS_DEEP_PROP$1 = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
-const REGEX_IS_PLAIN_PROP$1 = /^\w*$/;
-const REGEX_PROP_NAME$1 = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
-const REGEX_ESCAPE_CHAR$1 = /\\(\\)?/g;
-
-function attachEventListeners$1({ field, handleChange, isRadioOrCheckbox, }) {
-    const { ref } = field;
-    if (isHTMLElement$1(ref) && ref.addEventListener && handleChange) {
-        ref.addEventListener(isRadioOrCheckbox ? EVENTS$1.CHANGE : EVENTS$1.INPUT, handleChange);
-        ref.addEventListener(EVENTS$1.BLUR, handleChange);
-    }
-}
-
-var isKey$1 = (value) => !isArray$2(value) &&
-    (REGEX_IS_PLAIN_PROP$1.test(value) || !REGEX_IS_DEEP_PROP$1.test(value));
-
-var stringToPath$1 = (string) => {
-    const result = [];
-    string.replace(REGEX_PROP_NAME$1, (match, number, quote, string) => {
-        result.push(quote ? string.replace(REGEX_ESCAPE_CHAR$1, '$1') : number || match);
-    });
-    return result;
-};
-
-function set$1(object, path, value) {
-    let index = -1;
-    const tempPath = isKey$1(path) ? [path] : stringToPath$1(path);
-    const length = tempPath.length;
-    const lastIndex = length - 1;
-    while (++index < length) {
-        const key = tempPath[index];
-        let newValue = value;
-        if (index !== lastIndex) {
-            const objValue = object[key];
-            newValue =
-                isObject$1(objValue) || isArray$2(objValue)
-                    ? objValue
-                    : !isNaN(tempPath[index + 1])
-                        ? []
-                        : {};
-        }
-        object[key] = newValue;
-        object = object[key];
-    }
-    return object;
-}
-
-var transformToNestObject$1 = (data) => Object.entries(data).reduce((previous, [key, value]) => {
-    if (!isKey$1(key)) {
-        set$1(previous, key, value);
-        return previous;
-    }
-    return Object.assign(Object.assign({}, previous), { [key]: value });
-}, {});
-
-var get$1 = (obj, path, defaultValue) => {
-    const result = path
-        .split(/[,[\].]+?/)
-        .filter(Boolean)
-        .reduce((result, key) => (isNullOrUndefined$1(result) ? result : result[key]), obj);
-    return isUndefined$2(result) || result === obj
-        ? obj[path] || defaultValue
-        : result;
-};
-
-var focusErrorField$1 = (fields, fieldErrors) => {
-    for (const key in fields) {
-        if (get$1(fieldErrors, key)) {
-            const field = fields[key];
-            if (field) {
-                if (isHTMLElement$1(field.ref) && field.ref.focus) {
-                    field.ref.focus();
-                    break;
-                }
-                else if (field.options) {
-                    field.options[0].ref.focus();
-                    break;
-                }
-            }
-        }
-    }
-};
-
-var removeAllEventListeners$1 = (ref, validateWithStateUpdate) => {
-    if (isHTMLElement$1(ref) && ref.removeEventListener) {
-        ref.removeEventListener(EVENTS$1.INPUT, validateWithStateUpdate);
-        ref.removeEventListener(EVENTS$1.CHANGE, validateWithStateUpdate);
-        ref.removeEventListener(EVENTS$1.BLUR, validateWithStateUpdate);
-    }
-};
-
-var isRadioInput$1 = (element) => !!element && element.type === 'radio';
-
-var isCheckBoxInput$1 = (element) => !!element && element.type === 'checkbox';
-
-function isDetached$1(element) {
-    if (!element) {
-        return true;
-    }
-    if (!(element instanceof HTMLElement) ||
-        element.nodeType === Node.DOCUMENT_NODE) {
-        return false;
-    }
-    return isDetached$1(element.parentNode);
-}
-
-var isEmptyObject$1 = (value) => isObject$1(value) && !Object.keys(value).length;
-
-function castPath$1(value) {
-    return isArray$2(value) ? value : stringToPath$1(value);
-}
-function baseGet$1(object, path) {
-    const updatePath = isKey$1(path) ? [path] : castPath$1(path);
-    const length = path.length;
-    let index = 0;
-    while (index < length) {
-        object = isUndefined$2(object) ? index++ : object[updatePath[index++]];
-    }
-    return index == length ? object : undefined;
-}
-function baseSlice$1(array, start, end) {
-    let index = -1;
-    let length = array.length;
-    if (start < 0) {
-        start = -start > length ? 0 : length + start;
-    }
-    end = end > length ? length : end;
-    if (end < 0) {
-        end += length;
-    }
-    length = start > end ? 0 : end - start;
-    const result = Array(length);
-    while (++index < length) {
-        result[index] = array[index + start];
-    }
-    return result;
-}
-function parent$1(object, path) {
-    return path.length == 1 ? object : baseGet$1(object, baseSlice$1(path, 0, -1));
-}
-function baseUnset$1(object, path) {
-    const updatePath = isKey$1(path) ? [path] : castPath$1(path);
-    const childObject = parent$1(object, updatePath);
-    const key = updatePath[updatePath.length - 1];
-    const result = !(childObject != null) || delete childObject[key];
-    let previousObjRef = undefined;
-    for (let k = 0; k < updatePath.slice(0, -1).length; k++) {
-        let index = -1;
-        let objectRef = undefined;
-        const currentPaths = updatePath.slice(0, -(k + 1));
-        const currentPathsLength = currentPaths.length - 1;
-        if (k > 0) {
-            previousObjRef = object;
-        }
-        while (++index < currentPaths.length) {
-            const item = currentPaths[index];
-            objectRef = objectRef ? objectRef[item] : object[item];
-            if (currentPathsLength === index) {
-                if (isObject$1(objectRef) && isEmptyObject$1(objectRef)) {
-                    previousObjRef ? delete previousObjRef[item] : delete object[item];
-                }
-                else if (isArray$2(objectRef) &&
-                    !objectRef.filter(data => isObject$1(data) && !isEmptyObject$1(data))
-                        .length) {
-                    if (previousObjRef) {
-                        delete previousObjRef[item];
-                    }
-                }
-            }
-            previousObjRef = objectRef;
-        }
-    }
-    return result;
-}
-function unset$1(object, paths) {
-    paths.forEach(path => {
-        baseUnset$1(object, path);
-    });
-    return object;
-}
-
-function findRemovedFieldAndRemoveListener$1(fields, handleChange, field, forceDelete) {
-    if (!field) {
-        return;
-    }
-    const { ref, ref: { name, type }, mutationWatcher, } = field;
-    if (!type) {
-        delete fields[name];
-        return;
-    }
-    const fieldValue = fields[name];
-    if ((isRadioInput$1(ref) || isCheckBoxInput$1(ref)) && fieldValue) {
-        const { options } = fieldValue;
-        if (isArray$2(options) && options.length) {
-            options
-                .filter(Boolean)
-                .forEach(({ ref, mutationWatcher }, index) => {
-                if ((ref && isDetached$1(ref)) || forceDelete) {
-                    removeAllEventListeners$1(ref, handleChange);
-                    if (mutationWatcher) {
-                        mutationWatcher.disconnect();
-                    }
-                    unset$1(options, [`[${index}]`]);
-                }
-            });
-            if (options && !options.filter(Boolean).length) {
-                delete fields[name];
-            }
-        }
-        else {
-            delete fields[name];
-        }
-    }
-    else if (isDetached$1(ref) || forceDelete) {
-        removeAllEventListeners$1(ref, handleChange);
-        if (mutationWatcher) {
-            mutationWatcher.disconnect();
-        }
-        delete fields[name];
-    }
-}
-
-const defaultReturn$1 = {
-    isValid: false,
-    value: '',
-};
-var getRadioValue$1 = (options) => isArray$2(options)
-    ? options.filter(Boolean).reduce((previous, { ref: { checked, value } }) => checked
-        ? {
-            isValid: true,
-            value,
-        }
-        : previous, defaultReturn$1)
-    : defaultReturn$1;
-
-var getMultipleSelectValue$1 = (options) => [...options]
-    .filter(({ selected }) => selected)
-    .map(({ value }) => value);
-
-var isFileInput$1 = (element) => !!element && element.type === 'file';
-
-var isMultipleSelect$1 = (element) => !!element && element.type === 'select-multiple';
-
-var isEmptyString$1 = (value) => value === '';
-
-const defaultResult$1 = {
-    value: false,
-    isValid: false,
-};
-const validResult$1 = { value: true, isValid: true };
-var getCheckboxValue$1 = (options) => {
-    if (isArray$2(options)) {
-        if (options.length > 1) {
-            const values = options
-                .filter(({ ref: { checked } }) => checked)
-                .map(({ ref: { value } }) => value);
-            return { value: values, isValid: !!values.length };
-        }
-        const { checked, value, attributes } = options[0].ref;
-        return checked
-            ? attributes && !isUndefined$2(attributes.value)
-                ? isUndefined$2(value) || isEmptyString$1(value)
-                    ? validResult$1
-                    : { value: value, isValid: true }
-                : validResult$1
-            : defaultResult$1;
-    }
-    return defaultResult$1;
-};
-
-function getFieldValue$1(fields, ref) {
-    const { name, value } = ref;
-    const field = fields[name];
-    if (isFileInput$1(ref)) {
-        return ref.files;
-    }
-    if (isRadioInput$1(ref)) {
-        return field ? getRadioValue$1(field.options).value : '';
-    }
-    if (isMultipleSelect$1(ref)) {
-        return getMultipleSelectValue$1(ref.options);
-    }
-    if (isCheckBoxInput$1(ref)) {
-        return field ? getCheckboxValue$1(field.options).value : false;
-    }
-    return value;
-}
-
-var isString$2 = (value) => typeof value === 'string';
-
-var getFieldsValues$1 = (fields, search) => {
-    const output = {};
-    const isSearchString = isString$2(search);
-    const isSearchArray = isArray$2(search);
-    const isNest = search && search.nest;
-    for (const name in fields) {
-        if (isUndefined$2(search) ||
-            isNest ||
-            (isSearchString && name.startsWith(search)) ||
-            (isSearchArray &&
-                search.find((data) => name.startsWith(data)))) {
-            output[name] = getFieldValue$1(fields, fields[name].ref);
-        }
-    }
-    return output;
-};
-
-var compareObject$1 = (objectA = {}, objectB = {}) => Object.entries(objectA).reduce((previous, [key, value]) => previous ? objectB[key] && objectB[key] === value : false, true);
-
-var isSameError$1 = (error, { type, types, message, }) => {
-    return (isObject$1(error) &&
-        error.type === type &&
-        error.message === message &&
-        compareObject$1(error.types, types));
-};
-
-function shouldUpdateWithError$1({ errors, name, error, validFields, fieldsWithValidation, }) {
-    const isFieldValid = isEmptyObject$1(error);
-    const isFormValid = isEmptyObject$1(errors);
-    const currentFieldError = get$1(error, name);
-    const existFieldError = get$1(errors, name);
-    if ((isFieldValid && validFields.has(name)) ||
-        (existFieldError && existFieldError.isManual)) {
-        return false;
-    }
-    if (isFormValid !== isFieldValid ||
-        (!isFormValid && !existFieldError) ||
-        (isFieldValid && fieldsWithValidation.has(name) && !validFields.has(name))) {
-        return true;
-    }
-    return currentFieldError && !isSameError$1(existFieldError, currentFieldError);
-}
-
-var isRegex$1 = (value) => value instanceof RegExp;
-
-var getValueAndMessage$1 = (validationData) => {
-    const isValueMessage = (value) => isObject$1(value) && !isRegex$1(value);
-    return isValueMessage(validationData)
-        ? validationData
-        : {
-            value: validationData,
-            message: '',
-        };
-};
-
-var isFunction$1 = (value) => typeof value === 'function';
-
-var isBoolean$1 = (value) => typeof value === 'boolean';
-
-var isMessage$1 = (value) => isString$2(value) || (isObject$1(value) && React.isValidElement(value));
-
-function getValidateError$1(result, ref, type = 'validate') {
-    if (isMessage$1(result) || (isBoolean$1(result) && !result)) {
-        const message = isMessage$1(result) ? result : '';
-        return {
-            type,
-            message,
-            ref,
-        };
-    }
-}
-
-var appendErrors$1 = (name, validateAllFieldCriteria, errors, type, message) => {
-    if (!validateAllFieldCriteria) {
-        return {};
-    }
-    const error = errors[name];
-    return Object.assign(Object.assign({}, error), { types: Object.assign(Object.assign({}, (error && error.types ? error.types : {})), { [type]: message || true }) });
-};
-
-var validateField$1 = async (fieldsRef, validateAllFieldCriteria, { ref, ref: { type, value, name }, options, required, maxLength, minLength, min, max, pattern, validate, }) => {
-    const fields = fieldsRef.current;
-    const error = {};
-    const isRadio = isRadioInput$1(ref);
-    const isCheckBox = isCheckBoxInput$1(ref);
-    const isRadioOrCheckbox = isRadio || isCheckBox;
-    const isEmpty = isEmptyString$1(value);
-    const appendErrorsCurry = appendErrors$1.bind(null, name, validateAllFieldCriteria, error);
-    const getMinMaxMessage = (exceedMax, maxLengthMessage, minLengthMessage, maxType = INPUT_VALIDATION_RULES$1.maxLength, minType = INPUT_VALIDATION_RULES$1.minLength) => {
-        const message = exceedMax ? maxLengthMessage : minLengthMessage;
-        error[name] = Object.assign({ type: exceedMax ? maxType : minType, message,
-            ref }, (exceedMax
-            ? appendErrorsCurry(maxType, message)
-            : appendErrorsCurry(minType, message)));
-        if (!validateAllFieldCriteria) {
-            return error;
-        }
-    };
-    if (required &&
-        ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined$1(value))) ||
-            (isBoolean$1(value) && !value) ||
-            (isCheckBox && !getCheckboxValue$1(options).isValid) ||
-            (isRadio && !getRadioValue$1(options).isValid))) {
-        const { value: requiredValue, message: requiredMessage } = isMessage$1(required)
-            ? { value: !!required, message: required }
-            : getValueAndMessage$1(required);
-        if (requiredValue) {
-            error[name] = Object.assign({ type: INPUT_VALIDATION_RULES$1.required, message: requiredMessage, ref: isRadioOrCheckbox ? fields[name].options[0].ref : ref }, appendErrorsCurry(INPUT_VALIDATION_RULES$1.required, requiredMessage));
-            if (!validateAllFieldCriteria) {
-                return error;
-            }
-        }
-    }
-    if (!isNullOrUndefined$1(min) || !isNullOrUndefined$1(max)) {
-        let exceedMax;
-        let exceedMin;
-        const { value: maxValue, message: maxMessage } = getValueAndMessage$1(max);
-        const { value: minValue, message: minMessage } = getValueAndMessage$1(min);
-        if (type === 'number' || (!type && !isNaN(value))) {
-            const valueNumber = ref.valueAsNumber || parseFloat(value);
-            if (!isNullOrUndefined$1(maxValue)) {
-                exceedMax = valueNumber > maxValue;
-            }
-            if (!isNullOrUndefined$1(minValue)) {
-                exceedMin = valueNumber < minValue;
-            }
-        }
-        else {
-            const valueDate = ref.valueAsDate || new Date(value);
-            if (isString$2(maxValue)) {
-                exceedMax = valueDate > new Date(maxValue);
-            }
-            if (isString$2(minValue)) {
-                exceedMin = valueDate < new Date(minValue);
-            }
-        }
-        if (exceedMax || exceedMin) {
-            getMinMaxMessage(!!exceedMax, maxMessage, minMessage, INPUT_VALIDATION_RULES$1.max, INPUT_VALIDATION_RULES$1.min);
-            if (!validateAllFieldCriteria) {
-                return error;
-            }
-        }
-    }
-    if (isString$2(value) && !isEmpty && (maxLength || minLength)) {
-        const { value: maxLengthValue, message: maxLengthMessage, } = getValueAndMessage$1(maxLength);
-        const { value: minLengthValue, message: minLengthMessage, } = getValueAndMessage$1(minLength);
-        const inputLength = value.toString().length;
-        const exceedMax = !isNullOrUndefined$1(maxLengthValue) && inputLength > maxLengthValue;
-        const exceedMin = !isNullOrUndefined$1(minLengthValue) && inputLength < minLengthValue;
-        if (exceedMax || exceedMin) {
-            getMinMaxMessage(!!exceedMax, maxLengthMessage, minLengthMessage);
-            if (!validateAllFieldCriteria) {
-                return error;
-            }
-        }
-    }
-    if (pattern && !isEmpty) {
-        const { value: patternValue, message: patternMessage } = getValueAndMessage$1(pattern);
-        if (isRegex$1(patternValue) && !patternValue.test(value)) {
-            error[name] = Object.assign({ type: INPUT_VALIDATION_RULES$1.pattern, message: patternMessage, ref }, appendErrorsCurry(INPUT_VALIDATION_RULES$1.pattern, patternMessage));
-            if (!validateAllFieldCriteria) {
-                return error;
-            }
-        }
-    }
-    if (validate) {
-        const fieldValue = getFieldValue$1(fields, ref);
-        const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
-        if (isFunction$1(validate)) {
-            const result = await validate(fieldValue);
-            const validateError = getValidateError$1(result, validateRef);
-            if (validateError) {
-                error[name] = Object.assign(Object.assign({}, validateError), appendErrorsCurry(INPUT_VALIDATION_RULES$1.validate, validateError.message));
-                if (!validateAllFieldCriteria) {
-                    return error;
-                }
-            }
-        }
-        else if (isObject$1(validate)) {
-            let validationResult = {};
-            for (const [key, validateFunction] of Object.entries(validate)) {
-                if (!isEmptyObject$1(validationResult) && !validateAllFieldCriteria) {
-                    break;
-                }
-                const validateResult = await validateFunction(fieldValue);
-                const validateError = getValidateError$1(validateResult, validateRef, key);
-                if (validateError) {
-                    validationResult = Object.assign(Object.assign({}, validateError), appendErrorsCurry(key, validateError.message));
-                    if (validateAllFieldCriteria) {
-                        error[name] = validationResult;
-                    }
-                }
-            }
-            if (!isEmptyObject$1(validationResult)) {
-                error[name] = Object.assign({ ref: validateRef }, validationResult);
-                if (!validateAllFieldCriteria) {
-                    return error;
-                }
-            }
-        }
-    }
-    return error;
-};
-
-const parseErrorSchema$1 = (error, validateAllFieldCriteria) => isArray$2(error.inner)
-    ? error.inner.reduce((previous, { path, message, type }) => (Object.assign(Object.assign({}, previous), (previous[path] && validateAllFieldCriteria
-        ? {
-            [path]: appendErrors$1(path, validateAllFieldCriteria, previous, type, message),
-        }
-        : {
-            [path]: previous[path] || Object.assign({ message,
-                type }, (validateAllFieldCriteria
-                ? {
-                    types: { [type]: message || true },
-                }
-                : {})),
-        }))), {})
-    : {
-        [error.path]: { message: error.message, type: error.type },
-    };
-async function validateWithSchema$1(validationSchema, validateAllFieldCriteria, data, validationResolver, context) {
-    if (validationResolver) {
-        return validationResolver(data, context);
-    }
-    try {
-        return {
-            values: await validationSchema.validate(data, {
-                abortEarly: false,
-                context,
-            }),
-            errors: {},
-        };
-    }
-    catch (e) {
-        return {
-            values: {},
-            errors: transformToNestObject$1(parseErrorSchema$1(e, validateAllFieldCriteria)),
-        };
-    }
-}
-
-var getDefaultValue$1 = (defaultValues, name, defaultValue) => isUndefined$2(defaultValues[name])
-    ? get$1(defaultValues, name, defaultValue)
-    : defaultValues[name];
-
-function flatArray$1(list) {
-    return list.reduce((a, b) => a.concat(isArray$2(b) ? flatArray$1(b) : b), []);
-}
-
-var isPrimitive$1 = (value) => isNullOrUndefined$1(value) || !isObjectType$1(value);
-
-const getPath$3 = (path, values) => {
-    const getInnerPath = (value, key, isObject) => {
-        const pathWithIndex = isObject ? `${path}.${key}` : `${path}[${key}]`;
-        return isPrimitive$1(value) ? pathWithIndex : getPath$3(pathWithIndex, value);
-    };
-    return isArray$2(values)
-        ? values.map((value, key) => getInnerPath(value, key))
-        : Object.entries(values).map(([key, value]) => getInnerPath(value, key, true));
-};
-var getPath$1$1 = (parentPath, value) => flatArray$1(getPath$3(parentPath, value));
-
-var assignWatchFields$1 = (fieldValues, fieldName, watchFields, combinedDefaultValues) => {
-    let value;
-    watchFields.add(fieldName);
-    if (isEmptyObject$1(fieldValues)) {
-        value = undefined;
-    }
-    else if (!isUndefined$2(fieldValues[fieldName])) {
-        value = fieldValues[fieldName];
-        watchFields.add(fieldName);
-    }
-    else {
-        value = get$1(transformToNestObject$1(fieldValues), fieldName);
-        if (!isUndefined$2(value)) {
-            getPath$1$1(fieldName, value).forEach(name => watchFields.add(name));
-        }
-    }
-    return isUndefined$2(value)
-        ? isObject$1(combinedDefaultValues)
-            ? getDefaultValue$1(combinedDefaultValues, fieldName)
-            : combinedDefaultValues
-        : value;
-};
-
-var skipValidation$1 = ({ isOnChange, hasError, isBlurEvent, isOnSubmit, isReValidateOnSubmit, isOnBlur, isReValidateOnBlur, isSubmitted, }) => (isOnChange && isBlurEvent) ||
-    (isOnSubmit && isReValidateOnSubmit) ||
-    (isOnSubmit && !isSubmitted) ||
-    (isOnBlur && !isBlurEvent && !hasError) ||
-    (isReValidateOnBlur && !isBlurEvent && hasError) ||
-    (isReValidateOnSubmit && isSubmitted);
-
-var getFieldValueByName$1 = (fields, name) => {
-    const results = transformToNestObject$1(getFieldsValues$1(fields));
-    return name ? get$1(results, name, results) : results;
-};
-
-function getIsFieldsDifferent$1(referenceArray, differenceArray) {
-    let isMatch = false;
-    if (!isArray$2(referenceArray) ||
-        !isArray$2(differenceArray) ||
-        referenceArray.length !== differenceArray.length) {
-        return true;
-    }
-    for (let i = 0; i < referenceArray.length; i++) {
-        if (isMatch) {
-            break;
-        }
-        const dataA = referenceArray[i];
-        const dataB = differenceArray[i];
-        if (isUndefined$2(dataB) ||
-            Object.keys(dataA).length !== Object.keys(dataB).length) {
-            isMatch = true;
-            break;
-        }
-        for (const key in dataA) {
-            if (dataA[key] !== dataB[key]) {
-                isMatch = true;
-                break;
-            }
-        }
-    }
-    return isMatch;
-}
-
-const isMatchFieldArrayName$1 = (name, searchName) => name.startsWith(`${searchName}[`);
-var isNameInFieldArray$1 = (names, name) => [...names].reduce((prev, current) => (isMatchFieldArrayName$1(name, current) ? true : prev), false);
-
-var isFileListObject$1 = (data) => typeof FileList !== UNDEFINED$1 && data instanceof FileList;
-
-function onDomRemove$1(element, onDetachCallback) {
-    const observer = new MutationObserver(() => {
-        if (isDetached$1(element)) {
-            observer.disconnect();
-            onDetachCallback();
-        }
-    });
-    observer.observe(window.document, {
-        childList: true,
-        subtree: true,
-    });
-    return observer;
-}
-
-var modeChecker$1 = (mode) => ({
-    isOnSubmit: !mode || mode === VALIDATION_MODE$1.onSubmit,
-    isOnBlur: mode === VALIDATION_MODE$1.onBlur,
-    isOnChange: mode === VALIDATION_MODE$1.onChange,
-});
-
-const { useRef: useRef$1, useState: useState$1, useCallback: useCallback$1, useEffect: useEffect$1 } = React;
-function useForm$1({ mode = VALIDATION_MODE$1.onSubmit, reValidateMode = VALIDATION_MODE$1.onChange, validationSchema, validationResolver, validationContext, defaultValues = {}, submitFocusError = true, validateCriteriaMode, } = {}) {
-    const fieldsRef = useRef$1({});
-    const validateAllFieldCriteria = validateCriteriaMode === 'all';
-    const errorsRef = useRef$1({});
-    const touchedFieldsRef = useRef$1({});
-    const watchFieldsRef = useRef$1(new Set());
-    const dirtyFieldsRef = useRef$1(new Set());
-    const fieldsWithValidationRef = useRef$1(new Set());
-    const validFieldsRef = useRef$1(new Set());
-    const isValidRef = useRef$1(true);
-    const defaultRenderValuesRef = useRef$1({});
-    const defaultValuesRef = useRef$1(defaultValues);
-    const isUnMount = useRef$1(false);
-    const isWatchAllRef = useRef$1(false);
-    const isSubmittedRef = useRef$1(false);
-    const isDirtyRef = useRef$1(false);
-    const submitCountRef = useRef$1(0);
-    const isSubmittingRef = useRef$1(false);
-    const handleChangeRef = useRef$1();
-    const resetFieldArrayFunctionRef = useRef$1({});
-    const validationContextRef = useRef$1(validationContext);
-    const fieldArrayNamesRef = useRef$1(new Set());
-    const [, render] = useState$1();
-    const { isOnBlur, isOnSubmit, isOnChange } = useRef$1(modeChecker$1(mode)).current;
-    const isWindowUndefined = typeof window === UNDEFINED$1;
-    const shouldValidateCallback = !!(validationSchema || validationResolver);
-    const isWeb = typeof document !== UNDEFINED$1 &&
-        !isWindowUndefined &&
-        !isUndefined$2(window.HTMLElement);
-    const isProxyEnabled = isWeb && 'Proxy' in window;
-    const readFormStateRef = useRef$1({
-        dirty: !isProxyEnabled,
-        dirtyFields: !isProxyEnabled,
-        isSubmitted: isOnSubmit,
-        submitCount: !isProxyEnabled,
-        touched: !isProxyEnabled,
-        isSubmitting: !isProxyEnabled,
-        isValid: !isProxyEnabled,
-    });
-    const { isOnBlur: isReValidateOnBlur, isOnSubmit: isReValidateOnSubmit, } = useRef$1(modeChecker$1(reValidateMode)).current;
-    const reRender = useCallback$1(() => {
-        if (!isUnMount.current) {
-            render({});
-        }
-    }, []);
-    const shouldRenderBaseOnError = useCallback$1((name, error, shouldRender, skipReRender) => {
-        let shouldReRender = shouldRender ||
-            shouldUpdateWithError$1({
-                errors: errorsRef.current,
-                error,
-                name,
-                validFields: validFieldsRef.current,
-                fieldsWithValidation: fieldsWithValidationRef.current,
-            });
-        if (isEmptyObject$1(error)) {
-            if (fieldsWithValidationRef.current.has(name) ||
-                shouldValidateCallback) {
-                validFieldsRef.current.add(name);
-                shouldReRender = shouldReRender || get$1(errorsRef.current, name);
-            }
-            errorsRef.current = unset$1(errorsRef.current, [name]);
-        }
-        else {
-            validFieldsRef.current.delete(name);
-            shouldReRender = shouldReRender || !get$1(errorsRef.current, name);
-            set$1(errorsRef.current, name, error[name]);
-        }
-        if (shouldReRender && !skipReRender) {
-            reRender();
-            return true;
-        }
-    }, [reRender, shouldValidateCallback]);
-    const setFieldValue = useCallback$1((field, rawValue) => {
-        const ref = field.ref;
-        const options = field.options;
-        const { type } = ref;
-        const value = isWeb && isHTMLElement$1(ref) && isNullOrUndefined$1(rawValue)
-            ? ''
-            : rawValue;
-        if (isRadioInput$1(ref) && options) {
-            options.forEach(({ ref: radioRef }) => (radioRef.checked = radioRef.value === value));
-        }
-        else if (isFileInput$1(ref)) {
-            if (isEmptyString$1(value) ||
-                isFileListObject$1(value)) {
-                ref.files = value;
-            }
-            else {
-                ref.value = value;
-            }
-        }
-        else if (isMultipleSelect$1(ref)) {
-            [...ref.options].forEach(selectRef => (selectRef.selected = value.includes(selectRef.value)));
-        }
-        else if (isCheckBoxInput$1(ref) && options) {
-            options.length > 1
-                ? options.forEach(({ ref: checkboxRef }) => (checkboxRef.checked = value.includes(checkboxRef.value)))
-                : (options[0].ref.checked = !!value);
-        }
-        else {
-            ref.value = value;
-        }
-        return !!type;
-    }, [isWeb]);
-    const setDirty = (name) => {
-        if (!fieldsRef.current[name] ||
-            (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)) {
-            return false;
-        }
-        const isFieldArray = isNameInFieldArray$1(fieldArrayNamesRef.current, name);
-        const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
-        let isDirty = defaultRenderValuesRef.current[name] !==
-            getFieldValue$1(fieldsRef.current, fieldsRef.current[name].ref);
-        if (isFieldArray) {
-            const fieldArrayName = name.substring(0, name.indexOf('['));
-            isDirty = getIsFieldsDifferent$1(getFieldValueByName$1(fieldsRef.current, fieldArrayName), get$1(defaultValuesRef.current, fieldArrayName));
-        }
-        const isDirtyChanged = (isFieldArray ? isDirtyRef.current : dirtyFieldsRef.current.has(name)) !==
-            isDirty;
-        if (isDirty) {
-            dirtyFieldsRef.current.add(name);
-        }
-        else {
-            dirtyFieldsRef.current.delete(name);
-        }
-        isDirtyRef.current = isFieldArray ? isDirty : !!dirtyFieldsRef.current.size;
-        return readFormStateRef.current.dirty
-            ? isDirtyChanged
-            : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
-    };
-    const setDirtyAndTouchedFields = useCallback$1((fieldName) => {
-        if (setDirty(fieldName) ||
-            (!get$1(touchedFieldsRef.current, fieldName) &&
-                readFormStateRef.current.touched)) {
-            return !!set$1(touchedFieldsRef.current, fieldName, true);
-        }
-    }, []);
-    const setInternalValueBatch = useCallback$1((name, value, parentFieldName) => {
-        const isValueArray = isArray$2(value);
-        for (const key in value) {
-            const fieldName = `${parentFieldName || name}${isValueArray ? `[${key}]` : `.${key}`}`;
-            if (isObject$1(value[key])) {
-                setInternalValueBatch(name, value[key], fieldName);
-            }
-            const field = fieldsRef.current[fieldName];
-            if (field) {
-                setFieldValue(field, value[key]);
-                setDirtyAndTouchedFields(fieldName);
-            }
-        }
-    }, [setFieldValue, setDirtyAndTouchedFields]);
-    const setInternalValue = useCallback$1((name, value) => {
-        const field = fieldsRef.current[name];
-        if (field) {
-            setFieldValue(field, value);
-            const output = setDirtyAndTouchedFields(name);
-            if (isBoolean$1(output)) {
-                return output;
-            }
-        }
-        else if (!isPrimitive$1(value)) {
-            setInternalValueBatch(name, value);
-        }
-    }, [setDirtyAndTouchedFields, setFieldValue, setInternalValueBatch]);
-    const executeValidation = useCallback$1(async (name, skipReRender) => {
-        const field = fieldsRef.current[name];
-        if (!field) {
-            return false;
-        }
-        const error = await validateField$1(fieldsRef, validateAllFieldCriteria, field);
-        shouldRenderBaseOnError(name, error, false, skipReRender);
-        return isEmptyObject$1(error);
-    }, [shouldRenderBaseOnError, validateAllFieldCriteria]);
-    const executeSchemaValidation = useCallback$1(async (payload) => {
-        const { errors } = await validateWithSchema$1(validationSchema, validateAllFieldCriteria, getFieldValueByName$1(fieldsRef.current), validationResolver, validationContextRef.current);
-        const previousFormIsValid = isValidRef.current;
-        isValidRef.current = isEmptyObject$1(errors);
-        if (isArray$2(payload)) {
-            payload.forEach(name => {
-                const error = get$1(errors, name);
-                if (error) {
-                    set$1(errorsRef.current, name, error);
-                }
-                else {
-                    unset$1(errorsRef.current, [name]);
-                }
-            });
-            reRender();
-        }
-        else {
-            shouldRenderBaseOnError(payload, (get$1(errors, payload)
-                ? { [payload]: get$1(errors, payload) }
-                : {}), previousFormIsValid !== isValidRef.current);
-        }
-        return isEmptyObject$1(errorsRef.current);
-    }, [
-        reRender,
-        shouldRenderBaseOnError,
-        validateAllFieldCriteria,
-        validationResolver,
-        validationSchema,
-    ]);
-    const triggerValidation = useCallback$1(async (payload) => {
-        const fields = payload || Object.keys(fieldsRef.current);
-        if (shouldValidateCallback) {
-            return executeSchemaValidation(fields);
-        }
-        if (isArray$2(fields)) {
-            const result = await Promise.all(fields.map(async (data) => await executeValidation(data, true)));
-            reRender();
-            return result.every(Boolean);
-        }
-        return await executeValidation(fields);
-    }, [
-        executeSchemaValidation,
-        executeValidation,
-        reRender,
-        shouldValidateCallback,
-    ]);
-    const isFieldWatched = (name) => isWatchAllRef.current ||
-        watchFieldsRef.current.has(name) ||
-        watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
-    function setValue(names, valueOrShouldValidate, shouldValidate) {
-        let shouldRender = false;
-        const isMultiple = isArray$2(names);
-        (isMultiple
-            ? names
-            : [names]).forEach((name) => {
-            const isStringFieldName = isString$2(name);
-            shouldRender =
-                setInternalValue(isStringFieldName ? name : Object.keys(name)[0], isStringFieldName
-                    ? valueOrShouldValidate
-                    : Object.values(name)[0]) || isMultiple
-                    ? true
-                    : isFieldWatched(name);
-        });
-        if (shouldRender || isMultiple) {
-            reRender();
-        }
-        if (shouldValidate || (isMultiple && valueOrShouldValidate)) {
-            triggerValidation(isMultiple ? undefined : names);
-        }
-    }
-    handleChangeRef.current = handleChangeRef.current
-        ? handleChangeRef.current
-        : async ({ type, target }) => {
-            const name = target ? target.name : '';
-            const fields = fieldsRef.current;
-            const errors = errorsRef.current;
-            const field = fields[name];
-            const currentError = get$1(errors, name);
-            let error;
-            if (!field) {
-                return;
-            }
-            const isBlurEvent = type === EVENTS$1.BLUR;
-            const shouldSkipValidation = skipValidation$1({
-                hasError: !!currentError,
-                isOnChange,
-                isBlurEvent,
-                isOnSubmit,
-                isReValidateOnSubmit,
-                isOnBlur,
-                isReValidateOnBlur,
-                isSubmitted: isSubmittedRef.current,
-            });
-            const shouldUpdateDirty = setDirty(name);
-            let shouldUpdateState = isFieldWatched(name) || shouldUpdateDirty;
-            if (isBlurEvent &&
-                !get$1(touchedFieldsRef.current, name) &&
-                readFormStateRef.current.touched) {
-                set$1(touchedFieldsRef.current, name, true);
-                shouldUpdateState = true;
-            }
-            if (shouldSkipValidation) {
-                return shouldUpdateState && reRender();
-            }
-            if (shouldValidateCallback) {
-                const { errors } = await validateWithSchema$1(validationSchema, validateAllFieldCriteria, getFieldValueByName$1(fields), validationResolver, validationContextRef.current);
-                const previousFormIsValid = isValidRef.current;
-                isValidRef.current = isEmptyObject$1(errors);
-                error = (get$1(errors, name)
-                    ? { [name]: get$1(errors, name) }
-                    : {});
-                if (previousFormIsValid !== isValidRef.current) {
-                    shouldUpdateState = true;
-                }
-            }
-            else {
-                error = await validateField$1(fieldsRef, validateAllFieldCriteria, field);
-            }
-            if (!shouldRenderBaseOnError(name, error) && shouldUpdateState) {
-                reRender();
-            }
-        };
-    const validateSchemaIsValid = useCallback$1((values = {}) => {
-        const fieldValues = isEmptyObject$1(defaultValuesRef.current)
-            ? getFieldsValues$1(fieldsRef.current)
-            : defaultValuesRef.current;
-        validateWithSchema$1(validationSchema, validateAllFieldCriteria, transformToNestObject$1(Object.assign(Object.assign({}, fieldValues), values)), validationResolver, validationContextRef.current).then(({ errors }) => {
-            const previousFormIsValid = isValidRef.current;
-            isValidRef.current = isEmptyObject$1(errors);
-            if (previousFormIsValid !== isValidRef.current) {
-                reRender();
-            }
-        });
-    }, 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [reRender, validateAllFieldCriteria, validationResolver]);
-    const removeFieldEventListener = (field, forceDelete) => {
-        if (!isUndefined$2(handleChangeRef.current) && field) {
-            findRemovedFieldAndRemoveListener$1(fieldsRef.current, handleChangeRef.current, field, forceDelete);
-        }
-    };
-    const removeFieldEventListenerAndRef = useCallback$1((field, forceDelete) => {
-        if (!field ||
-            (field &&
-                isNameInFieldArray$1(fieldArrayNamesRef.current, field.ref.name) &&
-                !forceDelete)) {
-            return;
-        }
-        removeFieldEventListener(field, forceDelete);
-        const { name } = field.ref;
-        errorsRef.current = unset$1(errorsRef.current, [name]);
-        touchedFieldsRef.current = unset$1(touchedFieldsRef.current, [name]);
-        defaultRenderValuesRef.current = unset$1(defaultRenderValuesRef.current, [
-            name,
-        ]);
-        [
-            dirtyFieldsRef,
-            fieldsWithValidationRef,
-            validFieldsRef,
-            watchFieldsRef,
-        ].forEach(data => data.current.delete(name));
-        if (readFormStateRef.current.isValid ||
-            readFormStateRef.current.touched) {
-            reRender();
-            if (shouldValidateCallback) {
-                validateSchemaIsValid();
-            }
-        }
-    }, [reRender, shouldValidateCallback, validateSchemaIsValid]);
-    function clearError(name) {
-        if (isUndefined$2(name)) {
-            errorsRef.current = {};
-        }
-        else {
-            unset$1(errorsRef.current, isArray$2(name) ? name : [name]);
-        }
-        reRender();
-    }
-    const setInternalError = ({ name, type, types, message, preventRender, }) => {
-        const field = fieldsRef.current[name];
-        if (!isSameError$1(errorsRef.current[name], {
-            type,
-            message,
-            types,
-        })) {
-            set$1(errorsRef.current, name, {
-                type,
-                types,
-                message,
-                ref: field ? field.ref : {},
-                isManual: true,
-            });
-            if (!preventRender) {
-                reRender();
-            }
-        }
-    };
-    function setError(name, type = '', message) {
-        if (isString$2(name)) {
-            setInternalError(Object.assign({ name }, (isObject$1(type)
-                ? {
-                    types: type,
-                    type: '',
-                }
-                : {
-                    type,
-                    message,
-                })));
-        }
-        else if (isArray$2(name)) {
-            name.forEach(error => setInternalError(Object.assign(Object.assign({}, error), { preventRender: true })));
-            reRender();
-        }
-    }
-    function watch(fieldNames, defaultValue) {
-        const combinedDefaultValues = isUndefined$2(defaultValue)
-            ? isUndefined$2(defaultValuesRef.current)
-                ? {}
-                : defaultValuesRef.current
-            : defaultValue;
-        const fieldValues = getFieldsValues$1(fieldsRef.current, fieldNames);
-        const watchFields = watchFieldsRef.current;
-        if (isString$2(fieldNames)) {
-            return assignWatchFields$1(fieldValues, fieldNames, watchFields, combinedDefaultValues);
-        }
-        if (isArray$2(fieldNames)) {
-            return fieldNames.reduce((previous, name) => (Object.assign(Object.assign({}, previous), { [name]: assignWatchFields$1(fieldValues, name, watchFields, combinedDefaultValues) })), {});
-        }
-        isWatchAllRef.current = true;
-        const result = (!isEmptyObject$1(fieldValues) && fieldValues) ||
-            defaultValue ||
-            defaultValuesRef.current;
-        return fieldNames && fieldNames.nest
-            ? transformToNestObject$1(result)
-            : result;
-    }
-    function unregister(names) {
-        if (!isEmptyObject$1(fieldsRef.current)) {
-            (isArray$2(names) ? names : [names]).forEach(fieldName => removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true));
-        }
-    }
-    function registerFieldsRef(ref, validateOptions = {}) {
-        if (!ref.name) {
-            // eslint-disable-next-line no-console
-            return console.warn('Missing name @', ref);
-        }
-        const { name, type, value } = ref;
-        const fieldAttributes = Object.assign({ ref }, validateOptions);
-        const fields = fieldsRef.current;
-        const isRadioOrCheckbox = isRadioInput$1(ref) || isCheckBoxInput$1(ref);
-        let currentField = fields[name];
-        let isEmptyDefaultValue = true;
-        let isFieldArray = false;
-        let defaultValue;
-        if (isRadioOrCheckbox
-            ? currentField &&
-                isArray$2(currentField.options) &&
-                currentField.options
-                    .filter(Boolean)
-                    .find(({ ref }) => value === ref.value)
-            : currentField) {
-            fields[name] = Object.assign(Object.assign({}, currentField), validateOptions);
-            return;
-        }
-        if (type) {
-            const mutationWatcher = onDomRemove$1(ref, () => removeFieldEventListenerAndRef(fieldAttributes));
-            currentField = isRadioOrCheckbox
-                ? Object.assign({ options: [
-                        ...((currentField && currentField.options) || []),
-                        {
-                            ref,
-                            mutationWatcher,
-                        },
-                    ], ref: { type, name } }, validateOptions) : Object.assign(Object.assign({}, fieldAttributes), { mutationWatcher });
-        }
-        else {
-            currentField = fieldAttributes;
-        }
-        fields[name] = currentField;
-        if (!isEmptyObject$1(defaultValuesRef.current)) {
-            defaultValue = getDefaultValue$1(defaultValuesRef.current, name);
-            isEmptyDefaultValue = isUndefined$2(defaultValue);
-            isFieldArray = isNameInFieldArray$1(fieldArrayNamesRef.current, name);
-            if (!isEmptyDefaultValue && !isFieldArray) {
-                setFieldValue(currentField, defaultValue);
-            }
-        }
-        if (shouldValidateCallback &&
-            !isFieldArray &&
-            readFormStateRef.current.isValid) {
-            validateSchemaIsValid();
-        }
-        else if (!isEmptyObject$1(validateOptions)) {
-            fieldsWithValidationRef.current.add(name);
-            if (!isOnSubmit && readFormStateRef.current.isValid) {
-                validateField$1(fieldsRef, validateAllFieldCriteria, currentField).then(error => {
-                    const previousFormIsValid = isValidRef.current;
-                    if (isEmptyObject$1(error)) {
-                        validFieldsRef.current.add(name);
-                    }
-                    else {
-                        isValidRef.current = false;
-                    }
-                    if (previousFormIsValid !== isValidRef.current) {
-                        reRender();
-                    }
-                });
-            }
-        }
-        if (!defaultRenderValuesRef.current[name] &&
-            !(isFieldArray && isEmptyDefaultValue)) {
-            defaultRenderValuesRef.current[name] = isEmptyDefaultValue
-                ? getFieldValue$1(fields, currentField.ref)
-                : defaultValue;
-        }
-        if (!type) {
-            return;
-        }
-        const fieldToAttachListener = isRadioOrCheckbox && currentField.options
-            ? currentField.options[currentField.options.length - 1]
-            : currentField;
-        attachEventListeners$1({
-            field: fieldToAttachListener,
-            isRadioOrCheckbox,
-            handleChange: handleChangeRef.current,
-        });
-    }
-    function register(refOrValidationOptions, validationOptions) {
-        if (isWindowUndefined) {
-            return;
-        }
-        if (isString$2(refOrValidationOptions)) {
-            registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
-            return;
-        }
-        if (isObject$1(refOrValidationOptions) && 'name' in refOrValidationOptions) {
-            registerFieldsRef(refOrValidationOptions, validationOptions);
-            return;
-        }
-        return (ref) => ref && registerFieldsRef(ref, refOrValidationOptions);
-    }
-    const handleSubmit = useCallback$1((callback) => async (e) => {
-        if (e) {
-            e.preventDefault();
-            e.persist();
-        }
-        let fieldErrors = {};
-        let fieldValues = {};
-        const fields = fieldsRef.current;
-        if (readFormStateRef.current.isSubmitting) {
-            isSubmittingRef.current = true;
-            reRender();
-        }
-        try {
-            if (shouldValidateCallback) {
-                fieldValues = getFieldsValues$1(fields);
-                const { errors, values } = await validateWithSchema$1(validationSchema, validateAllFieldCriteria, transformToNestObject$1(fieldValues), validationResolver, validationContextRef.current);
-                errorsRef.current = errors;
-                fieldErrors = errors;
-                fieldValues = values;
-            }
-            else {
-                for (const field of Object.values(fields)) {
-                    if (field) {
-                        const { ref, ref: { name }, } = field;
-                        const fieldError = await validateField$1(fieldsRef, validateAllFieldCriteria, field);
-                        if (fieldError[name]) {
-                            set$1(fieldErrors, name, fieldError[name]);
-                            validFieldsRef.current.delete(name);
-                        }
-                        else {
-                            if (fieldsWithValidationRef.current.has(name)) {
-                                validFieldsRef.current.add(name);
-                            }
-                            fieldValues[name] = getFieldValue$1(fields, ref);
-                        }
-                    }
-                }
-            }
-            if (isEmptyObject$1(fieldErrors)) {
-                errorsRef.current = {};
-                await callback(transformToNestObject$1(fieldValues), e);
-            }
-            else {
-                if (submitFocusError && isWeb) {
-                    focusErrorField$1(fields, fieldErrors);
-                }
-                errorsRef.current = fieldErrors;
-            }
-        }
-        finally {
-            isSubmittedRef.current = true;
-            isSubmittingRef.current = false;
-            submitCountRef.current = submitCountRef.current + 1;
-            reRender();
-        }
-    }, [
-        isWeb,
-        reRender,
-        shouldValidateCallback,
-        submitFocusError,
-        validateAllFieldCriteria,
-        validationResolver,
-        validationSchema,
-    ]);
-    const resetRefs = ({ errors, dirty, isSubmitted, touched, isValid, submitCount, }) => {
-        fieldsRef.current = {};
-        if (!errors) {
-            errorsRef.current = {};
-        }
-        if (!touched) {
-            touchedFieldsRef.current = {};
-        }
-        if (!isValid) {
-            validFieldsRef.current = new Set();
-            fieldsWithValidationRef.current = new Set();
-            isValidRef.current = true;
-        }
-        if (!dirty) {
-            dirtyFieldsRef.current = new Set();
-            isDirtyRef.current = false;
-        }
-        if (!isSubmitted) {
-            isSubmittedRef.current = false;
-        }
-        if (!submitCount) {
-            submitCountRef.current = 0;
-        }
-        defaultRenderValuesRef.current = {};
-        watchFieldsRef.current = new Set();
-        isWatchAllRef.current = false;
-    };
-    const reset = (values, omitResetState = {}) => {
-        if (isWeb) {
-            for (const value of Object.values(fieldsRef.current)) {
-                if (value && isHTMLElement$1(value.ref) && value.ref.closest) {
-                    try {
-                        value.ref.closest('form').reset();
-                        break;
-                    }
-                    catch (_a) { }
-                }
-            }
-        }
-        if (values) {
-            defaultValuesRef.current = values;
-        }
-        Object.values(resetFieldArrayFunctionRef.current).forEach(resetFieldArray => isFunction$1(resetFieldArray) && resetFieldArray());
-        resetRefs(omitResetState);
-        reRender();
-    };
-    const getValues = (payload) => {
-        const fieldValues = getFieldsValues$1(fieldsRef.current);
-        const outputValues = isEmptyObject$1(fieldValues)
-            ? defaultValuesRef.current
-            : fieldValues;
-        return payload && payload.nest
-            ? transformToNestObject$1(outputValues)
-            : outputValues;
-    };
-    useEffect$1(() => () => {
-        isUnMount.current = true;
-        fieldsRef.current &&
-            "development" === 'production' &&
-            Object.values(fieldsRef.current).forEach((field) => removeFieldEventListenerAndRef(field, true));
-    }, [removeFieldEventListenerAndRef]);
-    if (!shouldValidateCallback) {
-        isValidRef.current =
-            validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
-                isEmptyObject$1(errorsRef.current);
-    }
-    const formState = {
-        dirty: isDirtyRef.current,
-        dirtyFields: dirtyFieldsRef.current,
-        isSubmitted: isSubmittedRef.current,
-        submitCount: submitCountRef.current,
-        touched: touchedFieldsRef.current,
-        isSubmitting: isSubmittingRef.current,
-        isValid: isOnSubmit
-            ? isSubmittedRef.current && isEmptyObject$1(errorsRef.current)
-            : isValidRef.current,
-    };
-    const control = Object.assign(Object.assign({ register,
-        unregister,
-        removeFieldEventListener,
-        getValues,
-        setValue,
-        reRender,
-        triggerValidation }, (shouldValidateCallback ? { validateSchemaIsValid } : {})), { formState, mode: {
-            isOnBlur,
-            isOnSubmit,
-            isOnChange,
-        }, reValidateMode: {
-            isReValidateOnBlur,
-            isReValidateOnSubmit,
-        }, errorsRef,
-        touchedFieldsRef,
-        fieldsRef,
-        resetFieldArrayFunctionRef,
-        validFieldsRef,
-        dirtyFieldsRef,
-        fieldsWithValidationRef,
-        watchFieldsRef,
-        fieldArrayNamesRef,
-        isDirtyRef,
-        readFormStateRef,
-        defaultValuesRef });
-    return {
-        watch,
-        control,
-        handleSubmit,
-        setValue: useCallback$1(setValue, [
-            reRender,
-            setInternalValue,
-            triggerValidation,
-        ]),
-        triggerValidation,
-        getValues: useCallback$1(getValues, []),
-        reset: useCallback$1(reset, []),
-        register: useCallback$1(register, [
-            defaultValuesRef.current,
-            defaultRenderValuesRef.current,
-        ]),
-        unregister: useCallback$1(unregister, []),
-        clearError: useCallback$1(clearError, []),
-        setError: useCallback$1(setError, []),
-        errors: errorsRef.current,
-        formState: isProxyEnabled
-            ? new Proxy(formState, {
-                get: (obj, prop) => {
-                    if (prop in obj) {
-                        readFormStateRef.current[prop] = true;
-                        return obj[prop];
-                    }
-                    return {};
-                },
-            })
-            : formState,
-    };
-}
-
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-
-function __rest$1(s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-}
-
-const FormGlobalContext$1 = React.createContext(null);
-function useFormContext$1() {
-    return React.useContext(FormGlobalContext$1);
-}
-
-var getInputValue$1 = (event, isCheckboxInput) => isPrimitive$1(event) ||
-    !isObject$1(event.target) ||
-    (isObject$1(event.target) && !event.type)
-    ? event
-    : isCheckboxInput || isUndefined$2(event.target.value)
-        ? event.target.checked
-        : event.target.value;
-
-const Controller$1 = (_a) => {
-    var { name, rules, as: InnerComponent, onBlur, onChange, onChangeName = VALIDATION_MODE$1.onChange, onBlurName = VALIDATION_MODE$1.onBlur, valueName, defaultValue, control } = _a, rest = __rest$1(_a, ["name", "rules", "as", "onBlur", "onChange", "onChangeName", "onBlurName", "valueName", "defaultValue", "control"]);
-    const methods = useFormContext$1();
-    const { defaultValuesRef, setValue, register, unregister, errorsRef, removeFieldEventListener, triggerValidation, mode: { isOnSubmit, isOnBlur, isOnChange }, reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit }, formState: { isSubmitted }, fieldsRef, fieldArrayNamesRef, } = control || methods.control;
-    const [value, setInputStateValue] = React.useState(isUndefined$2(defaultValue)
-        ? get$1(defaultValuesRef.current, name)
-        : defaultValue);
-    const valueRef = React.useRef(value);
-    const isCheckboxInput = isBoolean$1(value);
-    const shouldValidate = () => !skipValidation$1({
-        hasError: !!get$1(errorsRef.current, name),
-        isOnBlur,
-        isOnSubmit,
-        isOnChange,
-        isReValidateOnBlur,
-        isReValidateOnSubmit,
-        isSubmitted,
-    });
-    const commonTask = (event) => {
-        const data = getInputValue$1(event, isCheckboxInput);
-        setInputStateValue(data);
-        valueRef.current = data;
-        return data;
-    };
-    const eventWrapper = (event) => (...arg) => setValue(name, commonTask(event(arg)), shouldValidate());
-    const handleChange = (event) => {
-        const data = commonTask(event);
-        setValue(name, data, shouldValidate());
-    };
-    const registerField = () => {
-        if (isNameInFieldArray$1(fieldArrayNamesRef.current, name) &&
-            fieldsRef.current[name]) {
-            removeFieldEventListener(fieldsRef.current[name], true);
-        }
-        register(Object.defineProperty({ name }, VALUE$1, {
-            set(data) {
-                setInputStateValue(data);
-                valueRef.current = data;
-            },
-            get() {
-                return valueRef.current;
-            },
-        }), Object.assign({}, rules));
-    };
-    React.useEffect(() => {
-        if (!fieldsRef.current[name]) {
-            registerField();
-            setInputStateValue(isUndefined$2(defaultValue)
-                ? get$1(defaultValuesRef.current, name)
-                : defaultValue);
-        }
-    });
-    React.useEffect(() => {
-        registerField();
-        return () => {
-            if (!isNameInFieldArray$1(fieldArrayNamesRef.current, name)) {
-                unregister(name);
-            }
-        };
-    }, [name]);
-    React.useEffect(() => {
-        registerField();
-    }, [rules]);
-    const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
-    const props = Object.assign(Object.assign(Object.assign(Object.assign({ name }, rest), (onChange
-        ? { [onChangeName]: eventWrapper(onChange) }
-        : { [onChangeName]: handleChange })), (onBlur || shouldReValidateOnBlur
-        ? {
-            [onBlurName]: (...args) => {
-                if (onBlur) {
-                    onBlur(args);
-                }
-                if (shouldReValidateOnBlur) {
-                    triggerValidation(name);
-                }
-            },
-        }
-        : {})), { [valueName || (isCheckboxInput ? 'checked' : VALUE$1)]: value });
-    return React.isValidElement(InnerComponent)
-        ? React.cloneElement(InnerComponent, props)
-        : React.createElement(InnerComponent, props);
-};
-
-const ErrorMessage$1 = (_a) => {
-    var { as: InnerComponent, errors, name, message, children } = _a, rest = __rest$1(_a, ["as", "errors", "name", "message", "children"]);
-    const methods = useFormContext$1();
-    const error = get$1(errors || methods.errors, name);
-    if (!error) {
-        return null;
-    }
-    const { message: messageFromRegister, types } = error;
-    const props = Object.assign(Object.assign({}, (InnerComponent ? rest : {})), { children: children
-            ? children({ message: messageFromRegister || message, messages: types })
-            : messageFromRegister || message });
-    return InnerComponent ? (React.isValidElement(InnerComponent) ? (React.cloneElement(InnerComponent, props)) : (React.createElement(InnerComponent, props))) : (React.createElement(React.Fragment, Object.assign({}, props)));
-};
-
-var global$2 = typeof global$2 !== "undefined"
-    ? global$2
-    : typeof globalThis !== "undefined"
-        ? globalThis
-        : {};
-/**
- * Used to evaluate whether or not to render a component
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @param {Object} options.props - Props to test comparison values against, usually Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
- * @returns {Boolean} returns true if all comparisons are true or if using or comparisons, at least one condition is true
- * @example
- const sampleJSONX = {
-  component: 'div',
-  props: {
-    id: 'generatedJSONX',
-    className: 'jsonx',
-    bigNum: 1430931039,
-    smallNum: 0.425,
-    falsey: false,
-    truthy: true,
-  },
-  children: 'some div',
-};
-const testJSONX = Object.assign({}, sampleJSONX, {
-  comparisonprops: [{
-    left: ['truthy',],
-    operation:'==',
-    right:['falsey',],
-  }],
-});
-displayComponent({ jsonx: testJSONX, props: testJSONX2.props, }) // => false
- */
-function displayComponent$2(options) {
-    if (options === void 0) { options = {}; }
-    var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, props = options.props;
-    var propsToCompare = jsonx.comparisonprops;
-    var comparisons = Array.isArray(propsToCompare)
-        ? propsToCompare.map(function (comp) {
-            var compares = {};
-            if (Array.isArray(comp.left)) {
-                compares.left = comp.left;
-            }
-            if (Array.isArray(comp.right)) {
-                compares.right = comp.right;
-            }
-            var propcompares = traverse$1(compares, props || jsonx.props);
-            var opscompares = Object.assign({}, comp, propcompares);
-            // console.debug({ opscompares, compares, renderedCompProps });
-            switch (opscompares.operation) {
-                case "eq":
-                case "==":
-                    // return opscompares.left == opscompares.right;
-                    // eslint-disable-next-line
-                    return opscompares.left == opscompares.right;
-                case "dneq":
-                case "!=":
-                case "!":
-                    // return opscompares.left != opscompares.right;
-                    return opscompares.left !== opscompares.right;
-                case "dnseq":
-                case "!==":
-                    return opscompares.left !== opscompares.right;
-                case "seq":
-                case "===":
-                    return opscompares.left === opscompares.right;
-                case "lt":
-                case "<":
-                    return opscompares.left < opscompares.right;
-                case "lte":
-                case "<=":
-                    return opscompares.left <= opscompares.right;
-                case "gt":
-                case ">":
-                    return opscompares.left > opscompares.right;
-                case "gte":
-                case ">=":
-                    return opscompares.left >= opscompares.right;
-                case "dne":
-                case "undefined":
-                case "null":
-                    return opscompares.left === undefined || opscompares.left === null;
-                case "!null":
-                case "!undefined":
-                case "exists":
-                default:
-                    //'exists'
-                    return opscompares.left !== undefined && opscompares.left !== null;
-            }
-            // }
-            // if (opscompares.operation === 'eq') {
-            //   // return opscompares.left == opscompares.right;
-            //   // eslint-disable-next-line
-            //   return opscompares.left == opscompares.right;
-            // } else if (opscompares.operation === 'dneq') {
-            //   // return opscompares.left != opscompares.right;
-            //   return opscompares.left !== opscompares.right;
-            // } else if (opscompares.operation === 'dnseq') {
-            //   return opscompares.left !== opscompares.right;
-            // } else if (opscompares.operation === 'seq') {
-            //   return opscompares.left === opscompares.right;
-            // } else if (opscompares.operation === 'lt') {
-            //   return opscompares.left < opscompares.right;
-            // } else if (opscompares.operation === 'lte') {
-            //   return opscompares.left <= opscompares.right;
-            // } else if (opscompares.operation === 'gt') {
-            //   return opscompares.left > opscompares.right;
-            // } else if (opscompares.operation === 'gte') {
-            //   return opscompares.left >= opscompares.right;
-            // } else if (opscompares.operation === 'dne') {
-            //   return opscompares.left === undefined || opscompares.left === null;
-            // } else { //'exists'
-            //   return opscompares.left !== undefined && opscompares.left !== null;
-            // }
-        })
-        : [];
-    var validProps = comparisons.filter(function (comp) { return comp === true; });
-    if (!jsonx.comparisonprops) {
-        return true;
-    }
-    else if (jsonx.comparisonorprops && validProps.length < 1) {
-        return false;
-    }
-    else if (validProps.length !== comparisons.length &&
-        !jsonx.comparisonorprops) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-/**
- * Use to test if can bind components this context for react-redux-router
- * @returns {Boolean} true if browser is not IE or old android / chrome
- */
-function getAdvancedBinding$1() {
-    var window = window;
-    if (typeof window === "undefined") {
-        if (this && this.window) {
-            window = this.window;
-        }
-        else if (typeof global$2 !== "undefined" && (typeof global$2 !== "undefined" ? global$2 : window).window) {
-            window = (typeof global$2 !== "undefined" ? global$2 : window).window;
-        }
-        else if (typeof globalThis !== "undefined" && globalThis.window) {
-            window = globalThis.window;
-        }
-        if (!window.navigator)
-            return false;
-    }
-    try {
-        if (window &&
-            window.navigator &&
-            window.navigator.userAgent &&
-            typeof window.navigator.userAgent === "string") {
-            // console.log('window.navigator.userAgent',window.navigator.userAgent)
-            if (window.navigator.userAgent.indexOf("Trident") !== -1) {
-                return false;
-            }
-            var uastring = window.navigator.userAgent;
-            //@ts-ignore
-            var parser = new uaParser();
-            parser.setUA(uastring);
-            var parseUserAgent = parser.getResult();
-            // console.log({ parseUserAgent, });
-            if ((parseUserAgent.browser.name === "Chrome" ||
-                parseUserAgent.browser.name === "Chrome WebView") &&
-                parseUserAgent.os.name === "Android" &&
-                parseInt(parseUserAgent.browser.version, 10) < 50) {
-                return false;
-            }
-            if (parseUserAgent.browser.name === "Android Browser") {
-                return false;
-            }
-        }
-    }
-    catch (e) {
-        console.error(e);
-        // console.warn('could not detect browser support', e);
-        return false;
-    }
-    return true;
-}
-/**
- * take an object of array paths to traverse and resolve
- * @example
- * const testObj = {
-      user: {
-        name: 'jsonx',
-        description: 'react withouth javascript',
-      },
-      stats: {
-        logins: 102,
-        comments: 3,
-      },
-      authentication: 'OAuth2',
-    };
-const testVals = { auth: ['authentication', ], username: ['user', 'name', ], };
-
- traverse(testVals, testObj) // =>{ auth:'OAuth2', username:'jsonx',  }
- * @param {Object} paths - an object to resolve array property paths
- * @param {Object} data - object to traverse
- * @returns {Object} resolved object with traversed properties
- * @throws {TypeError}
- */
-function traverse$1(paths, data) {
-    if (paths === void 0) { paths = {}; }
-    if (data === void 0) { data = {}; }
-    var keys = Object.keys(paths);
-    if (!keys.length)
-        return paths;
-    return keys.reduce(function (result, key) {
-        //@ts-ignore
-        if (typeof paths[key] === "string")
-            result[key] = data[paths[key]];
-        else if (Array.isArray(paths[key])) {
-            var _path = Object.assign([], paths[key]);
-            var value = data;
-            while (_path.length && value && typeof value === "object") {
-                var prop = _path.shift();
-                //@ts-ignore
-                value = value[prop];
-            }
-            result[key] = _path.length ? undefined : value;
-        }
-        else
-            throw new TypeError("dynamic property paths must be a string or an array of strings or numeric indexes");
-        return result;
-    }, {});
-}
-/**
- * validates simple JSONX Syntax {[component]:{props,children}}
- * @param {Object} simpleJSONX - Any valid simple JSONX Syntax
- * @return {Boolean} returns true if simpleJSONX is valid
- */
-function validSimpleJSONXSyntax$1(simpleJSONX) {
-    if (simpleJSONX === void 0) { simpleJSONX = {}; }
-    if (Object.keys(simpleJSONX).length !== 1 && !simpleJSONX.component) {
-        return false;
-    }
-    else {
-        var componentName = Object.keys(simpleJSONX)[0];
-        return Object.keys(simpleJSONX).length === 1 &&
-            !simpleJSONX[componentName].component &&
-            typeof simpleJSONX[componentName] === "object"
-            ? true
-            : false;
-    }
-}
-/**
- * Transforms SimpleJSONX to Valid JSONX JSON {[component]:{props,children}} => {component,props,children}
- * @param {Object} simpleJSONX JSON Object
- * @return {Object} - returns a valid JSONX JSON Object from a simple JSONX JSON Object
- */
-function simpleJSONXSyntax$1(simpleJSONX) {
-    if (simpleJSONX === void 0) { simpleJSONX = {}; }
-    var component = Object.keys(simpleJSONX)[0];
-    try {
-        return Object.assign({}, {
-            component: component
-        }, simpleJSONX[component], {
-            children: simpleJSONX[component] &&
-                simpleJSONX[component].children &&
-                Array.isArray(simpleJSONX[component].children)
-                ? simpleJSONX[component].children.map(simpleJSONXSyntax$1)
-                : simpleJSONX[component].children
-        });
-    }
-    catch (e) {
-        throw SyntaxError("Invalid Simple JSONX Syntax");
-    }
-}
-/**
- * Fetches JSON from remote path
- * @param {String} path - fetch path url
- * @param {Object} options - fetch options
- * @return {Object} - returns fetched JSON data
- */
-function fetchJSON$2(path, options) {
-    if (path === void 0) { path = ""; }
-    if (options === void 0) { options = {}; }
-    return __awaiter(this, void 0, void 0, function () {
-        var response, e_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, fetch(path, options)];
-                case 1:
-                    response = _a.sent();
-                    return [4 /*yield*/, response.json()];
-                case 2: return [2 /*return*/, _a.sent()];
-                case 3:
-                    e_1 = _a.sent();
-                    throw e_1;
-                case 4: return [2 /*return*/];
-            }
-        });
-    });
-}
-
-var cache$1 = new Cache_1();
-// if (typeof window === 'undefined') {
-//   var window = window || (typeof global!=="undefined" ? global : window).window || {};
-// }
-/**
- 
- */
-//@ts-ignore
-var advancedBinding$1 = getAdvancedBinding$1();
-// require;
-/**
- * object of all react components available for JSONX
- 
- */
-//@ts-ignore
-var componentMap$2 = Object.assign({ Fragment: React.Fragment, Suspense: React.Suspense }, reactDomFactories, window && typeof window === "object" ? window.__jsonx_custom_elements : {});
-/**
- * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
- 
- * @param {Object} options - options for getBoundedComponents
- * @param {Object} options.reactComponents - all react components available for JSONX
- * @param {string[]} boundedComponents - list of components to bind JSONX this context (usually helpful for navigation and redux-router)
- * @returns {Object} reactComponents object of all react components available for JSONX
- */
-function getBoundedComponents$2(options) {
-    var _this = this;
-    if (options === void 0) { options = {}; }
-    var reactComponents = options.reactComponents, _a = options.boundedComponents, boundedComponents = _a === void 0 ? [] : _a;
-    if (advancedBinding$1 || options.advancedBinding) {
-        return Object.assign({}, reactComponents, boundedComponents.reduce(function (result, componentName) {
-            result[componentName] = reactComponents[componentName].bind(_this);
-            return result;
-        }, {}));
-        // reactComponents.ResponsiveLink = ResponsiveLink.bind(this);
-    }
-    else
-        return reactComponents;
-}
-/**
- * returns a react component from a component library
- 
- * @param {Object} options - options for getComponentFromLibrary
- * @param {Object} [options.componentLibraries={}] - react component library like bootstrap
- * @param {Object} [options.jsonx={}] - any valid JSONX JSON
- * @returns {function|undefined} react component from react library like bootstrap, material design or bulma
- */
-function getComponentFromLibrary$1(options) {
-    if (options === void 0) { options = { jsonx: {} }; }
-    var _a = options.componentLibraries, componentLibraries = _a === void 0 ? {} : _a, _b = options.jsonx, jsonx = _b === void 0 ? {} : _b;
-    var libComponent = Object.keys(componentLibraries)
-        .map(function (libraryName) {
-        //@ts-ignore
-        var cleanLibraryName = jsonx.component.replace(libraryName + ".", "");
-        var libraryNameArray = cleanLibraryName.split(".");
-        if (libraryNameArray.length === 2 &&
-            componentLibraries[libraryName] &&
-            componentLibraries[libraryName][libraryNameArray[0]] &&
-            typeof componentLibraries[libraryName][libraryNameArray[0]][libraryNameArray[1]] !== "undefined") {
-            return componentLibraries[libraryName][libraryNameArray[0]][libraryNameArray[1]];
-        }
-        else if (typeof componentLibraries[libraryName][cleanLibraryName] !== "undefined") {
-            return componentLibraries[libraryName][cleanLibraryName];
-        }
-    })
-        .filter(function (val) { return val; })[0];
-    return libComponent;
-}
-/**
- * returns a react element from jsonx.component
- 
- * @example
- * // returns react elements
- * getComponentFromMap({jsonx:{component:'div'}})=>div
- * getComponentFromMap({jsonx:{component:'MyModal'},reactComponents:{MyModal:MyModal extends React.Component}})=>MyModal
- * getComponentFromMap({jsonx:{component:'reactBootstap.nav'},componentLibraries:{reactBootstrap,}})=>reactBootstap.nav
- * @param {Object} options - options for getComponentFromMap
- * @param {object} [options.jsonx={}] - any valid JSONX JSON object
- * @param {Object} [options.reactComponents={}] - react components to render
- * @param {Object} [options.componentLibraries={}] - react components to render from another component library like bootstrap or bulma
- * @param {function} [options.logError=console.error] - error logging function
- * @param {boolean} [options.debug=false] - use debug messages
- * @returns {string|function|class} valid react element
- */
-function getComponentFromMap$2(options) {
-    if (options === void 0) { options = {}; }
-    //ReactElementLike | ReactComponentLike | ReactElement | ReactComponentLike
-    // eslint-disable-next-line
-    var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, _b = options.reactComponents, reactComponents = _b === void 0 ? {} : _b, _c = options.componentLibraries, componentLibraries = _c === void 0 ? {} : _c, _d = options.logError, logError = _d === void 0 ? console.error : _d, debug = options.debug;
-    try {
-        if (typeof jsonx.component !== "string" &&
-            typeof jsonx.component === "function") {
-            return jsonx.component;
-            //@ts-ignore
-        }
-        else if (jsonx.component && reactDomFactories[jsonx.component]) {
-            return jsonx.component;
-            //@ts-ignore
-        }
-        else if (reactComponents[jsonx.component]) {
-            //@ts-ignore
-            return reactComponents[jsonx.component];
-        }
-        else if (typeof jsonx.component === "string" &&
-            jsonx.component.indexOf(".") > 0 &&
-            getComponentFromLibrary$1({ jsonx: jsonx, componentLibraries: componentLibraries })) {
-            return getComponentFromLibrary$1({ jsonx: jsonx, componentLibraries: componentLibraries });
-        }
-        else {
-            throw new ReferenceError("Invalid React Component (" + jsonx.component + ")");
-        }
-    }
-    catch (e) {
-        if (debug)
-            logError(e, e.stack ? e.stack : "no stack");
-        throw e;
-    }
-}
-/**
- * Returns a new function from an options object
- 
- * @param {Object} options
- * @param {String} [options.body=''] - Function string body
- * @param {String[]} [options.args=[]] - Function arguments
- * @returns {Function}
- */
-function getFunctionFromEval$1(options) {
-    if (options === void 0) { options = {}; }
-    if (typeof options === "function")
-        return options;
-    var _a = options.body, body = _a === void 0 ? "" : _a, _b = options.args, args = _b === void 0 ? [] : _b, name = options.name;
-    var argus = [].concat(args);
-    argus.push(body);
-    var evalFunction = Function.prototype.constructor.apply({ name: name }, argus);
-    if (name) {
-        Object.defineProperty(evalFunction, "name", { value: name });
-    }
-    return evalFunction;
-}
-/**
- * Returns a new React Component
- 
- * @param {Boolean} [options.returnFactory=true] - returns a React component if true otherwise returns Component Class
- * @param {Object} [options.resources={}] - asyncprops for component
- * @param {String} [options.name ] - Component name
- * @param {Function} [options.lazy ] - function that resolves {reactComponent,options} to lazy load component for code splitting
- * @param {Boolean} [options.use_getState=true] - define getState prop
- * @param {Boolean} [options.bindContext=true] - bind class this reference to render function components
- * @param {Boolean} [options.passprops ] - pass props to rendered component
- * @param {Boolean} [options.passstate] - pass state as props to rendered component
- * @param {Object} [reactComponent={}] - an object of functions used for create-react-class
- * @param {Object} reactComponent.render.body - Valid JSONX JSON
- * @param {String} reactComponent.getDefaultProps.body - return an object for the default props
- * @param {String} reactComponent.getInitialState.body - return an object for the default state
- * @returns {Function}
- * @see {@link https://reactjs.org/docs/react-without-es6.html}
- */
-function getReactClassComponent$1(reactComponent, options) {
-    if (reactComponent === void 0) { reactComponent = {}; }
-    if (options === void 0) { options = {}; }
-    // const util = require('util');
-    // console.log(util.inspect({ reactComponent },{depth:20}));
-    if (options.lazy) {
-        //@ts-ignore
-        return React.lazy(function () {
-            return options
-                .lazy(reactComponent, Object.assign({}, options, { lazy: false }))
-                .then(function (lazyComponent) {
-                return {
-                    //@ts-ignore
-                    default: getReactClassComponent$1.apply(void 0, lazyComponent)
-                };
-            });
-        });
-    }
-    var context = this || {};
-    var _a = options.returnFactory, returnFactory = _a === void 0 ? true : _a, _b = options.resources, resources = _b === void 0 ? {} : _b, _c = options.use_getState, use_getState = _c === void 0 ? true : _c, _d = options.bindContext, bindContext = _d === void 0 ? true : _d, _e = options.disableRenderIndexKey, disableRenderIndexKey = _e === void 0 ? true : _e;
-    var rjc = __assign({ 
-        //mounting
-        getDefaultProps: {
-            body: "return {};"
-        }, 
-        // (unsupported) getDerivedStateFromProps: undefined, // {body:'return null;', args:['props','state',]}
-        getInitialState: {
-            body: "return {};"
-        }, componentDidMount: undefined, UNSAFE_componentWillMount: undefined, 
-        //updating
-        // (unsupported) getDerivedStateFromProps 
-        shouldComponentUpdate: undefined, getSnapshotBeforeUpdate: undefined, componentDidUpdate: undefined, UNSAFE_componentWillUpdate: undefined, UNSAFE_componentWillReceiveProps: undefined, 
-        //unmounting
-        componentWillUnmount: undefined }, reactComponent);
-    var rjcKeys = Object.keys(rjc);
-    if (rjcKeys.includes("render") === false) {
-        throw new ReferenceError("React components require a render method");
-    }
-    var classOptions = rjcKeys.reduce(function (result, val) {
-        if (!rjc[val])
-            return result;
-        if (typeof rjc[val] === "function")
-            rjc[val] = { body: rjc[val] };
-        var args = rjc[val].arguments;
-        var body = rjc[val].body;
-        if (!body) {
-            console.warn({ rjc: rjc });
-            throw new SyntaxError("Function(" + val + ") requires a function body");
-        }
-        if (args &&
-            !Array.isArray(args) &&
-            args.length &&
-            args.length &&
-            args.filter(function (arg) { return typeof arg === "string"; }).length) {
-            throw new TypeError("Function(" + val + ") arguments must be an array or variable names");
-        }
-        if (val === "render") {
-            result[val] = function () {
-                var _this = this;
-                //@ts-ignore
-                if (options.passprops && this && this.props)
-                    body.props = Object.assign({}, body.props, this.props);
-                //@ts-ignore
-                if (options.passstate && this.state)
-                    body.props = Object.assign({}, body.props, this.state);
-                return getReactElementFromJSONX$1.call(Object.assign({}, context, bindContext ? this : { props: {} }, { disableRenderIndexKey: disableRenderIndexKey }, {
-                    props: use_getState && this && this.props
-                        ? //@ts-ignore
-                            Object.assign({}, this.props, {
-                                getState: function () { return _this.state; }
-                            })
-                        : //@ts-ignore
-                            this.props
-                }), body, resources);
-            };
-        }
-        else {
-            //@ts-ignore
-            result[val] =
-                typeof body === "function"
-                    ? body
-                    : getFunctionFromEval$1({
-                        body: body,
-                        args: args
-                    });
-        }
-        return result;
-    }, {});
-    var reactComponentClass = createReactClass(classOptions);
-    if (options.name) {
-        Object.defineProperty(reactComponentClass, "name", {
-            value: options.name
-        });
-    }
-    var reactClass = returnFactory
-        ? React__default.createFactory(reactComponentClass)
-        : reactComponentClass;
-    return reactClass;
-}
-/**
- * A helper component that allows you to create forms with [react-hook-form](https://react-hook-form.com/) without needed to add external form libraries
- * @param this
- * @param props
- */
-function FormComponent$2(props) {
-    if (props === void 0) { props = {}; }
-    var _a = props.hookFormOptions, hookFormOptions = _a === void 0 ? {} : _a, _b = props.formComponent, formComponent = _b === void 0 ? { component: "div", children: "empty form" } : _b, onSubmit = props.onSubmit, formWrapperComponent = props.formWrapperComponent, formKey = props.formKey, formWrapperProps = props.formWrapperProps;
-    // const { register, unregister, errors, watch, handleSubmit, reset, setError, clearError, setValue, getValues, triggerValidation, control, formState, } = useForm(hookFormOptions);
-    var reactHookForm = useForm$1(hookFormOptions);
-    var context = __assign(__assign({}, this || {}), { reactHookForm: reactHookForm, });
-    if (!context.componentLibraries || !context.componentLibraries.ReactHookForm) {
-        context.componentLibraries = __assign(__assign({}, context.componentLibraries), {
-            ReactHookForm: {
-                Controller: Controller$1, ErrorMessage: ErrorMessage$1,
-            }
-        });
-    }
-    var formWrapperJXM = formWrapperComponent || {
-        component: 'form',
-        props: __assign({ onSubmit: onSubmit ? reactHookForm.handleSubmit(onSubmit) : undefined, key: formKey ? "formWrapperJXM-" + formKey : undefined }, formWrapperProps)
-    };
-    formWrapperJXM.children = Array.isArray(formComponent) ? formComponent : [formComponent];
-    var renderJSONX = React.useMemo(function () { return getReactElementFromJSONX$1.bind(context); }, [
-        context
-    ]);
-    return renderJSONX(formWrapperJXM);
-}
-/**
- * A helper component that allows you to create components that load data and render asynchronously.
- * @param this
- * @param props
- */
-function DynamicComponent$2(props) {
-    if (props === void 0) { props = {}; }
-    //@ts-ignore
-    var _a = props.useCache, useCache = _a === void 0 ? true : _a, _b = props.cacheTimeout, cacheTimeout = _b === void 0 ? 60 * 60 * 5 : _b, _c = props.loadingJSONX, loadingJSONX = _c === void 0 ? { component: "div", children: "...Loading" } : _c, 
-    //@ts-ignore
-    _d = props.loadingErrorJSONX, 
-    //@ts-ignore
-    loadingErrorJSONX = _d === void 0 ? {
-        component: "div",
-        children: [
-            { component: "span", children: "Error: " },
-            {
-                component: "span",
-                resourceprops: { _children: ["error", "message"] }
-            }
-        ]
-    } : _d, _e = props.cacheTimeoutFunction, cacheTimeoutFunction = _e === void 0 ? function () { } : _e, jsonx = props.jsonx, _f = props.transformFunction, transformFunction = _f === void 0 ? function (data) { return data; } : _f, fetchURL = props.fetchURL, fetchOptions = props.fetchOptions, fetchFunction = props.fetchFunction;
-    var context = this || {};
-    var _g = React.useState({
-        hasLoaded: false,
-        hasError: false,
-        resources: {},
-        error: undefined
-    }), state = _g[0], setState = _g[1];
-    var transformer = React.useMemo(function () { return getFunctionFromEval$1(transformFunction); }, [
-        transformFunction
-    ]);
-    var timeoutFunction = React.useMemo(function () { return getFunctionFromEval$1(cacheTimeoutFunction); }, [cacheTimeoutFunction]);
-    var renderJSONX = React.useMemo(function () { return getReactElementFromJSONX$1.bind(context); }, [
-        context
-    ]);
-    var loadingComponent = React.useMemo(function () { return renderJSONX(loadingJSONX); }, [
-        loadingJSONX
-    ]);
-    var loadingError = React.useMemo(function () { return renderJSONX(loadingErrorJSONX, { error: state.error }); }, [loadingErrorJSONX, state.error]);
-    React.useEffect(function () {
-        function getData() {
-            return __awaiter(this, void 0, void 0, function () {
-                var transformedData_1, fetchedData, e_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            _a.trys.push([0, 8, , 9]);
-                            if (!(useCache && cache$1.get(fetchURL))) return [3 /*break*/, 1];
-                            transformedData_1 = cache$1.get(fetchURL);
-                            return [3 /*break*/, 7];
-                        case 1:
-                            fetchedData = void 0;
-                            if (!fetchFunction) return [3 /*break*/, 3];
-                            return [4 /*yield*/, fetchFunction(fetchURL, fetchOptions)];
-                        case 2:
-                            fetchedData = _a.sent();
-                            return [3 /*break*/, 5];
-                        case 3: return [4 /*yield*/, fetchJSON$2(fetchURL, fetchOptions)];
-                        case 4:
-                            fetchedData = _a.sent();
-                            _a.label = 5;
-                        case 5: return [4 /*yield*/, transformer(fetchedData)];
-                        case 6:
-                            transformedData_1 = _a.sent();
-                            if (useCache)
-                                cache$1.put(fetchURL, transformedData_1, cacheTimeout, timeoutFunction);
-                            _a.label = 7;
-                        case 7:
-                            //@ts-ignore
-                            setState(function (prevState) {
-                                return Object.assign({}, prevState, {
-                                    hasLoaded: true,
-                                    hasError: false,
-                                    resources: { DynamicComponentData: transformedData_1 }
-                                });
-                            });
-                            return [3 /*break*/, 9];
-                        case 8:
-                            e_1 = _a.sent();
-                            if (context.debug)
-                                console.warn(e_1);
-                            //@ts-ignore
-                            setState({ hasError: true, error: e_1 });
-                            return [3 /*break*/, 9];
-                        case 9: return [2 /*return*/];
-                    }
-                });
-            });
-        }
-        if (fetchURL)
-            getData();
-    }, [fetchURL, fetchOptions]);
-    if (!fetchURL)
-        return null;
-    else if (state.hasError) {
-        return loadingError;
-    }
-    else if (state.hasLoaded === false) {
-        return loadingComponent;
-    }
-    else
-        return renderJSONX(jsonx, state.resources);
-}
-/**
- * Returns new React Function Component
- 
- * @todo set 'functionprops' to set arguments for function
- * @param {*} reactComponent - Valid JSONX to render
- * @param {String} functionBody - String of function component body
- * @param {String} options.name - Function Component name
- * @returns {Function}
- * @see {@link https://reactjs.org/docs/hooks-intro.html}
- * @example
-  const jsonxRender = {
-   component:'div',
-   passprops:'true',
-   children:[
-     {
-      component:'input',
-      thisprops:{
-          value:['count'],
-        },
-     },
-      {
-        component:'button',
-       __dangerouslyBindEvalProps:{
-        onClick:function(count,setCount){
-          setCount(count+1);
-          console.log('this is inline',{count,setCount});
-        },
-        // onClick:`(function(count,setCount){
-        //   setCount(count+1)
-        //   console.log('this is inline',{count,setCount});
-        // })`,
-        children:'Click me'
-      }
-   ]
-  };
-  const functionBody = 'const [count, setCount] = useState(0); const functionprops = {count,setCount};'
-  const options = { name: IntroHook}
-  const MyCustomFunctionComponent = jsonx._jsonxComponents.getReactFunctionComponent({jsonxRender, functionBody, options});
-   */
-function getReactFunctionComponent$1(reactComponent, functionBody, options) {
-    if (reactComponent === void 0) { reactComponent = {}; }
-    if (functionBody === void 0) { functionBody = ""; }
-    if (options === void 0) { options = {}; }
-    if (options.lazy) {
-        //@ts-ignore
-        return React.lazy(function () {
-            return options
-                .lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false }))
-                .then(function (lazyComponent) {
-                return {
-                    //@ts-ignore
-                    default: getReactFunctionComponent$1.apply(void 0, lazyComponent)
-                };
-            });
-        });
-    }
-    if (typeof options === "undefined" || typeof options.bind === "undefined")
-        options.bind = true;
-    var _a = options.resources, resources = _a === void 0 ? {} : _a, _b = options.args;
-    //@ts-ignore
-    var props = Object.assign({}, reactComponent.props);
-    var functionArgs = [
-        React__default,
-        React.useState,
-        React.useEffect,
-        React.useContext,
-        React.useReducer,
-        React.useCallback,
-        React.useMemo,
-        React.useRef,
-        React.useImperativeHandle,
-        React.useLayoutEffect,
-        React.useDebugValue,
-        getReactElementFromJSONX$1,
-        reactComponent,
-        resources,
-        props
-    ];
-    //@ts-ignore
-    if (typeof functionBody === "function")
-        functionBody = functionBody.toString();
-    var functionComponent = Function("React", "useState", "useEffect", "useContext", "useReducer", "useCallback", "useMemo", "useRef", "useImperativeHandle", "useLayoutEffect", "useDebugValue", "getReactElementFromJSONX", "reactComponent", "resources", "props", "\n    'use strict';\n    const self = this || {};\n\n    return function " + (options.name || "Anonymous") + "(props){\n      " + functionBody + "\n      if(typeof exposeprops==='undefined' || exposeprops){\n        reactComponent.props = Object.assign({},props,typeof exposeprops==='undefined'?{}:exposeprops);\n        if(typeof exposeprops!=='undefined') reactComponent.__functionargs = Object.keys(exposeprops);\n      } else{\n        reactComponent.props =  props;\n      }\n      if(!props.children) {\n      //  delete props.children;\n      }\n      const context = " + (options.bind ? "Object.assign(self,this||{})" : "this") + ";\n      return getReactElementFromJSONX.call(context, reactComponent);\n    }\n  ");
-    if (options.name) {
-        Object.defineProperty(functionComponent, "name", {
-            value: options.name
-        });
-    }
-    return options.bind
-        ? functionComponent.call.apply(functionComponent, __spreadArrays([this], functionArgs)) : functionComponent.apply(void 0, functionArgs);
-}
-
-//https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
-var STRIP_COMMENTS$1 = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
-var ARGUMENT_NAMES$1 = /([^\s,]+)/g;
-/**
- * returns the names of parameters from a function declaration
- * @example
- * const arrowFunctionAdd = (a,b)=>a+b;
- * function regularFunctionAdd(c,d){return c+d;}
- * getParamNames(arrowFunctionAdd) // => ['a','b']
- * getParamNames(regularFunctionAdd) // => ['c','d']
- * @param {Function} func
- * @todo write tests
- */
-function getParamNames$1(func) {
-    var fnStr = func.toString().replace(STRIP_COMMENTS$1, "");
-    var result = fnStr
-        .slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
-        .match(ARGUMENT_NAMES$1);
-    if (result === null) {
-        result = [];
-    }
-    return result;
-}
-/**
- * It uses traverse on a traverseObject to returns a resolved object on propName. So if you're making an ajax call and want to pass properties into a component, you can assign them using asyncprops and reference object properties by an array of property paths
- * @param {Object} [traverseObject={}] - the object that contains values of propName
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @param {Object} [options.propName='asyncprops'] - Property on JSONX to resolve values onto, i.e (asyncprops,thisprops,windowprops)
- * @returns {Object} resolved object
- * @example
- const traverseObject = {
-  user: {
-    name: 'jsonx',
-    description: 'react withouth javascript',
-  },
-  stats: {
-    logins: 102,
-    comments: 3,
-  },
-  authentication: 'OAuth2',
-};
-const testJSONX = {
-  component: 'div',
-  props: {
-    id: 'generatedJSONX',
-    className:'jsonx',
-  },
-  asyncprops:{
-    auth: [ 'authentication', ],
-    username: [ 'user', 'name', ],
-  },
-  children: [
-    {
-      component: 'p',
-      props: {
-        style: {
-          color: 'red',
-          fontWeight:'bold',
-        },
-      },
-      children:'hello world',
-    },
-  ],
-};
-const JSONXP = getJSONXProps({ jsonx: testJSONX, traverseObject, });
-// => {
-//   auth: 'OAuth2',
-//   username: 'jsonx'
-// }
-
-//finally resolves:
-const testJSONX = {
-  component: 'div',
-  props: {
-    id: 'generatedJSONX',
-    className:'jsonx',
-    auth: 'OAuth2',
-    username: 'jsonx',
-  },
-  children: [
-    {
-      component: 'p',
-      props: {
-        style: {
-          color: 'red',
-          fontWeight:'bold',
-        },
-      },
-      children:'hello world',
-    },
-  ],
-};
- */
-function getJSONXProps$1(options) {
-    if (options === void 0) { options = {}; }
-    // eslint-disable-next-line
-    var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, _b = options.propName, propName = _b === void 0 ? "asyncprops" : _b, _c = options.traverseObject, traverseObject = _c === void 0 ? {} : _c;
-    // return (jsonx.asyncprops && typeof jsonx.asyncprops === 'object')
-    // ? utilities.traverse(jsonx.asyncprops, resources)
-    // : {};
-    return jsonx[propName] && typeof jsonx[propName] === "object"
-        ? traverse$1(jsonx[propName], traverseObject)
-        : {};
-}
-/**
- * returns children jsonx components defined on __spreadComponent spread over an array on props.__spread
- * @param {*} options
- */
-function getChildrenComponents$1(options) {
-    if (options === void 0) { options = {}; }
-    var _a = options.allProps, allProps = _a === void 0 ? {} : _a, _b = options.jsonx, jsonx = _b === void 0 ? {} : _b;
-    // const asyncprops = getJSONXProps({ jsonx, propName: 'spreadprops', traverseObject: allProps, });
-    if (Array.isArray(allProps.__spread) === false) {
-        if ((this && this.debug) || jsonx.debug) {
-            return {
-                children: new Error("Using __spreadComponent requires an array prop '__spread'").toString()
-            };
-        }
-        else {
-            return { children: undefined };
-        }
-    }
-    else {
-        return {
-            _children: allProps.__spread.map(function (__item) {
-                var clonedChild = Object.assign({}, jsonx.__spreadComponent);
-                var clonedChildProps = Object.assign({}, clonedChild.props);
-                clonedChildProps.__item = __item;
-                clonedChild.props = clonedChildProps;
-                return clonedChild;
-            })
-        };
-    }
-}
-function boundArgsReducer$1(jsonx) {
-    var _this = this;
-    if (jsonx === void 0) { jsonx = {}; }
-    return function (args, arg) {
-        var val;
-        if (_this && _this.state && typeof _this.state[arg] !== "undefined")
-            val = _this.state[arg];
-        else if (_this && _this.props && typeof _this.props[arg] !== "undefined")
-            val = _this.props[arg];
-        else if (jsonx.props && typeof jsonx.props[arg] !== "undefined")
-            val = jsonx.props[arg];
-        if (typeof val !== "undefined")
-            args.push(val);
-        return args.filter(function (a) { return typeof a !== "undefined"; });
-    };
-}
-/**
- * Used to evalute javascript and set those variables as props. getEvalProps evaluates __dangerouslyEvalProps and __dangerouslyBindEvalProps properties with eval, this is used when component properties are functions, __dangerouslyBindEvalProps is used when those functions require that this is bound to the function. For __dangerouslyBindEvalProps it must resolve an expression, so functions should be wrapped in (). I.e. (function f(x){ return this.minimum+x;})
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @returns {Object} returns resolved object with evaluated javascript
- * @example
- const testVals = {
-    auth: 'true',
-    username: '(user={})=>user.name',
-  };
-  const testJSONX = Object.assign({}, sampleJSONX, {
-    __dangerouslyEvalProps: testVals, __dangerouslyBindEvalProps: {
-      email: '(function getUser(user={}){ return this.testBound(); })',
-    },
-  });
-  const JSONXP = getEvalProps.call({ testBound: () => 'bounded', }, { jsonx: testJSONX, });
-  const evalutedComputedFunc = JSONXP.username({ name: 'bob', });
-  const evalutedComputedBoundFunc = JSONXP.email({ email:'test@email.domain', });
-  // expect(JSONXP.auth).to.be.true;
-  // expect(evalutedComputedFunc).to.eql('bob');
-  // expect(evalutedComputedBoundFunc).to.eql('bounded');
- */
-function getEvalProps$1(options) {
-    var _this = this;
-    if (options === void 0) { options = { jsonx: {} }; }
-    var jsonx = options.jsonx;
-    var scopedEval = eval; //https://github.com/rollup/rollup/wiki/Troubleshooting#avoiding-eval
-    var evAllProps = {};
-    if (jsonx.__dangerouslyEvalAllProps) {
-        var evVal = void 0;
-        try {
-            // eslint-disable-next-line
-            evVal =
-                typeof evVal === "function"
-                    ? jsonx.__dangerouslyEvalAllProps
-                    : scopedEval(jsonx.__dangerouslyEvalAllProps);
-        }
-        catch (e) {
-            if (this.debug || jsonx.debug)
-                evVal = e;
-        }
-        evAllProps = evVal.call(this, { jsonx: jsonx });
-    }
-    var evProps = Object.keys(jsonx.__dangerouslyEvalProps || {}).reduce(function (eprops, epropName) {
-        var evVal;
-        var evValString;
-        try {
-            // eslint-disable-next-line
-            //@ts-ignore
-            evVal = scopedEval(jsonx.__dangerouslyEvalProps[epropName]);
-            evValString = evVal.toString();
-        }
-        catch (e) {
-            if (_this.debug || jsonx.debug)
-                evVal = e;
-        }
-        //@ts-ignore
-        eprops[epropName] =
-            typeof evVal === "function" ? evVal.call(_this, { jsonx: jsonx }) : evVal;
-        //@ts-ignore
-        if (_this.exposeEval)
-            eprops["__eval_" + epropName] = evValString;
-        return eprops;
-    }, {});
-    var evBindProps = Object.keys(jsonx.__dangerouslyBindEvalProps || {}).reduce(function (eprops, epropName) {
-        var evVal;
-        var evValString;
-        try {
-            var args = void 0;
-            //@ts-ignore
-            var functionBody = jsonx.__dangerouslyBindEvalProps[epropName];
-            // InlineFunction = Function.prototype.constructor.apply({}, args);
-            var functionDefinition = void 0;
-            if (typeof functionBody === "function") {
-                functionDefinition = functionBody;
-            }
-            else if (jsonx.__dangerouslyBindEvalProps) {
-                functionDefinition = scopedEval(jsonx.__dangerouslyBindEvalProps[epropName]);
-                evValString = functionDefinition.toString();
-            } // eslint-disable-next-line
-            if (jsonx.__functionargs && jsonx.__functionargs[epropName]) {
-                args = [_this].concat(jsonx.__functionargs[epropName].reduce(boundArgsReducer$1.call(_this, jsonx), []));
-            }
-            else if (jsonx.__functionparams === false) {
-                args = [_this];
-            }
-            else {
-                var functionDefArgs = getParamNames$1(functionDefinition);
-                args = [_this].concat(functionDefArgs.reduce(boundArgsReducer$1.call(_this, jsonx), []));
-            }
-            // eslint-disable-next-line
-            evVal = functionDefinition.bind.apply(functionDefinition, args);
-        }
-        catch (e) {
-            if (_this.debug || jsonx.debug)
-                evVal = e;
-        }
-        // eslint-disable-next-line
-        //@ts-ignore
-        eprops[epropName] = evVal;
-        //@ts-ignore
-        if (_this.exposeEval)
-            eprops["__eval_" + epropName] = evValString;
-        return eprops;
-    }, {});
-    return Object.assign({}, evProps, evBindProps, evAllProps);
-}
-/**
- * Resolves jsonx.__dangerouslyInsertComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @param {Object} [options.resources={}] - object to use for resourceprops(asyncprops), usually a result of an asynchronous call
- * @returns {Object} resolved object of React Components
- */
-function getComponentProps$1(options) {
-    var _this = this;
-    if (options === void 0) { options = { jsonx: {} }; }
-    var jsonx = options.jsonx, resources = options.resources;
-    //@ts-ignore
-    return Object.keys(jsonx.__dangerouslyInsertComponents).reduce(function (cprops, cpropName) {
-        var componentVal;
-        try {
-            // eslint-disable-next-line
-            if (jsonx.__dangerouslyInsertComponents) {
-                componentVal = getRenderedJSON$1.call(_this, jsonx.__dangerouslyInsertComponents[cpropName], resources);
-            }
-        }
-        catch (e) {
-            if (_this.debug || jsonx.debug)
-                componentVal = e;
-        }
-        cprops[cpropName] = componentVal;
-        return cprops;
-    }, {});
-}
-/**
- * Used to create components from jsonx as props
- * @param this
- * @param options
- */
-function getReactComponents$1(options) {
-    var _this = this;
-    var jsonx = options.jsonx, resources = options.resources;
-    var functionComponents = !jsonx.__dangerouslyInsertFunctionComponents
-        ? {}
-        : Object.keys(jsonx.__dangerouslyInsertFunctionComponents).reduce(function (cprops, cpropName) {
-            var componentVal;
-            try {
-                var args = jsonx.__dangerouslyInsertFunctionComponents && jsonx.__dangerouslyInsertFunctionComponents[cpropName];
-                if (args) {
-                    args.options = Object.assign({}, args.options, { resources: resources });
-                    // eslint-disable-next-line
-                    componentVal = getReactFunctionComponent$1.call(_this, args.reactComponent, args.functionBody, args.options);
-                }
-            }
-            catch (e) {
-                if (_this.debug || jsonx.debug)
-                    componentVal = e;
-            }
-            cprops[cpropName] =
-                cpropName === "_children" ? [componentVal] : componentVal;
-            return cprops;
-        }, {});
-    var classComponents = !jsonx.__dangerouslyInsertClassComponents
-        ? {}
-        : Object.keys(jsonx.__dangerouslyInsertClassComponents).reduce(function (cprops, cpropName) {
-            var componentVal;
-            try {
-                var args = jsonx.__dangerouslyInsertClassComponents && jsonx.__dangerouslyInsertClassComponents[cpropName];
-                if (args) {
-                    args.options = Object.assign({}, args.options, { resources: resources });
-                    // eslint-disable-next-line
-                    componentVal = getReactClassComponent$1.call(_this, args.reactComponent, args.options);
-                }
-            }
-            catch (e) {
-                if (_this.debug || jsonx.debug)
-                    componentVal = e;
-            }
-            cprops[cpropName] =
-                cpropName === "_children" ? [componentVal] : componentVal;
-            return cprops;
-        }, {});
-    return Object.assign({}, functionComponents, classComponents);
-}
-/**
- * Resolves jsonx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
-//  * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
- * @returns {Object} resolved object of React Components
- */
-function getReactComponentProps$1(options) {
-    var _this = this;
-    if (options === void 0) { options = { jsonx: {} }; }
-    var jsonx = options.jsonx;
-    var customComponents = this && this.reactComponents ? this.reactComponents : {};
-    var customLibraries = this && this.componentLibraries ? this.componentLibraries : {};
-    if (jsonx.__dangerouslyInsertJSONXComponents &&
-        Object.keys(jsonx.__dangerouslyInsertJSONXComponents).length) {
-        return Object.keys(jsonx.__dangerouslyInsertJSONXComponents).reduce(function (cprops, cpropName) {
-            var componentVal;
-            try {
-                componentVal = getComponentFromMap$2({
-                    jsonx: jsonx.__dangerouslyInsertJSONXComponents && jsonx.__dangerouslyInsertJSONXComponents[cpropName],
-                    reactComponents: customComponents,
-                    componentLibraries: customLibraries
-                });
-            }
-            catch (e) {
-                if (_this.debug || jsonx.debug)
-                    componentVal = e;
-            }
-            // eslint-disable-next-line
-            cprops[cpropName] = componentVal;
-            return cprops;
-        }, {});
-    }
-    else if (jsonx.__dangerouslyInsertReactComponents && Object.keys(jsonx.__dangerouslyInsertReactComponents).length) {
-        return Object.keys(jsonx.__dangerouslyInsertReactComponents).reduce(function (cprops, cpropName) {
-            var componentVal;
-            try {
-                componentVal = getComponentFromMap$2({
-                    jsonx: {
-                        component: jsonx.__dangerouslyInsertReactComponents && jsonx.__dangerouslyInsertReactComponents[cpropName],
-                        props: jsonx.__dangerouslyInsertComponentProps
-                            ? jsonx.__dangerouslyInsertComponentProps[cpropName]
-                            : {}
-                    },
-                    reactComponents: customComponents,
-                    componentLibraries: customLibraries
-                });
-            }
-            catch (e) {
-                if (_this.debug || jsonx.debug)
-                    componentVal = e;
-            }
-            // eslint-disable-next-line
-            cprops[cpropName] = componentVal;
-            return cprops;
-        }, {});
-    }
-}
-/**
- * Takes a function string and returns a function on either this.props or window. The function can only be 2 levels deep
- * @param {Object} options
- * @param {String} [options.propFunc='func:'] - function string, like func:window.LocalStorage.getItem or func:this.props.onClick  or func:inline.myInlineFunction
- * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, resourceprops, asyncprops, windowprops, evalProps, insertedComponents);
- * @returns {Function} returns a function from this.props or window functions
- * @example
- * getFunctionFromProps({ propFunc='func:this.props.onClick', }) // => this.props.onClick
- */
-function getFunctionFromProps$1(options) {
-    if (options === void 0) { options = { jsonx: {}, propBody: "" }; }
-    var _a = options.propFunc, propFunc = _a === void 0 ? "func:" : _a, propBody = options.propBody, jsonx = options.jsonx, _b = options.functionProperty, functionProperty = _b === void 0 ? "" : _b;
-    // eslint-disable-next-line
-    var _c = this, _d = _c.logError, logError = _d === void 0 ? console.error : _d, debug = _c.debug;
-    var windowObject = {};
-    if (this.window)
-        windowObject = this.window;
-    //@ts-ignore
-    else if (typeof global !== "undefined" && (typeof global !== "undefined" ? global : window).window)
-        windowObject = (typeof global !== "undefined" ? global : window).window;
-    try {
-        var functionNameString = propFunc.split(":")[1] || "";
-        var functionNameArray = functionNameString.split(".");
-        var functionName = functionNameArray.length
-            ? functionNameArray[functionNameArray.length - 1]
-            : "";
-        if (propFunc.includes("func:inline")) {
-            // eslint-disable-next-line
-            var InlineFunction = void 0;
-            if (jsonx.__functionargs) {
-                var args = [].concat(jsonx.__functionargs[functionProperty]);
-                args.push(propBody);
-                InlineFunction = Function.prototype.constructor.apply({}, args);
-            }
-            else {
-                InlineFunction = Function("param1", "param2", '"use strict";' + propBody);
-            }
-            var _e = propFunc.split("."), propFuncName = _e[0], funcName = _e[1];
-            Object.defineProperty(InlineFunction, "name", {
-                value: funcName
-            });
-            if (jsonx.__functionargs) {
-                var boundArgs = [this].concat(jsonx.__functionargs[functionProperty].map(function (arg) { return jsonx.props[arg]; }));
-                return InlineFunction.bind.apply(InlineFunction, boundArgs);
-            }
-            else {
-                return InlineFunction.bind(this);
-            }
-        }
-        else if (propFunc.indexOf("func:window") !== -1) {
-            if (functionNameArray.length === 3) {
-                try {
-                    return windowObject[functionNameArray[1]][functionName].bind(this);
-                }
-                catch (e) {
-                    if (debug) {
-                        logError(e);
-                    }
-                    return windowObject[functionNameArray[1]][functionName];
-                }
-            }
-            else {
-                try {
-                    return windowObject[functionName].bind(this);
-                }
-                catch (e) {
-                    if (debug) {
-                        logError(e);
-                    }
-                    return windowObject[functionName];
-                }
-            }
-        }
-        else if (functionNameArray.length === 4) {
-            return this.props
-                ? this.props[functionNameArray[2]][functionName]
-                : jsonx.props[functionNameArray[2]][functionName];
-        }
-        else if (functionNameArray.length === 3) {
-            return this.props
-                ? this.props[functionName].bind(this)
-                : jsonx.props[functionName].bind(this);
-        }
-        else {
-            return function () { };
-        }
-    }
-    catch (e) {
-        if (this.debug) {
-            logError(e);
-            if (jsonx && jsonx.debug)
-                return e;
-        }
-        return function () { };
-    }
-}
-/**
- * Returns a resolved object from function strings that has functions pulled from jsonx.__functionProps
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, asyncprops, windowprops, evalProps, insertedComponents);
- * @returns {Object} resolved object of functions from function strings
- */
-function getFunctionProps$1(options) {
-    if (options === void 0) { options = { jsonx: {} }; }
-    var _a = options.allProps, allProps = _a === void 0 ? {} : _a, _b = options.jsonx, jsonx = _b === void 0 ? {} : _b;
-    var getFunction = getFunctionFromProps$1.bind(this);
-    var funcProps = jsonx.__functionProps;
-    //Allowing for window functions
-    if (funcProps) {
-        Object.keys(funcProps).forEach(function (key) {
-            if (typeof funcProps[key] === "string" &&
-                funcProps[key].indexOf("func:") !== -1) {
-                allProps[key] = getFunction({
-                    propFunc: funcProps[key],
-                    propBody: jsonx.__inline ? jsonx.__inline[key] : "",
-                    jsonx: jsonx,
-                    functionProperty: key
-                });
-            }
-        });
-    }
-    return allProps;
-}
-/**
- * Returns a resolved object that has React Components pulled from window.__jsonx_custom_elements
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, jsonx.props, asyncprops, windowprops, evalProps, insertedComponents);
- * @returns {Object} resolved object of with React Components from a window property window.__jsonx_custom_elements
- */
-function getWindowComponents$1(options) {
-    var _this = this;
-    if (options === void 0) { options = { jsonx: {} }; }
-    var allProps = options.allProps, jsonx = options.jsonx;
-    var windowComponents = jsonx.__windowComponents;
-    //@ts-ignore
-    var window = this.window || (typeof global !== "undefined" ? global : window).window || {};
-    var windowFuncPrefix = "func:window.__jsonx_custom_elements";
-    // if (jsonx.hasWindowComponent && window.__jsonx_custom_elements) {
-    Object.keys(windowComponents).forEach(function (key) {
-        var windowKEY = typeof windowComponents[key] === "string"
-            ? windowComponents[key].replace(windowFuncPrefix + ".", "")
-            : "";
-        if (typeof windowComponents[key] === "string" &&
-            windowComponents[key].indexOf(windowFuncPrefix) !== -1 &&
-            typeof window.__jsonx_custom_elements[windowKEY] === "function") {
-            var windowComponentElement = window.__jsonx_custom_elements[windowKEY];
-            var windowComponentProps = allProps["__windowComponentProps"]
-                ? allProps["__windowComponentProps"]
-                : _this.props;
-            allProps[key] = React__default.createElement(windowComponentElement, windowComponentProps, null);
-        }
-    });
-    return allProps;
-}
-/**
- * Returns computed properties for React Components and any property that's prefixed with __ is a computedProperty
- * @param {Object} options
- * @param {Object} options.jsonx - Valid JSONX JSON
- * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
- * @param {Number} options.renderIndex - number used for React key prop
- * @param {function} [options.logError=console.error] - error logging function
- * @param {Object} [options.componentLibraries] - react components to render with JSONX
- * @param {Boolean} [options.useReduxState=true] - use redux props in this.props
- * @param {Boolean} [options.ignoreReduxPropsInComponentLibraries=true] - ignore redux props in this.props for component libraries, this is helpful incase these properties collide with component library element properties
- * @param {boolean} [options.debug=false] - use debug messages
- * @example
-const testJSONX = { component: 'div',
-  props: { id: 'generatedJSONX', className: 'jsonx' },
-  children: [ [Object] ],
-  asyncprops: { auth: [Array], username: [Array] },
-  __dangerouslyEvalProps: { getUsername: '(user={})=>user.name' },
-  __dangerouslyInsertComponents: { myComponent: [Object] }
-const resources = {
-  user: {
-    name: 'jsonx',
-    description: 'react withouth javascript',
-  },
-  stats: {
-    logins: 102,
-    comments: 3,
-  },
-  authentication: 'OAuth2',
-};
-const renderIndex = 1;
-getComputedProps.call({}, {
-        jsonx: testJSONX,
-        resources,
-        renderIndex,
-      });
-computedProps = { key: 1,
-     id: 'generatedJSONX',
-     className: 'jsonx',
-     auth: 'OAuth2',
-     username: 'jsonx',
-     getUsername: [Function],
-     myComponent:
-      { '$$typeof': Symbol(react.element),
-        type: 'p',
-        key: '8',
-        ref: null,
-        props: [Object],
-        _owner: null,
-        _store: {} } } }
- *
- */
-function getComputedProps$2(options) {
-    if (options === void 0) { options = {}; }
-    // eslint-disable-next-line
-    var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, _b = options.resources, resources = _b === void 0 ? {} : _b, renderIndex = options.renderIndex, _c = options.logError, logError = _c === void 0 ? console.error : _c, _d = options.useReduxState, useReduxState = _d === void 0 ? true : _d, _e = options.ignoreReduxPropsInComponentLibraries, ignoreReduxPropsInComponentLibraries = _e === void 0 ? true : _e, _f = options.disableRenderIndexKey, disableRenderIndexKey = _f === void 0 ? true : _f, debug = options.debug, _g = options.componentLibraries, componentLibraries = _g === void 0 ? {} : _g;
-    try {
-        var componentThisProp = jsonx.thisprops
-            ? Object.assign({
-                __jsonx: {
-                    _component: jsonx,
-                    _resources: resources
-                }
-            }, this.props, jsonx.props, 
-            //@ts-ignore
-            useReduxState &&
-                !jsonx.ignoreReduxProps &&
-                ignoreReduxPropsInComponentLibraries &&
-                jsonx.component &&
-                !componentLibraries[jsonx.component]
-                ? this.props && this.props.getState
-                    ? this.props.getState()
-                    : {}
-                : {})
-            : undefined;
-        var windowTraverse = typeof window !== "undefined" ? window : {};
-        var asyncprops = jsonx.asyncprops
-            ? getJSONXProps$1({
-                jsonx: jsonx,
-                propName: "asyncprops",
-                traverseObject: resources
-            })
-            : {};
-        var resourceprops = jsonx.resourceprops
-            ? getJSONXProps$1({
-                jsonx: jsonx,
-                propName: "resourceprops",
-                traverseObject: resources
-            })
-            : {};
-        var windowprops = jsonx.windowprops
-            ? getJSONXProps$1({
-                jsonx: jsonx,
-                propName: "windowprops",
-                traverseObject: windowTraverse
-            })
-            : {};
-        var thisprops = jsonx.thisprops
-            ? getJSONXProps$1({
-                jsonx: jsonx,
-                propName: "thisprops",
-                traverseObject: componentThisProp
-            })
-            : {};
-        var thisstate = jsonx.thisstate
-            ? getJSONXProps$1({
-                jsonx: jsonx,
-                propName: "thisstate",
-                traverseObject: this.state
-            })
-            : {};
-        var thiscontext = jsonx.thiscontext
-            ? getJSONXProps$1({
-                jsonx: jsonx,
-                propName: "thiscontext",
-                traverseObject: this || {}
-            })
-            : {};
-        //allowing javascript injections
-        var evalProps = jsonx.__dangerouslyEvalProps || jsonx.__dangerouslyBindEvalProps
-            ? getEvalProps$1.call(this, { jsonx: jsonx })
-            : {};
-        var insertedComponents = jsonx.__dangerouslyInsertComponents
-            ? getComponentProps$1.call(this, { jsonx: jsonx, resources: resources, debug: debug })
-            : {};
-        var insertedReactComponents = jsonx.__dangerouslyInsertReactComponents ||
-            jsonx.__dangerouslyInsertJSONXComponents
-            ? getReactComponentProps$1.call(this, { jsonx: jsonx, debug: debug })
-            : {};
-        var insertedComputedComponents = jsonx.__dangerouslyInsertFunctionComponents ||
-            jsonx.__dangerouslyInsertClassComponents
-            ? getReactComponents$1.call(this, { jsonx: jsonx, debug: debug })
-            : {};
-        var evalAllProps = jsonx.__dangerouslyEvalAllProps
-            ? getEvalProps$1.call(this, { jsonx: jsonx })
-            : {};
-        var allProps = Object.assign({}, this.disableRenderIndexKey || disableRenderIndexKey
-            ? {}
-            : { key: renderIndex }, jsonx.props, thisprops, thisstate, thiscontext, resourceprops, asyncprops, windowprops, evalProps, insertedComponents, insertedReactComponents, insertedComputedComponents);
-        var computedProps = Object.assign({}, allProps, jsonx.__functionProps
-            ? getFunctionProps$1.call(this, { allProps: allProps, jsonx: jsonx })
-            : {}, jsonx.__windowComponents
-            ? getWindowComponents$1.call(this, { allProps: allProps, jsonx: jsonx })
-            : {}, jsonx.__spreadComponent
-            ? getChildrenComponents$1.call(this, { allProps: allProps, jsonx: jsonx })
-            : {}, evalAllProps);
-        if (jsonx.debug)
-            console.debug({ jsonx: jsonx, computedProps: computedProps });
-        return computedProps;
-    }
-    catch (e) {
-        debug && logError(e, e.stack ? e.stack : "no stack");
-        return null;
-    }
-}
-
-var numeral$1 = createCommonjsModule(function (module) {
-/*! @preserve
- * numeral.js
- * version : 2.0.6
- * author : Adam Draper
- * license : MIT
- * http://adamwdraper.github.com/Numeral-js/
- */
-
-(function (global, factory) {
-    if ( module.exports) {
-        module.exports = factory();
-    } else {
-        (typeof global!=="undefined" ? global : window).numeral = factory();
-    }
-}(commonjsGlobal, function () {
-    /************************************
-        Variables
-    ************************************/
-
-    var numeral,
-        _,
-        VERSION = '2.0.6',
-        formats = {},
-        locales = {},
-        defaults = {
-            currentLocale: 'en',
-            zeroFormat: null,
-            nullFormat: null,
-            defaultFormat: '0,0',
-            scalePercentBy100: true
-        },
-        options = {
-            currentLocale: defaults.currentLocale,
-            zeroFormat: defaults.zeroFormat,
-            nullFormat: defaults.nullFormat,
-            defaultFormat: defaults.defaultFormat,
-            scalePercentBy100: defaults.scalePercentBy100
-        };
-
-
-    /************************************
-        Constructors
-    ************************************/
-
-    // Numeral prototype object
-    function Numeral(input, number) {
-        this._input = input;
-
-        this._value = number;
-    }
-
-    numeral = function(input) {
-        var value,
-            kind,
-            unformatFunction,
-            regexp;
-
-        if (numeral.isNumeral(input)) {
-            value = input.value();
-        } else if (input === 0 || typeof input === 'undefined') {
-            value = 0;
-        } else if (input === null || _.isNaN(input)) {
-            value = null;
-        } else if (typeof input === 'string') {
-            if (options.zeroFormat && input === options.zeroFormat) {
-                value = 0;
-            } else if (options.nullFormat && input === options.nullFormat || !input.replace(/[^0-9]+/g, '').length) {
-                value = null;
-            } else {
-                for (kind in formats) {
-                    regexp = typeof formats[kind].regexps.unformat === 'function' ? formats[kind].regexps.unformat() : formats[kind].regexps.unformat;
-
-                    if (regexp && input.match(regexp)) {
-                        unformatFunction = formats[kind].unformat;
-
-                        break;
-                    }
-                }
-
-                unformatFunction = unformatFunction || numeral._.stringToNumber;
-
-                value = unformatFunction(input);
-            }
-        } else {
-            value = Number(input)|| null;
-        }
-
-        return new Numeral(input, value);
-    };
-
-    // version number
-    numeral.version = VERSION;
-
-    // compare numeral object
-    numeral.isNumeral = function(obj) {
-        return obj instanceof Numeral;
-    };
-
-    // helper functions
-    numeral._ = _ = {
-        // formats numbers separators, decimals places, signs, abbreviations
-        numberToFormat: function(value, format, roundingFunction) {
-            var locale = locales[numeral.options.currentLocale],
-                negP = false,
-                optDec = false,
-                leadingCount = 0,
-                abbr = '',
-                trillion = 1000000000000,
-                billion = 1000000000,
-                million = 1000000,
-                thousand = 1000,
-                decimal = '',
-                neg = false,
-                abbrForce, // force abbreviation
-                abs,
-                int,
-                precision,
-                signed,
-                thousands,
-                output;
-
-            // make sure we never format a null value
-            value = value || 0;
-
-            abs = Math.abs(value);
-
-            // see if we should use parentheses for negative number or if we should prefix with a sign
-            // if both are present we default to parentheses
-            if (numeral._.includes(format, '(')) {
-                negP = true;
-                format = format.replace(/[\(|\)]/g, '');
-            } else if (numeral._.includes(format, '+') || numeral._.includes(format, '-')) {
-                signed = numeral._.includes(format, '+') ? format.indexOf('+') : value < 0 ? format.indexOf('-') : -1;
-                format = format.replace(/[\+|\-]/g, '');
-            }
-
-            // see if abbreviation is wanted
-            if (numeral._.includes(format, 'a')) {
-                abbrForce = format.match(/a(k|m|b|t)?/);
-
-                abbrForce = abbrForce ? abbrForce[1] : false;
-
-                // check for space before abbreviation
-                if (numeral._.includes(format, ' a')) {
-                    abbr = ' ';
-                }
-
-                format = format.replace(new RegExp(abbr + 'a[kmbt]?'), '');
-
-                if (abs >= trillion && !abbrForce || abbrForce === 't') {
-                    // trillion
-                    abbr += locale.abbreviations.trillion;
-                    value = value / trillion;
-                } else if (abs < trillion && abs >= billion && !abbrForce || abbrForce === 'b') {
-                    // billion
-                    abbr += locale.abbreviations.billion;
-                    value = value / billion;
-                } else if (abs < billion && abs >= million && !abbrForce || abbrForce === 'm') {
-                    // million
-                    abbr += locale.abbreviations.million;
-                    value = value / million;
-                } else if (abs < million && abs >= thousand && !abbrForce || abbrForce === 'k') {
-                    // thousand
-                    abbr += locale.abbreviations.thousand;
-                    value = value / thousand;
-                }
-            }
-
-            // check for optional decimals
-            if (numeral._.includes(format, '[.]')) {
-                optDec = true;
-                format = format.replace('[.]', '.');
-            }
-
-            // break number and format
-            int = value.toString().split('.')[0];
-            precision = format.split('.')[1];
-            thousands = format.indexOf(',');
-            leadingCount = (format.split('.')[0].split(',')[0].match(/0/g) || []).length;
-
-            if (precision) {
-                if (numeral._.includes(precision, '[')) {
-                    precision = precision.replace(']', '');
-                    precision = precision.split('[');
-                    decimal = numeral._.toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
-                } else {
-                    decimal = numeral._.toFixed(value, precision.length, roundingFunction);
-                }
-
-                int = decimal.split('.')[0];
-
-                if (numeral._.includes(decimal, '.')) {
-                    decimal = locale.delimiters.decimal + decimal.split('.')[1];
-                } else {
-                    decimal = '';
-                }
-
-                if (optDec && Number(decimal.slice(1)) === 0) {
-                    decimal = '';
-                }
-            } else {
-                int = numeral._.toFixed(value, 0, roundingFunction);
-            }
-
-            // check abbreviation again after rounding
-            if (abbr && !abbrForce && Number(int) >= 1000 && abbr !== locale.abbreviations.trillion) {
-                int = String(Number(int) / 1000);
-
-                switch (abbr) {
-                    case locale.abbreviations.thousand:
-                        abbr = locale.abbreviations.million;
-                        break;
-                    case locale.abbreviations.million:
-                        abbr = locale.abbreviations.billion;
-                        break;
-                    case locale.abbreviations.billion:
-                        abbr = locale.abbreviations.trillion;
-                        break;
-                }
-            }
-
-
-            // format number
-            if (numeral._.includes(int, '-')) {
-                int = int.slice(1);
-                neg = true;
-            }
-
-            if (int.length < leadingCount) {
-                for (var i = leadingCount - int.length; i > 0; i--) {
-                    int = '0' + int;
-                }
-            }
-
-            if (thousands > -1) {
-                int = int.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + locale.delimiters.thousands);
-            }
-
-            if (format.indexOf('.') === 0) {
-                int = '';
-            }
-
-            output = int + decimal + (abbr ? abbr : '');
-
-            if (negP) {
-                output = (negP && neg ? '(' : '') + output + (negP && neg ? ')' : '');
-            } else {
-                if (signed >= 0) {
-                    output = signed === 0 ? (neg ? '-' : '+') + output : output + (neg ? '-' : '+');
-                } else if (neg) {
-                    output = '-' + output;
-                }
-            }
-
-            return output;
-        },
-        // unformats numbers separators, decimals places, signs, abbreviations
-        stringToNumber: function(string) {
-            var locale = locales[options.currentLocale],
-                stringOriginal = string,
-                abbreviations = {
-                    thousand: 3,
-                    million: 6,
-                    billion: 9,
-                    trillion: 12
-                },
-                abbreviation,
-                value,
-                regexp;
-
-            if (options.zeroFormat && string === options.zeroFormat) {
-                value = 0;
-            } else if (options.nullFormat && string === options.nullFormat || !string.replace(/[^0-9]+/g, '').length) {
-                value = null;
-            } else {
-                value = 1;
-
-                if (locale.delimiters.decimal !== '.') {
-                    string = string.replace(/\./g, '').replace(locale.delimiters.decimal, '.');
-                }
-
-                for (abbreviation in abbreviations) {
-                    regexp = new RegExp('[^a-zA-Z]' + locale.abbreviations[abbreviation] + '(?:\\)|(\\' + locale.currency.symbol + ')?(?:\\))?)?$');
-
-                    if (stringOriginal.match(regexp)) {
-                        value *= Math.pow(10, abbreviations[abbreviation]);
-                        break;
-                    }
-                }
-
-                // check for negative number
-                value *= (string.split('-').length + Math.min(string.split('(').length - 1, string.split(')').length - 1)) % 2 ? 1 : -1;
-
-                // remove non numbers
-                string = string.replace(/[^0-9\.]+/g, '');
-
-                value *= Number(string);
-            }
-
-            return value;
-        },
-        isNaN: function(value) {
-            return typeof value === 'number' && isNaN(value);
-        },
-        includes: function(string, search) {
-            return string.indexOf(search) !== -1;
-        },
-        insert: function(string, subString, start) {
-            return string.slice(0, start) + subString + string.slice(start);
-        },
-        reduce: function(array, callback /*, initialValue*/) {
-            if (this === null) {
-                throw new TypeError('Array.prototype.reduce called on null or undefined');
-            }
-
-            if (typeof callback !== 'function') {
-                throw new TypeError(callback + ' is not a function');
-            }
-
-            var t = Object(array),
-                len = t.length >>> 0,
-                k = 0,
-                value;
-
-            if (arguments.length === 3) {
-                value = arguments[2];
-            } else {
-                while (k < len && !(k in t)) {
-                    k++;
-                }
-
-                if (k >= len) {
-                    throw new TypeError('Reduce of empty array with no initial value');
-                }
-
-                value = t[k++];
-            }
-            for (; k < len; k++) {
-                if (k in t) {
-                    value = callback(value, t[k], k, t);
-                }
-            }
-            return value;
-        },
-        /**
-         * Computes the multiplier necessary to make x >= 1,
-         * effectively eliminating miscalculations caused by
-         * finite precision.
-         */
-        multiplier: function (x) {
-            var parts = x.toString().split('.');
-
-            return parts.length < 2 ? 1 : Math.pow(10, parts[1].length);
-        },
-        /**
-         * Given a variable number of arguments, returns the maximum
-         * multiplier that must be used to normalize an operation involving
-         * all of them.
-         */
-        correctionFactor: function () {
-            var args = Array.prototype.slice.call(arguments);
-
-            return args.reduce(function(accum, next) {
-                var mn = _.multiplier(next);
-                return accum > mn ? accum : mn;
-            }, 1);
-        },
-        /**
-         * Implementation of toFixed() that treats floats more like decimals
-         *
-         * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
-         * problems for accounting- and finance-related software.
-         */
-        toFixed: function(value, maxDecimals, roundingFunction, optionals) {
-            var splitValue = value.toString().split('.'),
-                minDecimals = maxDecimals - (optionals || 0),
-                boundedPrecision,
-                optionalsRegExp,
-                power,
-                output;
-
-            // Use the smallest precision value possible to avoid errors from floating point representation
-            if (splitValue.length === 2) {
-              boundedPrecision = Math.min(Math.max(splitValue[1].length, minDecimals), maxDecimals);
-            } else {
-              boundedPrecision = minDecimals;
-            }
-
-            power = Math.pow(10, boundedPrecision);
-
-            // Multiply up by precision, round accurately, then divide and use native toFixed():
-            output = (roundingFunction(value + 'e+' + boundedPrecision) / power).toFixed(boundedPrecision);
-
-            if (optionals > maxDecimals - boundedPrecision) {
-                optionalsRegExp = new RegExp('\\.?0{1,' + (optionals - (maxDecimals - boundedPrecision)) + '}$');
-                output = output.replace(optionalsRegExp, '');
-            }
-
-            return output;
-        }
-    };
-
-    // avaliable options
-    numeral.options = options;
-
-    // avaliable formats
-    numeral.formats = formats;
-
-    // avaliable formats
-    numeral.locales = locales;
-
-    // This function sets the current locale.  If
-    // no arguments are passed in, it will simply return the current global
-    // locale key.
-    numeral.locale = function(key) {
-        if (key) {
-            options.currentLocale = key.toLowerCase();
-        }
-
-        return options.currentLocale;
-    };
-
-    // This function provides access to the loaded locale data.  If
-    // no arguments are passed in, it will simply return the current
-    // global locale object.
-    numeral.localeData = function(key) {
-        if (!key) {
-            return locales[options.currentLocale];
-        }
-
-        key = key.toLowerCase();
-
-        if (!locales[key]) {
-            throw new Error('Unknown locale : ' + key);
-        }
-
-        return locales[key];
-    };
-
-    numeral.reset = function() {
-        for (var property in defaults) {
-            options[property] = defaults[property];
-        }
-    };
-
-    numeral.zeroFormat = function(format) {
-        options.zeroFormat = typeof(format) === 'string' ? format : null;
-    };
-
-    numeral.nullFormat = function (format) {
-        options.nullFormat = typeof(format) === 'string' ? format : null;
-    };
-
-    numeral.defaultFormat = function(format) {
-        options.defaultFormat = typeof(format) === 'string' ? format : '0.0';
-    };
-
-    numeral.register = function(type, name, format) {
-        name = name.toLowerCase();
-
-        if (this[type + 's'][name]) {
-            throw new TypeError(name + ' ' + type + ' already registered.');
-        }
-
-        this[type + 's'][name] = format;
-
-        return format;
-    };
-
-
-    numeral.validate = function(val, culture) {
-        var _decimalSep,
-            _thousandSep,
-            _currSymbol,
-            _valArray,
-            _abbrObj,
-            _thousandRegEx,
-            localeData,
-            temp;
-
-        //coerce val to string
-        if (typeof val !== 'string') {
-            val += '';
-
-            if (console.warn) {
-                console.warn('Numeral.js: Value is not string. It has been co-erced to: ', val);
-            }
-        }
-
-        //trim whitespaces from either sides
-        val = val.trim();
-
-        //if val is just digits return true
-        if (!!val.match(/^\d+$/)) {
-            return true;
-        }
-
-        //if val is empty return false
-        if (val === '') {
-            return false;
-        }
-
-        //get the decimal and thousands separator from numeral.localeData
-        try {
-            //check if the culture is understood by numeral. if not, default it to current locale
-            localeData = numeral.localeData(culture);
-        } catch (e) {
-            localeData = numeral.localeData(numeral.locale());
-        }
-
-        //setup the delimiters and currency symbol based on culture/locale
-        _currSymbol = localeData.currency.symbol;
-        _abbrObj = localeData.abbreviations;
-        _decimalSep = localeData.delimiters.decimal;
-        if (localeData.delimiters.thousands === '.') {
-            _thousandSep = '\\.';
-        } else {
-            _thousandSep = localeData.delimiters.thousands;
-        }
-
-        // validating currency symbol
-        temp = val.match(/^[^\d]+/);
-        if (temp !== null) {
-            val = val.substr(1);
-            if (temp[0] !== _currSymbol) {
-                return false;
-            }
-        }
-
-        //validating abbreviation symbol
-        temp = val.match(/[^\d]+$/);
-        if (temp !== null) {
-            val = val.slice(0, -1);
-            if (temp[0] !== _abbrObj.thousand && temp[0] !== _abbrObj.million && temp[0] !== _abbrObj.billion && temp[0] !== _abbrObj.trillion) {
-                return false;
-            }
-        }
-
-        _thousandRegEx = new RegExp(_thousandSep + '{2}');
-
-        if (!val.match(/[^\d.,]/g)) {
-            _valArray = val.split(_decimalSep);
-            if (_valArray.length > 2) {
-                return false;
-            } else {
-                if (_valArray.length < 2) {
-                    return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx));
-                } else {
-                    if (_valArray[0].length === 1) {
-                        return ( !! _valArray[0].match(/^\d+$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
-                    } else {
-                        return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
-                    }
-                }
-            }
-        }
-
-        return false;
-    };
-
-
-    /************************************
-        Numeral Prototype
-    ************************************/
-
-    numeral.fn = Numeral.prototype = {
-        clone: function() {
-            return numeral(this);
-        },
-        format: function(inputString, roundingFunction) {
-            var value = this._value,
-                format = inputString || options.defaultFormat,
-                kind,
-                output,
-                formatFunction;
-
-            // make sure we have a roundingFunction
-            roundingFunction = roundingFunction || Math.round;
-
-            // format based on value
-            if (value === 0 && options.zeroFormat !== null) {
-                output = options.zeroFormat;
-            } else if (value === null && options.nullFormat !== null) {
-                output = options.nullFormat;
-            } else {
-                for (kind in formats) {
-                    if (format.match(formats[kind].regexps.format)) {
-                        formatFunction = formats[kind].format;
-
-                        break;
-                    }
-                }
-
-                formatFunction = formatFunction || numeral._.numberToFormat;
-
-                output = formatFunction(value, format, roundingFunction);
-            }
-
-            return output;
-        },
-        value: function() {
-            return this._value;
-        },
-        input: function() {
-            return this._input;
-        },
-        set: function(value) {
-            this._value = Number(value);
-
-            return this;
-        },
-        add: function(value) {
-            var corrFactor = _.correctionFactor.call(null, this._value, value);
-
-            function cback(accum, curr, currI, O) {
-                return accum + Math.round(corrFactor * curr);
-            }
-
-            this._value = _.reduce([this._value, value], cback, 0) / corrFactor;
-
-            return this;
-        },
-        subtract: function(value) {
-            var corrFactor = _.correctionFactor.call(null, this._value, value);
-
-            function cback(accum, curr, currI, O) {
-                return accum - Math.round(corrFactor * curr);
-            }
-
-            this._value = _.reduce([value], cback, Math.round(this._value * corrFactor)) / corrFactor;
-
-            return this;
-        },
-        multiply: function(value) {
-            function cback(accum, curr, currI, O) {
-                var corrFactor = _.correctionFactor(accum, curr);
-                return Math.round(accum * corrFactor) * Math.round(curr * corrFactor) / Math.round(corrFactor * corrFactor);
-            }
-
-            this._value = _.reduce([this._value, value], cback, 1);
-
-            return this;
-        },
-        divide: function(value) {
-            function cback(accum, curr, currI, O) {
-                var corrFactor = _.correctionFactor(accum, curr);
-                return Math.round(accum * corrFactor) / Math.round(curr * corrFactor);
-            }
-
-            this._value = _.reduce([this._value, value], cback);
-
-            return this;
-        },
-        difference: function(value) {
-            return Math.abs(numeral(this._value).subtract(value).value());
-        }
-    };
-
-    /************************************
-        Default Locale && Format
-    ************************************/
-
-    numeral.register('locale', 'en', {
-        delimiters: {
-            thousands: ',',
-            decimal: '.'
-        },
-        abbreviations: {
-            thousand: 'k',
-            million: 'm',
-            billion: 'b',
-            trillion: 't'
-        },
-        ordinal: function(number) {
-            var b = number % 10;
-            return (~~(number % 100 / 10) === 1) ? 'th' :
-                (b === 1) ? 'st' :
-                (b === 2) ? 'nd' :
-                (b === 3) ? 'rd' : 'th';
-        },
-        currency: {
-            symbol: '$'
-        }
-    });
-
-    
-
-(function() {
-        numeral.register('format', 'bps', {
-            regexps: {
-                format: /(BPS)/,
-                unformat: /(BPS)/
-            },
-            format: function(value, format, roundingFunction) {
-                var space = numeral._.includes(format, ' BPS') ? ' ' : '',
-                    output;
-
-                value = value * 10000;
-
-                // check for space before BPS
-                format = format.replace(/\s?BPS/, '');
-
-                output = numeral._.numberToFormat(value, format, roundingFunction);
-
-                if (numeral._.includes(output, ')')) {
-                    output = output.split('');
-
-                    output.splice(-1, 0, space + 'BPS');
-
-                    output = output.join('');
-                } else {
-                    output = output + space + 'BPS';
-                }
-
-                return output;
-            },
-            unformat: function(string) {
-                return +(numeral._.stringToNumber(string) * 0.0001).toFixed(15);
-            }
-        });
-})();
-
-
-(function() {
-        var decimal = {
-            base: 1000,
-            suffixes: ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-        },
-        binary = {
-            base: 1024,
-            suffixes: ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
-        };
-
-    var allSuffixes =  decimal.suffixes.concat(binary.suffixes.filter(function (item) {
-            return decimal.suffixes.indexOf(item) < 0;
-        }));
-        var unformatRegex = allSuffixes.join('|');
-        // Allow support for BPS (http://www.investopedia.com/terms/b/basispoint.asp)
-        unformatRegex = '(' + unformatRegex.replace('B', 'B(?!PS)') + ')';
-
-    numeral.register('format', 'bytes', {
-        regexps: {
-            format: /([0\s]i?b)/,
-            unformat: new RegExp(unformatRegex)
-        },
-        format: function(value, format, roundingFunction) {
-            var output,
-                bytes = numeral._.includes(format, 'ib') ? binary : decimal,
-                suffix = numeral._.includes(format, ' b') || numeral._.includes(format, ' ib') ? ' ' : '',
-                power,
-                min,
-                max;
-
-            // check for space before
-            format = format.replace(/\s?i?b/, '');
-
-            for (power = 0; power <= bytes.suffixes.length; power++) {
-                min = Math.pow(bytes.base, power);
-                max = Math.pow(bytes.base, power + 1);
-
-                if (value === null || value === 0 || value >= min && value < max) {
-                    suffix += bytes.suffixes[power];
-
-                    if (min > 0) {
-                        value = value / min;
-                    }
-
-                    break;
-                }
-            }
-
-            output = numeral._.numberToFormat(value, format, roundingFunction);
-
-            return output + suffix;
-        },
-        unformat: function(string) {
-            var value = numeral._.stringToNumber(string),
-                power,
-                bytesMultiplier;
-
-            if (value) {
-                for (power = decimal.suffixes.length - 1; power >= 0; power--) {
-                    if (numeral._.includes(string, decimal.suffixes[power])) {
-                        bytesMultiplier = Math.pow(decimal.base, power);
-
-                        break;
-                    }
-
-                    if (numeral._.includes(string, binary.suffixes[power])) {
-                        bytesMultiplier = Math.pow(binary.base, power);
-
-                        break;
-                    }
-                }
-
-                value *= (bytesMultiplier || 1);
-            }
-
-            return value;
-        }
-    });
-})();
-
-
-(function() {
-        numeral.register('format', 'currency', {
-        regexps: {
-            format: /(\$)/
-        },
-        format: function(value, format, roundingFunction) {
-            var locale = numeral.locales[numeral.options.currentLocale],
-                symbols = {
-                    before: format.match(/^([\+|\-|\(|\s|\$]*)/)[0],
-                    after: format.match(/([\+|\-|\)|\s|\$]*)$/)[0]
-                },
-                output,
-                symbol,
-                i;
-
-            // strip format of spaces and $
-            format = format.replace(/\s?\$\s?/, '');
-
-            // format the number
-            output = numeral._.numberToFormat(value, format, roundingFunction);
-
-            // update the before and after based on value
-            if (value >= 0) {
-                symbols.before = symbols.before.replace(/[\-\(]/, '');
-                symbols.after = symbols.after.replace(/[\-\)]/, '');
-            } else if (value < 0 && (!numeral._.includes(symbols.before, '-') && !numeral._.includes(symbols.before, '('))) {
-                symbols.before = '-' + symbols.before;
-            }
-
-            // loop through each before symbol
-            for (i = 0; i < symbols.before.length; i++) {
-                symbol = symbols.before[i];
-
-                switch (symbol) {
-                    case '$':
-                        output = numeral._.insert(output, locale.currency.symbol, i);
-                        break;
-                    case ' ':
-                        output = numeral._.insert(output, ' ', i + locale.currency.symbol.length - 1);
-                        break;
-                }
-            }
-
-            // loop through each after symbol
-            for (i = symbols.after.length - 1; i >= 0; i--) {
-                symbol = symbols.after[i];
-
-                switch (symbol) {
-                    case '$':
-                        output = i === symbols.after.length - 1 ? output + locale.currency.symbol : numeral._.insert(output, locale.currency.symbol, -(symbols.after.length - (1 + i)));
-                        break;
-                    case ' ':
-                        output = i === symbols.after.length - 1 ? output + ' ' : numeral._.insert(output, ' ', -(symbols.after.length - (1 + i) + locale.currency.symbol.length - 1));
-                        break;
-                }
-            }
-
-
-            return output;
-        }
-    });
-})();
-
-
-(function() {
-        numeral.register('format', 'exponential', {
-        regexps: {
-            format: /(e\+|e-)/,
-            unformat: /(e\+|e-)/
-        },
-        format: function(value, format, roundingFunction) {
-            var output,
-                exponential = typeof value === 'number' && !numeral._.isNaN(value) ? value.toExponential() : '0e+0',
-                parts = exponential.split('e');
-
-            format = format.replace(/e[\+|\-]{1}0/, '');
-
-            output = numeral._.numberToFormat(Number(parts[0]), format, roundingFunction);
-
-            return output + 'e' + parts[1];
-        },
-        unformat: function(string) {
-            var parts = numeral._.includes(string, 'e+') ? string.split('e+') : string.split('e-'),
-                value = Number(parts[0]),
-                power = Number(parts[1]);
-
-            power = numeral._.includes(string, 'e-') ? power *= -1 : power;
-
-            function cback(accum, curr, currI, O) {
-                var corrFactor = numeral._.correctionFactor(accum, curr),
-                    num = (accum * corrFactor) * (curr * corrFactor) / (corrFactor * corrFactor);
-                return num;
-            }
-
-            return numeral._.reduce([value, Math.pow(10, power)], cback, 1);
-        }
-    });
-})();
-
-
-(function() {
-        numeral.register('format', 'ordinal', {
-        regexps: {
-            format: /(o)/
-        },
-        format: function(value, format, roundingFunction) {
-            var locale = numeral.locales[numeral.options.currentLocale],
-                output,
-                ordinal = numeral._.includes(format, ' o') ? ' ' : '';
-
-            // check for space before
-            format = format.replace(/\s?o/, '');
-
-            ordinal += locale.ordinal(value);
-
-            output = numeral._.numberToFormat(value, format, roundingFunction);
-
-            return output + ordinal;
-        }
-    });
-})();
-
-
-(function() {
-        numeral.register('format', 'percentage', {
-        regexps: {
-            format: /(%)/,
-            unformat: /(%)/
-        },
-        format: function(value, format, roundingFunction) {
-            var space = numeral._.includes(format, ' %') ? ' ' : '',
-                output;
-
-            if (numeral.options.scalePercentBy100) {
-                value = value * 100;
-            }
-
-            // check for space before %
-            format = format.replace(/\s?\%/, '');
-
-            output = numeral._.numberToFormat(value, format, roundingFunction);
-
-            if (numeral._.includes(output, ')')) {
-                output = output.split('');
-
-                output.splice(-1, 0, space + '%');
-
-                output = output.join('');
-            } else {
-                output = output + space + '%';
-            }
-
-            return output;
-        },
-        unformat: function(string) {
-            var number = numeral._.stringToNumber(string);
-            if (numeral.options.scalePercentBy100) {
-                return number * 0.01;
-            }
-            return number;
-        }
-    });
-})();
-
-
-(function() {
-        numeral.register('format', 'time', {
-        regexps: {
-            format: /(:)/,
-            unformat: /(:)/
-        },
-        format: function(value, format, roundingFunction) {
-            var hours = Math.floor(value / 60 / 60),
-                minutes = Math.floor((value - (hours * 60 * 60)) / 60),
-                seconds = Math.round(value - (hours * 60 * 60) - (minutes * 60));
-
-            return hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
-        },
-        unformat: function(string) {
-            var timeArray = string.split(':'),
-                seconds = 0;
-
-            // turn hours and minutes into seconds and add them all up
-            if (timeArray.length === 3) {
-                // hours
-                seconds = seconds + (Number(timeArray[0]) * 60 * 60);
-                // minutes
-                seconds = seconds + (Number(timeArray[1]) * 60);
-                // seconds
-                seconds = seconds + Number(timeArray[2]);
-            } else if (timeArray.length === 2) {
-                // minutes
-                seconds = seconds + (Number(timeArray[0]) * 60);
-                // seconds
-                seconds = seconds + Number(timeArray[1]);
-            }
-            return Number(seconds);
-        }
-    });
-})();
-
-return numeral;
-}));
-});
-
-var fs$1 = {};
-
-var scopedEval$1 = eval;
-var templateCache$1 = new Map();
-/**
- * returns a valid jsonx.children property
- * @param {Object} options
- * @param {Object} [options.jsonx ={}]- Valid JSONX JSON
- * @param {Object} [options.props=options.jsonx.children] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
- * @returns {Object[]|String} returns a valid jsonx.children property that's either an array of JSONX objects or a string
- * @example
- * const sampleJSONX = {
-  component: 'div',
-  props: {
-    id: 'generatedJSONX',
-    className:'jsonx',
-  },
-  children: [
-    {
-      component: 'p',
-      props: {
-        style: {
-          color: 'red',
-        },
-      },
-      children:'hello world',
-    },
-    {
-      component: 'div',
-      children: [
-        {
-          component: 'ul',
-          children: [
-            {
-              component: 'li',
-              children:'list',
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
-const JSONXChildren = getChildrenProperty({ jsonx: sampleJSONX, }); //=> [ [jsonx Object],[jsonx Object]]
-const JSONXChildrenPTag = getChildrenProperty({ jsonx: sampleJSONX.children[ 0 ], }); //=>hello world
- */
-function getChildrenProperty$1(options) {
-    if (options === void 0) { options = {}; }
-    var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a;
-    var props = options.props || jsonx.props || {};
-    if (typeof props._children !== "undefined" /* && !jsonx.children */) {
-        if (Array.isArray(props._children) ||
-            typeof props._children === "string" ||
-            typeof props._children === "number") {
-            return props._children;
-        }
-        else {
-            return jsonx.children;
-        }
-    }
-    else if (typeof jsonx.children === "undefined") {
-        if (props &&
-            props.children &&
-            (typeof props.children !== "undefined" || Array.isArray(props.children))) {
-            return props.children;
-        }
-        else {
-            return null;
-        }
-    }
-    else {
-        return jsonx.children;
-    }
-}
-/**
- * Used to pass properties down to child components if passprops is set to true
- * @param {Object} options
- * @param {Object} [options.jsonx ={}] - Valid JSONX JSON
- * @param {Object} [options.childjsonx ={}] - Valid JSONX JSON
- * @param {Number} options.renderIndex - React key property
- * @param {Object} [options.props=options.jsonx.props] - Props to pull children  Object.assign(jsonx.props,jsonx.asyncprops,jsonx.thisprops,jsonx.windowprops)
- * @returns {Object|String} returns a valid  Valid JSONX Child object or a string
- */
-function getChildrenProps$1(options) {
-    if (options === void 0) { options = {}; }
-    var _a = options.jsonx, jsonx = _a === void 0 ? {} : _a, childjsonx = options.childjsonx, renderIndex = options.renderIndex;
-    var props = options.props || jsonx.props || {};
-    return jsonx.passprops && childjsonx && typeof childjsonx === "object"
-        ? Object.assign({}, childjsonx, {
-            props: Object.assign({}, props, (childjsonx.thisprops && childjsonx.thisprops.style) || // this is to make sure when you bind props, if you've defined props in a dynamic property, to not use bind props to  remove passing down styles
-                (childjsonx.asyncprops && childjsonx.asyncprops.style) ||
-                (childjsonx.windowprops && childjsonx.windowprops.style)
-                ? {}
-                : {
-                    style: {}
-                }, childjsonx.props, 
-            //@ts-ignore
-            typeof this !== "undefined" || (this && this.disableRenderIndexKey)
-                ? {}
-                : { key: typeof renderIndex !== "undefined"
-                        ? renderIndex + Math.random()
-                        : Math.random()
-                })
-        })
-        : childjsonx;
-}
-function fetchJSONSync$1(path, options) {
-    try {
-        var config_1 = __assign({ method: "GET", headers: [] }, options);
-        var request_1 = new XMLHttpRequest();
-        request_1.open(config_1 && config_1.method || "GET", path, false); // `false` makes the request synchronous
-        if (config_1.headers) {
-            Object.keys(config_1.headers).forEach(function (header) {
-                request_1.setRequestHeader(header, config_1.headers[header]);
-            });
-        }
-        request_1.send(config_1.body ? JSON.stringify(config_1.body) : undefined);
-        if (request_1.status !== 200) {
-            throw new Error(request_1.responseText);
-        }
-        else
-            return request_1.responseText;
-    }
-    catch (e) {
-        throw e;
-    }
-}
-function getChildrenTemplate$1(template) {
-    var cachedTemplate = templateCache$1.get(template);
-    if (cachedTemplate) {
-        return cachedTemplate;
-    }
-    else if (typeof window !== "undefined" &&
-        typeof window.XMLHttpRequest === "function" &&
-        !fs$1.readFileSync) {
-        var jsFile = fetchJSONSync$1(template);
-        var jsonxModule = scopedEval$1("(" + jsFile + ")");
-        templateCache$1.set(template, jsonxModule);
-        return jsonxModule;
-    }
-    else if (typeof template === "string") {
-        var jsFile = fs$1.readFileSync(path.resolve(template)).toString();
-        var jsonxModule = scopedEval$1("(" + jsFile + ")");
-        // console.log({jsonxModule})
-        templateCache$1.set(template, jsonxModule);
-        // console.log({ templateCache });
-        return jsonxModule;
-    }
-    return null;
-}
-/**
- * returns React Child Elements via JSONX
- * @param {*} options
- * @property {object} this - options for getReactElementFromJSONX
- * @property {Object} [this.componentLibraries] - react components to render with JSONX
- * @property {boolean} [this.debug=false] - use debug messages
- * @property {function} [this.logError=console.error] - error logging function
- * @property {string[]} [this.boundedComponents=[]] - list of components that require a bound this context (usefult for redux router)
- */
-function getJSONXChildren$2(options) {
-    var _this = this;
-    if (options === void 0) { options = { jsonx: {} }; }
-    // eslint-disable-next-line
-    var jsonx = options.jsonx, resources = options.resources, renderIndex = options.renderIndex, _a = options.logError, logError = _a === void 0 ? console.error : _a;
-    try {
-        var context_1 = this || {};
-        var props_1 = options && options.props
-            ? options.props
-            : jsonx && jsonx.props
-                ? jsonx.props
-                : {};
-        if (!jsonx)
-            return null;
-        jsonx.children = getChildrenProperty$1({ jsonx: jsonx, props: props_1 });
-        props_1._children = undefined;
-        delete props_1._children;
-        if (jsonx.___template)
-            jsonx.children = [getChildrenTemplate$1(jsonx.___template)];
-        else if (typeof jsonx.children === 'undefined' || jsonx.children === null)
-            return undefined;
-        else if (jsonx.children && jsonx.___stringifyChildren)
-            jsonx.children = JSON.stringify.apply(null, [jsonx.children, null, 2]);
-        //TODO: fix passing applied params
-        else if (jsonx.children && jsonx.___toStringChildren)
-            jsonx.children = jsonx.children.toString();
-        else if (jsonx.children && jsonx.___toNumeral)
-            jsonx.children = numeral$1(jsonx.children).format(jsonx.___toNumeral);
-        else if (jsonx.children && jsonx.___JSDatetoLuxonString)
-            jsonx.children = luxon.DateTime.fromJSDate(jsonx.children).toFormat(jsonx.___JSDatetoLuxonString);
-        else if (jsonx.children && jsonx.___ISOtoLuxonString)
-            jsonx.children = luxon.DateTime.fromISO(jsonx.children, {
-                zone: jsonx.___FromLuxonTimeZone
-            }).toFormat(jsonx.___ISOtoLuxonString);
-        if (typeof jsonx.children === 'string')
-            return jsonx.children;
-        var children = jsonx.children && Array.isArray(jsonx.children)
-            ? jsonx.children
-                .map(function (childjsonx) {
-                return getReactElementFromJSONX$1.call(context_1, getChildrenProps$1.call(_this, { jsonx: jsonx, childjsonx: childjsonx, props: props_1, renderIndex: renderIndex }), resources);
-            })
-                .filter(function (child) { return child !== null; })
-            : jsonx.children;
-        return children;
-    }
-    catch (e) {
-        this && this.debug && logError(e, e.stack ? e.stack : "no stack");
-        return null;
-    }
-}
-
-// import React, { createElement, } from 'react';
-var createElement$1 = React__default.createElement;
-var componentMap$3 = componentMap$2, getComponentFromMap$3 = getComponentFromMap$2, getBoundedComponents$3 = getBoundedComponents$2, DynamicComponent$3 = DynamicComponent$2, FormComponent$3 = FormComponent$2;
-var getComputedProps$3 = getComputedProps$2;
-var getJSONXChildren$3 = getJSONXChildren$2;
-var displayComponent$3 = displayComponent$2;
-var renderIndex$1 = 0;
-/**
- * Use React.createElement and JSONX JSON to create React elements
- * @example
- * // Uses react to create the equivalent JSX <myComponent style={{color:blue}}>hello world</myComponent>
- * jsonx.getReactElementFromJSONX({component:'myCompnent',props:{style:{color:'blue'}},children:'hello world'})
- * @param {object} jsonx - any valid JSONX JSON object
- * @param {object} resources - any additional resource used for asynchronous properties
- * @property {object} this - options for getReactElementFromJSONX
- * @property {Object} [this.componentLibraries] - react components to render with JSONX
- * @property {boolean} [this.debug=false] - use debug messages
- * @property {boolean} [this.returnJSON=false] - return json object of {type,props,children} instead of react element
- * @property {boolean} [this.disableRenderIndexKey=false] - disables auto assign a key prop
- * @property {function} [this.logError=console.error] - error logging function
- * @property {string[]} [this.boundedComponents=[]] - list of components that require a bound this context (usefult for redux router)
- * @returns {function} React element via React.createElement
- */
-function getReactElementFromJSONX$1(jsonx, resources) {
-    if (resources === void 0) { resources = {}; }
-    // eslint-disable-next-line
-    var _a = this || {}, _b = _a.componentLibraries, componentLibraries = _b === void 0 ? {} : _b, _c = _a.debug, debug = _c === void 0 ? false : _c, _d = _a.returnJSON, returnJSON = _d === void 0 ? false : _d, _e = _a.logError, logError = _e === void 0 ? console.error : _e, _f = _a.boundedComponents, boundedComponents = _f === void 0 ? [] : _f, _g = _a.disableRenderIndexKey, disableRenderIndexKey = _g === void 0 ? true : _g;
-    // const componentLibraries = this.componentLibraries;
-    if (!jsonx)
-        return null;
-    if (jsonx.type)
-        jsonx.component = jsonx.type;
-    if (validSimpleJSONXSyntax$1(jsonx))
-        jsonx = simpleJSONXSyntax$1(jsonx);
-    if (!jsonx || !jsonx.component)
-        return createElement$1("span", {}, debug ? "Error: Missing Component Object" : "");
-    try {
-        var components = Object.assign({ DynamicComponent: DynamicComponent$3.bind(this) }, { FormComponent: FormComponent$3.bind(this) }, componentMap$3, this.reactComponents);
-        var reactComponents = boundedComponents.length
-            ? getBoundedComponents$3.call(this, {
-                boundedComponents: boundedComponents,
-                reactComponents: components
-            })
-            : components;
-        renderIndex$1++;
-        var element = getComponentFromMap$3({
-            jsonx: jsonx,
-            reactComponents: reactComponents,
-            componentLibraries: componentLibraries,
-            debug: debug,
-            logError: logError
-        });
-        var props = getComputedProps$3.call(this, {
-            jsonx: jsonx,
-            resources: resources,
-            renderIndex: renderIndex$1,
-            componentLibraries: componentLibraries,
-            debug: debug,
-            logError: logError,
-            disableRenderIndexKey: disableRenderIndexKey
-        });
-        var displayElement = jsonx.comparisonprops
-            ? displayComponent$3.call(this, {
-                jsonx: jsonx,
-                props: props,
-                renderIndex: renderIndex$1,
-                componentLibraries: componentLibraries,
-                debug: debug
-            })
-            : true;
-        if (displayElement) {
-            var children = getJSONXChildren$3.call(this, {
-                jsonx: jsonx,
-                props: props,
-                resources: resources,
-                renderIndex: renderIndex$1
-            });
-            //@ts -ignore
-            if (returnJSON)
-                return { type: element, props: props, children: children };
-            else if (jsonx.test)
-                return JSON.stringify({ element: element, props: props, children: children }, null, 2);
-            //TODO: Fix
-            else
-                return createElement$1(element, props, children);
-        }
-        else {
-            return null;
-        }
-    }
-    catch (e) {
-        if (debug) {
-            logError({ jsonx: jsonx, resources: resources }, "getReactElementFromJSONX this", this);
-            logError(e, e.stack ? e.stack : "no stack");
-        }
-        throw e;
-    }
-}
-var getRenderedJSON$1 = getReactElementFromJSONX$1;
-
-exports.React = React__default;
+exports.React = React__default__default;
 exports.ReactDOM = ReactDOM;
-exports.JSONX = getReactElementFromJSONX$1;
+exports.JSONX = index_esm;
 exports.ViewXApp = ViewXApp;
 //# sourceMappingURL=viewx.vxa.cjs.js.map
