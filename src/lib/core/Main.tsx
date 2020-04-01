@@ -4,7 +4,8 @@ import React, {
   FunctionComponent,
   useState,
   useMemo,
-  Fragment
+  Fragment,
+  ReactNode
 } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
@@ -46,12 +47,38 @@ export function bindFunctionContext({
   Functions.logoutUser = Functions.logoutUser.bind(functionContext);
 }
 
+function ViewXComponent(props: any): JSX.Element {
+  const { layer, views, viewdata, ctx, layerStates, settings, } = props;
+  const { name, type, idSelector, } = layer;
+  const el = document.querySelector(`#${idSelector||name}`);
+  const layerStateData = layerStates?.[name];
+  const layerState = useMemo(() => layerStateData,[layerStateData]);
+  const [state, setState] = useState(layerState);
+  ctx[`viewx_layer_${name}_state`] = state;
+  ctx[`viewx_layer_${name}_setState`] = setState;
+  if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+  const getReactElement = getReactElementFromJSONX.bind(ctx);
+  const jsonxChildren = getReactElement(
+    views[name] ? views[name].jsonx : null,
+    viewdata[name] ? viewdata[name] : {}
+  );
+
+  return (
+    <Fragment key="viewx">
+      {(type === "applicationRoot")
+        ? jsonxChildren
+        : el ? ReactDOM.createPortal(jsonxChildren, el) : null
+      }
+    </Fragment>
+  );
+}
+
 export default function getMainComponent(
   options: VXAOptions
 ): FunctionComponent {
   if (!options) throw ReferenceError("invalid VXA Options");
   else if (!options.config) throw ReferenceError("invalid VXA Options");
-  const { dispatch, useGlobalState, config, application } = options;
+  const { dispatch, useGlobalState, config, application, layerStates, } = options;
   const { Functions, settings } = config;
   const dispatcher = (action: VXADispatchAction): void => dispatch(action);
   function Main(appProps: any) {
@@ -140,8 +167,8 @@ export default function getMainComponent(
       debug: settings.debug,
       componentLibraries: Object.assign({}, config.componentLibraries),
       reactComponents: Object.assign({ Link }, config.reactComponents)};
-    if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
-    const getReactElement = getReactElementFromJSONX.bind(ctx);
+    // if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+    // const getReactElement = getReactElementFromJSONX.bind(ctx);
 
     useEffect(() => {
       Functions.onLaunch.call(functionContext);
@@ -216,29 +243,12 @@ export default function getMainComponent(
       //   // return function cleanup(){}
       /* eslint-disable */
     }, [pathname /* templates*/]);
-    /* eslint-enable */
+  /* eslint-enable */
+    
     return (
       <Fragment key="viewx">
         {config.layers.map(layer => {
-          const { name, type, idSelector, } = layer;
-          const jsonxChildren = getReactElement(
-            views[name] ? views[name].jsonx : null,
-            viewdata[name] ? viewdata[name] : {}
-          );
-          // console.log(
-          //   "LAYER",
-          //   { name, type, jsonxChildren },
-          //   "views[name]",
-          //   views[name],
-          //   "viewdata[name]",
-          //   viewdata[name]
-          // );
-          if (type === "applicationRoot") {
-            return jsonxChildren;
-          } else {
-            const el = document.querySelector(`#${idSelector||name}`);
-            return el ? ReactDOM.createPortal(jsonxChildren, el) : null;
-          }
+          return (<ViewXComponent layer={layer} views={views} viewdata={viewdata} ctx={ctx} layerStates={layerStates} settings={settings} />);
         })}
       </Fragment>
     );

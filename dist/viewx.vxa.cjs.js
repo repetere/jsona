@@ -4,8 +4,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var React__default = require('react');
-var React__default__default = _interopDefault(React__default);
+var React = require('react');
+var React__default = _interopDefault(React);
 var reactRouter = require('react-router');
 var reactRouterDom = require('react-router-dom');
 var ReactDOM = _interopDefault(require('react-dom'));
@@ -5282,7 +5282,7 @@ var reactDomServer_node_development = createCommonjsModule(function (module) {
 {
   (function() {
 
-var React = React__default__default;
+var React = React__default;
 var _assign = objectAssign;
 var checkPropTypes = checkPropTypes_1;
 var stream = require$$3;
@@ -9562,7 +9562,7 @@ var reactDomFactories = createCommonjsModule(function (module, exports) {
 
 (function(f) {
   {
-    module.exports = f(React__default__default);
+    module.exports = f(React__default);
     /* global define */
   }
 })(function(React) {
@@ -11690,7 +11690,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 
 var factory_1 = factory;
 
-if (typeof React__default__default === 'undefined') {
+if (typeof React__default === 'undefined') {
   throw Error(
     'create-react-class could not find the React object. If you are using script tags, ' +
       'make sure that React is being loaded before create-react-class.'
@@ -11698,11 +11698,11 @@ if (typeof React__default__default === 'undefined') {
 }
 
 // Hack to grab NoopUpdateQueue from isomorphic React
-var ReactNoopUpdateQueue = new React__default__default.Component().updater;
+var ReactNoopUpdateQueue = new React__default.Component().updater;
 
 var createReactClass = factory_1(
-  React__default__default.Component,
-  React__default__default.isValidElement,
+  React__default.Component,
+  React__default.isValidElement,
   ReactNoopUpdateQueue
 );
 
@@ -12320,7 +12320,7 @@ var isFunction$1 = (value) => typeof value === 'function';
 
 var isBoolean$1 = (value) => typeof value === 'boolean';
 
-var isMessage = (value) => isString$1(value) || (isObject$1(value) && React__default.isValidElement(value));
+var isMessage = (value) => isString$1(value) || (isObject$1(value) && React.isValidElement(value));
 
 function getValidateError(result, ref, type = 'validate') {
     if (isMessage(result) || (isBoolean$1(result) && !result)) {
@@ -12611,7 +12611,7 @@ var modeChecker = (mode) => ({
     isOnChange: mode === VALIDATION_MODE.onChange,
 });
 
-const { useRef, useState, useCallback, useEffect } = React__default;
+const { useRef, useState, useCallback, useEffect } = React;
 function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_MODE.onChange, validationSchema, validationResolver, validationContext, defaultValues = {}, submitFocusError = true, validateCriteriaMode, } = {}) {
     const fieldsRef = useRef({});
     const validateAllFieldCriteria = validateCriteriaMode === 'all';
@@ -13353,9 +13353,9 @@ function __rest(s, e) {
     return t;
 }
 
-const FormGlobalContext = React__default.createContext(null);
+const FormGlobalContext = React.createContext(null);
 function useFormContext() {
-    return React__default.useContext(FormGlobalContext);
+    return React.useContext(FormGlobalContext);
 }
 
 var getInputValue = (event, isCheckboxInput) => isPrimitive(event) ||
@@ -13370,10 +13370,10 @@ const Controller = (_a) => {
     var { name, rules, as: InnerComponent, onBlur, onChange, onChangeName = VALIDATION_MODE.onChange, onBlurName = VALIDATION_MODE.onBlur, valueName, defaultValue, control } = _a, rest = __rest(_a, ["name", "rules", "as", "onBlur", "onChange", "onChangeName", "onBlurName", "valueName", "defaultValue", "control"]);
     const methods = useFormContext();
     const { defaultValuesRef, setValue, register, unregister, errorsRef, removeFieldEventListener, triggerValidation, mode: { isOnSubmit, isOnBlur, isOnChange }, reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit }, formState: { isSubmitted }, fieldsRef, fieldArrayNamesRef, } = control || methods.control;
-    const [value, setInputStateValue] = React__default.useState(isUndefined$1(defaultValue)
+    const [value, setInputStateValue] = React.useState(isUndefined$1(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue);
-    const valueRef = React__default.useRef(value);
+    const valueRef = React.useRef(value);
     const isCheckboxInput = isBoolean$1(value);
     const shouldValidate = () => !skipValidation({
         hasError: !!get(errorsRef.current, name),
@@ -13410,7 +13410,7 @@ const Controller = (_a) => {
             },
         }), Object.assign({}, rules));
     };
-    React__default.useEffect(() => {
+    React.useEffect(() => {
         if (!fieldsRef.current[name]) {
             registerField();
             setInputStateValue(isUndefined$1(defaultValue)
@@ -13418,7 +13418,7 @@ const Controller = (_a) => {
                 : defaultValue);
         }
     });
-    React__default.useEffect(() => {
+    React.useEffect(() => {
         registerField();
         return () => {
             if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
@@ -13426,7 +13426,7 @@ const Controller = (_a) => {
             }
         };
     }, [name]);
-    React__default.useEffect(() => {
+    React.useEffect(() => {
         registerField();
     }, [rules]);
     const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
@@ -13444,9 +13444,9 @@ const Controller = (_a) => {
             },
         }
         : {})), { [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value });
-    return React__default.isValidElement(InnerComponent)
-        ? React__default.cloneElement(InnerComponent, props)
-        : React__default.createElement(InnerComponent, props);
+    return React.isValidElement(InnerComponent)
+        ? React.cloneElement(InnerComponent, props)
+        : React.createElement(InnerComponent, props);
 };
 
 const ErrorMessage = (_a) => {
@@ -13460,7 +13460,7 @@ const ErrorMessage = (_a) => {
     const props = Object.assign(Object.assign({}, (InnerComponent ? rest : {})), { children: children
             ? children({ message: messageFromRegister || message, messages: types })
             : messageFromRegister || message });
-    return InnerComponent ? (React__default.isValidElement(InnerComponent) ? (React__default.cloneElement(InnerComponent, props)) : (React__default.createElement(InnerComponent, props))) : (React__default.createElement(React__default.Fragment, Object.assign({}, props)));
+    return InnerComponent ? (React.isValidElement(InnerComponent) ? (React.cloneElement(InnerComponent, props)) : (React.createElement(InnerComponent, props))) : (React.createElement(React.Fragment, Object.assign({}, props)));
 };
 
 var global$1$1 = typeof global$1$1 !== "undefined"
@@ -14016,7 +14016,7 @@ let advancedBinding = getAdvancedBinding();
  
  */
 //@ts-ignore
-let componentMap = Object.assign({ Fragment: React__default.Fragment, Suspense: React__default.Suspense }, reactDomFactories, window && typeof window === "object" ? window.__jsonx_custom_elements : {});
+let componentMap = Object.assign({ Fragment: React.Fragment, Suspense: React.Suspense }, reactDomFactories, window && typeof window === "object" ? window.__jsonx_custom_elements : {});
 /**
  * getBoundedComponents returns reactComponents with certain elements that have this bounded to select components in the boundedComponents list
  
@@ -14157,7 +14157,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
     // console.log(util.inspect({ reactComponent },{depth:20}));
     if (options.lazy) {
         //@ts-ignore
-        return React__default.lazy(() => options
+        return React.lazy(() => options
             .lazy(reactComponent, Object.assign({}, options, { lazy: false }))
             .then((lazyComponent) => {
             return {
@@ -14254,7 +14254,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
         });
     }
     const reactClass = returnFactory
-        ? React__default__default.createFactory(reactComponentClass)
+        ? React__default.createFactory(reactComponentClass)
         : reactComponentClass;
     return reactClass;
 }
@@ -14290,7 +14290,7 @@ function FormComponent(props = {}) {
         }
     };
     formWrapperJXM.children = Array.isArray(formComponent) ? formComponent : [formComponent];
-    const renderJSONX = React__default.useMemo(() => getReactElementFromJSONX.bind(context), [
+    const renderJSONX = React.useMemo(() => getReactElementFromJSONX.bind(context), [
         context
     ]);
     return renderJSONX(formWrapperJXM);
@@ -14315,24 +14315,24 @@ function DynamicComponent(props = {}) {
         ]
     }, cacheTimeoutFunction = () => { }, jsonx, transformFunction = (data) => data, fetchURL, fetchOptions, fetchFunction } = props;
     const context = this || {};
-    const [state, setState] = React__default.useState({
+    const [state, setState] = React.useState({
         hasLoaded: false,
         hasError: false,
         resources: {},
         error: undefined
     });
-    const transformer = React__default.useMemo(() => getFunctionFromEval(transformFunction), [
+    const transformer = React.useMemo(() => getFunctionFromEval(transformFunction), [
         transformFunction
     ]);
-    const timeoutFunction = React__default.useMemo(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
-    const renderJSONX = React__default.useMemo(() => getReactElementFromJSONX.bind(context), [
+    const timeoutFunction = React.useMemo(() => getFunctionFromEval(cacheTimeoutFunction), [cacheTimeoutFunction]);
+    const renderJSONX = React.useMemo(() => getReactElementFromJSONX.bind(context), [
         context
     ]);
-    const loadingComponent = React__default.useMemo(() => renderJSONX(loadingJSONX), [
+    const loadingComponent = React.useMemo(() => renderJSONX(loadingJSONX), [
         loadingJSONX
     ]);
-    const loadingError = React__default.useMemo(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
-    React__default.useEffect(() => {
+    const loadingError = React.useMemo(() => renderJSONX(loadingErrorJSONX, { error: state.error }), [loadingErrorJSONX, state.error]);
+    React.useEffect(() => {
         async function getData() {
             try {
                 //@ts-ignore
@@ -14421,7 +14421,7 @@ function DynamicComponent(props = {}) {
 function getReactFunctionComponent(reactComponent = {}, functionBody = "", options = {}) {
     if (options.lazy) {
         //@ts-ignore
-        return React__default.lazy(() => options
+        return React.lazy(() => options
             .lazy(reactComponent, functionBody, Object.assign({}, options, { lazy: false }))
             .then((lazyComponent) => {
             return {
@@ -14436,17 +14436,17 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = "", optio
     //@ts-ignore
     const props = Object.assign({}, reactComponent.props);
     const functionArgs = [
-        React__default__default,
-        React__default.useState,
-        React__default.useEffect,
-        React__default.useContext,
-        React__default.useReducer,
-        React__default.useCallback,
-        React__default.useMemo,
-        React__default.useRef,
-        React__default.useImperativeHandle,
-        React__default.useLayoutEffect,
-        React__default.useDebugValue,
+        React__default,
+        React.useState,
+        React.useEffect,
+        React.useContext,
+        React.useReducer,
+        React.useCallback,
+        React.useMemo,
+        React.useRef,
+        React.useImperativeHandle,
+        React.useLayoutEffect,
+        React.useDebugValue,
         getReactElementFromJSONX,
         reactComponent,
         resources,
@@ -14487,7 +14487,7 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = "", optio
  *
  */
 function getReactContext(options = {}) {
-    return React__default.createContext(options.value);
+    return React.createContext(options.value);
 }
 
 var jsonxComponents = /*#__PURE__*/Object.freeze({
@@ -15035,7 +15035,7 @@ function getWindowComponents(options = { jsonx: {} }) {
             const windowComponentProps = allProps["__windowComponentProps"]
                 ? allProps["__windowComponentProps"]
                 : this.props;
-            allProps[key] = React__default__default.createElement(windowComponentElement, windowComponentProps, null);
+            allProps[key] = React__default.createElement(windowComponentElement, windowComponentProps, null);
         }
     });
     return allProps;
@@ -23391,7 +23391,7 @@ ${jsonxRenderedString}`;
 }
 
 // import React, { createElement, } from 'react';
-const createElement = React__default__default.createElement;
+const createElement = React__default.createElement;
 const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, DynamicComponent: DynamicComponent$1, FormComponent: FormComponent$1, } = jsonxComponents;
 const { getComputedProps: getComputedProps$1 } = jsonxProps;
 const { getJSONXChildren: getJSONXChildren$1 } = jsonxChildren;
@@ -23616,7 +23616,7 @@ function jsonToJSX(json) {
  * @returns {Object} React
  */
 function __getReact() {
-    return React__default__default;
+    return React__default;
 }
 /**
  * Exposes react dom module used in JSONX
@@ -25131,12 +25131,29 @@ function bindFunctionContext(_a) {
     Functions.validateMFA = Functions.validateMFA.bind(functionContext);
     Functions.logoutUser = Functions.logoutUser.bind(functionContext);
 }
+function ViewXComponent(props) {
+    var layer = props.layer, views = props.views, viewdata = props.viewdata, ctx = props.ctx, layerStates = props.layerStates, settings = props.settings;
+    var name = layer.name, type = layer.type, idSelector = layer.idSelector;
+    var el = document.querySelector("#" + (idSelector || name));
+    var layerStateData = layerStates === null || layerStates === void 0 ? void 0 : layerStates[name];
+    var layerState = React.useMemo(function () { return layerStateData; }, [layerStateData]);
+    var _a = React.useState(layerState), state = _a[0], setState = _a[1];
+    ctx["viewx_layer_" + name + "_state"] = state;
+    ctx["viewx_layer_" + name + "_setState"] = setState;
+    if (settings.exposeVXAToWindow)
+        window.__ViewXContext = ctx;
+    var getReactElement = getReactElementFromJSONX.bind(ctx);
+    var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
+    return (React__default.createElement(React.Fragment, { key: "viewx" }, (type === "applicationRoot")
+        ? jsonxChildren
+        : el ? ReactDOM.createPortal(jsonxChildren, el) : null));
+}
 function getMainComponent(options) {
     if (!options)
         throw ReferenceError("invalid VXA Options");
     else if (!options.config)
         throw ReferenceError("invalid VXA Options");
-    var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config, application = options.application;
+    var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config, application = options.application, layerStates = options.layerStates;
     var Functions = config.Functions, settings = config.settings;
     var dispatcher = function (action) { return dispatch(action); };
     function Main(appProps) {
@@ -25149,7 +25166,7 @@ function getMainComponent(options) {
         var ui = useGlobalState("ui")[0];
         // const [ui, setUI] = useGlobalState("ui");
         var setUI = function (ui) { return dispatch({ type: 'setUI', ui: ui }); };
-        var _a = React__default.useState(application ? application.state : {}), state = _a[0], setState = _a[1];
+        var _a = React.useState(application ? application.state : {}), state = _a[0], setState = _a[1];
         var pathname = appProps.location.pathname;
         var props = Object.assign({
             dispatch: dispatch,
@@ -25176,7 +25193,7 @@ function getMainComponent(options) {
             window.VXAcontext = functionContext;
         }
         // eslint-disable-line
-        var loadView = React__default.useMemo(function () {
+        var loadView = React.useMemo(function () {
             return function _loadView(_a) {
                 var _b, _c;
                 var layerName = _a.layerName, view = _a.view, resourceprops = _a.resourceprops, pathname = _a.pathname;
@@ -25214,16 +25231,15 @@ function getMainComponent(options) {
             componentLibraries: Object.assign({}, config.componentLibraries),
             reactComponents: Object.assign({ Link: reactRouterDom.Link }, config.reactComponents)
         };
-        if (settings.exposeVXAToWindow)
-            window.__ViewXContext = ctx;
-        var getReactElement = getReactElementFromJSONX.bind(ctx);
-        React__default.useEffect(function () {
+        // if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+        // const getReactElement = getReactElementFromJSONX.bind(ctx);
+        React.useEffect(function () {
             Functions.onLaunch.call(functionContext);
             return function () { return Functions.onShutdown.call(functionContext); };
             /* eslint-disable */
         }, []);
         /* eslint-enable */
-        React__default.useEffect(function () {
+        React.useEffect(function () {
             var viewxTemplates = templates;
             var action;
             function initialize() {
@@ -25315,24 +25331,8 @@ function getMainComponent(options) {
             /* eslint-disable */
         }, [pathname /* templates*/]);
         /* eslint-enable */
-        return (React__default__default.createElement(React__default.Fragment, { key: "viewx" }, config.layers.map(function (layer) {
-            var name = layer.name, type = layer.type, idSelector = layer.idSelector;
-            var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
-            // console.log(
-            //   "LAYER",
-            //   { name, type, jsonxChildren },
-            //   "views[name]",
-            //   views[name],
-            //   "viewdata[name]",
-            //   viewdata[name]
-            // );
-            if (type === "applicationRoot") {
-                return jsonxChildren;
-            }
-            else {
-                var el = document.querySelector("#" + (idSelector || name));
-                return el ? ReactDOM.createPortal(jsonxChildren, el) : null;
-            }
+        return (React__default.createElement(React.Fragment, { key: "viewx" }, config.layers.map(function (layer) {
+            return (React__default.createElement(ViewXComponent, { layer: layer, views: views, viewdata: viewdata, ctx: ctx, layerStates: layerStates, settings: settings }));
         })));
     }
     return Main;
@@ -25460,8 +25460,8 @@ function getViewXapp(options) {
                     }
                     app = (
                     // <GlobalStateProvider>
-                    React__default__default.createElement(Router, null,
-                        React__default__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))
+                    React__default.createElement(Router, null,
+                        React__default.createElement(reactRouter.Route, { path: "*", component: MainApp }))
                     // </GlobalStateProvider>
                     );
                     return [2 /*return*/, { app: app, options: options, }];
@@ -27087,7 +27087,7 @@ function ViewXApp(options$1) {
     });
 }
 
-exports.React = React__default__default;
+exports.React = React__default;
 exports.ReactDOM = ReactDOM;
 exports.JSONX = index_esm;
 exports.ViewXApp = ViewXApp;

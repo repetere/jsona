@@ -90,6 +90,9 @@ export interface VXAOptions {
   settings?: any;
   application?: VXAApplicationState;
   vxaState?: VXAState | {};
+  layerStates?: {
+    [index: string]: any;
+  };
   templates?: VXATemplates;
   dispatch?: any;
   useGlobalState?: any;

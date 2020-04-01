@@ -1,5 +1,5 @@
-import * as React__default from 'react';
-import React__default__default, { createContext, Fragment, Suspense, lazy, useMemo, useState as useState$1, useEffect as useEffect$1, useContext, useRef as useRef$1, isValidElement, cloneElement, createElement as createElement$1, useReducer, useCallback as useCallback$1, useImperativeHandle, useLayoutEffect, useDebugValue } from 'react';
+import * as React from 'react';
+import React__default, { createContext, Fragment, Suspense, lazy, useMemo, useState as useState$1, useEffect as useEffect$1, useContext, useRef as useRef$1, isValidElement, cloneElement, createElement as createElement$1, useReducer, useCallback as useCallback$1, useImperativeHandle, useLayoutEffect, useDebugValue } from 'react';
 export { default as React } from 'react';
 import { Route as Route$1 } from 'react-router';
 import { Link, BrowserRouter, MemoryRouter, HashRouter, StaticRouter } from 'react-router-dom';
@@ -5278,7 +5278,7 @@ var reactDomServer_node_development = createCommonjsModule(function (module) {
 {
   (function() {
 
-var React = React__default__default;
+var React = React__default;
 var _assign = objectAssign;
 var checkPropTypes = checkPropTypes_1;
 var stream = require$$3;
@@ -9558,7 +9558,7 @@ var reactDomFactories = createCommonjsModule(function (module, exports) {
 
 (function(f) {
   {
-    module.exports = f(React__default__default);
+    module.exports = f(React__default);
     /* global define */
   }
 })(function(React) {
@@ -11686,7 +11686,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 
 var factory_1 = factory;
 
-if (typeof React__default__default === 'undefined') {
+if (typeof React__default === 'undefined') {
   throw Error(
     'create-react-class could not find the React object. If you are using script tags, ' +
       'make sure that React is being loaded before create-react-class.'
@@ -11694,11 +11694,11 @@ if (typeof React__default__default === 'undefined') {
 }
 
 // Hack to grab NoopUpdateQueue from isomorphic React
-var ReactNoopUpdateQueue = new React__default__default.Component().updater;
+var ReactNoopUpdateQueue = new React__default.Component().updater;
 
 var createReactClass = factory_1(
-  React__default__default.Component,
-  React__default__default.isValidElement,
+  React__default.Component,
+  React__default.isValidElement,
   ReactNoopUpdateQueue
 );
 
@@ -12607,7 +12607,7 @@ var modeChecker = (mode) => ({
     isOnChange: mode === VALIDATION_MODE.onChange,
 });
 
-const { useRef, useState, useCallback, useEffect } = React__default;
+const { useRef, useState, useCallback, useEffect } = React;
 function useForm({ mode = VALIDATION_MODE.onSubmit, reValidateMode = VALIDATION_MODE.onChange, validationSchema, validationResolver, validationContext, defaultValues = {}, submitFocusError = true, validateCriteriaMode, } = {}) {
     const fieldsRef = useRef({});
     const validateAllFieldCriteria = validateCriteriaMode === 'all';
@@ -14250,7 +14250,7 @@ function getReactClassComponent(reactComponent = {}, options = {}) {
         });
     }
     const reactClass = returnFactory
-        ? React__default__default.createFactory(reactComponentClass)
+        ? React__default.createFactory(reactComponentClass)
         : reactComponentClass;
     return reactClass;
 }
@@ -14432,7 +14432,7 @@ function getReactFunctionComponent(reactComponent = {}, functionBody = "", optio
     //@ts-ignore
     const props = Object.assign({}, reactComponent.props);
     const functionArgs = [
-        React__default__default,
+        React__default,
         useState$1,
         useEffect$1,
         useContext,
@@ -15031,7 +15031,7 @@ function getWindowComponents(options = { jsonx: {} }) {
             const windowComponentProps = allProps["__windowComponentProps"]
                 ? allProps["__windowComponentProps"]
                 : this.props;
-            allProps[key] = React__default__default.createElement(windowComponentElement, windowComponentProps, null);
+            allProps[key] = React__default.createElement(windowComponentElement, windowComponentProps, null);
         }
     });
     return allProps;
@@ -23387,7 +23387,7 @@ ${jsonxRenderedString}`;
 }
 
 // import React, { createElement, } from 'react';
-const createElement = React__default__default.createElement;
+const createElement = React__default.createElement;
 const { componentMap: componentMap$1, getComponentFromMap: getComponentFromMap$1, getBoundedComponents: getBoundedComponents$1, DynamicComponent: DynamicComponent$1, FormComponent: FormComponent$1, } = jsonxComponents;
 const { getComputedProps: getComputedProps$1 } = jsonxProps;
 const { getJSONXChildren: getJSONXChildren$1 } = jsonxChildren;
@@ -23612,7 +23612,7 @@ function jsonToJSX(json) {
  * @returns {Object} React
  */
 function __getReact() {
-    return React__default__default;
+    return React__default;
 }
 /**
  * Exposes react dom module used in JSONX
@@ -25127,12 +25127,29 @@ function bindFunctionContext(_a) {
     Functions.validateMFA = Functions.validateMFA.bind(functionContext);
     Functions.logoutUser = Functions.logoutUser.bind(functionContext);
 }
+function ViewXComponent(props) {
+    var layer = props.layer, views = props.views, viewdata = props.viewdata, ctx = props.ctx, layerStates = props.layerStates, settings = props.settings;
+    var name = layer.name, type = layer.type, idSelector = layer.idSelector;
+    var el = document.querySelector("#" + (idSelector || name));
+    var layerStateData = layerStates === null || layerStates === void 0 ? void 0 : layerStates[name];
+    var layerState = useMemo(function () { return layerStateData; }, [layerStateData]);
+    var _a = useState$1(layerState), state = _a[0], setState = _a[1];
+    ctx["viewx_layer_" + name + "_state"] = state;
+    ctx["viewx_layer_" + name + "_setState"] = setState;
+    if (settings.exposeVXAToWindow)
+        window.__ViewXContext = ctx;
+    var getReactElement = getReactElementFromJSONX.bind(ctx);
+    var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
+    return (React__default.createElement(Fragment, { key: "viewx" }, (type === "applicationRoot")
+        ? jsonxChildren
+        : el ? ReactDOM.createPortal(jsonxChildren, el) : null));
+}
 function getMainComponent(options) {
     if (!options)
         throw ReferenceError("invalid VXA Options");
     else if (!options.config)
         throw ReferenceError("invalid VXA Options");
-    var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config, application = options.application;
+    var dispatch = options.dispatch, useGlobalState = options.useGlobalState, config = options.config, application = options.application, layerStates = options.layerStates;
     var Functions = config.Functions, settings = config.settings;
     var dispatcher = function (action) { return dispatch(action); };
     function Main(appProps) {
@@ -25210,9 +25227,8 @@ function getMainComponent(options) {
             componentLibraries: Object.assign({}, config.componentLibraries),
             reactComponents: Object.assign({ Link: Link }, config.reactComponents)
         };
-        if (settings.exposeVXAToWindow)
-            window.__ViewXContext = ctx;
-        var getReactElement = getReactElementFromJSONX.bind(ctx);
+        // if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+        // const getReactElement = getReactElementFromJSONX.bind(ctx);
         useEffect$1(function () {
             Functions.onLaunch.call(functionContext);
             return function () { return Functions.onShutdown.call(functionContext); };
@@ -25311,24 +25327,8 @@ function getMainComponent(options) {
             /* eslint-disable */
         }, [pathname /* templates*/]);
         /* eslint-enable */
-        return (React__default__default.createElement(Fragment, { key: "viewx" }, config.layers.map(function (layer) {
-            var name = layer.name, type = layer.type, idSelector = layer.idSelector;
-            var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
-            // console.log(
-            //   "LAYER",
-            //   { name, type, jsonxChildren },
-            //   "views[name]",
-            //   views[name],
-            //   "viewdata[name]",
-            //   viewdata[name]
-            // );
-            if (type === "applicationRoot") {
-                return jsonxChildren;
-            }
-            else {
-                var el = document.querySelector("#" + (idSelector || name));
-                return el ? ReactDOM.createPortal(jsonxChildren, el) : null;
-            }
+        return (React__default.createElement(Fragment, { key: "viewx" }, config.layers.map(function (layer) {
+            return (React__default.createElement(ViewXComponent, { layer: layer, views: views, viewdata: viewdata, ctx: ctx, layerStates: layerStates, settings: settings }));
         })));
     }
     return Main;
@@ -25456,8 +25456,8 @@ function getViewXapp(options) {
                     }
                     app = (
                     // <GlobalStateProvider>
-                    React__default__default.createElement(Router, null,
-                        React__default__default.createElement(Route$1, { path: "*", component: MainApp }))
+                    React__default.createElement(Router, null,
+                        React__default.createElement(Route$1, { path: "*", component: MainApp }))
                     // </GlobalStateProvider>
                     );
                     return [2 /*return*/, { app: app, options: options, }];
