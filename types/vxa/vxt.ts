@@ -1,5 +1,6 @@
-import { jsonx } from "./jsonx";
-import React,{Dispatch,SetStateAction} from 'react';
+import { jsonx, jsonxLibrary, jsonxComponent, } from 'jsonx/src/types/jsonx';
+
+import {Dispatch,SetStateAction} from 'react';
 
 export type pageAttribute = {
   tagName: string;
@@ -112,10 +113,18 @@ export interface VXAFunctionContext {
   props: VXAState;
   state: any;
   setState: Dispatch<SetStateAction<any|undefined>>;
-  settings: VXASettings;
+  settings?: VXASettings;
+  debug?: boolean;
   viewx: {
     Functions: VXAFunctions;
     settings: VXASettings;
-  }
+  },
+  componentLibraries?: {
+    [index: string]: jsonxLibrary;
+  };
+  reactComponents?: {
+    [index: string]: jsonxComponent;
+  };
+  getReactElement?: (...args: any[]) => any;
 }
 

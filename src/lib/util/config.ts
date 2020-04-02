@@ -15,8 +15,9 @@ import {
   VXAConfig,
   VXALayer,
   VXAComponent,
-  jsonxLibrary
 } from "../../../types";
+import { jsonxLibrary } from 'jsonx/src/types/jsonx';
+
 import {
   customFileType,
   librariesAndComponents,

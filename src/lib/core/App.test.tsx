@@ -14,7 +14,7 @@ describe("getViewXapp", () => {
     appOptions.config = await configureViewx(appOptions);
   });
   it("renders without crashing", async () => {
-    const App = await getViewXapp(appOptions);
+    const {app:App} = await getViewXapp(appOptions);
     const div = document.createElement("div");
     ReactDOM.render(App, div);
     ReactDOM.unmountComponentAtNode(div);
@@ -35,7 +35,7 @@ describe("getViewXapp", () => {
         }
       }
     };
-    const App = await getViewXapp(renderOptions);
+    const {app:App} = await getViewXapp(renderOptions);
     const wrapper = render(App);
     expect(wrapper.html()).toEqual("hello");
   });

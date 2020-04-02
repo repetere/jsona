@@ -25135,14 +25135,16 @@ function ViewXComponent(props) {
     var layer = props.layer, views = props.views, viewdata = props.viewdata, ctx = props.ctx, layerStates = props.layerStates, settings = props.settings;
     var name = layer.name, type = layer.type, idSelector = layer.idSelector;
     var el = document.querySelector("#" + (idSelector || name));
-    var layerStateData = layerStates === null || layerStates === void 0 ? void 0 : layerStates[name];
+    var layerStateData = layerStates ? layerStates[name] : {};
     var layerState = React.useMemo(function () { return layerStateData; }, [layerStateData]);
     var _a = React.useState(layerState), state = _a[0], setState = _a[1];
     ctx["viewx_layer_" + name + "_state"] = state;
     ctx["viewx_layer_" + name + "_setState"] = setState;
-    if (settings.exposeVXAToWindow)
-        window.__ViewXContext = ctx;
     var getReactElement = getReactElementFromJSONX.bind(ctx);
+    if (settings.exposeVXAToWindow) {
+        window.__ViewXContext = ctx;
+        window.__ViewXContext.getReactElement = getReactElement;
+    }
     var jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
     return (React__default.createElement(React.Fragment, { key: "viewx" }, (type === "applicationRoot")
         ? jsonxChildren
@@ -25232,7 +25234,8 @@ function getMainComponent(options) {
             reactComponents: Object.assign({ Link: reactRouterDom.Link }, config.reactComponents)
         };
         // if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
-        // const getReactElement = getReactElementFromJSONX.bind(ctx);
+        var getReactElement = getReactElementFromJSONX.bind(ctx);
+        ctx.getReactElement = getReactElement;
         React.useEffect(function () {
             Functions.onLaunch.call(functionContext);
             return function () { return Functions.onShutdown.call(functionContext); };

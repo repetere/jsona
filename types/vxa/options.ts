@@ -1,9 +1,8 @@
-import { jsonx, jsonxComponent, jsonxLibrary, } from "./jsonx";
+import { jsonx, jsonxLibrary, jsonxComponent, } from 'jsonx/src/types/jsonx';
 import {
   vxtTemplate,
   VXAState,
   VXASettings,
-  VXAFunction,
   VXAFunctions
 } from "./vxt";
 import { string } from "prop-types";
@@ -40,6 +39,8 @@ export type VXAComponent = {
 export enum VXALayerTypes {
   root = "applicationRoot",
   modal = "modal",
+  data = "data",
+  overlay = "overlay",
   view = "view"
 }
 

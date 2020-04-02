@@ -1,5 +1,6 @@
 import { VXAState, VXAFunctionContext, VXAFunction, vxt, } from "./vxt";
-import { jsonxResourceProps, } from "./jsonx";
+import { jsonxResourceProps, } from 'jsonx/src/types/jsonx';
+
 import { ReactNode } from "react";
 import { VXALayer, VXAConfig, VXATemplates,  } from "./options";
 

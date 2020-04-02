@@ -11,11 +11,12 @@ import {
   VXAFunction,
   VXAFunctions,
   VXADispatchAction,
-  jsonxResourceProps,
   VXATemplateRouteLayer,
   appLoadRoute,
   layerPathRoutes,
 } from "../../../types";
+import { jsonxResourceProps, } from 'jsonx/src/types/jsonx';
+
 // import { insertScriptParams } from '../../internal_types/config';
 
 import { initSockets } from "./socket";
