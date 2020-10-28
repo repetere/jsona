@@ -10,7 +10,7 @@
     "jsonx": "^1.4.3",
     "path-to-regexp": "^6.0.0",
     "promisie": "^3.0.0",
-    "react": "16.13.1",
+    "react": "16.14.0",
     "react-dom": "^16.13.1",
     "react-hooks-global-state": "^1.0.0",
     "react-router": "^5.1.2",
