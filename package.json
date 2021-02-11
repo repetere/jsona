@@ -82,7 +82,7 @@
     "rollup-plugin-typescript": "1.0.1",
     "ts-jest": "25.2.1",
     "tslib": "1.11.1",
-    "typescript": "3.8.3",
+    "typescript": "3.9.9",
     "typings": "2.1.1"
   },
   "repository": {
