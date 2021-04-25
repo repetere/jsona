@@ -78,7 +78,7 @@ export type VXAConfig = {
   settings: VXASettings;
 };
 
-export interface VXAOptions {
+export interface JSONAOptions {
   initialScripts?: string[];
   customComponents?: VXAComponent[];
   customScripts?: string[];

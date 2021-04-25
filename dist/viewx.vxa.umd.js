@@ -58023,7 +58023,7 @@ ${jsonxRenderedString}`;
         });
     }
 
-    function getViewXapp(options) {
+    function getJSONA(options) {
         return __awaiter(this, void 0, Promise, function () {
             var settings, _a, 
             // GlobalStateProvider,
@@ -59294,10 +59294,10 @@ ${jsonxRenderedString}`;
     };
 
     window.hoistNonReactStatics = hoistNonReactStatics_cjs;
-    function ViewXApp(options$1) {
+    function JSONA(options$1) {
         if (options$1 === void 0) { options$1 = {}; }
         return __awaiter(this, void 0, Promise, function () {
-            var appOptions, _a, querySelector, _b, app, ViewXAppOptions;
+            var appOptions, _a, querySelector, _b, app, JSONAOptions;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -59307,13 +59307,13 @@ ${jsonxRenderedString}`;
                     case 1:
                         _a.config = _c.sent();
                         querySelector = appOptions.querySelector;
-                        return [4 /*yield*/, getViewXapp(appOptions)];
+                        return [4 /*yield*/, getJSONA(appOptions)];
                     case 2:
-                        _b = _c.sent(), app = _b.app, ViewXAppOptions = _b.options;
+                        _b = _c.sent(), app = _b.app, JSONAOptions = _b.options;
                         appOptions.config.layers
                             .sort(function (a, b) { return a.order - b.order; })
                             .forEach(function (layer) { return createLayer({ layer: layer, app: app, querySelector: querySelector, }); });
-                        return [2 /*return*/, { app: app, options: ViewXAppOptions, }];
+                        return [2 /*return*/, { app: app, options: JSONAOptions, }];
                 }
             });
         });
@@ -59322,7 +59322,7 @@ ${jsonxRenderedString}`;
     exports.JSONX = index_esm;
     exports.React = react;
     exports.ReactDOM = reactDom;
-    exports.ViewXApp = ViewXApp;
+    exports.JSONA = JSONA;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import {
   VXAFunctionContext,
   VXAFunctions,
-  VXAOptions,
+  JSONAOptions,
   VXADispatchAction,
   appLoadViewParams
 } from "../../../types";
@@ -76,7 +76,7 @@ function ViewXComponent(props: any): JSX.Element {
 }
 
 export default function getMainComponent(
-  options: VXAOptions
+  options: JSONAOptions
 ): FunctionComponent {
   if (!options) throw ReferenceError("invalid VXA Options");
   else if (!options.config) throw ReferenceError("invalid VXA Options");

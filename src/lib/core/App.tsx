@@ -12,13 +12,13 @@ import {
 
 import getMainComponent from "./Main";
 import { getGlobalStateHooks } from "../stores";
-import { VXAOptions, VXAConfig } from "../../../types";
+import { JSONAOptions, VXAConfig } from "../../../types";
 import { ReactElementLike } from "prop-types";
 
-export async function getViewXapp(
-  options: VXAOptions
+export async function getJSONA(
+  options: JSONAOptions
 ): Promise<{ app: ReactElementLike; options: any; }> {
-  // console.log("getViewXapp options", options);
+  // console.log("getJSONA options", options);
   const { settings } = options.config as VXAConfig;
   const {
     // GlobalStateProvider,
