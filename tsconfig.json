@@ -1,32 +1,45 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "declaration": true,
+    "declarationDir": "./build",
+    "outDir": "./build",
+    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
+    "isolatedModules": false,
+    "noEmit": false,
     "jsx": "react"
   },
   "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "node_modules/use-global-hook",
     "node_modules/jsonx/src/**/*.ts",
     "node_modules/jsonx/src/**/*.tsx",
-    "src/**/*.ts",
-    "src/**/*.tsx"
   ],
   "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
     "node_modules/jsonx/**/*.test.ts",
     "node_modules/jsonx/**/*.test.tsx"
-  ]
+  ],
+  "typedocOptions":{
+    "out":"docs",
+    "includes":"manual",
+    "entryPoints": ["src/index.ts"],
+    "media": "./manual/media",
+    "hideGenerator":true
+  }
 }
