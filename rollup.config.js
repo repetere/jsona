@@ -180,7 +180,9 @@ function getPlugins({
 export default [
   //web
   {
-    input: "build/index.js",
+    // input: "build/index.js",
+    input: "src/module.ts",
+
     output: getOutput({
       minify: false,
       server: false,
