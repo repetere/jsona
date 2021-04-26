@@ -1,5 +1,7 @@
 import JSONA from "./lib/core/index";
+//@ts-ignore
 import * as serviceWorker from "./serviceWorker";
+//@ts-ignore
 import { options } from "./lib/defaults/options";
 import { JSONAOptions } from "../types";
 
@@ -8,7 +10,7 @@ declare global {
     __JSONAConfig: JSONAOptions;
   }
 }
-const defaultOptions: JSONAOptions = { ...options };
+const defaultOptions = { ...options } as  JSONAOptions;
 
 JSONA({ ...defaultOptions, ...window.__JSONAConfig });
 

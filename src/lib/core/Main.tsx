@@ -19,8 +19,8 @@ import {
 // @ts-ignore
 // import * as JSONX from 
 // import { getReactElementFromJSON, } from "jsonx/src/index";
-import { getReactElementFromJSONX, } from "jsonx/dist/index.esm";
-// import { getReactElementFromJSON, } from "jsonx";
+// import { getReactElementFromJSONX, } from "jsonx/dist/index.esm";
+import { getReactElementFromJSONX, } from "jsonx";
 // import * as JSONX from "jsonx";
 
 
@@ -50,8 +50,10 @@ function ViewXComponent(props: any): JSX.Element {
   const { layer, views, viewdata, ctx, layerStates, settings, } = props;
   const { name, type, idSelector, } = layer;
   const el = document.querySelector(`#${idSelector||name}`);
-  const layerStateData = layerStates ? layerStates[name] : {};
-  const layerState = useMemo(() => layerStateData,[layerStateData]);
+  const layerState = useMemo(() =>{
+    const layerStateData = layerStates ? layerStates[name] : {};
+    return layerStateData
+  },[layerStates,name]);
   const [state, setState] = useState(layerState);
   ctx[`viewx_layer_${name}_state`] = state;
   ctx[`viewx_layer_${name}_setState`] = setState;

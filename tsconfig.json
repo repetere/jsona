@@ -18,16 +18,17 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": false,
-    "noEmit": false,
-    "jsx": "react"
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "node_modules/use-global-hook",
     "node_modules/jsonx/src/**/*.ts",
-    "node_modules/jsonx/src/**/*.tsx",
+    "node_modules/jsonx/src/**/*.tsx"
   ],
   "exclude": [
     "**/*.test.ts",
@@ -35,11 +36,13 @@
     "node_modules/jsonx/**/*.test.ts",
     "node_modules/jsonx/**/*.test.tsx"
   ],
-  "typedocOptions":{
-    "out":"docs",
-    "includes":"manual",
-    "entryPoints": ["src/index.ts"],
+  "typedocOptions": {
+    "out": "docs",
+    "includes": "manual",
+    "entryPoints": [
+      "src/index.ts"
+    ],
     "media": "./manual/media",
-    "hideGenerator":true
+    "hideGenerator": true
   }
 }

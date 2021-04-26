@@ -3,6 +3,7 @@
 import { getJSONA } from "./App";
 import { configureViewx } from "../util/config";
 import { createLayer } from "../util/html";
+//@ts-ignore
 import { options as defaultOptions } from "../defaults/options";
 import { JSONAOptions, VXALayer, VXAConfig } from "../../../types";
 import hoistNonReactStatics from "hoist-non-react-statics";
@@ -12,7 +13,7 @@ window.hoistNonReactStatics = hoistNonReactStatics;
 export default async function JSONA(
   options: JSONAOptions = {}
 ): Promise<{ app: ReactElement; options: VXAConfig;}> {
-  const appOptions: JSONAOptions = { ...defaultOptions, ...options };
+  const appOptions = { ...defaultOptions, ...options } as JSONAOptions;
   appOptions.config = await configureViewx(appOptions);
   // console.log({ options, appOptions, });
   const { querySelector, } = appOptions;

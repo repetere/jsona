@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
 import { getJSONA } from "./App";
 import { configureViewx } from "../util/config";
+//@ts-ignore
 import { options as defaultOptions } from "../defaults/options";
 import Enzyme, { render } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
