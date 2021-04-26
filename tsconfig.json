@@ -26,9 +26,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "node_modules/use-global-hook",
-    "node_modules/jsonx/src/**/*.ts",
-    "node_modules/jsonx/src/**/*.tsx"
+    "node_modules/use-global-hook"
   ],
   "exclude": [
     "**/*.test.ts",

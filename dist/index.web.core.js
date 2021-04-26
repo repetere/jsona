@@ -1,4 +1,4 @@
-var jsona = (function (exports, React, ReactDOM) {
+(function (React, ReactDOM) {
 	'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -3466,7 +3466,7 @@ var jsona = (function (exports, React, ReactDOM) {
 	  };
 	}
 
-	var index$1 = React__default['default'].createContext || createReactContext;
+	var index = React__default['default'].createContext || createReactContext;
 
 	var isarray = Array.isArray || function (arr) {
 	  return Object.prototype.toString.call(arr) == '[object Array]';
@@ -3477,7 +3477,7 @@ var jsona = (function (exports, React, ReactDOM) {
 	 */
 	var pathToRegexp_1$1 = pathToRegexp$1;
 	var parse_1$1 = parse$4;
-	var compile_1$1 = compile$3;
+	var compile_1$1 = compile$2;
 	var tokensToFunction_1$1 = tokensToFunction$2;
 	var tokensToRegExp_1$1 = tokensToRegExp$1;
 
@@ -3579,7 +3579,7 @@ var jsona = (function (exports, React, ReactDOM) {
 	 * @param  {Object=}            options
 	 * @return {!function(Object=, Object=)}
 	 */
-	function compile$3 (str, options) {
+	function compile$2 (str, options) {
 	  return tokensToFunction$2(parse$4(str, options), options)
 	}
 
@@ -4019,7 +4019,7 @@ var jsona = (function (exports, React, ReactDOM) {
 	// TODO: Replace with React.createContext once we can assume React 16+
 
 	var createNamedContext = function createNamedContext(name) {
-	  var context = index$1();
+	  var context = index();
 	  context.displayName = name;
 	  return context;
 	};
@@ -4031,7 +4031,7 @@ var jsona = (function (exports, React, ReactDOM) {
 	// TODO: Replace with React.createContext once we can assume React 16+
 
 	var createNamedContext$1 = function createNamedContext(name) {
-	  var context = index$1();
+	  var context = index();
 	  context.displayName = name;
 	  return context;
 	};
@@ -14249,14 +14249,12 @@ var jsona = (function (exports, React, ReactDOM) {
 	}
 	});
 
-	var server_node = createCommonjsModule(function (module) {
+	createCommonjsModule(function (module) {
 
 	{
 	  module.exports = reactDomServer_node_development;
 	}
 	});
-
-	var server = server_node;
 
 	function Cache () {
 	  var _cache = Object.create(null);
@@ -28406,23 +28404,6 @@ var jsona = (function (exports, React, ReactDOM) {
 	  }
 	}
 
-	const VERSION = "1.26.0";
-
-	var luxon = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		VERSION: VERSION,
-		DateTime: DateTime,
-		Duration: Duration,
-		Interval: Interval,
-		Info: Info,
-		Zone: Zone,
-		FixedOffsetZone: FixedOffsetZone,
-		IANAZone: IANAZone,
-		InvalidZone: InvalidZone,
-		LocalZone: LocalZone,
-		Settings: Settings
-	});
-
 	var fs = {};
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -28658,7 +28639,7 @@ var jsona = (function (exports, React, ReactDOM) {
 	    }
 	;
 
-	const scopedEval$1 = eval;
+	const scopedEval = eval;
 	const templateCache = new Map();
 	/**
 	 * returns a valid jsonx.children property
@@ -28803,13 +28784,13 @@ var jsona = (function (exports, React, ReactDOM) {
 	        typeof window.XMLHttpRequest === "function" &&
 	        !fs.readFileSync) {
 	        const jsFile = fetchJSONSync(template);
-	        const jsonxModule = scopedEval$1(`(${jsFile})`);
+	        const jsonxModule = scopedEval(`(${jsFile})`);
 	        templateCache.set(template, jsonxModule);
 	        return jsonxModule;
 	    }
 	    else if (typeof template === "string") {
 	        const jsFile = fs.readFileSync(path.resolve(template)).toString();
-	        const jsonxModule = scopedEval$1(`(${jsFile})`);
+	        const jsonxModule = scopedEval(`(${jsFile})`);
 	        templateCache.set(template, jsonxModule);
 	        return jsonxModule;
 	    }
@@ -28889,51 +28870,6 @@ var jsona = (function (exports, React, ReactDOM) {
 		getJSONXChildren: getJSONXChildren$1
 	});
 
-	const scopedEval = eval;
-	/**
-	 * Use JSONX for express view rendering
-	 * @param {string} filePath - path to jsonx express view
-	 * @param {object} options - property used for express view {locals}
-	 * @param {object} options.__boundConfig - property used to bind this object for JSONX, can be used to add custom components
-	 * @param {string} [options.__DOCTYPE="<!DOCTYPE html>"] - html doctype string
-	 * @param {*} callback
-	 */
-	function __express(filePath, options, callback) {
-	    try {
-	        let jsonxModule = options?.__jsonx;
-	        let isJSON = false;
-	        if (filePath) {
-	            isJSON = (path.extname(filePath) === ".json");
-	            const jsFile = fs.readFileSync(filePath).toString();
-	            jsonxModule = (isJSON)
-	                ? scopedEval(`(${jsFile})`)
-	                : scopedEval(jsFile);
-	        }
-	        const resources = Object.assign({}, options);
-	        delete resources.__boundConfig;
-	        delete resources.__DOCTYPE;
-	        delete resources.__jsonx;
-	        const context = Object.assign({ disableRenderIndexKey: false }, options?.__boundConfig);
-	        // if (isJSON) context.useJSON = true;
-	        const jsonxRenderedString = outputHTML.call(context, {
-	            jsonx: jsonxModule,
-	            resources
-	        });
-	        const template = `${options?.__DOCTYPE || "<!DOCTYPE html>"}
-${jsonxRenderedString}`;
-	        if (typeof callback === "function")
-	            callback(null, template);
-	        else
-	            return template;
-	    }
-	    catch (e) {
-	        if (typeof callback === "function")
-	            callback(e);
-	        else
-	            throw e;
-	    }
-	}
-
 	// import React, { createElement, } from 'react';
 	const createElement = React__default['default'].createElement;
 	const { componentMap, getComponentFromMap, getBoundedComponents, DynamicComponent, FormComponent, ReactHookForm, } = jsonxComponents;
@@ -28941,45 +28877,6 @@ ${jsonxRenderedString}`;
 	const { getJSONXChildren } = jsonxChildren;
 	const { displayComponent, validSimpleJSONXSyntax, simpleJSONXSyntax } = jsonxUtils;
 	let renderIndex = 0;
-	/**
-	 * Use JSONX without any configuration to render JSONX JSON to HTML and insert JSONX into querySelector using ReactDOM.render
-	 * @example
-	 * // Uses react to create <!DOCTYPE html><body><div id="myApp"><div class="jsonx-generated"><p style="color:red;">hello world</p></div></div></body>
-	 * jsonx.jsonxRender({ jsonx: { component: 'div', props:{className:'jsonx-generated',children:[{ component:'p',props:{style:{color:'red'}}, children:'hello world' }]}}, querySelector:'#myApp', });
-	 * @param {object} config - options used to inject html via ReactDOM.render
-	 * @param {object} config.jsonx - any valid JSONX JSON object
-	 * @param {object} config.resources - any additional resource used for asynchronous properties
-	 * @param {string} config.querySelector - selector for document.querySelector
-	 * @property {object} this - options for getReactElementFromJSONX
-	 */
-	function jsonxRender(config = { jsonx: { component: "" }, querySelector: "" }) {
-	    const { jsonx, resources, querySelector, DOM, portal } = config;
-	    const Render = portal ? ReactDOM__default['default'].createPortal : ReactDOM__default['default'].render;
-	    const RenderDOM = DOM || document.querySelector(querySelector);
-	    const JSONXReactElement = getReactElementFromJSONX.call(this || {}, jsonx, resources);
-	    if (!JSONXReactElement)
-	        throw ReferenceError("Invalid React Element");
-	    else if (!RenderDOM)
-	        throw ReferenceError("Invalid Render DOM Element");
-	    Render(JSONXReactElement, RenderDOM);
-	}
-	/**
-	 * Use ReactDOMServer.renderToString to render html from JSONX
-	 * @example
-	 * // Uses react to create <div class="jsonx-generated"><p style="color:red;">hello world</p></div>
-	 * jsonx.outputHTML({ jsonx: { component: 'div', props:{className:'jsonx-generated',children:[{ component:'p',props:{style:{color:'red'}}, children:'hello world' }]}}, });
-	 * @param {object} config - options used to inject html via ReactDOM.render
-	 * @param {object} config.jsonx - any valid JSONX JSON object
-	 * @param {object} config.resources - any additional resource used for asynchronous properties
-	 * @property {object} this - options for getReactElementFromJSONX
-	 * @returns {string} React genereated html via JSONX JSON
-	 */
-	function outputHTML(config = { jsonx: { component: "" } }) {
-	    const { jsonx, resources, type, props, children } = config;
-	    return this && this.useJSON
-	        ? server.renderToString(getReactElementFromJSON.call(this || {}, { type: (type || jsonx.type || jsonx.component || 'Fragment'), props: props || jsonx.props, children: children || jsonx.children }))
-	        : server.renderToString(getReactElementFromJSONX.call(this || {}, jsonx, resources));
-	}
 	/**
 	 * Use React.createElement and JSONX JSON to create React elements
 	 * @example
@@ -29072,90 +28969,6 @@ ${jsonxRenderedString}`;
 	    }
 	}
 	const getRenderedJSON = getReactElementFromJSONX;
-	const getReactElement = getReactElementFromJSONX;
-	/** converts a json object {type,props,children} into a react element
-	 * @example
-	 * jsonx.getReactElementFromJSON({type:'div',props:{title:'some title attribute'},children:'inner html text'})
-	 * @param {Object|String} options.type - 'div' or react component
-	 * @param {Object} options.props - props for react element
-	 * @param {String|[Object]} options.children - children elements
-	 * @returns {function} React element via React.createElement
-	 */
-	function getReactElementFromJSON({ type, props, children }) {
-	    return createElement(type, props, children && Array.isArray(children)
-	        ? children.map(getReactElementFromJSON)
-	        : children);
-	}
-	/** converts a jsonx json object into a react function component
-	 * @example
-	 * jsonx.compile({jsonx:{component:'div',props:{title:'some title attribute'},children:'inner html text'}}) //=>React Function Component
-	 * @param {Object} jsonx - valid JSONX JSON
-	 * @param {Object} resources - props for react element
-	 * @returns {function} React element via React.createElement
-	 */
-	function compile$2(jsonx, resources = {}) {
-	    const context = Object.assign({}, this, { returnJSON: true });
-	    const json = getReactElementFromJSONX.call(context, jsonx, resources);
-	    const func = function compiledJSONX(props) {
-	        json.props = Object.assign({}, json.props, props);
-	        return getReactElementFromJSON(json);
-	    };
-	    Object.defineProperty(func, "name", { value: this.name });
-	    return func;
-	}
-	/**
-	 * converts JSONX JSON IR to JSX
-	 * @example
-	 * jsonx.jsonToJSX({ type: 'div', props: { key: 5, title: 'test' }, children: 'hello' }) // => '<div key={5} title="test">hello</div>'
-	 * @param {Object} json - {type,props,children}
-	 * @returns {String} jsx string
-	 */
-	function outputJSX(jsonx, resources = {}) {
-	    const context = Object.assign({}, this, { returnJSON: true });
-	    const json = getReactElementFromJSONX.call(context, jsonx, resources);
-	    return jsonToJSX(json);
-	}
-	/**
-	 * Compiles JSONX into JSON IR format for react create element
-	 * @example
-	 * jsonx.outputJSON({ component: 'div', props: { title: 'test', }, children: 'hello', }); //=> { type: 'div',
-	 props: { key: 5, title: 'test' },
-	 children: 'hello' }
-	 * @property {object} this - options for getReactElementFromJSONX
-	 * @param {object} jsonx - any valid JSONX JSON object
-	 * @param {object} resources - any additional resource used for asynchronous properties
-	 * @returns {Object} json - {type,props,children}
-	 */
-	function outputJSON(jsonx, resources = {}) {
-	    //@ts-ignore
-	    const context = Object.assign({}, this, { returnJSON: true });
-	    return getReactElementFromJSONX.call(context, jsonx, resources);
-	}
-	const jsonxHTMLString = outputHTML;
-	/**
-	 * converts JSONX JSON IR to JSX
-	 * @example
-	 * jsonx.jsonToJSX({ type: 'div', props: { key: 5, title: 'test' }, children: 'hello' }) // => '<div key={5} title="test">hello</div>'
-	 * @param {Object} json - {type,props,children}
-	 * @returns {String} jsx string
-	 */
-	function jsonToJSX(json) {
-	    const propsString = json.props
-	        ? Object.keys(json.props)
-	            .filter(prop => prop.includes("__eval_") === false)
-	            .reduce((propString, prop) => {
-	            propString += ` ${prop.toString()}=${typeof json.props[prop] === "string"
-                ? `"${json.props[prop].toString()}"`
-                : `{${(json.props[`__eval_${prop}`] || json.props[prop]).toString()}}`}`;
-	            return propString;
-	        }, "")
-	        : "";
-	    return Array.isArray(json.children)
-	        ? `<${json.type} ${propsString}>
-  ${json.children.map(jsonToJSX).join('\r\n')}
-</${json.type}>`
-	        : `<${json.type}${propsString}>${json.children}</${json.type}>`;
-	}
 	/**
 	 * Exposes react module used in JSONX
 	 * @returns {Object} React
@@ -29170,37 +28983,7 @@ ${jsonxRenderedString}`;
 	function __getReactDOM() {
 	    return ReactDOM__default['default'];
 	}
-	const _jsonxChildren = jsonxChildren;
 	const _jsonxComponents = jsonxComponents;
-	const _jsonxProps = jsonxProps;
-	const _jsonxUtils = jsonxUtils;
-	const _jsonxHelpers = { numeral, luxon };
-
-	var index = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		get renderIndex () { return renderIndex; },
-		jsonxRender: jsonxRender,
-		outputHTML: outputHTML,
-		getReactElementFromJSONX: getReactElementFromJSONX,
-		getRenderedJSON: getRenderedJSON,
-		getReactElement: getReactElement,
-		getReactElementFromJSON: getReactElementFromJSON,
-		compile: compile$2,
-		outputJSX: outputJSX,
-		outputJSON: outputJSON,
-		jsonxHTMLString: jsonxHTMLString,
-		jsonToJSX: jsonToJSX,
-		__getReact: __getReact,
-		__getReactDOM: __getReactDOM,
-		_jsonxChildren: _jsonxChildren,
-		_jsonxComponents: _jsonxComponents,
-		_jsonxProps: _jsonxProps,
-		_jsonxUtils: _jsonxUtils,
-		_jsonxHelpers: _jsonxHelpers,
-		'default': getReactElementFromJSONX,
-		__express: __express,
-		renderFile: __express
-	});
 
 	/**
 	 * Expose `pathToRegexp`.
@@ -32887,23 +32670,33 @@ ${jsonxRenderedString}`;
 	    // ReactDOM.render(app, document.querySelector(querySelector));
 	}
 
-	Object.defineProperty(exports, 'React', {
-		enumerable: true,
-		get: function () {
-			return React__default['default'];
-		}
-	});
-	Object.defineProperty(exports, 'ReactDOM', {
-		enumerable: true,
-		get: function () {
-			return ReactDOM__default['default'];
-		}
-	});
-	exports.App = JSONA;
-	exports.JSONX = index;
+	// This optional code is used to register a service worker.
+	// register() is not called by default.
+	// This lets the app load faster on subsequent visits in production, and gives
+	// it offline capabilities. However, it also means that developers (and users)
+	// will only see deployed updates on subsequent visits to a page, after all the
+	// existing tabs open on the page have been closed, since previously cached
+	// resources are updated in the background.
+	// To learn more about the benefits of this model and instructions on how to
+	// opt-in, read https://bit.ly/CRA-PWA
+	Boolean(window.location.hostname === 'localhost' ||
+	    // [::1] is the IPv6 localhost address.
+	    window.location.hostname === '[::1]' ||
+	    // 127.0.0.1/8 is considered localhost for IPv4.
+	    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/));
+	function unregister() {
+	    if ('serviceWorker' in navigator) {
+	        navigator.serviceWorker.ready.then(registration => {
+	            registration.unregister();
+	        });
+	    }
+	}
 
-	Object.defineProperty(exports, '__esModule', { value: true });
+	const defaultOptions = { ...options };
+	JSONA({ ...defaultOptions, ...window.__JSONAConfig });
+	// If you want your app to work offline and load faster, you can change
+	// unregister() to register() below. Note this comes with some pitfalls.
+	// Learn more about service workers: https://bit.ly/CRA-PWA
+	unregister();
 
-	return exports;
-
-}({}, React, ReactDOM));
+}(React, ReactDOM));

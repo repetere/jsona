@@ -180,9 +180,8 @@ function getPlugins({
 export default [
   //web
   {
-    // input: "build/index.js",
-    input: "src/module.ts",
-
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -194,7 +193,8 @@ export default [
   },
   //web core
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -208,7 +208,8 @@ export default [
   },
   //web minified
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -220,7 +221,8 @@ export default [
   },
   //web minified core
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -234,7 +236,8 @@ export default [
   },
   //web  legacy
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -248,7 +251,8 @@ export default [
   },
   //web  core legacy
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -264,7 +268,8 @@ export default [
   },
   //web minified legacy
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -278,7 +283,8 @@ export default [
   },
   //web minified core legacy
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -295,7 +301,8 @@ export default [
 
   //server
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: true,
@@ -308,7 +315,8 @@ export default [
   },
   //server react-dom-server
   {
-    input: "src/module.ts",
+    input: "build/src/index.js",
+    // input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: true,
