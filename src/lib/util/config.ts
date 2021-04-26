@@ -1,8 +1,8 @@
 // @ts-ignore
 // import * as JSONX from "jsonx/src/index";
 // import * as JSONX from "jsonx/dist/index.esm";
-// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
-import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.esm";
+import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
+// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.esm";
 // import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/src/index";
 
 // import * as JSONX from "jsonx";
@@ -11,7 +11,7 @@ import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.e
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
 import {
-  VXAOptions,
+  JSONAOptions,
   VXAConfig,
   VXALayer,
   VXAComponent,
@@ -217,7 +217,7 @@ export async function addCustomFiles({
 }
 
 export async function configureViewx(
-  options: VXAOptions = {}
+  options: JSONAOptions = {}
 ): Promise<VXAConfig> {
   let layerMaxOrder = 0;
   let applicationRootLayerName;

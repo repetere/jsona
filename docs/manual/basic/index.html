@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Template</title>
+  <link rel="stylesheet" href="https://unpkg.com/style.css">
+  <style type="text/css">
+    .markdown-body {
+      max-width: 46em;
+      margin: 2em auto;
+      padding: 0 1em;
+      overflow: hidden;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <main class="markdown-body"><h1>Template</h1>
+<pre><code class="hljs language-javascript">templates:{
+    [layerName]:{
+        [pathname]:{ <span class="hljs-comment">//__error_404,__error_500</span>
+            <span class="hljs-attr">jsonx</span>:{<span class="hljs-comment">/* jsonx react element */</span>},
+            <span class="hljs-attr">resources</span>:{
+                [propertyName]:<span class="hljs-string">'fetchPath'</span>,
+                [propertyName]:{
+                    <span class="hljs-attr">fetchPath</span>:<span class="hljs-string">'url'</span>,
+                    <span class="hljs-attr">fetchOptions</span>:{
+                        <span class="hljs-attr">blocking</span>:<span class="hljs-literal">false</span>,
+                    }
+                },
+            },
+            <span class="hljs-attr">preRenderFunctions</span>:[functionName,<span class="hljs-string">'func:window.functionName'</span>,<span class="hljs-string">'func:viewx.functions.functionName'</span>],
+            <span class="hljs-comment">// preRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],</span>
+            <span class="hljs-attr">postRenderFunctions</span>:[functionName,<span class="hljs-built_in">window</span>.functionName,viewx.functions.functionName],
+            <span class="hljs-comment">// postRenderFunctionPipe:[functionName,window.functionName,viewx.functions.functionName],</span>
+            <span class="hljs-attr">pageData</span>:[
+                {
+                    <span class="hljs-attr">tagName</span>:<span class="hljs-string">'title'</span>,
+                    <span class="hljs-attr">innerHTML</span>:<span class="hljs-string">'my title'</span>,
+                    <span class="hljs-attr">attributes</span>:{<span class="hljs-attr">prop1</span>:value,<span class="hljs-attr">prop2</span>:value}
+                }
+            ],
+        }
+    }
+}
+</code></pre>
+<h1>ViewX State</h1>
+<pre><code class="hljs language-javascript">views:{
+    [layerName]:jsonx,
+},
+<span class="hljs-attr">viewdata</span>:{
+    [layerName]:jsonx,
+},
+<span class="hljs-attr">templates</span>:{
+    [layerName]:{
+        [pathName]:{
+            jsonx,
+        }
+    }
+},
+<span class="hljs-attr">user</span>:{},
+<span class="hljs-attr">auth</span>:{},
+<span class="hljs-attr">ui</span>:{},
+</code></pre>
+<h1>ViewX Configuration</h1>
+<pre><code class="hljs language-javascript">{
+    <span class="hljs-attr">customComponents</span>:[
+        {
+            <span class="hljs-attr">name</span>:ComponentName,
+            <span class="hljs-attr">format</span>:umd|jsonx,
+            <span class="hljs-attr">type</span>:component|library,
+            <span class="hljs-attr">umdFilePath</span>:url,
+            jsonx,
+            <span class="hljs-attr">stylesheets</span>:[url,],
+        }
+    ],
+    <span class="hljs-attr">customScripts</span>:[url,],
+    <span class="hljs-attr">customStyles</span>:[url,],
+    <span class="hljs-attr">customFunctions</span>:[<span class="hljs-built_in">Function</span>,],
+    <span class="hljs-attr">layers</span>:[
+        loading,
+        modal,
+        overlay,
+        header,
+        footer,
+        nav,
+        error,
+        layout,
+    ],
+    <span class="hljs-attr">settings</span>:{
+        <span class="hljs-attr">debug</span>:<span class="hljs-literal">true</span>,
+        <span class="hljs-attr">router</span>:hash|memory|broswer,
+        <span class="hljs-attr">cacheTemplatesOffline</span>:<span class="hljs-literal">false</span>,
+        <span class="hljs-attr">templatePath</span>:url,
+        <span class="hljs-attr">templateFetchOptions</span>:{},
+    },
+    <span class="hljs-attr">querySelector</span>:<span class="hljs-string">'#root'</span>,
+    <span class="hljs-attr">application</span>:{
+        <span class="hljs-attr">state</span>:{
+            prop,
+            prop2,
+        },
+        <span class="hljs-attr">preRenderFunction</span>:[functionName,<span class="hljs-string">'func:window.functionName'</span>,<span class="hljs-string">'func:viewx.functions.functionName'</span>],
+        <span class="hljs-attr">preRenderFunctionPipe</span>:[functionName,<span class="hljs-built_in">window</span>.functionName,viewx.functions.functionName],
+        <span class="hljs-attr">postRenderFunction</span>:[functionName,<span class="hljs-built_in">window</span>.functionName,viewx.functions.functionName],
+        <span class="hljs-attr">postRenderFunctionPipe</span>:[functionName,<span class="hljs-built_in">window</span>.functionName,viewx.functions.functionName],
+    },
+    <span class="hljs-attr">templates</span>:{},
+}
+</code></pre>
+</main>
+
+
+</body></html>

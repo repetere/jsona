@@ -384,7 +384,7 @@ export const options = {
                 }
               },
               __dangerouslyBindEvalProps: {
-                onSubmit: function(values){
+                onSubmit: function(this:any, values: any){
                   console.log({ values }, this);
                   this.viewx.Functions.loginUser(values);
 

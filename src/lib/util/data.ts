@@ -80,15 +80,15 @@ export function getPath(path: string, options: any): { path: string; options: an
  */
 export async function fetchJSON(this: VXAFunctionContext, path: string, options:any = {}):Promise<any> {
   const userAccessToken = (this.props.user.token) ? {
-    [this.settings.accessTokenProperty]:this.props.user.token,
+    [this.settings?.accessTokenProperty|| "x-access-token"]:this.props.user.token,
   } : {};
   options.headers = {
     ...options.headers,
-    ...this.settings.fetchHeaders,
+    ...this.settings?.fetchHeaders,
     ...this.props.user.fetchHeaders,
     ...userAccessToken,
   };
-  if (this.settings.useWindowRequestQuery && window.location.search) {
+  if (this.settings?.useWindowRequestQuery && window.location.search) {
     // const pathQuery = {
     //   body: Object.assign({},
     //     qs.parse(window.location.search.replace('?', '')),
