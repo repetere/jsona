@@ -10,7 +10,7 @@
   "type": "module",
   "dependencies": {
     "hoist-non-react-statics": "3.3.2",
-    "jsonx": "1.9.1",
+    "jsonx": "1.9.2",
     "luxon": "1.26.0",
     "path-to-regexp": "6.2.0",
     "promisie": "3.0.1",
