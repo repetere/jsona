@@ -1,3 +1,11 @@
+## [0.6.5](https://github.com/repetere/jsona/compare/v0.6.4...v0.6.5) (2021-04-30)
+
+
+### Bug Fixes
+
+* rollup fix ([32bd93a](https://github.com/repetere/jsona/commit/32bd93a768e025652685a6d0aa4a8b00649d7892))
+* updating jsonx ([31c2db0](https://github.com/repetere/jsona/commit/31c2db089643616ab24610aa62509e130b6948b2))
+
 ## [0.6.4](https://github.com/repetere/jsona/compare/v0.6.3...v0.6.4) (2021-04-26)
 
 
