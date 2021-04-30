@@ -1,6 +1,6 @@
 // import React, { ReactElement } from "react";
 import ReactDOM from "react-dom";
-import { VXALayer, pageAttribute, } from "../../../types";
+import { VXALayer, pageAttribute, } from "../../types";
 import { insertScriptParams } from "../../internal_types/config";
 
 /**

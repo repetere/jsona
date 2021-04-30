@@ -1,4 +1,4 @@
-import { VXALayer, VXAConfig, } from "../../types";
+import { VXALayer, VXAConfig, } from "../types";
 
 export enum customFileType{
   script = "script",

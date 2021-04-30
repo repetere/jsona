@@ -1,16 +1,13 @@
-
 // @ts-ignore
 import * as JSONA from "./module";
-console.log({ JSONA });
-
-// export { JSONA, React, ReactDOM, JSONX };
+const { App, React, ReactDOM, JSONX } = JSONA
 
 describe('JSONA module', function () {
   describe('module', () => {
     // it('should return useGlobalHook', () => {
-    //   const ugh = jsonx.__getUseGlobalHook();
+    //   const ugh = JSONX.__getUseGlobalHook();
     //   console.log({ ugh });
-    //   expect(jsonx.__getUseGlobalHook()).to.be.a('function');
+    //   expect(JSONX.__getUseGlobalHook()).to.be.a('function');
     // });
     it('should return a JSONA Object', () => {
       expect(typeof JSONA).toBe('object');

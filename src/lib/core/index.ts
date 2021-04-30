@@ -5,7 +5,7 @@ import { configureViewx } from "../util/config";
 import { createLayer } from "../util/html";
 //@ts-ignore
 import { options as defaultOptions } from "../defaults/options";
-import { JSONAOptions, VXALayer, VXAConfig } from "../../../types";
+import { JSONAOptions, VXALayer, VXAConfig } from "../../types";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import { ReactElement } from "react";
 window.hoistNonReactStatics = hoistNonReactStatics;

@@ -3,7 +3,7 @@ import JSONA from "./lib/core/index";
 import * as serviceWorker from "./serviceWorker";
 //@ts-ignore
 import { options } from "./lib/defaults/options";
-import { JSONAOptions } from "../types";
+import { JSONAOptions } from "./types";
 
 declare global {
   interface Window {

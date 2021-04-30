@@ -141,15 +141,16 @@ function getPlugins({
       declaration: false,
       declarationDir: null,
       allowJs:true,
+      // rootDir:'src/',
       target: legacy?"es6":"esnext",
     }),
     commonjs({
       extensions: ['.js'],
     }), // so Rollup can convert `ms` to an ES module
-    globals({
-      // react: 'React',
-      // 'react-dom': 'ReactDOM'
-    }),
+    // globals({
+    //   // react: 'React',
+    //   // 'react-dom': 'ReactDOM'
+    // }),
   ];
   if (serverDom) {
     plugins.push(alias({
@@ -174,14 +175,15 @@ function getPlugins({
       ]);
     return minifyPlugins;
   }
+  console.log({plugins})
   return plugins;
 }
 
 export default [
   //web
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -193,8 +195,8 @@ export default [
   },
   //web core
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -208,8 +210,8 @@ export default [
   },
   //web minified
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -221,8 +223,8 @@ export default [
   },
   //web minified core
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -236,8 +238,8 @@ export default [
   },
   //web  legacy
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -251,8 +253,8 @@ export default [
   },
   //web  core legacy
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: false,
@@ -268,8 +270,8 @@ export default [
   },
   //web minified legacy
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -283,8 +285,8 @@ export default [
   },
   //web minified core legacy
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: true,
       server: false,
@@ -301,8 +303,8 @@ export default [
 
   //server
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: true,
@@ -315,8 +317,8 @@ export default [
   },
   //server react-dom-server
   {
-    input: "build/src/index.js",
-    // input: "src/module.ts",
+    // input: "build/src/index.js",
+    input: "src/module.ts",
     output: getOutput({
       minify: false,
       server: true,

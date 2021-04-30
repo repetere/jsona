@@ -7,7 +7,7 @@
 import store from "store2";
 import qs from 'querystring';
 import * as pathToRegexp from "path-to-regexp";
-import { VXAFunctionContext, vxtResource, vxtTemplateRoute, } from "../../../types";
+import { VXAFunctionContext, vxtResource, vxtTemplateRoute, } from "../../types";
 import { jsonxResourceProps, } from 'jsonx/src/types/jsonx';
 
 // import { insertScriptParams } from '../../internal_types/config';

@@ -14,7 +14,7 @@ import {
   VXATemplateRouteLayer,
   appLoadRoute,
   layerPathRoutes,
-} from "../../../types";
+} from "../../types";
 import { jsonxResourceProps, } from 'jsonx/src/types/jsonx';
 
 // import { insertScriptParams } from '../../internal_types/config';

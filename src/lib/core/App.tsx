@@ -12,7 +12,7 @@ import {
 
 import getMainComponent from "./Main";
 import { getGlobalStateHooks } from "../stores";
-import { JSONAOptions, VXAConfig } from "../../../types";
+import { JSONAOptions, VXAConfig } from "../../types";
 import { ReactElementLike } from "prop-types";
 
 export async function getJSONA(

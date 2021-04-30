@@ -15,7 +15,7 @@ import {
   VXAConfig,
   VXALayer,
   VXAComponent,
-} from "../../../types";
+} from "../../types";
 import { jsonxLibrary } from 'jsonx/src/types/jsonx';
 
 import {

@@ -14,7 +14,7 @@ import {
   JSONAOptions,
   VXADispatchAction,
   appLoadViewParams
-} from "../../../types";
+} from "../../types";
 
 // @ts-ignore
 // import * as JSONX from 
