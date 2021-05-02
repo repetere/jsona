@@ -175,7 +175,7 @@ function getPlugins({
       ]);
     return minifyPlugins;
   }
-  console.log({plugins})
+  // console.log({plugins})
   return plugins;
 }
 

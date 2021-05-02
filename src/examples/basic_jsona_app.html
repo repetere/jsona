@@ -3,12 +3,291 @@
   <head>
     <meta charset="utf-8">
     <title>SIMPLE JSONA TEST</title>
-    <script type="text/javascript" src="../../dist/index.umd.min.js"></script>
+    <script type="text/javascript" src="../../dist/index.umd.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="text/javascript">
-      jsona.App()
+    const jsonaTemplates = {
+      header:{
+        __error_404:{
+          jsonx:{
+            component:"header",
+            children:"error header"
+          }
+        },
+        '/':{
+          jsonx:{
+            component:"header",
+            children:"home header"
+          }
+        },
+        '/page-2':{
+          jsonx:{
+            component:"header",
+            children:"page-2 header"
+          }
+        },
+        '/page-3':{
+          jsonx:{
+            component:"header",
+            children:"page-3 header"
+          }
+        },
+        '/:catchall*':{
+          jsonx:{
+            component:"header",
+            children:"header"
+          }
+        },
+      },
+      root:{
+        __error_404: {
+          jsonx: {
+            component: "div",
+            children: [
+              {
+                component: "h1",
+                children: "Not Found"
+              },
+              {
+                component: "div",
+                thisprops: {
+                  _children: ["location", "pathname"]
+                }
+              }
+            ]
+          },
+          pageData: [
+            {
+              tagName: "title",
+              attributes: {},
+              innerHTML: "Not Found"
+            }
+          ]
+        },
+        __error_500: {
+          jsonx: {
+            component: "div",
+            children: [
+              {
+                component: "h1",
+                children: "Error"
+              },
+              {
+                component: "div",
+                props: {
+                  style: {
+                    padding: "1rem",
+                    margin: "1rem",
+                    border: "1px solid lightgrey"
+                  }
+                },
+                children: [
+                  {
+                    component: "pre",
+                    resourceprops: {
+                      _children: ["error", "message"]
+                    }
+                  },
+                  {
+                    component: "pre",
+                    resourceprops: {
+                      _children: ["error", "stack"]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          pageData: [
+            {
+              tagName: "title",
+              attributes: {},
+              innerHTML: "Error"
+            }
+          ]
+        },
+        '/':{
+          preRenderFunctions:[],
+          pageData:[
+            {
+              tagName:'title',
+              attributes:{},
+              innerHTML:"Basic JSONA App"
+            }
+          ],
+          jsonx:{
+            component:'main',
+            children:[
+              {div:'hello world!!!'},
+              {
+                ul:[
+                  {li:[{Link:{props:{to:'/'},children:'index'}}]},
+                  {li:[{Link:{props:{to:'/page-1'},children:'page1'}}]},
+                  {li:[{Link:{props:{to:'/page-2'},children:'page2'}}]},
+                  {li:[{Link:{props:{to:'/page-3'},children:'page3'}}]}
+                ]
+              }
+            ]
+          }
+        },
+        '/page-1':{
+          preRenderFunctions:[],
+          pageData:[
+            {
+              tagName:'title',
+              attributes:{},
+              innerHTML:"Page 1"
+            }
+          ],
+          jsonx:{
+            component:'main',
+            children:[
+              {div:'page 1!!!'},
+              {
+                ul:[
+                  {li:[{Link:{props:{to:'/'},children:'index'}}]},
+                  {li:[{Link:{props:{to:'/page-1'},children:'page1'}}]},
+                  {li:[{Link:{props:{to:'/page-2'},children:'page2'}}]},
+                  {li:[{Link:{props:{to:'/page-3'},children:'page3'}}]}
+                ]
+              }
+            ]
+          }
+        },
+        '/page-2':{
+          preRenderFunctions:[],
+          pageData:[
+            {
+              tagName:'title',
+              attributes:{},
+              innerHTML:"Page 2"
+            }
+          ],
+          jsonx:{
+            component:'main',
+            children:[
+              {div:'page 2!!!'},
+              {
+                ul:[
+                  {li:[{Link:{props:{to:'/'},children:'index'}}]},
+                  {li:[{Link:{props:{to:'/page-1'},children:'page1'}}]},
+                  {li:[{Link:{props:{to:'/page-2'},children:'page2'}}]},
+                  {li:[{Link:{props:{to:'/page-3'},children:'page3'}}]}
+                ]
+              }
+            ]
+          }
+        }
+      },
+    }
+    const AppConfig = {
+      templates: jsonaTemplates,
+      // templates: window.placeholderTemplates.templates,
+      settings: {
+        // templatePath: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/templates', //TODO: should be remote location of your templates
+        router: "hash", //TODO: this should be 'browser' on server
+        // hasPreloadedTemplates: true //TODO:remove
+      },
+      application: {
+        state: {
+          name: "VXA Demo",
+          version: "0.0.1",
+          cartItems: []
+        }
+      },
+      initialScripts: [
+        // "https://unpkg.com/deepmerge@4.2.2/dist/umd.js",
+        // "https://unpkg.com/tiny-warning@1.0.3/dist/tiny-warning.js",
+        // "temp/formik_dependencies.js"
+      ],
+      customComponents: [
+        // {
+        //   name: "ReactModal",
+        //   format: "umd",
+        //   type: "component",
+        //   umdFilePath:
+        //     "https://unpkg.com/react-modal@3.10.1/dist/react-modal.js"
+        //   // jsonx,
+        //   // stylesheets:[url,],
+        // },
+        // {
+        //   name: "formik",
+        //   format: "umd",
+        //   type: "library",
+        //   umdFilePath:
+        //     "https://unpkg.com/formik@2.0.6/dist/formik.umd.development.js"
+        //   // umdFilePath: 'https://unpkg.com/formik/dist/formik.umd.production.js',
+        //   // jsonx,
+        //   // stylesheets: [ ],
+        // },
+        // // {
+        // //   name: "Spectre",
+        // //   format: "umd",
+        // //   type: "library",
+        // //   umdFilePath: "node_modules/jsonx/design/spectre.umd.js"
+        // // },
+        // {
+        //   name: "sayHello",
+        //   format: "jsonx",
+        //   type: "component",
+        //   jsonx: {
+        //     render: {
+        //       body: {
+        //         component: "div",
+        //         children: "HELLO!"
+        //       }
+        //     }
+        //   }
+        // }
+      ],
+      customScripts: [
+        /*url,*/
+        // "https://unpkg.com/scheduler@0.18.0/umd/scheduler.production.min.js"
+      ],
+      customStyles: [
+      /*url,*/
+        // "node_modules/spectre.css/dist/spectre.min.css"
+      ],
+      customFunctions: {
+        /*Function, */
+      },
+      layers: [
+        {
+          order: 100,
+          name: "loading",
+          system: true,
+          type: "loadingView"
+        },
+        {
+          order: 200,
+          name: "modal",
+          system: true,
+          type: "overlay"
+        },
+        // overlay
+        {
+          order: 400,
+          name: "header",
+          system: true,
+          type: "view"
+        },
+        // nav
+        // footer
+        // error
+        // {
+        //   order: 900,
+        //   name: "root",
+        //   system: true,
+        //   type: "applicationRoot"
+        // }
+      ]
+    };
+    void async function main(){
+      const App = await jsona.App(AppConfig)
+      console.log({App})
+    }()
     </script>
   </body>
 </html>

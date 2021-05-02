@@ -69,7 +69,7 @@ function ViewXComponent(props: any): JSX.Element {
 
   return (
     <Fragment key="viewx">
-      {(type === "applicationRoot")
+      {(type !== "overlay")
         ? jsonxChildren
         : el ? ReactDOM.createPortal(jsonxChildren, el) : null
       }

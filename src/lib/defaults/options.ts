@@ -405,8 +405,6 @@ export const options = {
           }
         ]
       },
-      
-
       "/": {
         // '/:catchall*': {
         preRenderFunctions: [
