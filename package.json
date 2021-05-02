@@ -1,13 +1,14 @@
 {
   "name": "@jsonstack/jsona",
   "version": "0.6.6",
-  "main": "dist/index.cjs.js",
+  "description": "Construct SPA React Applciations with JSON using Typescript",
+  "type": "module",
   "module": "build/index.js",
+  "main": "dist/index.cjs.js",
   "esm": "dist/index.esm.js",
   "browser": "dist/index.umd.js",
   "web": "dist/index.web.js",
   "modules.root": "build",
-  "type": "module",
   "dependencies": {
     "hoist-non-react-statics": "3.3.2",
     "jsonx": "^1.9.2",

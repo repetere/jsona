@@ -60449,7 +60449,6 @@ ${jsonxRenderedString}`;
             const templateRoute = viewxTemplateLayer ? findMatchingRoutePath(viewxTemplateLayer, pathname, {
                 return_matching_keys: true
             }) : undefined;
-            console.log({layer,templateRoute,viewxTemplateLayer})
             if (type === "overlay" && templateRoute)
                 hasOverlayLayer = true;
             if (!templateRoute &&
@@ -60598,13 +60597,26 @@ ${jsonxRenderedString}`;
             templateRouteLayers.forEach((templateRouteLayer) => __awaiter(this, void 0, void 0, function* () {
                 const functionNames = templateRouteLayer.vxtObject[property] || [];
                 // @ts-ignore
-                const funcs = functionNames.map(functionName => getFunctionFromNameString({
-                    Functions,
-                    functionContext,
-                    functionName
-                })(templateViewData));
-                promiseNames.push(...functionNames);
-                promises.push(...funcs);
+                functionNames.map((functionName) => {
+                    if (typeof functionName === 'function') {
+                        const func = functionName.bind(functionContext)(templateViewData);
+                        promiseNames.push(functionName.name);
+                        promises.push(func);
+                        return func;
+                    }
+                    else {
+                        const func = getFunctionFromNameString({
+                            Functions,
+                            functionContext,
+                            functionName
+                        })(templateViewData);
+                        promiseNames.push(functionName);
+                        promises.push(func);
+                        return func;
+                    }
+                });
+                // promiseNames.push(...functionNames);
+                // promises.push(...funcs);
             }));
             // @ts-ignore
             const results = yield promiseSeries(
@@ -60706,7 +60718,6 @@ ${jsonxRenderedString}`;
     }
     function ViewXComponent(props) {
         const { layer, views, viewdata, ctx, layerStates, settings, } = props;
-        // console.log({props})
         const { name, type, idSelector, } = layer;
         const el = document.querySelector(`#${idSelector || name}`);
         const layerState = react.useMemo(() => {
