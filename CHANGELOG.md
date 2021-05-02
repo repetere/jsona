@@ -1,3 +1,10 @@
+## [0.6.6](https://github.com/repetere/jsona/compare/v0.6.5...v0.6.6) (2021-05-02)
+
+
+### Bug Fixes
+
+* adding rendering multiple layers ([bc63e0d](https://github.com/repetere/jsona/commit/bc63e0d613c41713e4fe3863c45de7bdf4c639bc))
+
 ## [0.6.5](https://github.com/repetere/jsona/compare/v0.6.4...v0.6.5) (2021-04-30)
 
 
