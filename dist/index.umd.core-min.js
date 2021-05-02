@@ -24034,11 +24034,14 @@ ${jsonxRenderedString}`;
 	 * @param options
 	 */
 	async function loadTemplates({ config, viewxTemplates, templates, setTemplates, setUI, ui, layers, Functions, functionContext }) {
+	    // console.log({  config  })
 	    // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
 	    const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(functionContext);
 	    const loadedTemplates = config.settings.hasPreloadedTemplates
 	        ? {}
-	        : await fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions);
+	        : config.settings.templatePath
+	            ? await fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions)
+	            : {};
 	    viewxTemplates = layers.reduce((result, layer) => {
 	        const { name } = layer;
 	        result[name] = {
@@ -24402,7 +24405,7 @@ ${jsonxRenderedString}`;
 	        window.__ViewXContext.getReactElement = getReactElement;
 	    }
 	    const jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
-	    return (jsxRuntime.jsx(React.Fragment, { children: (type === "applicationRoot")
+	    return (jsxRuntime.jsx(React.Fragment, { children: (type !== "overlay")
 	            ? jsonxChildren
 	            : el ? ReactDOM__default['default'].createPortal(jsonxChildren, el) : null }, "viewx"));
 	}

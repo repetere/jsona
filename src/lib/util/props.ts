@@ -59,6 +59,7 @@ export async function loadTemplates({
   Functions,
   functionContext
 }: appLoadTemplates): Promise<{ viewxTemplates: VXATemplates, updatedUI:any, }> {
+  // console.log({  config  })
   // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
   const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(
     functionContext
@@ -66,10 +67,12 @@ export async function loadTemplates({
 
   const loadedTemplates = config.settings.hasPreloadedTemplates
     ? {}
-    : await fetchFunction(
+    : config.settings.templatePath 
+      ? await fetchFunction(
         config.settings.templatePath,
         config.settings.templateFetchOptions
-      );
+      )
+      : {};
 
   viewxTemplates = layers.reduce((result: VXATemplates, layer) => {
     const { name } = layer;

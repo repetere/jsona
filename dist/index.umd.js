@@ -60362,11 +60362,14 @@ ${jsonxRenderedString}`;
      */
     function loadTemplates({ config, viewxTemplates, templates, setTemplates, setUI, ui, layers, Functions, functionContext }) {
         return __awaiter(this, void 0, void 0, function* () {
+            // console.log({  config  })
             // const fetchFunctionObject = Functions.fetchJSON.bind(functionContext) || fetchJSON.bind(functionContext);
             const fetchFunction = (Functions.fetchJSON || fetchJSON).bind(functionContext);
             const loadedTemplates = config.settings.hasPreloadedTemplates
                 ? {}
-                : yield fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions);
+                : config.settings.templatePath
+                    ? yield fetchFunction(config.settings.templatePath, config.settings.templateFetchOptions)
+                    : {};
             viewxTemplates = layers.reduce((result, layer) => {
                 const { name } = layer;
                 result[name] = Object.assign(Object.assign({}, loadedTemplates[name]), templates[name]);
@@ -60446,6 +60449,7 @@ ${jsonxRenderedString}`;
             const templateRoute = viewxTemplateLayer ? findMatchingRoutePath(viewxTemplateLayer, pathname, {
                 return_matching_keys: true
             }) : undefined;
+            console.log({layer,templateRoute,viewxTemplateLayer})
             if (type === "overlay" && templateRoute)
                 hasOverlayLayer = true;
             if (!templateRoute &&
@@ -60702,6 +60706,7 @@ ${jsonxRenderedString}`;
     }
     function ViewXComponent(props) {
         const { layer, views, viewdata, ctx, layerStates, settings, } = props;
+        // console.log({props})
         const { name, type, idSelector, } = layer;
         const el = document.querySelector(`#${idSelector || name}`);
         const layerState = react.useMemo(() => {
@@ -60717,7 +60722,7 @@ ${jsonxRenderedString}`;
             window.__ViewXContext.getReactElement = getReactElement;
         }
         const jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
-        return (jsxRuntime.jsx(react.Fragment, { children: (type === "applicationRoot")
+        return (jsxRuntime.jsx(react.Fragment, { children: (type !== "overlay")
                 ? jsonxChildren
                 : el ? reactDom.createPortal(jsonxChildren, el) : null }, "viewx"));
     }
