@@ -6,9 +6,19 @@
     <script type="text/javascript" src="../../dist/index.umd.js"></script>
   </head>
   <body>
+    <div id="loading"></div>
     <div id="root"></div>
     <script type="text/javascript">
     const jsonaTemplates = {
+      loading:{
+
+        '/:catchall*':{
+          jsonx:{
+            component:"div",
+            children:"loading..."
+          }
+        },
+      },
       header:{
         __error_404:{
           jsonx:{
@@ -133,7 +143,25 @@
           }
         },
         '/page-1':{
-          preRenderFunctions:[],
+          preRenderFunctions:[
+            // 'func:viewx.Functions.debug',
+            async function testFunction(props){
+
+              console.log({props})
+              return new Promise((resolve,reject)=>{
+                setTimeout(()=>{
+                  console.log('timer done')
+                  resolve(1)
+                },3000)
+              })
+            }
+          ],
+          postRenderFunctions:[
+            function testEndFunction(props){
+              console.log({props},this,arguments)
+              return true
+            }
+          ],
           pageData:[
             {
               tagName:'title',
@@ -154,7 +182,11 @@
                 ]
               }
             ]
-          }
+          },
+          "resources": {
+            "album": "https://jsonplaceholder.typicode.com/albums/1",
+            "photos": "https://jsonplaceholder.typicode.com/albums/1/photos"
+          },
         },
         '/page-2':{
           preRenderFunctions:[],

@@ -31020,13 +31020,26 @@ ${jsonxRenderedString}`;
 	    templateRouteLayers.forEach(async (templateRouteLayer) => {
 	        const functionNames = templateRouteLayer.vxtObject[property] || [];
 	        // @ts-ignore
-	        const funcs = functionNames.map(functionName => getFunctionFromNameString({
-	            Functions,
-	            functionContext,
-	            functionName
-	        })(templateViewData));
-	        promiseNames.push(...functionNames);
-	        promises.push(...funcs);
+	        functionNames.map((functionName) => {
+	            if (typeof functionName === 'function') {
+	                const func = functionName.bind(functionContext)(templateViewData);
+	                promiseNames.push(functionName.name);
+	                promises.push(func);
+	                return func;
+	            }
+	            else {
+	                const func = getFunctionFromNameString({
+	                    Functions,
+	                    functionContext,
+	                    functionName
+	                })(templateViewData);
+	                promiseNames.push(functionName);
+	                promises.push(func);
+	                return func;
+	            }
+	        });
+	        // promiseNames.push(...functionNames);
+	        // promises.push(...funcs);
 	    });
 	    // @ts-ignore
 	    const results = await promiseSeries(

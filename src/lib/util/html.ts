@@ -42,43 +42,44 @@ export function insertJavaScript({
   src,
   name,
   async = true,
-  onload
+  onload,
+  doc,
 }: insertScriptParams): void {
-  (function(d, s, id) {
+  (function(HTMLDocument, ElementTagName, id) {
     const tagId = `viewx-script-${id}`;
-    if (d.getElementById(id)) return;
-    const s0: Node | null = d.getElementsByTagName(s)[0];
-    const j: HTMLElement = d.createElement(s);
-    j.setAttribute("async", async.toString());
-    j.id = tagId;
-    j.setAttribute("type", "text/javascript");
-    j.setAttribute("src", src);
+    if (HTMLDocument.getElementById(id)) return;
+    const firstHTMLDocumentScript: Node | null = HTMLDocument.getElementsByTagName(ElementTagName)[0];
+    const newScript: HTMLElement = HTMLDocument.createElement(ElementTagName);
+    newScript.setAttribute("async", async.toString());
+    newScript.id = tagId;
+    newScript.setAttribute("type", "text/javascript");
+    newScript.setAttribute("src", src);
     if (src.includes('://')) {
-      const a = document.createElement('a');
+      const a = HTMLDocument.createElement('a');
       a.setAttribute('ref', src);
-      if (a.origin !== window.location.origin) j.setAttribute('crossorigin', 'true');
+      if (a.origin !== window.location.origin) newScript.setAttribute('crossorigin', 'true');
     }
-    if (onload) j.onload = onload;
+    if (onload) newScript.onload = onload;
     // @ts-ignore
-    if (s0) s0.parentNode.insertBefore(j, s0);
-    else document.head.prepend(j);
-  })(document || window.document, "script", name);
+    if (firstHTMLDocumentScript) firstHTMLDocumentScript.parentNode.insertBefore(newScript, firstHTMLDocumentScript);
+    else HTMLDocument.head.prepend(newScript);
+  })(doc || document || window.document, "script", name);
 }
 
-export function insertStyleSheet({ src, name, onload }: insertScriptParams) {
-  (function(d, l, id) {
+export function insertStyleSheet({ src, name, onload, doc }: insertScriptParams) {
+  (function(HTMLDocument, ElementTagName, id) {
     const tagId = `viewx-style-${id}`;
-    if (d.getElementById(id)) return;
-    const s0 = d.getElementsByTagName(l)[0];
-    const ss: HTMLElement = d.createElement(l);
-    ss.id = tagId;
-    ss.setAttribute("rel", "stylesheet");
-    ss.setAttribute("type", "text/css");
-    ss.setAttribute("href", src);
-    if (onload) ss.onload = onload;
-    if (s0 && s0.parentNode) s0.parentNode.insertBefore(ss, s0);
-    else document.head.prepend(ss);
-  })(document || window.document, "link", name);
+    if (HTMLDocument.getElementById(id)) return;
+    const firstHTMLDocumentStylesheet = HTMLDocument.getElementsByTagName(ElementTagName)[0];
+    const newStyleSheet: HTMLElement = HTMLDocument.createElement(ElementTagName);
+    newStyleSheet.id = tagId;
+    newStyleSheet.setAttribute("rel", "stylesheet");
+    newStyleSheet.setAttribute("type", "text/css");
+    newStyleSheet.setAttribute("href", src);
+    if (onload) newStyleSheet.onload = onload;
+    if (firstHTMLDocumentStylesheet && firstHTMLDocumentStylesheet.parentNode) firstHTMLDocumentStylesheet.parentNode.insertBefore(newStyleSheet, firstHTMLDocumentStylesheet);
+    else HTMLDocument.head.prepend(newStyleSheet);
+  })(doc || document || window.document, "link", name);
 }
 
 export function createLayer({

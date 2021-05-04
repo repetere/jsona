@@ -1,68 +1,266 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# JSONA
+[![Coverage Status](https://coveralls.io/repos/github/repetere/jsona/badge.svg?branch=main)](https://coveralls.io/github/repetere/jsona?branch=main) [![Build, Test, Release](https://github.com/repetere/jsona/actions/workflows/release.yml/badge.svg)](https://github.com/repetere/jsona/actions/workflows/release.yml)
 
-## Available Scripts
+## Description
 
-In the project directory, you can run:
+**JSONA** is a module that constructs a single page react applciation (SPA) with JSON using Typescript.
+### Jump right in
 
-### `npm start`
+JSONA is designed so you can quickly build a React SPA by defining your layout, routes, and application functionality with JSON. The JSONA Library includes a JSONA UMD module with batteries included so you can use JSONA in the browser without transpilers or any additional setup/configuration. The JSONA UMD is ideal for JAMstack Applications and internal tools.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Usage
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+The idea behind JSONA is to enable rapid SPA development. JSONA attempts to automate the routing, rendering, and compiling of a typical front end application. 
 
-### `npm test`
+React developers who are more comfortable building custom components and elements can also configure JSONA to meet specific application requirements.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Although you could build a completely custom React App with JSONA, the ideal use case is for quickly building and prototyping internal tools.
 
-### `npm run build`
+### What's included
+JSONA currently supports
+- Defining custom components
+- Using custom component libraries (React Bootstrap, Material UI, Ant Design, etc)
+- Multiple layered views, and support for overlays and modals
+- Custom authentication logic
+- Dynamic routing and data loading
+- Custom error handling
+## Installation
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```sh
+$ npm i @jsonstack/jsona
+```
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+<link id="viewx-style-style-0" rel="stylesheet" type="text/css" href="https://unpkg.com/highlight.js@9.18.1/styles/darkula.css">
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
+### JSONA Manual
+ - [Getting Started](https://repetere.github.io/jsona/manual/getting-started/index.html)
+   - [Basic Views, Layers, and Routes](https://repetere.github.io/jsona/manual/data-fetching/index.html)
+   - [Data Driven Views and Routing](https://repetere.github.io/jsona/manual/feature-engineering/index.html)
+   - [Custom Components](https://repetere.github.io/jsona/manual/model-training/index.html)
+   - [Managing Application and View States](https://repetere.github.io/jsona/manual/model-evaluation/index.html)
+   - [JSONA & JVT Spec](https://repetere.github.io/jsona/manual/spec/index.html)
+   - [Examples](https://repetere.github.io/jsona/manual/examples/index.html)
+---
 
-### `npm run eject`
+### Basic Usage
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SIMPLE JSONA TEST</title>
+    <script type="text/javascript" src="https://unpkg.com/@jsonstack/jsona@0.6.6/dist/index.umd.js"></script>
+  </head>
+  <body>
+    <div id="loading"></div>
+    <div id="root"></div>
+    <script type="text/javascript">
+    const jsonaTemplates = {
+      header:{
+        __error_404:{
+          jsonx:{
+            component:"header",
+            children:"error header"
+          }
+        },
+        '/':{
+          jsonx:{
+            component:"header",
+            children:"home header"
+          }
+        },
+        '/:catchall*':{
+          jsonx:{
+            component:"header",
+            children:"rest of pages header"
+          }
+        },
+      },
+      root:{
+        __error_404: {
+          jsonx: {
+            component: "div",
+            children: [
+              {
+                component: "h1",
+                children: "Not Found"
+              },
+              {
+                component: "div",
+                thisprops: {
+                  _children: ["location", "pathname"]
+                }
+              }
+            ]
+          },
+          pageData: [
+            {
+              tagName: "title",
+              attributes: {},
+              innerHTML: "Not Found"
+            }
+          ]
+        },
+        '/':{
+          preRenderFunctions:[],
+          pageData:[
+            {
+              tagName:'title',
+              attributes:{},
+              innerHTML:"Basic JSONA App"
+            }
+          ],
+          jsonx:{
+            component:'main',
+            children:[
+              {div:'hello world!!!'},
+              {
+                ul:[
+                  {li:[{Link:{props:{to:'/'},children:'index'}}]},
+                  {li:[{Link:{props:{to:'/page-1'},children:'page1'}}]},
+                  {li:[{Link:{props:{to:'/page-2'},children:'page2'}}]},
+                  {li:[{Link:{props:{to:'/page-3'},children:'page3'}}]}
+                ]
+              }
+            ]
+          }
+        },
+        '/page-1':{
+          preRenderFunctions:[
+          ],
+          postRenderFunctions:[
+          ],
+          pageData:[
+            {
+              tagName:'title',
+              attributes:{},
+              innerHTML:"Page 1"
+            }
+          ],
+          jsonx:{
+            component:'main',
+            children:[
+              {div:'page 1!!!'},
+              {
+                ul:[
+                  {li:[{Link:{props:{to:'/'},children:'index'}}]},
+                  {li:[{Link:{props:{to:'/page-1'},children:'page1'}}]},
+                  {li:[{Link:{props:{to:'/page-2'},children:'page2'}}]},
+                  {li:[{Link:{props:{to:'/page-3'},children:'page3'}}]}
+                ]
+              }
+            ]
+          },
+          "resources": {
+            "album": "https://jsonplaceholder.typicode.com/albums/1",
+            "photos": "https://jsonplaceholder.typicode.com/albums/1/photos"
+          },
+        },
+      },
+    }
+    const AppConfig = {
+      templates: jsonaTemplates,
+      settings: {
+        // templatePath: 'https://my-json-server.typicode.com/repetere/mock-my-json-server/templates', //can also provide endpoint to pull templates
+        router: "hash", //react router type
+      },
+      application: {
+        state: {
+          name: "Demo App",
+          version: "0.0.1",
+        }
+      },
+      initialScripts: [
+        // "https://any-custom-scripts.js",
+      ],
+      customComponents: [
+        // {
+        //   name: "ReactModal",
+        //   format: "umd",
+        //   type: "component",
+        //   umdFilePath:
+        //     "https://unpkg.com/react-modal@3.10.1/dist/react-modal.js"
+        //   // jsonx,
+        //   // stylesheets:[url,],
+        // },
+      ],
+      customScripts: [
+        /*url,*/
+        // "https://unpkg.com/scheduler@0.18.0/umd/scheduler.production.min.js"
+      ],
+      customStyles: [
+      /*url,*/
+        // "node_modules/spectre.css/dist/spectre.min.css"
+      ],
+      customFunctions: {
+        /*Function, */
+      },
+      layers: [
+        {
+          order: 200,
+          name: "modal",
+          system: true,
+          type: "overlay"
+        },
+        // overlay
+        {
+          order: 400,
+          name: "header",
+          system: true,
+          type: "view"
+        },
+        {
+          order: 900,
+          name: "root",
+          system: true,
+          type: "applicationRoot"
+        }
+      ]
+    };
+    // void async function main(){
+    //   const App = await jsona.App(AppConfig)
+    // }()
+    jsona.App(AppConfig) 
+    </script>
+  </body>
+</html>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<!-- ## Example ##
+<iframe width="100%" height="500" src="https://jsfiddle.net/yawetse/4ph1vwes/21/embedded/result,js,html,css,resources/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe> -->
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Development
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Note *Make sure you have typescript installed*
 
-## Learn More
+```sh
+$ npm i -g typescript 
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+For generating documentation
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```sh
+$ npm run doc
+```
 
-### Code Splitting
+### Notes
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Check out [https://repetere.github.io/jsona/](https://repetere.github.io/jsona/) for the full jsona Documentation
 
-### Analyzing the Bundle Size
+### Testing
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+```sh
+$ npm test
+```
 
-### Making a Progressive Web App
+### Contributing
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+Fork, write tests and create a pull request!
 
-### Advanced Configuration
+License
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+----
 
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+MIT

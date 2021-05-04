@@ -19,4 +19,5 @@ export interface insertScriptParams {
   name: string;
   async?: boolean;
   onload?: () => void;
+  doc?: HTMLDocument;
 }
