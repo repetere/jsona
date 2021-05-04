@@ -178,6 +178,11 @@ export function getComponentPromise(
   });
 }
 
+/**
+ * Add custom components to jsona's JSONX instance
+ * @param {VXAComponent[]} customComponents array of components to add to jsona 
+ * @returns {librariesAndComponents} reactComponents and componentLibraries to add to JSONX
+ */
 export async function getReactLibrariesAndComponents({
   customComponents
 }: {
