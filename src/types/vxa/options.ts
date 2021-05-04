@@ -5,9 +5,9 @@ import {
   VXASettings,
   VXAFunctions
 } from "./vxt";
-import { string } from "prop-types";
-import React from "react";
-import { createStore } from "react-hooks-global-state";
+// import { string } from "prop-types";
+// import React from "react";
+// import { createStore } from "react-hooks-global-state";
 
 export enum VXAComponentFormats {
   umd = "umd",
@@ -24,17 +24,22 @@ export type customVXAJSONXLibrary = {
   [index: string]: jsonx;
 };
 
-export type VXAComponent = {
+export type VXAComponentPromiseParams = {
   name: string;
-  format: VXAComponentFormats;
-  type: VXAComponentTypes;
-  umdFilePath: string;
+  umdFilePath?: string;
   jsonx?: jsonxLibrary | jsonx;
   jsonxComponent?: jsonx;
-  stylesheets: string[];
+  stylesheets?: string[];
   options?: {};
-  functionBody?: string;
-};
+  functionBody?: (string) | ((props:any)=>void);
+  HTMLDocument?: HTMLDocument;
+  timeoutMilliseconds?: number;
+}
+
+export type VXAComponent = {
+  format: VXAComponentFormats;
+  type: VXAComponentTypes;
+} & VXAComponentPromiseParams;
 
 export enum VXALayerTypes {
   root = "applicationRoot",

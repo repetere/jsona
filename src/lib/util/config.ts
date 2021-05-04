@@ -1,13 +1,8 @@
-// @ts-ignore
 // import * as JSONX from "jsonx/src/index";
 // import * as JSONX from "jsonx/dist/index.esm";
+/// <reference path="../../../node_modules/jsonx/build/index.d.ts" />
+//@ts-ignore
 import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
-// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/dist/index.esm";
-// import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx/src/index";
-
-// import * as JSONX from "jsonx";
-
-// import * as JSONX from "jsonx";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
 import {
@@ -15,6 +10,9 @@ import {
   VXAConfig,
   VXALayer,
   VXAComponent,
+  VXAComponentTypes,
+  VXAComponentFormats,
+  VXAComponentPromiseParams,
 } from "../../types";
 import { jsonxLibrary } from 'jsonx/src/types/jsonx';
 
@@ -32,16 +30,38 @@ declare global {
 
 let addedReact: boolean = false;
 
+/**
+ * Inserts either a stylesheet or javascript in the DOM
+ * @param {'script'|'style'} options.type The type of file to inject into the DOM
+ * @param {string} options.file The URI of the file to insert
+ * @param {number} options.i Index of file to insert
+ * @param {string} options.name Script name identifier
+ * @param {object} options.doc HTML DOM
+ * @returns {Promise} an async function that appends files to the DOM
+ * @example
+const output = await getFilePromise({ 
+  type: 'script',
+  file:'https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js',
+  i: 0,
+  name: 'ReactBootstrap',
+  timeoutMilliseconds: 10000,
+  doc: window.document,
+}) // => true
+ */
 export function getFilePromise({
   type,
   file,
   i,
-  name
+  name,
+  timeoutMilliseconds = 60000,
+  doc,
 }: {
   type: string;
   file: string;
   i: number;
   name: string;
+  timeoutMilliseconds?: number;
+  doc?: HTMLDocument;
 }): Promise<boolean | string> {
   return new Promise((resolve, reject) => {
     try {
@@ -51,23 +71,25 @@ export function getFilePromise({
         // console.log('LOADED SCRIPT', umdFilePath);
         resolve(file);
       };
-      let t = setTimeout(() => {
+      const t = setTimeout(() => {
         clearTimeout(t);
         if (returnedFile === false)
           throw new Error("Timeout loading file: " + file);
-      }, 60000);
+      }, timeoutMilliseconds);
       if (type === "script") {
         insertJavaScript({
           name: `${name}-${i}`,
           src: file,
           async: true,
-          onload
+          onload,
+          doc,
         });
       } else if (type === "style") {
         insertStyleSheet({
           src: file,
           name: `${name}-${i}`,
-          onload
+          onload,
+          doc,
         });
       } else resolve(true);
     } catch (e) {
@@ -77,14 +99,40 @@ export function getFilePromise({
   });
 }
 
+/**
+ * inserts javascript and stylesheets for additional react components
+ * @param {string} customComponent.name module name
+ * @param {string='umd' | string='jsonx'} customComponent.format type of module to add
+ * @param {string='component' | string='library' | string='function'} customComponent.type defining what to add to JSONX either a component, a component library of a functional component
+ * @param {string} customComponent.umdFilePath URI of umd module
+ * @param {object} customComponent.jsonx JXM JSON component definition
+ * @param {object} customComponent.jsonxComponent JXM JSON component definition
+ * @param {string[]} customComponent.stylesheets CSS stylesheets associated with component
+ * @param {object} customComponent.options options
+ * @param {string} customComponent.functionBody function body for component
+ * @param {object} options.HTMLDocument HTML DOM
+ * @returns {Promise} a reach component
+ * @example
+  const file = 'https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js';
+  const css = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css';
+  const output = await getComponentPromise({ 
+    umdFilePath: file,
+    name: 'ReactBootstrap',
+    timeoutMilliseconds: 5000,
+    stylesheets:[css],
+    HTMLDocument: window.document,
+  }) //=> file
+ */
 export function getComponentPromise(
-  customComponent: VXAComponent
+  customComponent: VXAComponentPromiseParams
 ): Promise<string | boolean> {
   return new Promise((resolve, reject) => {
     let returnedFile = false;
     try {
       const {
         // type,
+        timeoutMilliseconds,
+        HTMLDocument,
         umdFilePath,
         name,
         stylesheets = []
@@ -94,13 +142,14 @@ export function getComponentPromise(
           clearTimeout(t);
           if (returnedFile === false)
             throw new Error("Timeout loading file: " + umdFilePath);
-        }, 60000);
+        }, timeoutMilliseconds);
       }
       if (stylesheets.length) {
         stylesheets.forEach((stylesheet, i) =>
           insertStyleSheet({
             src: stylesheet,
-            name: `${name}-${i}`
+            name: `${name}-${i}`,
+            doc: HTMLDocument,
           })
         );
       }
@@ -114,6 +163,7 @@ export function getComponentPromise(
           name,
           src: umdFilePath,
           async: true,
+          doc: HTMLDocument,
           onload: () => {
             returnedFile = true;
             // console.log("LOADED SCRIPT", { umdFilePath, name, });
@@ -176,7 +226,7 @@ export async function getReactLibrariesAndComponents({
             options
           );
         } else reactComponents[name] = window[name];
-      } else if (type === "function") {
+      } else if (type === "function" || typeof functionBody ==='function') {
         if (jsonx) {
           reactComponents[
             name
