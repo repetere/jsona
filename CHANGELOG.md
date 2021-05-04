@@ -1,3 +1,11 @@
+## [0.6.7](https://github.com/repetere/jsona/compare/v0.6.6...v0.6.7) (2021-05-04)
+
+
+### Bug Fixes
+
+* small fixes to config loading and more tests ([8577304](https://github.com/repetere/jsona/commit/85773047674252485ceed10b0d112efc69212bbd))
+* small fixes to config loading and more tests ([2e0fdf7](https://github.com/repetere/jsona/commit/2e0fdf789f0314c8088556694f190fc7e2f05e85))
+
 ## [0.6.6](https://github.com/repetere/jsona/compare/v0.6.5...v0.6.6) (2021-05-02)
 
 
