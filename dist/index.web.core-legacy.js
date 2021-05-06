@@ -30343,50 +30343,50 @@ ${jsonxRenderedString}`;
             document.body.setAttribute("id", encodeURIComponent(pathname).replace(new RegExp(/%2F|%2/, "g"), "_"));
         }
     }
-    function insertJavaScript({ src, name, async = true, onload }) {
-        (function (d, s, id) {
+    function insertJavaScript({ src, name, async = true, onload, doc, }) {
+        (function (HTMLDocument, ElementTagName, id) {
             const tagId = `viewx-script-${id}`;
-            if (d.getElementById(id))
+            if (HTMLDocument.getElementById(id))
                 return;
-            const s0 = d.getElementsByTagName(s)[0];
-            const j = d.createElement(s);
-            j.setAttribute("async", async.toString());
-            j.id = tagId;
-            j.setAttribute("type", "text/javascript");
-            j.setAttribute("src", src);
+            const firstHTMLDocumentScript = HTMLDocument.getElementsByTagName(ElementTagName)[0];
+            const newScript = HTMLDocument.createElement(ElementTagName);
+            newScript.setAttribute("async", async.toString());
+            newScript.id = tagId;
+            newScript.setAttribute("type", "text/javascript");
+            newScript.setAttribute("src", src);
             if (src.includes('://')) {
-                const a = document.createElement('a');
+                const a = HTMLDocument.createElement('a');
                 a.setAttribute('ref', src);
                 if (a.origin !== window.location.origin)
-                    j.setAttribute('crossorigin', 'true');
+                    newScript.setAttribute('crossorigin', 'true');
             }
             if (onload)
-                j.onload = onload;
+                newScript.onload = onload;
             // @ts-ignore
-            if (s0)
-                s0.parentNode.insertBefore(j, s0);
+            if (firstHTMLDocumentScript)
+                firstHTMLDocumentScript.parentNode.insertBefore(newScript, firstHTMLDocumentScript);
             else
-                document.head.prepend(j);
-        })(document || window.document, "script", name);
+                HTMLDocument.head.prepend(newScript);
+        })(doc || document || window.document, "script", name);
     }
-    function insertStyleSheet({ src, name, onload }) {
-        (function (d, l, id) {
+    function insertStyleSheet({ src, name, onload, doc }) {
+        (function (HTMLDocument, ElementTagName, id) {
             const tagId = `viewx-style-${id}`;
-            if (d.getElementById(id))
+            if (HTMLDocument.getElementById(id))
                 return;
-            const s0 = d.getElementsByTagName(l)[0];
-            const ss = d.createElement(l);
-            ss.id = tagId;
-            ss.setAttribute("rel", "stylesheet");
-            ss.setAttribute("type", "text/css");
-            ss.setAttribute("href", src);
+            const firstHTMLDocumentStylesheet = HTMLDocument.getElementsByTagName(ElementTagName)[0];
+            const newStyleSheet = HTMLDocument.createElement(ElementTagName);
+            newStyleSheet.id = tagId;
+            newStyleSheet.setAttribute("rel", "stylesheet");
+            newStyleSheet.setAttribute("type", "text/css");
+            newStyleSheet.setAttribute("href", src);
             if (onload)
-                ss.onload = onload;
-            if (s0 && s0.parentNode)
-                s0.parentNode.insertBefore(ss, s0);
+                newStyleSheet.onload = onload;
+            if (firstHTMLDocumentStylesheet && firstHTMLDocumentStylesheet.parentNode)
+                firstHTMLDocumentStylesheet.parentNode.insertBefore(newStyleSheet, firstHTMLDocumentStylesheet);
             else
-                document.head.prepend(ss);
-        })(document || window.document, "link", name);
+                HTMLDocument.head.prepend(newStyleSheet);
+        })(doc || document || window.document, "link", name);
     }
     function createLayer({ layer, app, querySelector, }) {
         const { name, type, order, idSelector, } = layer;
@@ -30924,6 +30924,7 @@ ${jsonxRenderedString}`;
                     pathname
                 }))
                     .filter((layer) => layer);
+                Functions.onPageChange.call(functionContext, { pathname, templateRouteLayers, });
                 // @ts-ignore
                 const preFunctions = yield invokeWebhooks({
                     Functions,
@@ -31035,12 +31036,12 @@ ${jsonxRenderedString}`;
             templateRouteLayers.forEach((templateRouteLayer) => __awaiter(this, void 0, void 0, function* () {
                 const functionNames = templateRouteLayer.vxtObject[property] || [];
                 // @ts-ignore
-                functionNames.map((functionName) => {
+                functionNames.forEach((functionName) => {
                     if (typeof functionName === 'function') {
                         const func = functionName.bind(functionContext)(templateViewData);
                         promiseNames.push(functionName.name);
                         promises.push(func);
-                        return func;
+                        // return func;
                     }
                     else {
                         const func = getFunctionFromNameString({
@@ -31050,7 +31051,7 @@ ${jsonxRenderedString}`;
                         })(templateViewData);
                         promiseNames.push(functionName);
                         promises.push(func);
-                        return func;
+                        // return func
                     }
                 });
                 // promiseNames.push(...functionNames);
@@ -31269,7 +31270,6 @@ ${jsonxRenderedString}`;
                 let action;
                 function initialize() {
                     return __awaiter(this, void 0, void 0, function* () {
-                        Functions.showLoader.call(functionContext, { ui, setUI });
                         try {
                             setup.call(functionContext, { settings });
                             let updatedUI = ui;
@@ -31562,7 +31562,9 @@ ${jsonxRenderedString}`;
                     el.style.display = "none";
                 setUI(Object.assign(Object.assign({}, ui), { isLoading: false }));
             },
-            onPageChange() { },
+            onPageChange({ pathname, templateRouteLayers }) {
+                // console.log({pathname, templateRouteLayers})
+            },
             onLaunch() {
                 // console.warn('default onlaunch')
             },
@@ -31863,7 +31865,25 @@ ${jsonxRenderedString}`;
     })(customFileType || (customFileType = {}));
 
     let addedReact = false;
-    function getFilePromise({ type, file, i, name }) {
+    /**
+     * Inserts either a stylesheet or javascript in the DOM
+     * @param {'script'|'style'} options.type The type of file to inject into the DOM
+     * @param {string} options.file The URI of the file to insert
+     * @param {number} options.i Index of file to insert
+     * @param {string} options.name Script name identifier
+     * @param {object} options.doc HTML DOM
+     * @returns {Promise} an async function that appends files to the DOM
+     * @example
+    const output = await getFilePromise({
+      type: 'script',
+      file:'https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js',
+      i: 0,
+      name: 'ReactBootstrap',
+      timeoutMilliseconds: 10000,
+      doc: window.document,
+    }) // => true
+     */
+    function getFilePromise({ type, file, i, name, timeoutMilliseconds = 60000, doc, }) {
         return new Promise((resolve, reject) => {
             try {
                 let returnedFile = false;
@@ -31872,24 +31892,26 @@ ${jsonxRenderedString}`;
                     // console.log('LOADED SCRIPT', umdFilePath);
                     resolve(file);
                 };
-                let t = setTimeout(() => {
+                const t = setTimeout(() => {
                     clearTimeout(t);
                     if (returnedFile === false)
                         throw new Error("Timeout loading file: " + file);
-                }, 60000);
+                }, timeoutMilliseconds);
                 if (type === "script") {
                     insertJavaScript({
                         name: `${name}-${i}`,
                         src: file,
                         async: true,
-                        onload
+                        onload,
+                        doc,
                     });
                 }
                 else if (type === "style") {
                     insertStyleSheet({
                         src: file,
                         name: `${name}-${i}`,
-                        onload
+                        onload,
+                        doc,
                     });
                 }
                 else
@@ -31901,24 +31923,49 @@ ${jsonxRenderedString}`;
             }
         });
     }
+    /**
+     * inserts javascript and stylesheets for additional react components
+     * @param {string} customComponent.name module name
+     * @param {string='umd' | string='jsonx'} customComponent.format type of module to add
+     * @param {string='component' | string='library' | string='function'} customComponent.type defining what to add to JSONX either a component, a component library of a functional component
+     * @param {string} customComponent.umdFilePath URI of umd module
+     * @param {object} customComponent.jsonx JXM JSON component definition
+     * @param {object} customComponent.jsonxComponent JXM JSON component definition
+     * @param {string[]} customComponent.stylesheets CSS stylesheets associated with component
+     * @param {object} customComponent.options options
+     * @param {string} customComponent.functionBody function body for component
+     * @param {object} options.HTMLDocument HTML DOM
+     * @returns {Promise} a reach component
+     * @example
+      const file = 'https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js';
+      const css = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css';
+      const output = await getComponentPromise({
+        umdFilePath: file,
+        name: 'ReactBootstrap',
+        timeoutMilliseconds: 5000,
+        stylesheets:[css],
+        HTMLDocument: window.document,
+      }) //=> file
+     */
     function getComponentPromise(customComponent) {
         return new Promise((resolve, reject) => {
             let returnedFile = false;
             try {
                 const { 
                 // type,
-                umdFilePath, name, stylesheets = [] } = customComponent;
+                timeoutMilliseconds, HTMLDocument, umdFilePath, name, stylesheets = [] } = customComponent;
                 if (umdFilePath) {
                     let t = setTimeout(() => {
                         clearTimeout(t);
                         if (returnedFile === false)
                             throw new Error("Timeout loading file: " + umdFilePath);
-                    }, 60000);
+                    }, timeoutMilliseconds);
                 }
                 if (stylesheets.length) {
                     stylesheets.forEach((stylesheet, i) => insertStyleSheet({
                         src: stylesheet,
-                        name: `${name}-${i}`
+                        name: `${name}-${i}`,
+                        doc: HTMLDocument,
                     }));
                 }
                 if (umdFilePath) {
@@ -31933,6 +31980,7 @@ ${jsonxRenderedString}`;
                         name,
                         src: umdFilePath,
                         async: true,
+                        doc: HTMLDocument,
                         onload: () => {
                             returnedFile = true;
                             // console.log("LOADED SCRIPT", { umdFilePath, name, });
@@ -31949,6 +31997,11 @@ ${jsonxRenderedString}`;
             }
         });
     }
+    /**
+     * Add custom components to jsona's JSONX instance
+     * @param {VXAComponent[]} customComponents array of components to add to jsona
+     * @returns {librariesAndComponents} reactComponents and componentLibraries to add to JSONX
+     */
     function getReactLibrariesAndComponents({ customComponents }) {
         return __awaiter(this, void 0, void 0, function* () {
             const componentLibraries = {};
@@ -31981,7 +32034,7 @@ ${jsonxRenderedString}`;
                         else
                             reactComponents[name] = window[name];
                     }
-                    else if (type === "function") {
+                    else if (type === "function" || typeof functionBody === 'function') {
                         if (jsonx) {
                             reactComponents[name] = _jsonxComponents.getReactFunctionComponent(jsonx, functionBody, options);
                         }

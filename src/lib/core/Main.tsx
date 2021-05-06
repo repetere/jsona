@@ -186,7 +186,6 @@ export default function getMainComponent(
       let viewxTemplates = templates;
       let action: VXADispatchAction;
       async function initialize() {
-        Functions.showLoader.call(functionContext, { ui, setUI });
         try {
           setup.call(functionContext, { settings });
           let updatedUI = ui;

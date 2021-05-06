@@ -158,7 +158,7 @@
           ],
           postRenderFunctions:[
             function testEndFunction(props){
-              console.log({props},this,arguments)
+              // console.log({props},this,arguments)
               return true
             }
           ],
@@ -284,6 +284,9 @@
       ],
       customFunctions: {
         /*Function, */
+        onPageChange({pathname,templateRouteLayers}) {
+          console.log({pathname,templateRouteLayers},'this',this)
+        },
       },
       layers: [
         {

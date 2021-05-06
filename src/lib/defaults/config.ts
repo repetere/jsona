@@ -1,4 +1,5 @@
 import qs from "querystring";
+import { VXATemplateRouteLayer } from "../../types";
 import { removeKeys } from "../util/data";
 export const config = {
   componentLibraries: {},
@@ -100,7 +101,9 @@ export const config = {
         isLoading: false
       });
     },
-    onPageChange() {},
+    onPageChange({pathname, templateRouteLayers}:{pathname?:string; templateRouteLayers: VXATemplateRouteLayer[];}) {
+      // console.log({pathname, templateRouteLayers})
+    },
     onLaunch() {
       // console.warn('default onlaunch')
     },

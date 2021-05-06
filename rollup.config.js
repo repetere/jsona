@@ -3,7 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import builtins from 'rollup-plugin-node-builtins';
 // import nodePolyfills from 'rollup-plugin-node-polyfills';
-import globals from 'rollup-plugin-node-globals';
+// import globals from 'rollup-plugin-node-globals';
 import replace from '@rollup/plugin-replace';
 import terser from 'rollup-plugin-terser-js';
 import alias from '@rollup/plugin-alias';

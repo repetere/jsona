@@ -248,6 +248,7 @@ export async function loadRoute({
         })
       )
       .filter((layer: VXALayer) => layer);
+    Functions.onPageChange.call(functionContext, { pathname, templateRouteLayers, });
 
     // @ts-ignore
     const preFunctions = await invokeWebhooks({
