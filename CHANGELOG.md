@@ -1,3 +1,10 @@
+## [0.6.9](https://github.com/repetere/jsona/compare/v0.6.8...v0.6.9) (2021-05-06)
+
+
+### Bug Fixes
+
+* timeout on loading custom component libraries ([69115ae](https://github.com/repetere/jsona/commit/69115ae7c824cfe39d9ee4df66d55bfd9d6ea2b5))
+
 ## [0.6.8](https://github.com/repetere/jsona/compare/v0.6.7...v0.6.8) (2021-05-06)
 
 

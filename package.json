@@ -1,6 +1,6 @@
 {
   "name": "@jsonstack/jsona",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "Construct SPA React Applciations with JSON using Typescript",
   "type": "module",
   "module": "build/index.js",
