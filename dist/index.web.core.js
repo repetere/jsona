@@ -30902,7 +30902,6 @@ ${jsonxRenderedString}`;
 	            pathname
 	        }))
 	            .filter((layer) => layer);
-	        console.log('seding route layers');
 	        Functions.onPageChange.call(functionContext, { pathname, templateRouteLayers, });
 	        // @ts-ignore
 	        const preFunctions = await invokeWebhooks({
@@ -32024,12 +32023,12 @@ ${jsonxRenderedString}`;
 	        try {
 	            const { 
 	            // type,
-	            timeoutMilliseconds, HTMLDocument, umdFilePath, name, stylesheets = [] } = customComponent;
+	            timeoutMilliseconds = 60000, HTMLDocument, umdFilePath, name, stylesheets = [] } = customComponent;
 	            if (umdFilePath) {
 	                let t = setTimeout(() => {
 	                    clearTimeout(t);
 	                    if (returnedFile === false)
-	                        throw new Error("Timeout loading file: " + umdFilePath);
+	                        throw new Error(`Timeout (${timeoutMilliseconds}ms) loading file:  ${umdFilePath}`);
 	                }, timeoutMilliseconds);
 	            }
 	            if (stylesheets.length) {

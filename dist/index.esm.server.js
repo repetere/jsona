@@ -3605,12 +3605,12 @@ function getComponentPromise(customComponent) {
         try {
             const { 
             // type,
-            timeoutMilliseconds, HTMLDocument, umdFilePath, name, stylesheets = [] } = customComponent;
+            timeoutMilliseconds = 60000, HTMLDocument, umdFilePath, name, stylesheets = [] } = customComponent;
             if (umdFilePath) {
                 let t = setTimeout(() => {
                     clearTimeout(t);
                     if (returnedFile === false)
-                        throw new Error("Timeout loading file: " + umdFilePath);
+                        throw new Error(`Timeout (${timeoutMilliseconds}ms) loading file:  ${umdFilePath}`);
                 }, timeoutMilliseconds);
             }
             if (stylesheets.length) {

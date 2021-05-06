@@ -1,6 +1,5 @@
 // import * as JSONX from "jsonx/src/index";
 // import * as JSONX from "jsonx/dist/index.esm";
-/// <reference path="../../../node_modules/jsonx/build/index.d.ts" />
 //@ts-ignore
 import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
 import { config } from "../defaults/config";
@@ -131,7 +130,7 @@ export function getComponentPromise(
     try {
       const {
         // type,
-        timeoutMilliseconds,
+        timeoutMilliseconds = 60000,
         HTMLDocument,
         umdFilePath,
         name,
@@ -141,7 +140,7 @@ export function getComponentPromise(
         let t = setTimeout(() => {
           clearTimeout(t);
           if (returnedFile === false)
-            throw new Error("Timeout loading file: " + umdFilePath);
+            throw new Error(`Timeout (${timeoutMilliseconds}ms) loading file:  ${umdFilePath}`);
         }, timeoutMilliseconds);
       }
       if (stylesheets.length) {
