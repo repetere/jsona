@@ -1,3 +1,10 @@
+## [0.6.8](https://github.com/repetere/jsona/compare/v0.6.7...v0.6.8) (2021-05-06)
+
+
+### Bug Fixes
+
+* adding onPageChange hook trigger ([a1db4c0](https://github.com/repetere/jsona/commit/a1db4c071f23be2b4b78a7ffb0689be968c34468))
+
 ## [0.6.7](https://github.com/repetere/jsona/compare/v0.6.6...v0.6.7) (2021-05-04)
 
 
