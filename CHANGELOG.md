@@ -1,3 +1,10 @@
+## [0.6.10](https://github.com/repetere/jsona/compare/v0.6.9...v0.6.10) (2021-05-07)
+
+
+### Bug Fixes
+
+* udpating jsonx ([a76bc32](https://github.com/repetere/jsona/commit/a76bc32aef0936bc816593fa4ed3abe9b42dd8e1))
+
 ## [0.6.9](https://github.com/repetere/jsona/compare/v0.6.8...v0.6.9) (2021-05-06)
 
 
