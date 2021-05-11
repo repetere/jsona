@@ -121,6 +121,7 @@ describe('src/lib/util/config',()=>{
       done();
     });
   });
+  /*
   describe('getReactLibrariesAndComponents',()=>{
     const fnc_name = 'customFuncComponent';
     const fnc = {
@@ -196,4 +197,5 @@ describe('src/lib/util/config',()=>{
       done();
     });
   });
+  */
 });

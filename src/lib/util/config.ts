@@ -1,7 +1,7 @@
 // import * as JSONX from "jsonx/src/index";
 // import * as JSONX from "jsonx/dist/index.esm";
 //@ts-ignore
-import { _jsonxComponents, __getReact, __getReactDOM, } from "jsonx";
+import { __getReact, __getReactDOM, } from "jsonx";
 import { config } from "../defaults/config";
 import { insertJavaScript, insertStyleSheet } from "./html";
 import {
@@ -9,11 +9,11 @@ import {
   VXAConfig,
   VXALayer,
   VXAComponent,
-  VXAComponentTypes,
-  VXAComponentFormats,
+  // VXAComponentTypes,
+  // VXAComponentFormats,
   VXAComponentPromiseParams,
 } from "../../types";
-import { jsonxLibrary } from 'jsonx/src/types/jsonx';
+// import { jsonxLibrary } from 'jsonx/src/types/jsonx';
 
 import {
   customFileType,
@@ -183,65 +183,77 @@ export function getComponentPromise(
  * @returns {librariesAndComponents} reactComponents and componentLibraries to add to JSONX
  */
 export async function getReactLibrariesAndComponents({
-  customComponents
+  customComponents,
+  configuration,
 }: {
   customComponents?: VXAComponent[];
+  configuration?:VXAConfig;
 }): Promise<librariesAndComponents> {
   const componentLibraries: VXAConfig["componentLibraries"] = {};
   const reactComponents: VXAConfig["reactComponents"] = {};
 
   if (customComponents && customComponents.length) {
     await Promise.all(customComponents.map(getComponentPromise));
-    customComponents.forEach(customComponent => {
-      const { type, name, jsonx, options, functionBody } = customComponent;
-      if (type === "library") {
-        if (jsonx) {
-          componentLibraries[name] = Object.keys(jsonx).reduce(
-            (result: jsonxLibrary, prop: string) => {
-              const libraryComponent:VXAComponent = jsonx[prop];
-              const {
-                type,
-                name,
-                jsonxComponent,
-                options,
-                functionBody
-              } = libraryComponent;
-              if (type === "component") {
-                result[name] = _jsonxComponents.getReactClassComponent(
-                  jsonxComponent,
-                  options
-                );
-              } else {
-                result[name] = _jsonxComponents.getReactFunctionComponent(
-                  jsonxComponent,
-                  functionBody,
-                  options
-                );
-              }
-              return result;
-            },
-            {}
-          );
-        } else componentLibraries[name] = window[name];
-      } else if (type === "component") {
-        if (jsonx) {
-          reactComponents[name] = _jsonxComponents.getReactClassComponent(
-            jsonx,
-            options
-          );
-        } else reactComponents[name] = window[name];
-      } else if (type === "function" || typeof functionBody ==='function') {
-        if (jsonx) {
-          reactComponents[
-            name
-          ] = _jsonxComponents.getReactFunctionComponent(
-            jsonx,
-            functionBody,
-            options
-          );
-        } else reactComponents[name] = window[name];
-      }
-    });
+    // customComponents.forEach(customComponent => {
+    //   const { type, name, jsonx, options, functionBody, functionComponent, } = customComponent;
+    //   if (type === "library") {
+    //     if (jsonx) {
+    //       componentLibraries[name] = Object.keys(jsonx).reduce(
+    //         (result: jsonxLibrary, prop: string) => {
+    //           const libraryComponent:VXAComponent = jsonx[prop];
+    //           const {
+    //             type,
+    //             name,
+    //             jsonxComponent,
+    //             options,
+    //             functionBody
+    //           } = libraryComponent;
+    //           if (type === "component") {
+    //             result[name] = _jsonxComponents.getReactClassComponent.call({debug:configuration?.settings.debug},
+    //               jsonxComponent,
+    //               options
+    //             );
+    //           } else if(functionComponent) {
+    //             result[name] = _jsonxComponents.makeFunctionComponent.call(           {debug:configuration?.settings.debug},
+    //               functionComponent,
+    //               options
+    //               );
+    //           } else {
+    //             result[name] = _jsonxComponents.getReactFunctionComponent.call( {debug:configuration?.settings.debug},
+    //               jsonxComponent,
+    //               functionBody,
+    //               options
+    //             );
+    //           }
+    //           return result;
+    //         },
+    //         {}
+    //       );
+    //     } else componentLibraries[name] = window[name];
+    //   } else if (type === "component") {
+    //     if (jsonx) {
+    //       reactComponents[name] = _jsonxComponents.getReactClassComponent.call( {debug:configuration?.settings.debug},
+    //         jsonx,
+    //         options
+    //       );
+    //     } else reactComponents[name] = window[name];
+    //   } else if (type === "function" || typeof functionBody ==='function') {
+    //     if(functionComponent){
+    //       reactComponents[name] = _jsonxComponents.makeFunctionComponent.call(           {debug:configuration?.settings.debug},
+    //         functionComponent,
+    //         options
+    //         );
+    //     } else if (jsonx) {
+    //       reactComponents[
+    //         name
+    //       ] = _jsonxComponents.getReactFunctionComponent.call( {debug:configuration?.settings.debug},
+    //         jsonx,
+    //         functionBody,
+    //         options
+    //       );
+    //     } else reactComponents[name] = window[name];
+    //   }
+    // });
   }
 
   return {
@@ -316,6 +328,7 @@ export async function configureViewx(
   });
   const [reactJSONXComponents] = await Promise.all([
     getReactLibrariesAndComponents({
+      configuration,
       customComponents: options.customComponents
     }),
     addCustomFiles({

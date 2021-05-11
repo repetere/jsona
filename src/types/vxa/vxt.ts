@@ -1,6 +1,7 @@
 import { jsonx, jsonxLibrary, jsonxComponent, } from 'jsonx/src/types/jsonx';
 
 import {Dispatch,SetStateAction} from 'react';
+import { VXAComponent } from './options';
 
 export type pageAttribute = {
   tagName: string;
@@ -125,6 +126,7 @@ export interface VXAFunctionContext {
   reactComponents?: {
     [index: string]: jsonxComponent;
   };
+  customComponents?: VXAComponent[];
   getReactElement?: (...args: any[]) => any;
 }
 

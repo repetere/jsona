@@ -2736,6 +2736,7 @@ function getDynamicFunctionName(function_name) {
     return function_name.replace(FUNCTION_NAME_REGEXP, "$1");
 }
 
+// import { jsonxComponent } from "jsonx/src/types/jsonx";
 /**
  * bound default vxa functions to the vxafunctioncontext object
  */
@@ -2756,24 +2757,28 @@ function ViewXComponent(props) {
         return layerStateData;
     }, [layerStates, name]);
     const [state, setState] = require$$0.useState(layerState);
-    ctx[`viewx_layer_${name}_state`] = state;
-    ctx[`viewx_layer_${name}_setState`] = setState;
+    ctx[`jsona_layer_${name}_state`] = state;
+    ctx[`jsona_layer_${name}_setState`] = setState;
     const getReactElement = jsonx.getReactElementFromJSONX.bind(ctx);
     if (settings.exposeVXAToWindow) {
-        window.__ViewXContext = ctx;
-        window.__ViewXContext.getReactElement = getReactElement;
+        window.__JSONAContext = ctx;
+        window.__JSONAContext.getReactElement = getReactElement;
     }
-    const jsonxChildren = getReactElement(views[name] ? views[name].jsonx : null, viewdata[name] ? viewdata[name] : {});
+    const Element = views[name] ? views[name].jsonx : null;
+    if (Element)
+        Element.props = { key: `jsona_layer_element_${name}`, ...Element.props, };
+    const jsonxChildren = getReactElement(Element, viewdata[name] ? viewdata[name] : {});
     return (jsxRuntime.jsx(require$$0.Fragment, { children: (type !== "overlay")
             ? jsonxChildren
-            : el ? ReactDOM__default['default'].createPortal(jsonxChildren, el) : null }, "viewx"));
+            : el ? ReactDOM__default['default'].createPortal(jsonxChildren, el) : null }, `jsona_layer_${name}`));
 }
 function getMainComponent(options) {
     if (!options)
         throw ReferenceError("invalid VXA Options");
     else if (!options.config)
         throw ReferenceError("invalid VXA Options");
-    const { dispatch, useGlobalState, config, application, layerStates, } = options;
+    const { dispatch, useGlobalState, config, application, layerStates, customComponents, } = options;
+    // console.log({options})
     const { Functions, settings } = config;
     const dispatcher = (action) => dispatch(action);
     function Main(appProps) {
@@ -2848,10 +2853,11 @@ function getMainComponent(options) {
             viewx: { Functions, settings },
             // state:{counter, setCounter},
             debug: settings.debug,
-            componentLibraries: Object.assign({}, config.componentLibraries),
-            reactComponents: Object.assign({ Link: reactRouterDom.Link }, config.reactComponents)
+            customComponents,
+            componentLibraries: {},
+            reactComponents: { Link: reactRouterDom.Link, }, //Object.assign({ Link }, config.reactComponents)
         };
-        // if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+        // if (settings.exposeVXAToWindow) window.__JSONAContext = ctx;
         const getReactElement = jsonx.getReactElementFromJSONX.bind(ctx);
         ctx.getReactElement = getReactElement;
         require$$0.useEffect(() => {
@@ -2930,7 +2936,9 @@ function getMainComponent(options) {
         }, [pathname /* templates*/]);
         /* eslint-enable */
         return (jsxRuntime.jsx(require$$0.Fragment, { children: config.layers.map(layer => {
-                return (jsxRuntime.jsx(ViewXComponent, { layer: layer, views: views, viewdata: viewdata, ctx: ctx, layerStates: layerStates, settings: settings }, void 0));
+                let layerName = layer.name;
+                // Object.defineProperty(ViewXComponent, 'name', {value: `${layerName}_layer`, writable: true});
+                return (jsxRuntime.jsx(ViewXComponent, { layer: layer, views: views, viewdata: viewdata, ctx: ctx, layerStates: layerStates, settings: settings }, `${layerName}_layer`));
             }) }, "viewx"));
     }
     return Main;
@@ -3681,45 +3689,71 @@ function getComponentPromise(customComponent) {
  * @param {VXAComponent[]} customComponents array of components to add to jsona
  * @returns {librariesAndComponents} reactComponents and componentLibraries to add to JSONX
  */
-async function getReactLibrariesAndComponents({ customComponents }) {
+async function getReactLibrariesAndComponents({ customComponents, configuration, }) {
     const componentLibraries = {};
     const reactComponents = {};
     if (customComponents && customComponents.length) {
         await Promise.all(customComponents.map(getComponentPromise));
-        customComponents.forEach(customComponent => {
-            const { type, name, jsonx: jsonx$1, options, functionBody } = customComponent;
-            if (type === "library") {
-                if (jsonx$1) {
-                    componentLibraries[name] = Object.keys(jsonx$1).reduce((result, prop) => {
-                        const libraryComponent = jsonx$1[prop];
-                        const { type, name, jsonxComponent, options, functionBody } = libraryComponent;
-                        if (type === "component") {
-                            result[name] = jsonx._jsonxComponents.getReactClassComponent(jsonxComponent, options);
-                        }
-                        else {
-                            result[name] = jsonx._jsonxComponents.getReactFunctionComponent(jsonxComponent, functionBody, options);
-                        }
-                        return result;
-                    }, {});
-                }
-                else
-                    componentLibraries[name] = window[name];
-            }
-            else if (type === "component") {
-                if (jsonx$1) {
-                    reactComponents[name] = jsonx._jsonxComponents.getReactClassComponent(jsonx$1, options);
-                }
-                else
-                    reactComponents[name] = window[name];
-            }
-            else if (type === "function" || typeof functionBody === 'function') {
-                if (jsonx$1) {
-                    reactComponents[name] = jsonx._jsonxComponents.getReactFunctionComponent(jsonx$1, functionBody, options);
-                }
-                else
-                    reactComponents[name] = window[name];
-            }
-        });
+        // customComponents.forEach(customComponent => {
+        //   const { type, name, jsonx, options, functionBody, functionComponent, } = customComponent;
+        //   if (type === "library") {
+        //     if (jsonx) {
+        //       componentLibraries[name] = Object.keys(jsonx).reduce(
+        //         (result: jsonxLibrary, prop: string) => {
+        //           const libraryComponent:VXAComponent = jsonx[prop];
+        //           const {
+        //             type,
+        //             name,
+        //             jsonxComponent,
+        //             options,
+        //             functionBody
+        //           } = libraryComponent;
+        //           if (type === "component") {
+        //             result[name] = _jsonxComponents.getReactClassComponent.call({debug:configuration?.settings.debug},
+        //               jsonxComponent,
+        //               options
+        //             );
+        //           } else if(functionComponent) {
+        //             result[name] = _jsonxComponents.makeFunctionComponent.call(           {debug:configuration?.settings.debug},
+        //               functionComponent,
+        //               options
+        //               );
+        //           } else {
+        //             result[name] = _jsonxComponents.getReactFunctionComponent.call( {debug:configuration?.settings.debug},
+        //               jsonxComponent,
+        //               functionBody,
+        //               options
+        //             );
+        //           }
+        //           return result;
+        //         },
+        //         {}
+        //       );
+        //     } else componentLibraries[name] = window[name];
+        //   } else if (type === "component") {
+        //     if (jsonx) {
+        //       reactComponents[name] = _jsonxComponents.getReactClassComponent.call( {debug:configuration?.settings.debug},
+        //         jsonx,
+        //         options
+        //       );
+        //     } else reactComponents[name] = window[name];
+        //   } else if (type === "function" || typeof functionBody ==='function') {
+        //     if(functionComponent){
+        //       reactComponents[name] = _jsonxComponents.makeFunctionComponent.call(           {debug:configuration?.settings.debug},
+        //         functionComponent,
+        //         options
+        //         );
+        //     } else if (jsonx) {
+        //       reactComponents[
+        //         name
+        //       ] = _jsonxComponents.getReactFunctionComponent.call( {debug:configuration?.settings.debug},
+        //         jsonx,
+        //         functionBody,
+        //         options
+        //       );
+        //     } else reactComponents[name] = window[name];
+        //   }
+        // });
     }
     return {
         componentLibraries,
@@ -3777,6 +3811,7 @@ async function configureViewx(options = {}) {
     });
     const [reactJSONXComponents] = await Promise.all([
         getReactLibrariesAndComponents({
+            configuration,
             customComponents: options.customComponents
         }),
         addCustomFiles({

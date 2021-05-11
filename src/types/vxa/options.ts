@@ -32,6 +32,7 @@ export type VXAComponentPromiseParams = {
   stylesheets?: string[];
   options?: {};
   functionBody?: (string) | ((props:any)=>void);
+  functionComponent?: (props:any)=>void;
   HTMLDocument?: HTMLDocument;
   timeoutMilliseconds?: number;
 }

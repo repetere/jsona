@@ -27,6 +27,7 @@ import { getReactElementFromJSONX, } from "jsonx";
 import { loadTemplates, loadDynamicTemplate, loadRoute, setup, hasMatchingDynamicTemplateRoutePathFallback } from "../util/props";
 import { setBodyPathnameId } from "../util/html";
 import { fetchJSON } from "../util/data";
+// import { jsonxComponent } from "jsonx/src/types/jsonx";
 
 /**
  * bound default vxa functions to the vxafunctioncontext object
@@ -55,20 +56,23 @@ function ViewXComponent(props: any): JSX.Element {
     return layerStateData
   },[layerStates,name]);
   const [state, setState] = useState(layerState);
-  ctx[`viewx_layer_${name}_state`] = state;
-  ctx[`viewx_layer_${name}_setState`] = setState;
+  ctx[`jsona_layer_${name}_state`] = state;
+  ctx[`jsona_layer_${name}_setState`] = setState;
   const getReactElement = getReactElementFromJSONX.bind(ctx);
   if (settings.exposeVXAToWindow) {
-    window.__ViewXContext = ctx;
-    window.__ViewXContext.getReactElement = getReactElement;
+    window.__JSONAContext = ctx;
+    window.__JSONAContext.getReactElement = getReactElement;
   }
+  const Element = views[name] ? views[name].jsonx : null;
+  if(Element) Element.props = {key: `jsona_layer_element_${name}`, ...Element.props, };
   const jsonxChildren = getReactElement(
-    views[name] ? views[name].jsonx : null,
+    Element,
     viewdata[name] ? viewdata[name] : {}
   );
-
+ 
+  
   return (
-    <Fragment key="viewx">
+    <Fragment key={`jsona_layer_${name}`}>
       {(type !== "overlay")
         ? jsonxChildren
         : el ? ReactDOM.createPortal(jsonxChildren, el) : null
@@ -82,7 +86,8 @@ export default function getMainComponent(
 ): FunctionComponent {
   if (!options) throw ReferenceError("invalid VXA Options");
   else if (!options.config) throw ReferenceError("invalid VXA Options");
-  const { dispatch, useGlobalState, config, application, layerStates, } = options;
+  const { dispatch, useGlobalState, config, application, layerStates, customComponents, } = options;
+  // console.log({options})
   const { Functions, settings } = config;
   const dispatcher = (action: VXADispatchAction): void => dispatch(action);
   function Main(appProps: any) {
@@ -169,10 +174,11 @@ export default function getMainComponent(
       viewx: { Functions, settings },
       // state:{counter, setCounter},
       debug: settings.debug,
-      componentLibraries: Object.assign({}, config.componentLibraries),
-      reactComponents: Object.assign({ Link }, config.reactComponents)
+      customComponents,
+      componentLibraries:{},// Object.assign({}, config.componentLibraries),
+      reactComponents: {Link: Link as any,}, //Object.assign({ Link }, config.reactComponents)
     };
-    // if (settings.exposeVXAToWindow) window.__ViewXContext = ctx;
+    // if (settings.exposeVXAToWindow) window.__JSONAContext = ctx;
     const getReactElement = getReactElementFromJSONX.bind(ctx);
     ctx.getReactElement = getReactElement;
 
@@ -253,7 +259,9 @@ export default function getMainComponent(
     return (
       <Fragment key="viewx">
         {config.layers.map(layer => {
-          return (<ViewXComponent layer={layer} views={views} viewdata={viewdata} ctx={ctx} layerStates={layerStates} settings={settings} />);
+          let layerName = layer.name;
+          // Object.defineProperty(ViewXComponent, 'name', {value: `${layerName}_layer`, writable: true});
+          return (<ViewXComponent key={`${layerName}_layer`} layer={layer} views={views} viewdata={viewdata} ctx={ctx} layerStates={layerStates} settings={settings} />);
         })}
       </Fragment>
     );

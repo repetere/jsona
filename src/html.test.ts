@@ -37,4 +37,20 @@ describe('End to End HTML Tests', function(){
       expect(backToPage2url.includes('page-2')).toBe(true);
     });
   });
+  describe('Inline Custom Components JSONA Test',()=>{
+    it('should render the page and navigate links', async()=>{
+      await page.goto(`file://${__dirname}/examples/material_ui_example.html`,{
+        waitUntil: 'networkidle2',
+      });
+      // const initialPageData = await page.evaluate(()=>{
+      //   const titleText = document.querySelector('title')?.innerHTML
+      //   return {titleText};
+      // });
+      const pageContent = await page.content();
+      // expect(initialPageData.titleText).toBe('CUSTOM COMPONENTS');
+      expect(pageContent.includes('<button class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary" tabindex="0" type="button"><span class="MuiButton-label">Index</span><span class="MuiTouchRipple-root"></span></button>')).toBe(true);
+      expect(pageContent.includes('<span class="MuiButton-label">Link From Inline</span>')).toBe(true);
+    
+    });
+  });
 });

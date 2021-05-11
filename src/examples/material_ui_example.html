@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>CUSTOM COMPONENTS JSONA TEST</title>
+    <script type="text/javascript" src="../../dist/index.umd.js"></script>
+  </head>
+  <body>
+    <div id="loading"></div>
+    <div id="root"></div>
+    <script type="text/javascript">
+    const jsonaTemplates = {
+
+      header:{
+        '/:catchall*':{
+          jsonx:{
+            component:"header",
+            children:"header"
+          }
+        },
+      },
+      root:{
+        __error_404: {
+          jsonx: {
+            component: "div",
+            children: [
+              {
+                component: "h1",
+                children: "Not Found"
+              },
+              {
+                component: "div",
+                thisprops: {
+                  _children: ["location", "pathname"]
+                }
+              }
+            ]
+          },
+          pageData: [
+            {
+              tagName: "title",
+              attributes: {},
+              innerHTML: "Not Found"
+            }
+          ]
+        },
+        '/':{
+          preRenderFunctions:[],
+          pageData:[
+            {
+              tagName:'title',
+              attributes:{},
+              innerHTML:"CUSTOM COMPONENTS"
+            }
+          ],
+          jsonx:{
+            component:'main',
+            children:[
+              // {div:'hello world!!!'},
+              {
+                ul:[
+                  {
+                    li:[{
+                      Link:{
+                        props:{to:'/'},
+                        children:[
+                          {
+                            component:'MaterialUI.Button',
+                            props:{
+                              variant:"contained",
+                              color:"primary"
+                            },
+                            children:'Index'
+                          }
+                        ]
+                      }
+                    }]
+                  },
+                  {
+                    li:[{
+                      Link:{
+                        props:{to:'/'},
+                        children:[
+                          {
+                            component:"div",
+                            // debug:true,
+                            __dangerouslyInsertFunctionComponents:{
+                              children:{
+                                functionBody:'console.log("called invoked function")',
+                                reactComponent:{
+                                  component:'MaterialUI.Button',
+                                  props:{
+                                    variant:"contained",
+                                    color:"primary"
+                                  },
+                                  children:'Link From Inline',
+                                },
+                                options:{
+                                  name:'spanFunc'
+                                },
+                                invoke:true,
+                              }
+                            },
+                          },
+                        ]
+                      }
+                    }]
+                  },
+                  {li:[{Link:{props:{to:'/page-1'},children:'page1'}}]},
+                  {li:[{Link:{props:{to:'/page-2'},children:'page2'}}]},
+                  {li:[{Link:{props:{to:'/page-3'},children:'page3'}}]}
+                ]
+              },
+              {
+                component:'sayHello2'
+              },
+              {
+                component:'div',
+                children:'should show sayHello2'
+              }
+            ]
+          }
+        },
+      },
+    }
+    const AppConfig = {
+      templates: jsonaTemplates,
+      settings: {
+        router: "hash", //TODO: this should be 'browser' on server
+      },
+      application: {
+        state: {
+          name: "Material UI Demo",
+        }
+      },
+      initialScripts: [],
+      customComponents: [
+        {
+          name: "MaterialUI",
+          format: "umd",
+          type: "library",
+          umdFilePath:
+            "https://unpkg.com/@material-ui/core/umd/material-ui.development.js",
+          stylesheets: [
+            'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap',
+            'https://fonts.googleapis.com/icon?family=Material+Icons',
+          ],
+          timeoutMilliseconds: 60000,
+        },
+        // {
+        //   name: "sayHello",
+        //   format: "jsonx",
+        //   type: "component",
+        //   jsonx: {
+        //     render: {
+        //       body: {
+        //         component: "div",
+        //         children: "HELLO!"
+        //       }
+        //     }
+        //   }
+        // }
+        {
+          name: "sayHello2",
+          options:{
+            name: "sayHello2",
+          },
+          format: "jsonx",
+          type: "function",
+          functionBody:'console.log("in say hello2");',
+          jsonx: {
+            component: "div",
+            // children: "in say hello"
+            children: [
+              {
+                component:'MaterialUI.Switch',
+                props:{
+                  variant:"rect", 
+                  width:210,
+                  height:118
+                }
+              }
+            ]
+          }
+        },
+      ],
+      customScripts: [
+      ],
+      customStyles: [
+      ],
+      customFunctions: {
+      },
+      layers: [
+        {
+          order: 400,
+          name: "header",
+          system: true,
+          type: "view"
+        },
+        // {
+        //   order: 900,
+        //   name: "root",
+        //   system: true,
+        //   type: "applicationRoot"
+        // }
+      ]
+    };
+    void async function main(){
+      const App = await jsona.App(AppConfig)
+      console.log({App})
+    }()
+    </script>
+  </body>
+</html>
