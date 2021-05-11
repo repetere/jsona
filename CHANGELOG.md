@@ -1,3 +1,10 @@
+# [0.7.0](https://github.com/repetere/jsona/compare/v0.6.11...v0.7.0) (2021-05-11)
+
+
+### Features
+
+* cascading custom components with updated JSONX ([1c03a1c](https://github.com/repetere/jsona/commit/1c03a1c3c858cbc237815693f069d1e664e78727))
+
 ## [0.6.11](https://github.com/repetere/jsona/compare/v0.6.10...v0.6.11) (2021-05-09)
 
 
