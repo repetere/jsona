@@ -87,7 +87,7 @@
     "@types/hoist-non-react-statics": "3.3.1",
     "@types/jest": "26.0.23",
     "@types/jsdom": "^16.2.10",
-    "@types/luxon": "1.26.5",
+    "@types/luxon": "1.27.0",
     "@types/memory-cache": "0.2.1",
     "@types/numeral": "2.0.1",
     "@types/react-dom": "17.0.7",
