@@ -85,7 +85,7 @@
     "@types/enzyme": "3.10.8",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/hoist-non-react-statics": "3.3.1",
-    "@types/jest": "26.0.23",
+    "@types/jest": "26.0.24",
     "@types/jsdom": "^16.2.10",
     "@types/luxon": "1.27.0",
     "@types/memory-cache": "0.2.1",
