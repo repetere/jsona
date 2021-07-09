@@ -81,7 +81,7 @@
     "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "12.0.0",
-    "@types/chai": "4.2.20",
+    "@types/chai": "4.2.21",
     "@types/enzyme": "3.10.9",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/hoist-non-react-statics": "3.3.1",
