@@ -12,7 +12,7 @@
   "dependencies": {
     "hoist-non-react-statics": "3.3.2",
     "jsonx": "^1.10.2",
-    "luxon": "2.0.1",
+    "luxon": "3.2.1",
     "path-to-regexp": "6.2.0",
     "promisie": "3.0.1",
     "react": "17.0.2",
@@ -87,7 +87,7 @@
     "@types/hoist-non-react-statics": "3.3.1",
     "@types/jest": "26.0.24",
     "@types/jsdom": "^16.2.10",
-    "@types/luxon": "1.27.1",
+    "@types/luxon": "3.2.0",
     "@types/memory-cache": "0.2.1",
     "@types/numeral": "2.0.1",
     "@types/react-dom": "17.0.9",
